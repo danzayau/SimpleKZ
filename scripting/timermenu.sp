@@ -153,5 +153,5 @@ public SetupOtherMenuListeners() {
 	}
 	else {
 		SetFailState("Failed to load file (%s not found).", menuCommandsPath);
-	}	
+	}
 } 

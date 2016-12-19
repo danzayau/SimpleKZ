@@ -99,6 +99,14 @@ void TeleportToOtherPlayer(client, target)
 	GetClientEyeAngles(target, targetAngles);
 	GetClientName(target, targetName, MAX_NAME_LENGTH);
 	
+	// Leave spectators if necessary
+	if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
+		ChangeClientTeam(client, CS_TEAM_CT);
+	}
+	// Respawn the player if necessary
+	if (!IsPlayerAlive(client)) {
+		CS_RespawnPlayer(client);
+	}
 	TeleportEntity(client, targetOrigin, targetAngles, Float: { 0.0, 0.0, -100.0 } );
 	PrintToChat(client, "[KZ] You have teleported to %s.", targetName);
-}
+} 

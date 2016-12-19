@@ -91,6 +91,7 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 	if (IsFakeClient(client)) {
 		ServerCommand("bot_quota 0");
 	}
+	// Reset all the player's variables
 	if (IsValidClient(client)) {
 		ResetClientVariables(client);
 		TimerMenuSetup(client);
@@ -104,7 +105,7 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2]) {
-	// Update variables and performs routine.
+	// Update variables.
 	if (IsValidClient(client)) {
 		if (IsPlayerAlive(client)) {
 			TimerTick(client);
