@@ -9,7 +9,7 @@ Plugin myinfo =
 	name = "Simple KZ", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer.", 
-	version = "0.1", 
+	version = "0.2", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -32,7 +32,6 @@ bool g_clientCanUndo[MAXPLAYERS + 1] =  { false, ... };
 /*	timer menu	*/
 bool g_clientUsingOtherMenu[MAXPLAYERS + 1] =  { false, ... };
 bool g_clientUsingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
-bool g_clientWasUsingTeleportMenu[MAXPLAYERS + 1] =  { false, ... };
 Handle g_timerMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 /*	misc	*/
 bool g_clientHidingPlayers[MAXPLAYERS + 1] =  { false, ... };
@@ -70,13 +69,15 @@ public void OnPluginStart() {
 	TimerMenuSetupAll();
 	
 	// Hooks
-	HookEvent("player_spawn", Event_PlayerSpawn);
+	HookEvent("player_spawn", OnPlayerSpawn);
 	HookEntityOutput("func_button", "OnPressed", ButtonPress);
+	
+	// Translations
+	LoadTranslations("common.phrases");
 }
 
 public void OnMapStart() {
 	LoadKZConfig();
-	ServerCommand("mp_warmup_end");
 }
 
 public void OnClientPutInServer(client) {
@@ -84,7 +85,7 @@ public void OnClientPutInServer(client) {
 	SDKHook(client, SDKHook_WeaponDrop, OnWeaponDrop);
 }
 
-public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
+public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	// Get rid of bots when they join.
 	if (IsFakeClient(client)) {
@@ -105,7 +106,7 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2]) {
 	// Update variables and performs routine.
 	if (IsValidClient(client)) {
-		if (GetClientTeam(client) != CS_TEAM_SPECTATOR) {
+		if (IsPlayerAlive(client)) {
 			TimerTick(client);
 		}
 		UpdateTimerMenu(client);
@@ -142,7 +143,7 @@ public void OnMapVoteStarted()
 	for (new client = 1; client <= MaxClients; client++)
 	{
 		if (IsValidClient(client)) {
-			TimerMenuOpenOtherMenu(client);
+			g_clientUsingOtherMenu[client] = true;
 		}
 	}
 }
@@ -150,13 +151,12 @@ public void OnMapVoteStarted()
 // Stop menu from overlapping other menus by using command listeners
 public Action CommandOpenOtherMenu(int client, const char[] command, int argc) {
 	if (IsValidClient(client)) {
-		TimerMenuOpenOtherMenu(client);
+		g_clientUsingOtherMenu[client] = true;
 	}
 }
 
 // Allow unlimited team changes
 public Action CommandJoinTeam(int client, const char[] command, int argc) {
-	if (!client)return Plugin_Continue;
 	if (IsValidClient(client)) {
 		char teamString[4];
 		GetCmdArgString(teamString, sizeof(teamString));

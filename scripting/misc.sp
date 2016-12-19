@@ -5,15 +5,7 @@
 
 void AddCommandListeners() {
 	AddCommandListener(CommandJoinTeam, "jointeam");
-	AddCommandListener(CommandOpenOtherMenu, "radio1");
-	AddCommandListener(CommandOpenOtherMenu, "radio2");
-	AddCommandListener(CommandOpenOtherMenu, "radio3");
-	AddCommandListener(CommandOpenOtherMenu, "sm_nominate");
-	AddCommandListener(CommandOpenOtherMenu, "sm_admin");
-	AddCommandListener(CommandOpenOtherMenu, "sm_votekick");
-	AddCommandListener(CommandOpenOtherMenu, "sm_voteban");
-	AddCommandListener(CommandOpenOtherMenu, "sm_votemenu");
-	AddCommandListener(CommandOpenOtherMenu, "sm_revote");
+	SetupOtherMenuListeners();
 }
 
 bool IsValidClient(int client) {
@@ -95,4 +87,18 @@ public Action CleanHUD(Handle timer, int client) {
 
 int GetSpectatedPlayer(int client) {
 	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-} 
+}
+
+void TeleportToOtherPlayer(client, target)
+{
+	float targetOrigin[3];
+	float targetAngles[3];
+	char targetName[MAX_NAME_LENGTH];
+	
+	GetClientAbsOrigin(target, targetOrigin);
+	GetClientEyeAngles(target, targetAngles);
+	GetClientName(target, targetName, MAX_NAME_LENGTH);
+	
+	TeleportEntity(client, targetOrigin, targetAngles, Float: { 0.0, 0.0, -100.0 } );
+	PrintToChat(client, "[KZ] You have teleported to %s.", targetName);
+}

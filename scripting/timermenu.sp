@@ -61,43 +61,40 @@ void UpdateTimerMenu(int client) {
 	if (g_clientUsingOtherMenu[client] && GetClientMenu(client) == MenuSource_None)
 	{
 		g_clientUsingOtherMenu[client] = false;
-		g_clientWasUsingTeleportMenu[client] = false;
-	}
-	if (!g_clientUsingOtherMenu[client] && g_clientWasUsingTeleportMenu[client]) {
-		g_clientUsingTeleportMenu[client] = true;
 	}
 	
-	
-	if (IsPlayerAlive(client)) {
-		UpdateTimerMenuTitle(client);
-		// Alive and playing
-		if (g_clientUsingTeleportMenu[client]) {
+	if (!g_clientUsingOtherMenu[client]) {
+		if (IsPlayerAlive(client)) {
+			UpdateTimerMenuTitle(client);
+			// Alive and playing
 			if (g_clientUsingTeleportMenu[client]) {
-				UpdateTimerMenuItems(client);
-				DisplayMenu(g_timerMenu[client], client, 1);
+				if (g_clientUsingTeleportMenu[client]) {
+					UpdateTimerMenuItems(client);
+					DisplayMenu(g_timerMenu[client], client, 1);
+				}
+			}
+			else {
+				// Use a panel to just draw the title (since menu doesn't seem to work when there are no items)
+				Handle timerPanel = CreatePanel();
+				char timerMenuTitle[64];
+				GetMenuTitle(g_timerMenu[client], timerMenuTitle, sizeof(timerMenuTitle))
+				DrawPanelText(timerPanel, timerMenuTitle);
+				SendPanelToClient(timerPanel, client, TimerMenuHandler, 1);
+				CloseHandle(timerPanel);
 			}
 		}
+		// Spectating
 		else {
-			// Use a panel to just draw the title (since menu doesn't seem to work when there are no items)
-			Handle timerPanel = CreatePanel();
-			char timerMenuTitle[64];
-			GetMenuTitle(g_timerMenu[client], timerMenuTitle, sizeof(timerMenuTitle))
-			DrawPanelText(timerPanel, timerMenuTitle);
-			SendPanelToClient(timerPanel, client, TimerMenuHandler, 1);
-			CloseHandle(timerPanel);
-		}
-	}
-	// Spectating
-	else {
-		int spectatedPlayer = GetSpectatedPlayer(client);
-		if (IsValidClient(spectatedPlayer)) {
-			// Use a panel to just draw the title (since menu doesn't seem to work when there are no items)
-			Handle timerPanel = CreatePanel();
-			char spectatedPlayerMenuTitle[64];
-			GetMenuTitle(g_timerMenu[spectatedPlayer], spectatedPlayerMenuTitle, sizeof(spectatedPlayerMenuTitle));
-			DrawPanelText(timerPanel, spectatedPlayerMenuTitle);
-			SendPanelToClient(timerPanel, client, TimerMenuHandler, 1);
-			CloseHandle(timerPanel);
+			int spectatedPlayer = GetSpectatedPlayer(client);
+			if (IsValidClient(spectatedPlayer)) {
+				// Use a panel to just draw the title (since menu doesn't seem to work when there are no items)
+				Handle timerPanel = CreatePanel();
+				char spectatedPlayerMenuTitle[64];
+				GetMenuTitle(g_timerMenu[spectatedPlayer], spectatedPlayerMenuTitle, sizeof(spectatedPlayerMenuTitle));
+				DrawPanelText(timerPanel, spectatedPlayerMenuTitle);
+				SendPanelToClient(timerPanel, client, TimerMenuHandler, 1);
+				CloseHandle(timerPanel);
+			}
 		}
 	}
 }
@@ -129,13 +126,32 @@ public int TimerMenuHandler(Menu menu, MenuAction action, int param1, int param2
 	}
 }
 
-void TimerMenuOpenOtherMenu(client) {
-	g_clientUsingOtherMenu[client] = true;
-	if (g_clientUsingTeleportMenu[client]) {
-		g_clientUsingTeleportMenu[client] = false;
-		g_clientWasUsingTeleportMenu[client] = true;
+// Add command listeners for other menu commands as specified in menu_commands.txt so that the
+// plugin can temporarily disable the timer menu while the player is using the other menu.
+public SetupOtherMenuListeners() {
+	char menuCommandsPath[] = "cfg/sourcemod/simplekz/exception_list.txt";
+	char line[256];
+	
+	if (FileExists(menuCommandsPath)) {
+		Handle fileHandle = OpenFile(menuCommandsPath, "r");
+		
+		while (!IsEndOfFile(fileHandle) && ReadFileLine(fileHandle, line, sizeof(line)))
+		{
+			if ((StrContains(line, "//", true) == -1))
+			{
+				TrimString(line);
+				if (!StrEqual(line, ""))
+				{
+					AddCommandListener(CommandOpenOtherMenu, line);
+				}
+			}
+		}
+		
+		if (fileHandle != INVALID_HANDLE) {
+			CloseHandle(fileHandle);
+		}
 	}
 	else {
-		g_clientWasUsingTeleportMenu[client] = false;
-	}
+		SetFailState("Failed to load file (%s not found).", menuCommandsPath);
+	}	
 } 

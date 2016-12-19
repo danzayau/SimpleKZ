@@ -1,0 +1,10 @@
+// The timer menu of SimpleKZ blocks menus of other plugins.
+// To prevent this, add commands that open menus here.
+radio1
+radio2
+sm_nominate
+sm_admin
+sm_votekick
+sm_voteban
+sm_votemenu
+sm_revote

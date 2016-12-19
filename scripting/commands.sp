@@ -5,98 +5,144 @@
 
 
 void RegisterCommands() {
-	RegConsoleCmd("sm_menu", CommandToggleMenu, "[SimpleKZ] Toggles the visibility of the timer menu.");
-	RegConsoleCmd("sm_checkpoint", CommandMakeCheckpoint, "[SimpleKZ] Set a checkpoint.");
-	RegConsoleCmd("sm_gocheck", CommandTeleportToCheckpoint, "[SimpleKZ] Teleport to the checkpoint.");
-	RegConsoleCmd("sm_undo", CommandUndoTeleport, "[SimpleKZ] Undo teleport to checkpoint.");
-	RegConsoleCmd("sm_start", CommandTeleportToStart, "[SimpleKZ] Teleports you to the start of the map.");
-	RegConsoleCmd("sm_stopsound", CommandStopsound, "[SimpleKZ] Stops all sounds e.g. map soundscapes (music).");
-	RegConsoleCmd("sm_hide", CommandHide, "[SimpleKZ] Hides other players.");
-	RegConsoleCmd("+noclip", CommandEnableNoclip, "[SimpleKZ] Noclip on.");
-	RegConsoleCmd("-noclip", CommandDisableNoclip, "[SimpleKZ] Noclip off.");
+	RegConsoleCmd("sm_menu", CommandToggleMenu, "[KZ] Toggles the visibility of the timer menu.");
+	RegConsoleCmd("sm_checkpoint", CommandMakeCheckpoint, "[KZ] Set a checkpoint.");
+	RegConsoleCmd("sm_gocheck", CommandTeleportToCheckpoint, "[KZ] Teleport to the checkpoint.");
+	RegConsoleCmd("sm_undo", CommandUndoTeleport, "[KZ] Undo teleport to checkpoint.");
+	RegConsoleCmd("sm_start", CommandTeleportToStart, "[KZ] Teleports you to the start of the map.");
+	RegConsoleCmd("sm_r", CommandTeleportToStart, "[KZ] Teleports you to the start of the map.");
+	RegConsoleCmd("sm_stopsound", CommandStopsound, "[KZ] Stops all sounds e.g. map soundscapes (music).");
+	RegConsoleCmd("sm_hide", CommandHide, "[KZ] Hides other players.");
+	RegConsoleCmd("sm_goto", CommandGoto, "[KZ] Teleport to another player.");
+	RegConsoleCmd("sm_spec", CommandSpec, "[KZ] Spectate another player.");
+	RegConsoleCmd("sm_watch", CommandSpec, "[KZ] Spectate another player.");
+	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
+	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
 }
 
 
 // Command Handlers
 
 public Action CommandToggleMenu(client, args) {
-	if (IsValidClient(client)) {
-		if (g_clientUsingTeleportMenu[client]) {
-			g_clientUsingTeleportMenu[client] = false;
-			PrintToChat(client, "[KZ] Teleport menu disabled.");
-		}
-		else {
-			g_clientUsingTeleportMenu[client] = true;
-			PrintToChat(client, "[KZ] Teleport menu enabled.");
-		}
+	if (g_clientUsingTeleportMenu[client]) {
+		g_clientUsingTeleportMenu[client] = false;
+		PrintToChat(client, "[KZ] Your teleport menu has been disabled.");
+	}
+	else {
+		g_clientUsingTeleportMenu[client] = true;
+		PrintToChat(client, "[KZ] Your teleport menu has been enabled.");
 	}
 	return Plugin_Handled;
 }
 
 public Action CommandMakeCheckpoint(client, args) {
-	if (IsValidClient(client)) {
-		MakeCheckpoint(client);
-	}
+	MakeCheckpoint(client);
 	return Plugin_Handled;
 }
 
 public Action CommandTeleportToCheckpoint(client, args) {
-	if (IsValidClient(client)) {
-		TeleportToCheckpoint(client);
-	}
+	TeleportToCheckpoint(client);
 	return Plugin_Handled;
 }
 
 public Action CommandUndoTeleport(client, args) {
-	if (IsValidClient(client)) {
-		UndoTeleport(client);
-	}
+	UndoTeleport(client);
 	return Plugin_Handled;
 }
 
 public Action CommandTeleportToStart(client, args) {
-	if (IsValidClient(client)) {
-		TeleportToStart(client);
-	}
+	TeleportToStart(client);
 	return Plugin_Handled;
 }
 
 public Action CommandStopsound(client, args) {
-	if (IsValidClient(client)) {
-		ClientCommand(client, "snd_playsounds Music.StopAllExceptMusic");
-	}
+	ClientCommand(client, "snd_playsounds Music.StopAllExceptMusic");
+	PrintToChat(client, "[KZ] You have stopped all sounds.");
 	return Plugin_Handled;
 }
 
 public Action CommandHide(client, args) {
-	if (IsValidClient(client)) {
-		if (g_clientHidingPlayers[client]) {
-			g_clientHidingPlayers[client] = false;
-			PrintToChat(client, "[KZ] You are now showing other players.");
+	if (g_clientHidingPlayers[client]) {
+		g_clientHidingPlayers[client] = false;
+		PrintToChat(client, "[KZ] You are now showing other players.");
+	}
+	else {
+		g_clientHidingPlayers[client] = true;
+		PrintToChat(client, "[KZ] You are now hiding other players.");
+	}
+	return Plugin_Handled;
+}
+
+public Action CommandGoto(client, args) {
+	if (!IsPlayerAlive(client)) {
+		ReplyToCommand(client, "[KZ] You must be alive to use this command.");
+	}
+	
+	else if (args < 1) {  // No arguments
+		ReplyToCommand(client, "[KZ] Please specify a player to goto.");
+	}
+	
+	else {
+		char specifiedPlayer[MAX_NAME_LENGTH];
+		GetCmdArg(1, specifiedPlayer, sizeof(specifiedPlayer));
+		
+		int target = FindTarget(client, specifiedPlayer, false, false);
+		
+		if (target != -1) {
+			if (target != client) {
+				TeleportToOtherPlayer(client, target);
+				g_clientTimerRunning[client] = false;
+			}
+			else {
+				ReplyToCommand(client, "[KZ] You can't goto yourself.");
+			}
 		}
-		else {
-			g_clientHidingPlayers[client] = true;
-			PrintToChat(client, "[KZ] You are now hiding other players.");
-		}
+	}
+	return Plugin_Handled;
+}
+
+public Action CommandSpec(client, args) {
+	if (args < 1) {
+		ChangeClientTeam(client, 1);
+		g_clientTimerRunning[client] = false;
+	}
+	else {
+		char specifiedPlayer[MAX_NAME_LENGTH];
+		GetCmdArg(1, specifiedPlayer, sizeof(specifiedPlayer));
+		
+		int target = FindTarget(client, specifiedPlayer, false, false);
+		
+		if (target != -1) {
+			if (target != client) {
+				if (IsPlayerAlive(target)) {
+					ChangeClientTeam(client, 1);
+					SetEntProp(client, Prop_Send, "m_iObserverMode", 4);
+					SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", target);
+					g_clientTimerRunning[client] = false;
+				}
+				else {
+					ReplyToCommand(client, "[KZ] The player you specified is not alive.");
+				}
+			}
+			else {
+				ReplyToCommand(client, "[KZ] You can't spectate yourself.");
+			}
+		}		
 	}
 	return Plugin_Handled;
 }
 
 public Action CommandEnableNoclip(client, args) {
-	if (IsValidClient(client)) {
-		if (g_clientTimerRunning[client])
-		{
-			g_clientTimerRunning[client] = false;
-			PrintToChat(client, "[KZ] Time stopped. Reason: +noclip used.");
-		}
-		SetEntityMoveType(client, MOVETYPE_NOCLIP);
+	if (g_clientTimerRunning[client])
+	{
+		g_clientTimerRunning[client] = false;
+		PrintToChat(client, "[KZ] Your time has been stopped because you used noclip.");
 	}
+	SetEntityMoveType(client, MOVETYPE_NOCLIP);
 	return Plugin_Handled;
 }
 
 public Action CommandDisableNoclip(client, args) {
-	if (IsValidClient(client)) {
-		SetEntityMoveType(client, MOVETYPE_WALK);
-	}
+	SetEntityMoveType(client, MOVETYPE_WALK);
 	return Plugin_Handled;
 } 
