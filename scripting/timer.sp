@@ -117,7 +117,6 @@ void TeleportToCheckpoint(int client) {
 			g_clientCanUndo[client] = false;
 		}
 		TeleportEntity(client, g_clientCheckpointOrigin[client], g_clientCheckpointAngles[client], Float: { 0.0, 0.0, -100.0 } );
-		EmitSoundToClient(client, "buttons/blip1.wav", client);
 	}
 }
 
@@ -128,7 +127,6 @@ void UndoTeleport(int client) {
 	else if (g_clientTeleportsUsed[client] > 0) {
 		if (g_clientCanUndo[client]) {
 			TeleportEntity(client, g_clientUndoOrigin[client], g_clientUndoAngle[client], Float: { 0.0, 0.0, -100.0 } );
-			EmitSoundToClient(client, "buttons/blip1.wav", client);
 		}
 		else {
 			PrintToChat(client, "[KZ] You can't undo because you teleported midair.");

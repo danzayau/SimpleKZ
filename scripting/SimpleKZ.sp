@@ -9,7 +9,7 @@ Plugin myinfo =
 	name = "Simple KZ", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer.", 
-	version = "0.2", 
+	version = "0.2.1", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -38,7 +38,6 @@ bool g_clientHidingPlayers[MAXPLAYERS + 1] =  { false, ... };
 
 
 // Includes
-#include "convars.sp"
 #include "commands.sp"
 #include "timer.sp"
 #include "timermenu.sp"
@@ -54,10 +53,6 @@ public void OnPluginStart() {
 	{
 		SetFailState("This plugin is for CS:GO.");
 	}
-	
-	// ConVars
-	RegisterConVars();
-	AutoExecConfig(true, "SimpleKZ");
 	
 	// Commands
 	RegisterCommands();
@@ -81,28 +76,29 @@ public void OnMapStart() {
 }
 
 public void OnClientPutInServer(client) {
-	SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
-	SDKHook(client, SDKHook_WeaponDrop, OnWeaponDrop);
-}
-
-public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	// Get rid of bots when they join.
 	if (IsFakeClient(client)) {
 		ServerCommand("bot_quota 0");
 	}
-	// Reset all the player's variables
-	if (IsValidClient(client)) {
+	else {
+		// Reset all the player's variables
 		ResetClientVariables(client);
 		TimerMenuSetup(client);
-		// CleanHUD using a timer or else it doesn't work
-		CreateTimer(0.0, CleanHUD, client);
-		// Godmode
-		SetEntProp(client, Prop_Data, "m_takedamage", 0, 1);
-		// No Block
-		SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true);
-	}	
+		// Hooks
+		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
+		SDKHook(client, SDKHook_WeaponDrop, OnWeaponDrop);		
+	}
 }
+
+public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	// CleanHUD using a timer or else it doesn't work
+	CreateTimer(0.0, CleanHUD, client);
+	// Godmode
+	SetEntProp(client, Prop_Data, "m_takedamage", 0, 1);
+	// No Block
+	SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true);
+} 
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2]) {
 	// Update variables.
@@ -134,8 +130,8 @@ public Action OnSetTransmit(int entity, int client)
 
 // Remove dropped weapons
 public Action OnWeaponDrop(int client, int weapon) {
-	if(IsValidEntity(weapon))
-	AcceptEntityInput(weapon, "Kill");
+	if (IsValidEntity(weapon))
+		AcceptEntityInput(weapon, "Kill");
 }
 
 // Stop menu from overlapping the mapvote

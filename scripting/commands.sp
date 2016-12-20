@@ -15,7 +15,6 @@ void RegisterCommands() {
 	RegConsoleCmd("sm_hide", CommandHide, "[KZ] Hides other players.");
 	RegConsoleCmd("sm_goto", CommandGoto, "[KZ] Teleport to another player.");
 	RegConsoleCmd("sm_spec", CommandSpec, "[KZ] Spectate another player.");
-	RegConsoleCmd("sm_watch", CommandSpec, "[KZ] Spectate another player.");
 	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
 	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
 }
