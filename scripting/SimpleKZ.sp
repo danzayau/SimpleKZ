@@ -86,7 +86,7 @@ public void OnClientPutInServer(client) {
 		TimerMenuSetup(client);
 		// Hooks
 		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
-		SDKHook(client, SDKHook_WeaponDrop, OnWeaponDrop);		
+		SDKHook(client, SDKHook_WeaponDrop, OnWeaponDrop);	
 	}
 }
 
@@ -98,7 +98,7 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 	SetEntProp(client, Prop_Data, "m_takedamage", 0, 1);
 	// No Block
 	SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true);
-} 
+}
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2]) {
 	// Update variables.

@@ -95,7 +95,6 @@ void MakeCheckpoint(int client) {
 		g_clientCheckpointsSet[client]++;
 		GetClientAbsOrigin(client, g_clientCheckpointOrigin[client]);
 		GetClientEyeAngles(client, g_clientCheckpointAngles[client]);
-		EmitSoundToClient(client, "buttons/button15.wav", client);
 	}
 	else {
 		PrintToChat(client, "[KZ] You can't make a checkpoint midair.");
