@@ -15,7 +15,6 @@ void RegisterCommands() {
 	RegConsoleCmd("sm_hide", CommandHide, "[KZ] Hides other players.");
 	RegConsoleCmd("sm_goto", CommandGoto, "[KZ] Teleport to another player.");
 	RegConsoleCmd("sm_spec", CommandSpec, "[KZ] Spectate another player.");
-	RegConsoleCmd("sm_watch", CommandSpec, "[KZ] Spectate another player.");
 	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
 	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
 }
@@ -74,14 +73,9 @@ public Action CommandHide(client, args) {
 }
 
 public Action CommandGoto(client, args) {
-	if (!IsPlayerAlive(client)) {
-		ReplyToCommand(client, "[KZ] You must be alive to use this command.");
+	if (args < 1) {  // No arguments
+		ReplyToCommand(client, "[KZ] Please specify a player to go to.");
 	}
-	
-	else if (args < 1) {  // No arguments
-		ReplyToCommand(client, "[KZ] Please specify a player to goto.");
-	}
-	
 	else {
 		char specifiedPlayer[MAX_NAME_LENGTH];
 		GetCmdArg(1, specifiedPlayer, sizeof(specifiedPlayer));
@@ -89,12 +83,21 @@ public Action CommandGoto(client, args) {
 		int target = FindTarget(client, specifiedPlayer, false, false);
 		
 		if (target != -1) {
-			if (target != client) {
-				TeleportToOtherPlayer(client, target);
-				g_clientTimerRunning[client] = false;
+			if (IsPlayerAlive(target)) {
+				if (target != client) {
+					TeleportToOtherPlayer(client, target);
+					if (g_clientTimerRunning[client])
+					{
+						g_clientTimerRunning[client] = false;
+						ReplyToCommand(client, "[KZ] Your time has been stopped.");
+					}
+				}
+				else {
+					ReplyToCommand(client, "[KZ] You can't teleport to yourself.");
+				}
 			}
 			else {
-				ReplyToCommand(client, "[KZ] You can't goto yourself.");
+				ReplyToCommand(client, "[KZ] The player you specified is not alive.");
 			}
 		}
 	}
@@ -103,8 +106,12 @@ public Action CommandGoto(client, args) {
 
 public Action CommandSpec(client, args) {
 	if (args < 1) {
-		ChangeClientTeam(client, 1);
-		g_clientTimerRunning[client] = false;
+		ChangeClientTeam(client, CS_TEAM_SPECTATOR);
+		if (g_clientTimerRunning[client])
+		{
+			g_clientTimerRunning[client] = false;
+			ReplyToCommand(client, "[KZ] Your time has been stopped.");
+		}
 	}
 	else {
 		char specifiedPlayer[MAX_NAME_LENGTH];
@@ -115,10 +122,14 @@ public Action CommandSpec(client, args) {
 		if (target != -1) {
 			if (target != client) {
 				if (IsPlayerAlive(target)) {
-					ChangeClientTeam(client, 1);
+					ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 					SetEntProp(client, Prop_Send, "m_iObserverMode", 4);
 					SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", target);
-					g_clientTimerRunning[client] = false;
+					if (g_clientTimerRunning[client])
+					{
+						g_clientTimerRunning[client] = false;
+						ReplyToCommand(client, "[KZ] Your time has been stopped.");
+					}
 				}
 				else {
 					ReplyToCommand(client, "[KZ] The player you specified is not alive.");
@@ -127,7 +138,7 @@ public Action CommandSpec(client, args) {
 			else {
 				ReplyToCommand(client, "[KZ] You can't spectate yourself.");
 			}
-		}		
+		}
 	}
 	return Plugin_Handled;
 }

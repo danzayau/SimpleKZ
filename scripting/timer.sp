@@ -33,6 +33,7 @@ public ButtonPress(const char[] name, int caller, int activator, float delay) {
 }
 
 void StartTimer(int client) {
+	// Have to be on ground and not noclipping to start the timer
 	if ((GetEntityFlags(client) & FL_ONGROUND) && (GetEntityMoveType(client) == MOVETYPE_WALK)) {
 		g_clientTimerRunning[client] = true;
 		g_clientStartTime[client] = GetGameTime();
@@ -69,7 +70,15 @@ void TimerResetClientTeleportVars(int client) {
 }
 
 void TeleportToStart(int client) {
+	// Leave spectators if necessary
+	if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
+		ChangeClientTeam(client, CS_TEAM_CT);
+	}
 	if (g_clientHasStartPosition[client]) {
+		// Respawn the player if necessary
+		if (!IsPlayerAlive(client)) {
+			CS_RespawnPlayer(client);
+		}
 		TeleportEntity(client, g_clientStartOrigin[client], g_clientStartAngles[client], Float: { 0.0, 0.0, -100.0 } );
 	}
 	else {
@@ -78,12 +87,14 @@ void TeleportToStart(int client) {
 }
 
 void MakeCheckpoint(int client) {
+	if (!IsPlayerAlive(client)) {
+		ReplyToCommand(client, "[KZ] You must be alive to make a checkpoint.");
+	}
 	// Check if on ground
-	if (GetEntityFlags(client) & FL_ONGROUND) {
+	else if (GetEntityFlags(client) & FL_ONGROUND) {
 		g_clientCheckpointsSet[client]++;
 		GetClientAbsOrigin(client, g_clientCheckpointOrigin[client]);
 		GetClientEyeAngles(client, g_clientCheckpointAngles[client]);
-		EmitSoundToClient(client, "buttons/button15.wav", client);
 	}
 	else {
 		PrintToChat(client, "[KZ] You can't make a checkpoint midair.");
@@ -91,7 +102,10 @@ void MakeCheckpoint(int client) {
 }
 
 void TeleportToCheckpoint(int client) {
-	if (g_clientCheckpointsSet[client] > 0) {
+	if (!IsPlayerAlive(client)) {
+		ReplyToCommand(client, "[KZ] You must be alive to teleport to a checkpoint.");
+	}
+	else if (g_clientCheckpointsSet[client] > 0) {
 		g_clientTeleportsUsed[client]++;
 		if (GetEntityFlags(client) & FL_ONGROUND) {
 			g_clientCanUndo[client] = true;
@@ -102,15 +116,16 @@ void TeleportToCheckpoint(int client) {
 			g_clientCanUndo[client] = false;
 		}
 		TeleportEntity(client, g_clientCheckpointOrigin[client], g_clientCheckpointAngles[client], Float: { 0.0, 0.0, -100.0 } );
-		EmitSoundToClient(client, "buttons/blip1.wav", client);
 	}
 }
 
 void UndoTeleport(int client) {
-	if (g_clientTeleportsUsed[client] > 0) {
+	if (!IsPlayerAlive(client)) {
+		ReplyToCommand(client, "[KZ] You must be alive to undo a teleport.");
+	}
+	else if (g_clientTeleportsUsed[client] > 0) {
 		if (g_clientCanUndo[client]) {
 			TeleportEntity(client, g_clientUndoOrigin[client], g_clientUndoAngle[client], Float: { 0.0, 0.0, -100.0 } );
-			EmitSoundToClient(client, "buttons/blip1.wav", client);
 		}
 		else {
 			PrintToChat(client, "[KZ] You can't undo because you teleported midair.");
