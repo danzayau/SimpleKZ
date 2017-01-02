@@ -3,7 +3,6 @@
 	Implements commands for player control over features of the plugin.
 */
 
-
 void RegisterCommands() {
 	RegConsoleCmd("sm_menu", CommandToggleMenu, "[KZ] Toggles the visibility of the timer menu.");
 	RegConsoleCmd("sm_checkpoint", CommandMakeCheckpoint, "[KZ] Set a checkpoint.");
@@ -17,65 +16,68 @@ void RegisterCommands() {
 	RegConsoleCmd("sm_spec", CommandSpec, "[KZ] Spectate another player.");
 	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
 	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
+	RegConsoleCmd("sm_speed", CommandToggleInfoPanel, "[KZ] Toggle visibility of the centre information panel.");
+	RegConsoleCmd("sm_hideweapon", CommandToggleHideWeapon, "[KZ] Toggle visibility of your weapon.");
 }
 
 
 // Command Handlers
-
-public Action CommandToggleMenu(client, args) {
-	if (g_clientUsingTeleportMenu[client]) {
-		g_clientUsingTeleportMenu[client] = false;
+public Action CommandToggleMenu(int client, int args) {
+	if (gB_UsingTeleportMenu[client]) {
+		gB_UsingTeleportMenu[client] = false;
 		PrintToChat(client, "[KZ] Your teleport menu has been disabled.");
 	}
 	else {
-		g_clientUsingTeleportMenu[client] = true;
+		gB_UsingTeleportMenu[client] = true;
 		PrintToChat(client, "[KZ] Your teleport menu has been enabled.");
 	}
 	return Plugin_Handled;
 }
 
-public Action CommandMakeCheckpoint(client, args) {
+public Action CommandMakeCheckpoint(int client, int args) {
 	MakeCheckpoint(client);
 	return Plugin_Handled;
 }
 
-public Action CommandTeleportToCheckpoint(client, args) {
+public Action CommandTeleportToCheckpoint(int client, int args) {
 	TeleportToCheckpoint(client);
 	return Plugin_Handled;
 }
 
-public Action CommandUndoTeleport(client, args) {
+public Action CommandUndoTeleport(int client, int args) {
 	UndoTeleport(client);
 	return Plugin_Handled;
 }
 
-public Action CommandTeleportToStart(client, args) {
+public Action CommandTeleportToStart(int client, int args) {
 	TeleportToStart(client);
 	return Plugin_Handled;
 }
 
-public Action CommandStopsound(client, args) {
+public Action CommandStopsound(int client, int args) {
 	ClientCommand(client, "snd_playsounds Music.StopAllExceptMusic");
 	PrintToChat(client, "[KZ] You have stopped all sounds.");
 	return Plugin_Handled;
 }
 
-public Action CommandHide(client, args) {
-	if (g_clientHidingPlayers[client]) {
-		g_clientHidingPlayers[client] = false;
+public Action CommandHide(int client, int args) {
+	if (gB_HidingPlayers[client]) {
+		gB_HidingPlayers[client] = false;
 		PrintToChat(client, "[KZ] You are now showing other players.");
 	}
 	else {
-		g_clientHidingPlayers[client] = true;
+		gB_HidingPlayers[client] = true;
 		PrintToChat(client, "[KZ] You are now hiding other players.");
 	}
 	return Plugin_Handled;
 }
 
-public Action CommandGoto(client, args) {
-	if (args < 1) {  // No arguments
+public Action CommandGoto(int client, int args) {
+	// If no arguments, respond with error message
+	if (args < 1) {
 		ReplyToCommand(client, "[KZ] Please specify a player to go to.");
 	}
+	// Otherwise try to teleport to the player
 	else {
 		char specifiedPlayer[MAX_NAME_LENGTH];
 		GetCmdArg(1, specifiedPlayer, sizeof(specifiedPlayer));
@@ -86,9 +88,9 @@ public Action CommandGoto(client, args) {
 			if (IsPlayerAlive(target)) {
 				if (target != client) {
 					TeleportToOtherPlayer(client, target);
-					if (g_clientTimerRunning[client])
+					if (gB_TimerRunning[client])
 					{
-						g_clientTimerRunning[client] = false;
+						gB_TimerRunning[client] = false;
 						ReplyToCommand(client, "[KZ] Your time has been stopped.");
 					}
 				}
@@ -104,15 +106,17 @@ public Action CommandGoto(client, args) {
 	return Plugin_Handled;
 }
 
-public Action CommandSpec(client, args) {
+public Action CommandSpec(int client, int args) {
+	// If no arguments, just join spectators
 	if (args < 1) {
 		ChangeClientTeam(client, CS_TEAM_SPECTATOR);
-		if (g_clientTimerRunning[client])
+		if (gB_TimerRunning[client])
 		{
-			g_clientTimerRunning[client] = false;
+			gB_TimerRunning[client] = false;
 			ReplyToCommand(client, "[KZ] Your time has been stopped.");
 		}
 	}
+	// Otherwise try to spectate the player
 	else {
 		char specifiedPlayer[MAX_NAME_LENGTH];
 		GetCmdArg(1, specifiedPlayer, sizeof(specifiedPlayer));
@@ -125,9 +129,9 @@ public Action CommandSpec(client, args) {
 					ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 					SetEntProp(client, Prop_Send, "m_iObserverMode", 4);
 					SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", target);
-					if (g_clientTimerRunning[client])
+					if (gB_TimerRunning[client])
 					{
-						g_clientTimerRunning[client] = false;
+						gB_TimerRunning[client] = false;
 						ReplyToCommand(client, "[KZ] Your time has been stopped.");
 					}
 				}
@@ -143,17 +147,42 @@ public Action CommandSpec(client, args) {
 	return Plugin_Handled;
 }
 
-public Action CommandEnableNoclip(client, args) {
-	if (g_clientTimerRunning[client])
+public Action CommandEnableNoclip(int client, int args) {
+	if (gB_TimerRunning[client])
 	{
-		g_clientTimerRunning[client] = false;
+		gB_TimerRunning[client] = false;
 		PrintToChat(client, "[KZ] Your time has been stopped because you used noclip.");
 	}
 	SetEntityMoveType(client, MOVETYPE_NOCLIP);
 	return Plugin_Handled;
 }
 
-public Action CommandDisableNoclip(client, args) {
+public Action CommandDisableNoclip(int client, int args) {
 	SetEntityMoveType(client, MOVETYPE_WALK);
+	return Plugin_Handled;
+}
+
+public Action CommandToggleInfoPanel(int client, int args) {
+	if (gB_InfoPanel[client]) {
+		gB_InfoPanel[client] = false;
+		PrintToChat(client, "[KZ] Your centre info panel has been disabled.");
+	}
+	else {
+		gB_InfoPanel[client] = true;
+		PrintToChat(client, "[KZ] Your centre info panel has been enabled.");
+	}
+	return Plugin_Handled;
+}
+
+public Action CommandToggleHideWeapon(int client, int args) {
+	if (gB_HidingWeapon[client]) {
+		gB_HidingWeapon[client] = false;
+		PrintToChat(client, "[KZ] You are now showing your weapon.");
+	}
+	else {
+		gB_HidingWeapon[client] = true;
+		PrintToChat(client, "[KZ] You are now hiding your weapon.");
+	}
+	SetDrawViewModel(client, !gB_HidingWeapon[client]);
 	return Plugin_Handled;
 } 
