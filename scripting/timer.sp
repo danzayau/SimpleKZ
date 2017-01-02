@@ -40,6 +40,8 @@ void StartTimer(int client) {
 		gB_HasStartPosition[client] = true;
 		g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
 		GetClientEyeAngles(client, gF_StartAngles[client]);
+		
+		Call_SimpleKZ_OnTimerStarted(client);
 	}
 }
 
@@ -49,6 +51,8 @@ void EndTimer(int client) {
 		GetClientName(client, clientName, sizeof(clientName));
 		gB_TimerRunning[client] = false;
 		PrintToChatAll("[KZ] %s finished the map in %s (%s).", clientName, TimerFormatTime(gF_CurrentTime[client]), GetRunTypeString(client));
+		
+		Call_SimpleKZ_OnTimerEnded(client);
 	}
 }
 

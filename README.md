@@ -1,4 +1,4 @@
-# SimpleKZ
+# SimpleKZ (CS:GO)
 
 [![Build Status](https://travis-ci.org/danzayau/SimpleKZ.svg?branch=master)](https://travis-ci.org/danzayau/SimpleKZ)
 
@@ -12,6 +12,7 @@ SimpleKZ is a timer plugin intended for KZ maps with all the essentials.
  * **Timer** - Simple timer that keeps track and tells you how long you took to complete the map.
  * **Teleport Menu** - Gives the ability to make a checkpoint and teleport back to it.
  * **Essential Timer Features** - Noclip, hide other players, spectate command, goto command, speed panel etc.
+  * **API** - Forwards and natives for you to use in other plugins (see [simplekz.inc](scripting/include/simplekz.inc)).
  
 ### Player Commands
 

@@ -25,7 +25,11 @@ before_script:
     - chmod +x spcomp
     - PATH+=":$PWD"
 
+    # includes
     - cp ../../../scripting/include/* include/
+    - wget -O include/movement.inc https://raw.githubusercontent.com/DanZayAU/MovementAPI/master/scripting/include/movement.inc
+    - wget -O include/movementtweaker.inc https://raw.githubusercontent.com/DanZayAU/MovementTweaker/master/scripting/include/movementtweaker.inc
+    
     - cd ../../..
 
 script:

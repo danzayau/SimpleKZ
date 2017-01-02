@@ -4,6 +4,7 @@
 #include <cstrike>
 #include <movement>
 #include <movementtweaker>
+#include <simplekz>
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -66,6 +67,7 @@ bool gB_HidingWeapon[MAXPLAYERS + 1];
 #include "timermenu.sp"
 #include "infopanel.sp"
 #include "misc.sp"
+#include "api.sp"
 
 
 // Functions
@@ -77,6 +79,9 @@ public void OnPluginStart() {
 	{
 		SetFailState("This plugin is for CS:GO.");
 	}
+	
+	// Forwards
+	CreateGlobalForwards();
 	
 	// Commands
 	RegisterCommands();
