@@ -1,6 +1,6 @@
-/*	database.sp
+/*	dbqueries.sp
 
-	Database queries to be used by the plugin.
+	Database queries.
 */
 
 // PLAYEROPTIONS

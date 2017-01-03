@@ -1,14 +1,7 @@
-/*	database.sp
+/*	db.sp
 
+	Run time and client options database.
 */
-
-#define MYSQL 0
-#define SQLITE 1
-
-#include "databasequeries.sp"
-
-
-// Functions
 
 void db_ConnectToDatabase() {
 	char error[255];
@@ -39,4 +32,4 @@ void db_ConnectToDatabase() {
 
 void db_CreateTables() {
 	
-}
+} 

@@ -3,7 +3,9 @@
 	API for other plugins.
 */
 
-// Forwards
+
+/*=====  Forwards  ======*/
+
 Handle gH_Forward_SimpleKZ_OnTimerStarted;
 Handle gH_Forward_SimpleKZ_OnTimerEnded;
 
@@ -23,3 +25,20 @@ void Call_SimpleKZ_OnTimerEnded(int client) {
 	Call_PushCell(client);
 	Call_Finish();
 }
+
+
+
+/*=====  Natives  ======*/
+
+void CreateNatives() {
+	CreateNative("SimpleKZ_GetTimerRunning", Native_GetTimerRunning);
+	CreateNative("SimpleKZ_SetTimerRunning", Native_SetTimerRunning);
+}
+
+public int Native_GetTimerRunning(Handle plugin, int numParams) {
+	return view_as<int>(gB_TimerRunning[GetNativeCell(1)]);
+}
+
+public int Native_SetTimerRunning(Handle plugin, int numParams) {
+	gB_TimerRunning[GetNativeCell(1)] = view_as<bool>(GetNativeCell(2));
+} 

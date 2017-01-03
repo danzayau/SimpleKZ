@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/danzayau/SimpleKZ.svg?branch=master)](https://travis-ci.org/danzayau/SimpleKZ)
 
-SimpleKZ is a timer plugin intended for KZ maps with all the essentials.
+SimpleKZ is a timer plugin for KZ maps with all the essentials.
 
 ============================
 
@@ -11,10 +11,25 @@ SimpleKZ is a timer plugin intended for KZ maps with all the essentials.
  * **KZ Map Compatibility** - Automatically detects start and end timers on KZTimer globally approved maps.
  * **Timer** - Simple timer that keeps track and tells you how long you took to complete the map.
  * **Teleport Menu** - Gives the ability to make a checkpoint and teleport back to it.
- * **Essential Timer Features** - Noclip, hide other players, spectate command, goto command, speed panel etc.
-  * **API** - Forwards and natives for you to use in other plugins (see [simplekz.inc](scripting/include/simplekz.inc)).
- 
-### Player Commands
+ * **Essential Extras** - Noclip, hide other players, spectate command, goto command, speed panel, and more.
+ * **API** - Forwards and natives for you to use in other plugins (see [simplekz.inc](scripting/include/simplekz.inc)).
+
+============================
+
+### Requirements
+
+ * **Tested Against**: SourceMod 1.7 Latest, 1.8 Latest, 1.9 Latest
+ * [**MovementAPI**](https://github.com/danzayau/MovementAPI)
+ * [**MovementTweaker**](https://github.com/danzayau/MovementTweaker)
+
+### Installation
+
+ * Extract ```SimpleKZ.zip``` to ```csgo/``` in your server directory.
+ * Check the config file ```csgo/cfg/sourcemod/SimpleKZ/SimpleKZ.cfg``` is appropriate for your server.
+
+============================
+
+ ### Player Commands
 
  * ```!hide``` - Toggles the visibility of other players.
  * ```!menu``` - Toggles the visibility of the teleport menu.
@@ -24,20 +39,7 @@ SimpleKZ is a timer plugin intended for KZ maps with all the essentials.
  * ```!start``` - Teleport to the start of the map.
  * ```!spec``` - Join spectators or spectate a specified player.
  * ```!goto``` - Teleport to a player.
- * ```+noclip``` - Noclip (bind a key to it in console).
  * ```!speed``` - Toggles the visibility of the centre information panel.
  * ```!hideweapon``` - Toggles the visiblity of weapon/viewmodel.
-
-============================
-
-### Requirements
-
- * **Tested Against**: SourceMod 1.7 Latest, SourceMod 1.8 Latest, SourceMod 1.9 Latest
- * [**MovementAPI**](https://github.com/danzayau/MovementAPI)
- * [**MovementTweaker**](https://github.com/danzayau/MovementTweaker)
-
-### Installation
-
- * Extract ```SimpleKZ.zip``` to ```csgo/``` in your server directory.
- * The config file executed by the plugin is ```csgo/cfg/sourcemod/SimpleKZ/SimpleKZ.cfg```.
- * SimpleKZ will block other menus from showing. To fix, add menu commands to ```csgo/cfg/sourcemod/SimpleKZ/exceptions_list.cfg```.
+ * ```!pistol``` - Brings up the pistol selection menu.
+ * ```+noclip``` - Noclip (bind a key to it in console).
