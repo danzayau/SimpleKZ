@@ -32,14 +32,11 @@ void RegisterCommands() {
 public Action CommandToggleMenu(int client, int args) {
 	if (gB_UsingTeleportMenu[client]) {
 		gB_UsingTeleportMenu[client] = false;
-		if (!gB_UsingOtherMenu[client]) {
-			CancelClientMenu(client);	
-		}
+		CloseTeleportMenu(client);
 		PrintToChat(client, "[KZ] Your teleport menu has been disabled.");
 	}
 	else {
 		gB_UsingTeleportMenu[client] = true;
-		gB_NeedToRefreshTeleportMenu[client] = true;
 		PrintToChat(client, "[KZ] Your teleport menu has been enabled.");
 	}
 	return Plugin_Handled;
@@ -109,7 +106,7 @@ public Action CommandGoto(int client, int args) {
 			else {
 				TeleportToOtherPlayer(client, target);
 				if (gB_TimerRunning[client]) {
-					gB_TimerRunning[client] = false;
+					ForceStopTimer(client);
 					PrintToChat(client, "[KZ] Your time has been stopped because you used !goto.");
 				}
 			}
@@ -121,11 +118,7 @@ public Action CommandGoto(int client, int args) {
 public Action CommandSpec(int client, int args) {
 	// If no arguments, just join spectators
 	if (args < 1) {
-		ChangeClientTeam(client, CS_TEAM_SPECTATOR);
-		if (gB_TimerRunning[client]) {
-			gB_TimerRunning[client] = false;
-			PrintToChat(client, "[KZ] Your time has been stopped because you used !spec.");
-		}
+		JoinTeam(client, CS_TEAM_SPECTATOR);
 	}
 	// Otherwise try to spectate the player
 	else {
@@ -141,13 +134,9 @@ public Action CommandSpec(int client, int args) {
 				PrintToChat(client, "[KZ] The player you specified is not alive.");
 			}
 			else {
-				ChangeClientTeam(client, CS_TEAM_SPECTATOR);
+				JoinTeam(client, CS_TEAM_SPECTATOR);
 				SetEntProp(client, Prop_Send, "m_iObserverMode", 4);
 				SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", target);
-				if (gB_TimerRunning[client]) {
-					gB_TimerRunning[client] = false;
-					PrintToChat(client, "[KZ] Your time has been stopped because you used !spec.");
-				}
 			}
 		}
 	}
@@ -185,7 +174,7 @@ public Action CommandPistolMenu(int client, int args) {
 
 public Action CommandEnableNoclip(int client, int args) {
 	if (gB_TimerRunning[client]) {
-		gB_TimerRunning[client] = false;
+		ForceStopTimer(client);
 		PrintToChat(client, "[KZ] Your time has been stopped because you used +noclip.");
 	}
 	SetEntityMoveType(client, MOVETYPE_NOCLIP);

@@ -14,6 +14,12 @@ float FloatMax(float a, float b) {
 	return b;
 }
 
+void SetupMovementMethodmaps() {
+	for (int client = 1; client <= MaxClients; client++) {
+		g_MovementPlayer[client] = new MovementPlayer(client);
+	}
+}
+
 void LoadKZConfig() {
 	char kzConfigPath[] = "sourcemod/simplekz/kz.cfg";
 	char kzConfigPathFull[64];
@@ -76,6 +82,33 @@ int GetRunType(int client) {
 	else {
 		return 1;
 	}
+}
+
+void FreezePlayer(int client) {
+	g_MovementPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
+	SetEntityMoveType(client, MOVETYPE_NONE);
+}
+
+void JoinTeam(int client, int team) {
+	if (team == CS_TEAM_SPECTATOR) {
+		g_MovementPlayer[client].GetOrigin(gF_SavedOrigin[client]);
+		GetClientEyeAngles(client, gF_SavedAngles[client]);
+		gB_HasSavedPosition[client] = true;
+		if (gB_TimerRunning[client]) {
+			gB_Paused[client] = true;
+		}
+		ChangeClientTeam(client, CS_TEAM_SPECTATOR);
+	}
+	else {
+		ChangeClientTeam(client, team);
+		if (gB_HasSavedPosition[client]) {
+			TeleportEntity(client, gF_SavedOrigin[client], gF_SavedAngles[client], view_as<float>( { 0.0, 0.0, -50.0 } ));
+			if (gB_Paused[client]) {
+				FreezePlayer(client);
+			}
+		}
+	}
+	CloseTeleportMenu(client);
 }
 
 
@@ -179,7 +212,7 @@ void GivePlayerPistol(int client, int pistol) {
 	}
 	GivePlayerItem(client, gC_Pistols[pistol][0]);
 	// Go back to original team
-	if (playerTeam > 0) {
+	if (1 <= playerTeam && playerTeam <= 3) {
 		CS_SwitchTeam(client, playerTeam);
 	}
 } 

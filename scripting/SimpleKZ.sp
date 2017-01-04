@@ -14,7 +14,7 @@ Plugin myinfo =
 	name = "Simple KZ", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer.", 
-	version = "0.3.1", 
+	version = "0.3", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -24,8 +24,9 @@ Plugin myinfo =
 
 #define MYSQL 0
 #define SQLITE 1
+
+#define PAUSE_COOLDOWN_AFTER_RESUMING 0.5
 #define NUMBER_OF_PISTOLS 9
-#define USP_PISTOL_NUMBER 2
 
 
 
@@ -33,9 +34,15 @@ Plugin myinfo =
 
 MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
 
+Handle gH_TeleportMenu[MAXPLAYERS + 1];
+Handle gH_PistolMenu;
+
 bool gB_TimerRunning[MAXPLAYERS + 1];
-bool gB_Paused[MAXPLAYERS + 1];
 float gF_CurrentTime[MAXPLAYERS + 1];
+
+bool gB_Paused[MAXPLAYERS + 1];
+float gF_LastResumeTime[MAXPLAYERS + 1];
+bool gB_HasResumedInThisRun[MAXPLAYERS + 1];
 
 bool gB_HasStartPosition[MAXPLAYERS + 1];
 float gF_StartOrigin[MAXPLAYERS + 1][3];
@@ -50,22 +57,21 @@ bool gB_LastTeleportOnGround[MAXPLAYERS + 1];
 float gF_UndoOrigin[MAXPLAYERS + 1][3];
 float gF_UndoAngle[MAXPLAYERS + 1][3];
 
-float gF_CheckpointTime[MAXPLAYERS + 1];
-float gF_TeleportTime[MAXPLAYERS + 1];
+float gF_LastCheckpointTime[MAXPLAYERS + 1];
+float gF_LastTeleportTime[MAXPLAYERS + 1];
 float gF_WastedTime[MAXPLAYERS + 1];
 
-bool gB_UsingOtherMenu[MAXPLAYERS + 1];
-bool gB_UsingTeleportMenu[MAXPLAYERS + 1];
-bool gB_NeedToRefreshTeleportMenu[MAXPLAYERS + 1];
-Handle gH_TeleportMenu[MAXPLAYERS + 1];
+bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1];
 
-bool gB_UsingInfoPanel[MAXPLAYERS + 1];
+bool gB_HasSavedPosition[MAXPLAYERS + 1];
+float gF_SavedOrigin[MAXPLAYERS + 1][3];
+float gF_SavedAngles[MAXPLAYERS + 1][3];
 
-bool gB_HidingPlayers[MAXPLAYERS + 1];
-bool gB_HidingWeapon[MAXPLAYERS + 1];
-
-int gI_Pistol[MAXPLAYERS + 1];
-Handle gH_PistolMenu;
+bool gB_UsingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
+bool gB_UsingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
+bool gB_HidingPlayers[MAXPLAYERS + 1] =  { false, ... };
+bool gB_HidingWeapon[MAXPLAYERS + 1] =  { false, ... };
+int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
 
 //Database gDB_database;
 
@@ -89,7 +95,6 @@ public void OnPluginStart() {
 	if (gameEngine != Engine_CSGO) {
 		SetFailState("This plugin is for CS:GO.");
 	}
-	
 	CreateGlobalForwards();
 	CreateNatives();
 	RegisterCommands();
@@ -98,14 +103,12 @@ public void OnPluginStart() {
 	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Pre);
 	HookEvent("player_team", OnPlayerTeam, EventHookMode_Pre);
 	HookEntityOutput("func_button", "OnPressed", OnButtonPress);
+	AddNormalSoundHook(view_as<NormalSHook>(OnNormalSound));
 	// Translations
 	LoadTranslations("common.phrases");
 	
-	for (int client = 1; client <= MaxClients; client++) {
-		SetupTeleportMenu(client);
-		// Setup Global Movement API Methodmaps
-		g_MovementPlayer[client] = new MovementPlayer(client);
-	}
+	SetupMovementMethodmaps();
+	SetupTeleportMenuAll();
 	SetupPistolMenu();
 }
 
@@ -119,15 +122,13 @@ public void OnClientPutInServer(int client) {
 		ServerCommand("bot_quota 0");
 	}
 	else {
-		// Reset all the player's variables
 		//LoadClientOptions(client);
 		gB_UsingTeleportMenu[client] = true;
 		gB_UsingInfoPanel[client] = true;
 		gB_HidingWeapon[client] = false;
 		gI_Pistol[client] = 0;
-		TimerSetupVariables(client);
-		SetupTeleportMenu(client);
-		// Hooks
+		SetupTimer(client);
+		gB_HasSavedPosition[client] = false;
 		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
 	}
 }
@@ -165,15 +166,22 @@ public Action OnSetTransmit(int entity, int client) {
 	return Plugin_Continue;
 }
 
-// Allow unlimited team changes
+// Prevent sounds
+public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed) {
+	char className[20];
+	GetEntityClassname(entity, className, sizeof(className));
+	// Prevent func_button sounds
+	if (StrEqual(className, "func_button", false)) {
+		return Plugin_Handled;
+	}
+	return Plugin_Continue;
+}
+
+// Allow unlimited team changes, and force menu update
 public Action CommandJoinTeam(int client, const char[] command, int argc) {
 	char teamString[4];
 	GetCmdArgString(teamString, sizeof(teamString));
 	int team = StringToInt(teamString);
-	
-	if (1 <= team <= 3) {
-		ChangeClientTeam(client, team);
-		return Plugin_Handled;
-	}
-	return Plugin_Continue;
-} 
+	JoinTeam(client, team);
+	return Plugin_Handled;
+}
