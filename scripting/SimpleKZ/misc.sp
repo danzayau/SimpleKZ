@@ -3,6 +3,7 @@
 	Miscellaneous, non-specific functions.
 */
 
+
 bool IsValidClient(int client) {
 	return 1 <= client && client <= MaxClients && IsClientInGame(client);
 }
@@ -57,8 +58,8 @@ void TeleportToOtherPlayer(int client, int target)
 	float targetAngles[3];
 	char targetName[MAX_NAME_LENGTH];
 	
-	GetClientAbsOrigin(target, targetOrigin);
-	GetClientEyeAngles(target, targetAngles);
+	g_MovementPlayer[target].GetOrigin(targetOrigin);
+	g_MovementPlayer[target].GetEyeAngles(targetOrigin);
 	GetClientName(target, targetName, MAX_NAME_LENGTH);
 	
 	// Leave spectators if necessary
@@ -86,13 +87,13 @@ int GetRunType(int client) {
 
 void FreezePlayer(int client) {
 	g_MovementPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
-	SetEntityMoveType(client, MOVETYPE_NONE);
+	g_MovementPlayer[client].moveType = MOVETYPE_NONE;
 }
 
 void JoinTeam(int client, int team) {
 	if (team == CS_TEAM_SPECTATOR) {
 		g_MovementPlayer[client].GetOrigin(gF_SavedOrigin[client]);
-		GetClientEyeAngles(client, gF_SavedAngles[client]);
+		g_MovementPlayer[client].GetEyeAngles(gF_SavedAngles[client]);
 		gB_HasSavedPosition[client] = true;
 		if (gB_TimerRunning[client]) {
 			gB_Paused[client] = true;
@@ -179,13 +180,12 @@ char gC_Pistols[NUMBER_OF_PISTOLS][3][] =
 	{ "weapon_elite", "Dualies", "EITHER" }, 
 	{ "weapon_cz75a", "CZ75", "EITHER" }, 
 	{ "weapon_fiveseven", "Five-SeveN", "CT" }, 
-	{ "weapon_tec9", "Tec-9", "T" }, 
-	{ "weapon_revolver", "R8 Revolver", "EITHER" }
+	{ "weapon_tec9", "Tec-9", "T" }
 };
 
 void SetupPistolMenu() {
 	gH_PistolMenu = CreateMenu(MenuHandler_Pistol);
-	SetMenuTitle(gH_PistolMenu, "Pistols");
+	SetMenuTitle(gH_PistolMenu, "Pick a Pistol");
 	for (int pistol = 0; pistol < NUMBER_OF_PISTOLS; pistol++) {
 		AddMenuItem(gH_PistolMenu, gC_Pistols[pistol][1], gC_Pistols[pistol][1]);
 	}

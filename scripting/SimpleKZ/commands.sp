@@ -3,6 +3,7 @@
 	Commands for player use.
 */
 
+
 void RegisterCommands() {
 	RegConsoleCmd("sm_menu", CommandToggleMenu, "[KZ] Toggles the visibility of the teleport menu.");
 	RegConsoleCmd("sm_save", CommandMakeCheckpoint, "[KZ] Save a checkpoint.");
@@ -27,7 +28,7 @@ void RegisterCommands() {
 
 
 
-/*=====  Command Handlers  ======*/
+/*======  Command Handlers  ======*/
 
 public Action CommandToggleMenu(int client, int args) {
 	if (gB_UsingTeleportMenu[client]) {
@@ -177,11 +178,11 @@ public Action CommandEnableNoclip(int client, int args) {
 		PrintToChat(client, "[KZ] Your time has been stopped because you used +noclip.");
 	}
 	ForceStopTimer(client);
-	SetEntityMoveType(client, MOVETYPE_NOCLIP);
+	g_MovementPlayer[client].moveType = MOVETYPE_NOCLIP;
 	return Plugin_Handled;
 }
 
 public Action CommandDisableNoclip(int client, int args) {
-	SetEntityMoveType(client, MOVETYPE_WALK);
+	g_MovementPlayer[client].moveType = MOVETYPE_WALK;
 	return Plugin_Handled;
 } 

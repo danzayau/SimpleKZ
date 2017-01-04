@@ -20,17 +20,14 @@ Plugin myinfo =
 
 
 
-/*=====  Definitions  ======*/
-
-#define MYSQL 0
-#define SQLITE 1
+/*======  Definitions  ======*/
 
 #define PAUSE_COOLDOWN_AFTER_RESUMING 0.5
-#define NUMBER_OF_PISTOLS 9
+#define NUMBER_OF_PISTOLS 8
 
 
 
-/*=====  Global Variables  ======*/
+/*======  Global Variables  ======*/
 
 MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
 
@@ -58,7 +55,12 @@ float gF_UndoOrigin[MAXPLAYERS + 1][3];
 float gF_UndoAngle[MAXPLAYERS + 1][3];
 
 float gF_LastCheckpointTime[MAXPLAYERS + 1];
-float gF_LastTeleportTime[MAXPLAYERS + 1];
+float gF_LastGoCheckTime[MAXPLAYERS + 1];
+float gF_LastGoCheckWastedTime[MAXPLAYERS + 1];
+float gF_LastUndoTime[MAXPLAYERS + 1];
+float gF_LastUndoWastedTime[MAXPLAYERS + 1];
+float gF_LastTeleportToStartTime[MAXPLAYERS + 1];
+float gF_LastTeleportToStartWastedTime[MAXPLAYERS + 1];
 float gF_WastedTime[MAXPLAYERS + 1];
 
 bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1];
@@ -73,11 +75,9 @@ bool gB_HidingPlayers[MAXPLAYERS + 1] =  { false, ... };
 bool gB_HidingWeapon[MAXPLAYERS + 1] =  { false, ... };
 int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
 
-//Database gDB_database;
 
 
-
-/*=====  Includes  ======*/
+/*======  Includes  ======*/
 
 #include "SimpleKZ/commands.sp"
 #include "SimpleKZ/timer.sp"
@@ -87,7 +87,7 @@ int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
 
 
 
-/*=====  Events  ======*/
+/*======  Events  ======*/
 
 public void OnPluginStart() {
 	// Check if game is CS:GO
@@ -96,12 +96,11 @@ public void OnPluginStart() {
 		SetFailState("This plugin is for CS:GO.");
 	}
 	CreateGlobalForwards();
-	CreateNatives();
 	RegisterCommands();
 	AddCommandListeners();
 	// Hooks
 	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Pre);
-	HookEvent("player_team", OnPlayerTeam, EventHookMode_Pre);
+	HookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);
 	HookEntityOutput("func_button", "OnPressed", OnButtonPress);
 	AddNormalSoundHook(view_as<NormalSHook>(OnNormalSound));
 	// Translations
@@ -110,6 +109,12 @@ public void OnPluginStart() {
 	SetupMovementMethodmaps();
 	SetupTeleportMenuAll();
 	SetupPistolMenu();
+}
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
+	CreateNatives();
+	RegPluginLibrary("SimpleKZ");
+	return APLRes_Success;
 }
 
 public void OnMapStart() {
@@ -142,11 +147,6 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 	GivePlayerPistol(client, gI_Pistol[client]); // Give player their preffered pistol
 }
 
-public Action OnPlayerTeam(Event event, const char[] name, bool dontBroadcast) {
-	SetEventBroadcast(event, true);
-	return Plugin_Continue;
-}
-
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2]) {
 	TimerTick(client);
 	UpdateTeleportMenu(client);
@@ -156,6 +156,12 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 // Stop round from ever ending
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
 	return Plugin_Handled;
+}
+
+// Stop join team messages from showing up
+public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) {
+	SetEventBroadcast(event, true);
+	return Plugin_Continue;
 }
 
 // Hide other players

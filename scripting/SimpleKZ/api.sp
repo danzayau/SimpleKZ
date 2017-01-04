@@ -4,13 +4,13 @@
 */
 
 
-/*=====  Forwards  ======*/
+/*======  Forwards  ======*/
 
 Handle gH_Forward_SimpleKZ_OnTimerStarted;
 Handle gH_Forward_SimpleKZ_OnTimerEnded;
 
 void CreateGlobalForwards() {
-	gH_Forward_SimpleKZ_OnTimerStarted = CreateGlobalForward("SimpleKZ_OnTimerStarted", ET_Event, Param_Cell);
+	gH_Forward_SimpleKZ_OnTimerStarted = CreateGlobalForward("SimpleKZ_OnTimerStarted", ET_Event, Param_Cell, Param_Float, Param_Cell, Param_Float);
 	gH_Forward_SimpleKZ_OnTimerEnded = CreateGlobalForward("SimpleKZ_OnTimerEnded", ET_Event, Param_Cell);
 }
 
@@ -23,12 +23,15 @@ void Call_SimpleKZ_OnTimerStarted(int client) {
 void Call_SimpleKZ_OnTimerEnded(int client) {
 	Call_StartForward(gH_Forward_SimpleKZ_OnTimerEnded);
 	Call_PushCell(client);
+	Call_PushFloat(gF_CurrentTime[client]);
+	Call_PushCell(gI_TeleportsUsed[client]);
+	Call_PushFloat(gF_WastedTime[client]);
 	Call_Finish();
 }
 
 
 
-/*=====  Natives  ======*/
+/*======  Natives  ======*/
 
 void CreateNatives() {
 	CreateNative("SimpleKZ_StartTimer", Native_StartTimer);

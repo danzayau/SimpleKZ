@@ -3,6 +3,7 @@
 	Centre information panel (hint text).
 */
 
+
 void UpdateInfoPanel(int client) {
 	MovementPlayer player = g_MovementPlayer[client];
 	if (gB_UsingInfoPanel[player.id]) {
@@ -22,11 +23,12 @@ char[] GetInfoPanelTextAlive(MovementPlayer player) {
 	char infoPanelText[512];
 	if (!gB_Paused[player.id]) {
 		Format(infoPanelText, sizeof(infoPanelText), 
-			"<font color='#948d8d'>%s %s\n%s %s", 
+			"<font color='#948d8d'>%s %s\n%s %s\n <b>Wasted</b>: %s", 
 			GetInfoPanelTimeString(player), 
 			GetInfoPanelPausedString(player), 
 			GetInfoPanelSpeedString(player), 
-			GetInfoPanelTakeoffString(player));
+			GetInfoPanelTakeoffString(player), 
+			TimerFormatTime(gF_WastedTime[player]));
 	}
 	else {
 		Format(infoPanelText, sizeof(infoPanelText), 
@@ -70,7 +72,7 @@ char[] GetInfoPanelPausedString(MovementPlayer player) {
 
 char[] GetInfoPanelSpeedString(MovementPlayer player) {
 	char speedString[64];
-	if (player.onGround) {
+	if (player.onGround || player.onLadder || player.noclipping) {
 		Format(speedString, sizeof(speedString), " <b>Speed</b>: %.0f u/s", RoundFloat(player.speed * 10) / 10.0);
 	}
 	else {
@@ -81,7 +83,7 @@ char[] GetInfoPanelSpeedString(MovementPlayer player) {
 
 char[] GetInfoPanelTakeoffString(MovementPlayer player) {
 	char takeoffString[64];
-	if (!player.onGround) {
+	if (!player.onGround && !player.onLadder && !player.noclipping) {
 		if (MT_GetHitPerf(player.id)) {
 			Format(takeoffString, sizeof(takeoffString), "(<font color='#03cc00'>%.0f</font>)", RoundFloat(player.takeoffSpeed * 10) / 10.0);
 		}

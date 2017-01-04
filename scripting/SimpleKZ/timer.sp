@@ -3,6 +3,7 @@
 	Timer and checkpoint/teleport system.
 */
 
+
 void TimerTick(int client) {
 	if (IsPlayerAlive(client) && gB_TimerRunning[client] && !gB_Paused[client]) {
 		gF_CurrentTime[client] += GetTickInterval();
@@ -23,7 +24,12 @@ void TimerRestart(int client) {
 	gI_CheckpointsSet[client] = 0;
 	gI_TeleportsUsed[client] = 0;
 	gF_LastCheckpointTime[client] = 0.0;
-	gF_LastTeleportTime[client] = 0.0;
+	gF_LastGoCheckTime[client] = 0.0;
+	gF_LastGoCheckWastedTime[client] = 0.0;
+	gF_LastUndoTime[client] = 0.0;
+	gF_LastUndoWastedTime[client] = 0.0;
+	gF_LastTeleportToStartTime[client] = 0.0;
+	gF_LastTeleportToStartWastedTime[client] = 0.0;
 	gF_WastedTime[client] = 0.0;
 	gB_HasSavedPosition[client] = false;
 }
@@ -35,7 +41,7 @@ void StartTimer(int client) {
 	gB_TimerRunning[client] = true;
 	gB_HasStartPosition[client] = true;
 	g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
-	GetClientEyeAngles(client, gF_StartAngles[client]);
+	g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
 	CloseTeleportMenu(client);
 }
 
@@ -60,11 +66,10 @@ void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
 	// Store old variables here to avoid incorrect behaviour when teleporting to undo position
 	float oldOrigin[3], oldAngles[3];
 	g_MovementPlayer[client].GetOrigin(oldOrigin);
-	GetClientEyeAngles(client, oldAngles);
+	g_MovementPlayer[client].GetEyeAngles(oldAngles);
 	
 	TeleportEntity(client, destination, eyeAngles, view_as<float>( { 0.0, 0.0, -50.0 } ));
 	gI_TeleportsUsed[client]++;
-	gF_LastTeleportTime[client] = gF_CurrentTime[client];
 	// Store position for undo
 	if (g_MovementPlayer[client].onGround) {
 		gB_LastTeleportOnGround[client] = true;
@@ -112,7 +117,7 @@ void EndButtonPress(int client) {
 
 
 
-/*=====  Timer Commands ======*/
+/*=====  Timer Commands  ======*/
 
 void TeleportToStart(int client) {
 	// Leave spectators if necessary
@@ -124,6 +129,7 @@ void TeleportToStart(int client) {
 		if (!IsPlayerAlive(client)) {
 			CS_RespawnPlayer(client);
 		}
+		AddWastedTimeTeleportToStart(client);
 		TimerDoTeleport(client, gF_StartOrigin[client], gF_StartAngles[client]);
 	}
 	else {
@@ -143,7 +149,7 @@ void MakeCheckpoint(int client) {
 		gI_CheckpointsSet[client]++;
 		gF_LastCheckpointTime[client] = gF_CurrentTime[client];
 		g_MovementPlayer[client].GetOrigin(gF_CheckpointOrigin[client]);
-		GetClientEyeAngles(client, gF_CheckpointAngles[client]);
+		g_MovementPlayer[client].GetEyeAngles(gF_CheckpointAngles[client]);
 	}
 	CloseTeleportMenu(client);
 }
@@ -156,8 +162,7 @@ void TeleportToCheckpoint(int client) {
 		PrintToChat(client, "[KZ] You don't have a checkpoint set.");
 	}
 	else {
-		// Updated wasted time before performing teleport
-		gF_WastedTime[client] += gF_CurrentTime[client] - FloatMax(gF_LastCheckpointTime[client], gF_LastTeleportTime[client]);
+		AddWastedTimeTeleportToCheckpoint(client);
 		TimerDoTeleport(client, gF_CheckpointOrigin[client], gF_CheckpointAngles[client]);
 	}
 	CloseTeleportMenu(client);
@@ -174,6 +179,7 @@ void UndoTeleport(int client) {
 		PrintToChat(client, "[KZ] You can't undo because you teleported midair.");
 	}
 	else {
+		AddWastedTimeUndoTeleport(client);
 		TimerDoTeleport(client, gF_UndoOrigin[client], gF_UndoAngle[client]);
 	}
 	CloseTeleportMenu(client);
@@ -187,7 +193,7 @@ void TogglePause(int client) {
 		gB_Paused[client] = false;
 		gB_HasResumedInThisRun[client] = true;
 		gF_LastResumeTime[client] = gF_CurrentTime[client];
-		SetEntityMoveType(client, MOVETYPE_WALK);
+		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
 	}
 	else {
 		if (gB_HasResumedInThisRun[client] && gF_CurrentTime[client] - gF_LastResumeTime[client] < PAUSE_COOLDOWN_AFTER_RESUMING) {
@@ -206,7 +212,62 @@ void TogglePause(int client) {
 
 
 
-/*=====  Teleport Menu ======*/
+/*======  Wasted Time Tracking  ======*/
+
+void AddWastedTimeTeleportToStart(int client) {
+	float addedWastedTime = 0.0;
+	addedWastedTime = gF_CurrentTime[client] - gF_WastedTime[client];
+	gF_WastedTime[client] += addedWastedTime;
+	gF_LastTeleportToStartWastedTime[client] = addedWastedTime;
+	gF_LastTeleportToStartTime[client] = gF_CurrentTime[client];
+}
+
+void AddWastedTimeTeleportToCheckpoint(int client) {
+	float addedWastedTime = 0.0;
+	if (TeleportToStartWasLatestTeleport(client)) {
+		addedWastedTime -= gF_LastTeleportToStartWastedTime[client];
+	}
+	if (UndoWasLatestTeleport(client)) {
+		addedWastedTime -= gF_LastUndoWastedTime[client];
+	}
+	addedWastedTime += gF_CurrentTime[client] - FloatMax(gF_LastCheckpointTime[client], gF_LastGoCheckTime[client]);
+	gF_WastedTime[client] += addedWastedTime;
+	gF_LastGoCheckWastedTime[client] = addedWastedTime;
+	gF_LastGoCheckTime[client] = gF_CurrentTime[client];
+}
+
+void AddWastedTimeUndoTeleport(int client) {
+	float addedWastedTime = 0.0;
+	if (TeleportToStartWasLatestTeleport(client)) {
+		addedWastedTime -= gF_LastTeleportToStartWastedTime[client];
+		addedWastedTime += gF_CurrentTime[client] - gF_LastTeleportToStartTime[client];
+	}
+	else if (UndoWasLatestTeleport(client)) {
+		addedWastedTime -= gF_LastUndoWastedTime[client];
+		addedWastedTime += gF_CurrentTime[client] - gF_LastUndoTime[client];
+	}
+	else {
+		addedWastedTime -= gF_LastGoCheckWastedTime[client];
+		addedWastedTime += gF_CurrentTime[client] - gF_LastGoCheckTime[client];
+	}
+	gF_WastedTime[client] += addedWastedTime;
+	gF_LastUndoWastedTime[client] = addedWastedTime;
+	gF_LastUndoTime[client] = gF_CurrentTime[client];
+}
+
+bool UndoWasLatestTeleport(int client) {
+	return gF_LastUndoTime[client] > gF_LastGoCheckTime[client]
+	 && gF_LastUndoTime[client] > gF_LastTeleportToStartTime[client];
+}
+
+bool TeleportToStartWasLatestTeleport(int client) {
+	return gF_LastTeleportToStartTime[client] > gF_LastGoCheckTime[client]
+	 && gF_LastTeleportToStartTime[client] > gF_LastUndoTime[client];
+}
+
+
+
+/*====== Teleport Menu  ======*/
 
 void SetupTeleportMenuAll() {
 	for (int client = 1; client <= MaxClients; client++) {
