@@ -15,11 +15,6 @@ void SetupTimer(int client) {
 	TimerRestart(client);
 }
 
-void ForceStopTimer(int client) {
-	gB_TimerRunning[client] = false;
-	TimerRestart(client);
-}
-
 void TimerRestart(int client) {
 	gF_CurrentTime[client] = 0.0;
 	gB_Paused[client] = false;
@@ -31,6 +26,34 @@ void TimerRestart(int client) {
 	gF_LastTeleportTime[client] = 0.0;
 	gF_WastedTime[client] = 0.0;
 	gB_HasSavedPosition[client] = false;
+}
+
+void StartTimer(int client) {
+	Call_SimpleKZ_OnTimerStarted(client);
+	EmitSoundToClient(client, "buttons/button9.wav");
+	TimerRestart(client);
+	gB_TimerRunning[client] = true;
+	gB_HasStartPosition[client] = true;
+	g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
+	GetClientEyeAngles(client, gF_StartAngles[client]);
+	CloseTeleportMenu(client);
+}
+
+void EndTimer(int client) {
+	if (gB_TimerRunning[client]) {
+		Call_SimpleKZ_OnTimerEnded(client);
+		EmitSoundToClient(client, "buttons/bell1.wav");
+		gB_TimerRunning[client] = false;
+		PrintToChatAll("%s", GetEndTimeString(client));
+		CloseTeleportMenu(client);
+	}
+}
+
+void ForceStopTimer(int client) {
+	if (gB_TimerRunning[client]) {
+		gB_TimerRunning[client] = false;
+		TimerRestart(client);
+	}
 }
 
 void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
@@ -67,36 +90,24 @@ public void OnButtonPress(const char[] name, int caller, int activator, float de
 			GetEntPropString(caller, Prop_Data, "m_iName", tempString, sizeof(tempString));
 			// Check if button entity name is something we want to do something with
 			if (StrEqual(tempString, "climb_startbutton")) {
-				StartTimer(activator);
+				StartButtonPress(activator);
 			}
 			else if (StrEqual(tempString, "climb_endbutton")) {
-				EndTimer(activator);
+				EndButtonPress(activator);
 			}
 		}
 	}
 }
 
-void StartTimer(int client) {
+void StartButtonPress(int client) {
 	// Have to be on ground and not noclipping to start the timer
 	if (g_MovementPlayer[client].onGround && !g_MovementPlayer[client].noclipping) {
-		Call_SimpleKZ_OnTimerStarted(client);
-		EmitSoundToClient(client, "buttons/button9.wav");
-		TimerRestart(client);
-		gB_TimerRunning[client] = true;
-		gB_HasStartPosition[client] = true;
-		g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
-		GetClientEyeAngles(client, gF_StartAngles[client]);
+		StartTimer(client);
 	}
-	CloseTeleportMenu(client);
 }
 
-void EndTimer(int client) {
-	if (gB_TimerRunning[client]) {
-		Call_SimpleKZ_OnTimerEnded(client);
-		EmitSoundToClient(client, "buttons/bell1.wav");
-		gB_TimerRunning[client] = false;
-		PrintToChatAll("%s", GetEndTimeString(client));
-	}
+void EndButtonPress(int client) {
+	EndTimer(client);
 }
 
 
@@ -106,7 +117,7 @@ void EndTimer(int client) {
 void TeleportToStart(int client) {
 	// Leave spectators if necessary
 	if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
-		ChangeClientTeam(client, CS_TEAM_CT);
+		CS_SwitchTeam(client, CS_TEAM_CT);
 	}
 	if (gB_HasStartPosition[client]) {
 		// Respawn the player if necessary

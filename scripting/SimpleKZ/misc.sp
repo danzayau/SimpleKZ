@@ -63,7 +63,7 @@ void TeleportToOtherPlayer(int client, int target)
 	
 	// Leave spectators if necessary
 	if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
-		ChangeClientTeam(client, CS_TEAM_CT);
+		CS_SwitchTeam(client, CS_TEAM_T);
 	}
 	// Respawn the player if necessary
 	if (!IsPlayerAlive(client)) {
@@ -99,8 +99,10 @@ void JoinTeam(int client, int team) {
 		}
 		ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 	}
-	else {
-		ChangeClientTeam(client, team);
+	else if (team == CS_TEAM_CT || team == CS_TEAM_T) {
+		// Switch teams without killing them (no death notice)
+		CS_SwitchTeam(client, team);
+		CS_RespawnPlayer(client);
 		if (gB_HasSavedPosition[client]) {
 			TeleportEntity(client, gF_SavedOrigin[client], gF_SavedAngles[client], view_as<float>( { 0.0, 0.0, -50.0 } ));
 			if (gB_Paused[client]) {

@@ -19,7 +19,7 @@
  * @param client			Client entity index.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerStarted(int clien);
+forward void SimpleKZ_OnTimerStarted(int client);
 
 /**
  * Called when the player ends their timer.
@@ -34,18 +34,25 @@ forward void SimpleKZ_OnTimerEnded(int client);
 /*=====  Natives  ======*/
 
 /**
- * Gets whether or not the player's SimpleKZ timer is running.
+ * Starts the players timer.
  *
  * @param client    		Client entity index.
- * @return        			Whether or not the player's SimpleKZ timer is running.
- */
-native bool SimpleKZ_GetTimerRunning(int client);
-
-/**
- * Sets whether or not the player's SimpleKZ timer is running.
- *
- * @param client    		Client entity index.
- * @param running			Whether or not to set the player's SimpleKZ timer to be running.
  * @noreturn
  */
-native void SimpleKZ_SetTimerRunning(int client, bool running); 
+native void SimpleKZ_StartTimer(int client);
+
+/**
+ * Ends the players timer.
+ *
+ * @param client    		Client entity index.
+ * @noreturn
+ */
+native void SimpleKZ_EndTimer(int client);
+
+/**
+ * Forces the players timer to stop without calling SimpleKZ_OnTimerEnded. Intended for run invalidation.
+ *
+ * @param client    		Client entity index.
+ * @noreturn
+ */
+native void SimpleKZ_ForceStopTimer(int client); 

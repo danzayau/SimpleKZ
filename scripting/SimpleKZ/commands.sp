@@ -106,9 +106,9 @@ public Action CommandGoto(int client, int args) {
 			else {
 				TeleportToOtherPlayer(client, target);
 				if (gB_TimerRunning[client]) {
-					ForceStopTimer(client);
 					PrintToChat(client, "[KZ] Your time has been stopped because you used !goto.");
 				}
+				ForceStopTimer(client);
 			}
 		}
 	}
@@ -174,9 +174,9 @@ public Action CommandPistolMenu(int client, int args) {
 
 public Action CommandEnableNoclip(int client, int args) {
 	if (gB_TimerRunning[client]) {
-		ForceStopTimer(client);
 		PrintToChat(client, "[KZ] Your time has been stopped because you used +noclip.");
 	}
+	ForceStopTimer(client);
 	SetEntityMoveType(client, MOVETYPE_NOCLIP);
 	return Plugin_Handled;
 }

@@ -31,14 +31,19 @@ void Call_SimpleKZ_OnTimerEnded(int client) {
 /*=====  Natives  ======*/
 
 void CreateNatives() {
-	CreateNative("SimpleKZ_GetTimerRunning", Native_GetTimerRunning);
-	CreateNative("SimpleKZ_SetTimerRunning", Native_SetTimerRunning);
+	CreateNative("SimpleKZ_StartTimer", Native_StartTimer);
+	CreateNative("SimpleKZ_EndTimer", Native_EndTimer);
+	CreateNative("SimpleKZ_ForceStopTimer", Native_ForceStopTimer);
 }
 
-public int Native_GetTimerRunning(Handle plugin, int numParams) {
-	return view_as<int>(gB_TimerRunning[GetNativeCell(1)]);
+public int Native_StartTimer(Handle plugin, int numParams) {
+	StartTimer(GetNativeCell(1));
 }
 
-public int Native_SetTimerRunning(Handle plugin, int numParams) {
-	gB_TimerRunning[GetNativeCell(1)] = view_as<bool>(GetNativeCell(2));
+public int Native_EndTimer(Handle plugin, int numParams) {
+	EndTimer(GetNativeCell(1));
+}
+
+public int Native_ForceStopTimer(Handle plugin, int numParams) {
+	ForceStopTimer(GetNativeCell(1));
 } 

@@ -184,4 +184,4 @@ public Action CommandJoinTeam(int client, const char[] command, int argc) {
 	int team = StringToInt(teamString);
 	JoinTeam(client, team);
 	return Plugin_Handled;
-}
+} 

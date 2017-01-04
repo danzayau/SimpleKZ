@@ -29,7 +29,7 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
 
 ============================
 
- ### Player Commands
+### Player Commands
 
  * ```!hide``` - Toggles the visibility of other players.
  * ```!menu``` - Toggles the visibility of the teleport menu.
