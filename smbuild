@@ -1,0 +1,8 @@
+Plugin(source='scripting/SimpleKZ.sp')
+
+Package(name='SimpleKZ',
+        plugins=['SimpleKZ'],
+        filegroups={
+            '.':['README.md', 'LICENSE'],
+        },
+)

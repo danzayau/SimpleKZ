@@ -2,167 +2,192 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <cstrike>
+#include <movement>
+#include <movementtweaker>
+#include <simplekz>
 
+#pragma newdecls required
+#pragma semicolon 1
 
 Plugin myinfo = 
 {
 	name = "Simple KZ", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer.", 
-	version = "0.2.1", 
+	version = "0.3", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
 
-// Global Variables
-/* 	timer	*/
-bool g_clientTimerRunning[MAXPLAYERS + 1] =  { false, ... };
-float g_clientStartTime[MAXPLAYERS + 1] =  { 0.0, ... };
-float g_clientCurrentTime[MAXPLAYERS + 1] =  { 0.0, ... };
-bool g_clientHasStartPosition[MAXPLAYERS + 1] =  { false, ... };
-float g_clientStartOrigin[MAXPLAYERS + 1][3];
-float g_clientStartAngles[MAXPLAYERS + 1][3];
-int g_clientCheckpointsSet[MAXPLAYERS + 1] =  { 0, ... };
-int g_clientTeleportsUsed[MAXPLAYERS + 1] =  { 0, ... };
-float g_clientCheckpointOrigin[MAXPLAYERS + 1][3];
-float g_clientCheckpointAngles[MAXPLAYERS + 1][3];
-float g_clientUndoOrigin[MAXPLAYERS + 1][3];
-float g_clientUndoAngle[MAXPLAYERS + 1][3];
-bool g_clientCanUndo[MAXPLAYERS + 1] =  { false, ... };
-/*	timer menu	*/
-bool g_clientUsingOtherMenu[MAXPLAYERS + 1] =  { false, ... };
-bool g_clientUsingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
-Handle g_timerMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-/*	misc	*/
-bool g_clientHidingPlayers[MAXPLAYERS + 1] =  { false, ... };
+
+/*======  Definitions  ======*/
+
+#define PAUSE_COOLDOWN_AFTER_RESUMING 0.5
+#define NUMBER_OF_PISTOLS 8
 
 
-// Includes
-#include "commands.sp"
-#include "timer.sp"
-#include "timermenu.sp"
-#include "misc.sp"
+
+/*======  Global Variables  ======*/
+
+MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
+
+Handle gH_TeleportMenu[MAXPLAYERS + 1];
+Handle gH_PistolMenu;
+
+bool gB_TimerRunning[MAXPLAYERS + 1];
+float gF_CurrentTime[MAXPLAYERS + 1];
+
+bool gB_Paused[MAXPLAYERS + 1];
+float gF_LastResumeTime[MAXPLAYERS + 1];
+bool gB_HasResumedInThisRun[MAXPLAYERS + 1];
+
+bool gB_HasStartPosition[MAXPLAYERS + 1];
+float gF_StartOrigin[MAXPLAYERS + 1][3];
+float gF_StartAngles[MAXPLAYERS + 1][3];
+
+int gI_CheckpointsSet[MAXPLAYERS + 1];
+int gI_TeleportsUsed[MAXPLAYERS + 1];
+float gF_CheckpointOrigin[MAXPLAYERS + 1][3];
+float gF_CheckpointAngles[MAXPLAYERS + 1][3];
+
+bool gB_LastTeleportOnGround[MAXPLAYERS + 1];
+float gF_UndoOrigin[MAXPLAYERS + 1][3];
+float gF_UndoAngle[MAXPLAYERS + 1][3];
+
+float gF_LastCheckpointTime[MAXPLAYERS + 1];
+float gF_LastGoCheckTime[MAXPLAYERS + 1];
+float gF_LastGoCheckWastedTime[MAXPLAYERS + 1];
+float gF_LastUndoTime[MAXPLAYERS + 1];
+float gF_LastUndoWastedTime[MAXPLAYERS + 1];
+float gF_LastTeleportToStartTime[MAXPLAYERS + 1];
+float gF_LastTeleportToStartWastedTime[MAXPLAYERS + 1];
+float gF_WastedTime[MAXPLAYERS + 1];
+
+bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1];
+
+bool gB_HasSavedPosition[MAXPLAYERS + 1];
+float gF_SavedOrigin[MAXPLAYERS + 1][3];
+float gF_SavedAngles[MAXPLAYERS + 1][3];
+
+bool gB_UsingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
+bool gB_UsingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
+bool gB_HidingPlayers[MAXPLAYERS + 1] =  { false, ... };
+bool gB_HidingWeapon[MAXPLAYERS + 1] =  { false, ... };
+int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
 
 
-// Functions
+
+/*======  Includes  ======*/
+
+#include "SimpleKZ/commands.sp"
+#include "SimpleKZ/timer.sp"
+#include "SimpleKZ/infopanel.sp"
+#include "SimpleKZ/misc.sp"
+#include "SimpleKZ/api.sp"
+
+
+
+/*======  Events  ======*/
 
 public void OnPluginStart() {
-	// Check if game is CS:GO.
+	// Check if game is CS:GO
 	EngineVersion gameEngine = GetEngineVersion();
-	if (gameEngine != Engine_CSGO)
-	{
+	if (gameEngine != Engine_CSGO) {
 		SetFailState("This plugin is for CS:GO.");
 	}
-	
-	// Commands
+	CreateGlobalForwards();
 	RegisterCommands();
-	
-	// Command Listeners
 	AddCommandListeners();
-	
-	// Menus
-	TimerMenuSetupAll();
-	
 	// Hooks
-	HookEvent("player_spawn", OnPlayerSpawn);
-	HookEntityOutput("func_button", "OnPressed", ButtonPress);
-	
+	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Pre);
+	HookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);
+	HookEntityOutput("func_button", "OnPressed", OnButtonPress);
+	AddNormalSoundHook(view_as<NormalSHook>(OnNormalSound));
 	// Translations
 	LoadTranslations("common.phrases");
+	
+	SetupMovementMethodmaps();
+	SetupTeleportMenuAll();
+	SetupPistolMenu();
+}
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
+	CreateNatives();
+	RegPluginLibrary("SimpleKZ");
+	return APLRes_Success;
 }
 
 public void OnMapStart() {
 	LoadKZConfig();
 }
 
-public void OnClientPutInServer(client) {
-	// Get rid of bots when they join.
+public void OnClientPutInServer(int client) {
+	// Get rid of bots when they join
 	if (IsFakeClient(client)) {
 		ServerCommand("bot_quota 0");
 	}
 	else {
-		// Reset all the player's variables
-		ResetClientVariables(client);
-		TimerMenuSetup(client);
-		// Hooks
+		//LoadClientOptions(client);
+		gB_UsingTeleportMenu[client] = true;
+		gB_UsingInfoPanel[client] = true;
+		gB_HidingWeapon[client] = false;
+		gI_Pistol[client] = 0;
+		SetupTimer(client);
+		gB_HasSavedPosition[client] = false;
 		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
-		SDKHook(client, SDKHook_WeaponDrop, OnWeaponDrop);	
 	}
 }
 
 public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	// CleanHUD using a timer or else it doesn't work
-	CreateTimer(0.0, CleanHUD, client);
-	// Godmode
-	SetEntProp(client, Prop_Data, "m_takedamage", 0, 1);
-	// No Block
-	SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true);
+	CreateTimer(0.0, CleanHUD, client); // Clean HUD (using a 1 frame timer or else it won't work)
+	SetEntProp(client, Prop_Data, "m_takedamage", 0, 1); // Godmode
+	SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true); // No Block
+	SetDrawViewModel(client, !gB_HidingWeapon[client]); // Hide weapon
+	GivePlayerPistol(client, gI_Pistol[client]); // Give player their preffered pistol
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2]) {
-	// Update variables.
-	if (IsValidClient(client)) {
-		if (IsPlayerAlive(client)) {
-			TimerTick(client);
-		}
-		UpdateTimerMenu(client);
-	}
+	TimerTick(client);
+	UpdateTeleportMenu(client);
+	UpdateInfoPanel(client);
 }
 
-// Stop round from ending
-public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
-{
+// Stop round from ever ending
+public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
 	return Plugin_Handled;
 }
 
+// Stop join team messages from showing up
+public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) {
+	SetEventBroadcast(event, true);
+	return Plugin_Continue;
+}
+
 // Hide other players
-public Action OnSetTransmit(int entity, int client)
-{
-	if (IsValidClient(client))
-	{
-		if (g_clientHidingPlayers[client] && entity != client && entity != GetSpectatedPlayer(client)) {
-			return Plugin_Handled;
-		}
+public Action OnSetTransmit(int entity, int client) {
+	if (gB_HidingPlayers[client] && entity != client && entity != GetSpectatedPlayer(client)) {
+		return Plugin_Handled;
 	}
 	return Plugin_Continue;
 }
 
-// Remove dropped weapons
-public Action OnWeaponDrop(int client, int weapon) {
-	if (IsValidEntity(weapon))
-		AcceptEntityInput(weapon, "Kill");
-}
-
-// Stop menu from overlapping the mapvote
-public void OnMapVoteStarted()
-{
-	for (new client = 1; client <= MaxClients; client++)
-	{
-		if (IsValidClient(client)) {
-			g_clientUsingOtherMenu[client] = true;
-		}
+// Prevent sounds
+public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed) {
+	char className[20];
+	GetEntityClassname(entity, className, sizeof(className));
+	// Prevent func_button sounds
+	if (StrEqual(className, "func_button", false)) {
+		return Plugin_Handled;
 	}
+	return Plugin_Continue;
 }
 
-// Stop menu from overlapping other menus by using command listeners
-public Action CommandOpenOtherMenu(int client, const char[] command, int argc) {
-	if (IsValidClient(client)) {
-		g_clientUsingOtherMenu[client] = true;
-	}
-}
-
-// Allow unlimited team changes
+// Allow unlimited team changes, and force menu update
 public Action CommandJoinTeam(int client, const char[] command, int argc) {
-	if (IsValidClient(client)) {
-		char teamString[4];
-		GetCmdArgString(teamString, sizeof(teamString));
-		int team = StringToInt(teamString);
-		
-		if (1 <= team <= 3) {
-			ChangeClientTeam(client, team);
-			return Plugin_Handled;
-		}
-	}
-	return Plugin_Continue;
+	char teamString[4];
+	GetCmdArgString(teamString, sizeof(teamString));
+	int team = StringToInt(teamString);
+	JoinTeam(client, team);
+	return Plugin_Handled;
 } 
