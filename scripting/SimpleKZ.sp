@@ -14,7 +14,7 @@ Plugin myinfo =
 	name = "Simple KZ", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer.", 
-	version = "0.3.1", 
+	version = "0.4", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
