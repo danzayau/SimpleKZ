@@ -295,9 +295,9 @@ public int MenuHandler_Timer(Menu menu, MenuAction action, int param1, int param
 			switch (param2) {
 				case 0:MakeCheckpoint(param1);
 				case 1:TeleportToCheckpoint(param1);
-				case 2:UndoTeleport(param1);
-				case 3:TogglePause(param1);
-				case 4:TeleportToStart(param1);
+				case 2:TogglePause(param1);
+				case 3:TeleportToStart(param1);
+				case 4:UndoTeleport(param1);
 			}
 		}
 		else {
@@ -323,9 +323,9 @@ void TeleportMenuAddItems(int client) {
 		SetMenuTitle(gH_TeleportMenu[client], "");
 		TeleportMenuAddItemCheckpoint(client);
 		TeleportMenuAddItemTeleport(client);
-		TeleportMenuAddItemUndo(client);
 		TeleportMenuAddItemPause(client);
 		TeleportMenuAddItemStart(client);
+		TeleportMenuAddItemUndo(client);
 	}
 	else {
 		if (gB_TimerRunning[client]) {
