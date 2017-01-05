@@ -26,8 +26,8 @@ forward void SimpleKZ_OnTimerStarted(int client);
  *
  * @param client			Client entity index.
  * @param time				Player's end time.
- * @param client			Number of teleports the player used.
- * @param client			Time wasted using teleports.
+ * @param teleports			Number of teleports the player used.
+ * @param wastedTime		Time wasted using teleports (0.0 for PRO runs).
  * @noreturn
  */
 forward void SimpleKZ_OnTimerEnded(int client, float time, int teleports, float wastedTime);

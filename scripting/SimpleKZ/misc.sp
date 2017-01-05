@@ -119,7 +119,7 @@ void JoinTeam(int client, int team) {
 /*=====  String Formatters  ======*/
 
 char[] GetRunTypeString(int client) {
-	char runTypeString[64];
+	char runTypeString[4];
 	if (GetRunType(client) == 0) {
 		Format(runTypeString, sizeof(runTypeString), "PRO");
 	}
@@ -130,22 +130,28 @@ char[] GetRunTypeString(int client) {
 }
 
 char[] GetEndTimeString(int client) {
-	char endTimeString[256], clientName[64];
+	char endTimeString[128], clientName[64];
 	GetClientName(client, clientName, sizeof(clientName));
 	
 	if (GetRunType(client) == 0) {
 		Format(endTimeString, sizeof(endTimeString), "[KZ] %s finished in %s (%s).", 
-			clientName, TimerFormatTime(gF_CurrentTime[client]), GetRunTypeString(client));
+			clientName, 
+			TimerFormatTime(gF_CurrentTime[client]), 
+			GetRunTypeString(client));
 	}
 	else {
-		Format(endTimeString, sizeof(endTimeString), "[KZ] %s finished in %s (TPs: %d, Waste: %s).", 
-			clientName, TimerFormatTime(gF_CurrentTime[client]), gI_TeleportsUsed[client], TimerFormatTime(gF_WastedTime[client]));
+		Format(endTimeString, sizeof(endTimeString), 
+			"[KZ] %s finished in %s (TPs: %d, Without TPs: %s).", 
+			clientName, 
+			TimerFormatTime(gF_CurrentTime[client]), 
+			gI_TeleportsUsed[client], 
+			TimerFormatTime(gF_CurrentTime[client] - gF_WastedTime[client]));
 	}
 	return endTimeString;
 }
 
 char[] TimerFormatTime(float timeToFormat) {
-	char formattedTime[64];
+	char formattedTime[16];
 	
 	int roundedTime = RoundFloat(timeToFormat * 100); // Time rounded to number of centiseconds
 	
@@ -170,7 +176,7 @@ char[] TimerFormatTime(float timeToFormat) {
 
 /*=====  Pistol Menu ======*/
 
-// Pistol Entity Names
+// Pistol Entity Names (entity class name, alias, team that buys it)
 char gC_Pistols[NUMBER_OF_PISTOLS][3][] = 
 {
 	{ "weapon_hkp2000", "P2K / USP", "CT" }, 

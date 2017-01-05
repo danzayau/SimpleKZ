@@ -14,7 +14,7 @@ Plugin myinfo =
 	name = "Simple KZ", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer.", 
-	version = "0.3", 
+	version = "0.3.1", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -130,6 +130,7 @@ public void OnClientPutInServer(int client) {
 		//LoadClientOptions(client);
 		gB_UsingTeleportMenu[client] = true;
 		gB_UsingInfoPanel[client] = true;
+		gB_HidingPlayers[client] = false;
 		gB_HidingWeapon[client] = false;
 		gI_Pistol[client] = 0;
 		SetupTimer(client);
