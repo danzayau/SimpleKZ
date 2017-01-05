@@ -71,7 +71,7 @@ void TeleportToOtherPlayer(int client, int target)
 		CS_RespawnPlayer(client);
 	}
 	TeleportEntity(client, targetOrigin, targetAngles, view_as<float>( { 0.0, 0.0, -100.0 } ));
-	PrintToChat(client, "[KZ] You have teleported to %s.", targetName);
+	PrintToChat(client, "[\x06KZ\x01] You have teleported to %s.", targetName);
 }
 
 int GetRunType(int client) {
@@ -130,18 +130,19 @@ char[] GetRunTypeString(int client) {
 }
 
 char[] GetEndTimeString(int client) {
-	char endTimeString[128], clientName[64];
+	char endTimeString[256], clientName[64];
 	GetClientName(client, clientName, sizeof(clientName));
 	
 	if (GetRunType(client) == 0) {
-		Format(endTimeString, sizeof(endTimeString), "[KZ] %s finished in %s (%s).", 
+		Format(endTimeString, sizeof(endTimeString), 
+			"[\x06KZ\x01] \x05%s\x01 finished in \x0A%s\x01 (\x0APRO\x01).", 
 			clientName, 
 			TimerFormatTime(gF_CurrentTime[client]), 
 			GetRunTypeString(client));
 	}
 	else {
 		Format(endTimeString, sizeof(endTimeString), 
-			"[KZ] %s finished in %s (TPs: %d, Without TPs: %s).", 
+			"[\x06KZ\x01] \x05%s\x01 finished in \x09%s\x01 (\x09%d\x01 TP | \x08%s\x01).", 
 			clientName, 
 			TimerFormatTime(gF_CurrentTime[client]), 
 			gI_TeleportsUsed[client], 
