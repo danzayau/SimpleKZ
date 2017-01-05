@@ -15,6 +15,20 @@ float FloatMax(float a, float b) {
 	return b;
 }
 
+bool IntToBool(int value) {
+	if (value == 0) {
+		return false;
+	}
+	return true;
+}
+
+int BoolToInt(bool boolean) {
+	if (boolean) {
+		return 1;
+	}
+	return 0;
+}
+
 void SetupMovementMethodmaps() {
 	for (int client = 1; client <= MaxClients; client++) {
 		g_MovementPlayer[client] = new MovementPlayer(client);
@@ -24,7 +38,7 @@ void SetupMovementMethodmaps() {
 void LoadKZConfig() {
 	char kzConfigPath[] = "sourcemod/simplekz/kz.cfg";
 	char kzConfigPathFull[64];
-	Format(kzConfigPathFull, sizeof(kzConfigPathFull), "cfg/%s", kzConfigPath);
+	FormatEx(kzConfigPathFull, sizeof(kzConfigPathFull), "cfg/%s", kzConfigPath);
 	
 	if (FileExists(kzConfigPathFull)) {
 		ServerCommand("exec %s", kzConfigPath);
@@ -121,10 +135,10 @@ void JoinTeam(int client, int team) {
 char[] GetRunTypeString(int client) {
 	char runTypeString[4];
 	if (GetRunType(client) == 0) {
-		Format(runTypeString, sizeof(runTypeString), "PRO");
+		FormatEx(runTypeString, sizeof(runTypeString), "PRO");
 	}
 	else {
-		Format(runTypeString, sizeof(runTypeString), "TP");
+		FormatEx(runTypeString, sizeof(runTypeString), "TP");
 	}
 	return runTypeString;
 }
@@ -134,14 +148,14 @@ char[] GetEndTimeString(int client) {
 	GetClientName(client, clientName, sizeof(clientName));
 	
 	if (GetRunType(client) == 0) {
-		Format(endTimeString, sizeof(endTimeString), 
+		FormatEx(endTimeString, sizeof(endTimeString), 
 			"[\x06KZ\x01] \x05%s\x01 finished in \x0A%s\x01 (\x0APRO\x01).", 
 			clientName, 
 			TimerFormatTime(gF_CurrentTime[client]), 
 			GetRunTypeString(client));
 	}
 	else {
-		Format(endTimeString, sizeof(endTimeString), 
+		FormatEx(endTimeString, sizeof(endTimeString), 
 			"[\x06KZ\x01] \x05%s\x01 finished in \x09%s\x01 (\x09%d\x01 TP | \x08%s\x01).", 
 			clientName, 
 			TimerFormatTime(gF_CurrentTime[client]), 
@@ -165,10 +179,10 @@ char[] TimerFormatTime(float timeToFormat) {
 	int hours = roundedTime;
 	
 	if (hours == 0) {
-		Format(formattedTime, sizeof(formattedTime), "%02d:%02d.%02d", minutes, seconds, centiseconds);
+		FormatEx(formattedTime, sizeof(formattedTime), "%02d:%02d.%02d", minutes, seconds, centiseconds);
 	}
 	else {
-		Format(formattedTime, sizeof(formattedTime), "%d:%02d:%02d.%02d", hours, minutes, seconds, centiseconds);
+		FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d:%02d.%02d", hours, minutes, seconds, centiseconds);
 	}
 	return formattedTime;
 }

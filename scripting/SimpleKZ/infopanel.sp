@@ -26,7 +26,7 @@ void UpdateInfoPanel(int client) {
 
 char[] GetInfoPanel(MovementPlayer player) {
 	char infoPanelText[256];
-	Format(infoPanelText, sizeof(infoPanelText), 
+	FormatEx(infoPanelText, sizeof(infoPanelText), 
 		"<font color='#4d4d4d'>%s %s\n%s %s", 
 		GetInfoPanelTimeString(player), 
 		GetInfoPanelPausedString(player), 
@@ -37,7 +37,7 @@ char[] GetInfoPanel(MovementPlayer player) {
 
 char[] GetInfoPanelWithKeys(MovementPlayer player) {
 	char infoPanelText[320];
-	Format(infoPanelText, sizeof(infoPanelText), 
+	FormatEx(infoPanelText, sizeof(infoPanelText), 
 		"<font color='#4d4d4d'>%s %s\n%s %s\n%s", 
 		GetInfoPanelTimeString(player), 
 		GetInfoPanelPausedString(player), 
@@ -51,12 +51,12 @@ char[] GetInfoPanelTimeString(MovementPlayer player) {
 	char timeString[64];
 	if (gB_TimerRunning[player.id]) {
 		if (GetRunType(player.id) == 0) {
-			Format(timeString, sizeof(timeString), 
+			FormatEx(timeString, sizeof(timeString), 
 				" <b>Time</b>: <font color='#6699ff'>%s</font>", 
 				TimerFormatTime(gF_CurrentTime[player.id]));
 		}
 		else {
-			Format(timeString, sizeof(timeString), 
+			FormatEx(timeString, sizeof(timeString), 
 				" <b>Time</b>: <font color='#ffdd99'>%s</font>", 
 				TimerFormatTime(gF_CurrentTime[player.id]));
 		}
@@ -82,12 +82,12 @@ char[] GetInfoPanelSpeedString(MovementPlayer player) {
 	char speedString[64];
 	if (!gB_Paused[player.id]) {
 		if (player.onGround || player.onLadder || player.noclipping) {
-			Format(speedString, sizeof(speedString), 
+			FormatEx(speedString, sizeof(speedString), 
 				" <b>Speed</b>: <font color='#999999'>%.0f</font> u/s", 
 				RoundFloat(player.speed * 10) / 10.0);
 		}
 		else {
-			Format(speedString, sizeof(speedString), 
+			FormatEx(speedString, sizeof(speedString), 
 				" <b>Speed</b>: <font color='#999999'>%.0f</font>", 
 				RoundFloat(player.speed * 10) / 10.0);
 		}
@@ -102,12 +102,12 @@ char[] GetInfoPanelTakeoffString(MovementPlayer player) {
 	char takeoffString[64];
 	if (!player.onGround && !player.onLadder && !player.noclipping) {
 		if (MT_GetHitPerf(player.id)) {
-			Format(takeoffString, sizeof(takeoffString), 
+			FormatEx(takeoffString, sizeof(takeoffString), 
 				"(<font color='#03cc00'>%.0f</font>)", 
 				RoundFloat(player.takeoffSpeed * 10) / 10.0);
 		}
 		else {
-			Format(takeoffString, sizeof(takeoffString), 
+			FormatEx(takeoffString, sizeof(takeoffString), 
 				"(<font color='#999999'>%.0f</font>)", 
 				RoundFloat(player.takeoffSpeed * 10) / 10.0);
 		}
@@ -120,7 +120,7 @@ char[] GetInfoPanelTakeoffString(MovementPlayer player) {
 
 char[] GetInfoPanelKeysString(MovementPlayer player) {
 	char keysString[64];
-	Format(keysString, sizeof(keysString), 
+	FormatEx(keysString, sizeof(keysString), 
 		" <b>Keys:</b> <font color='#999999'>%c %c %c %c   %c %c</font>", 
 		GetInfoPanelAString(player), 
 		GetInfoPanelWString(player), 

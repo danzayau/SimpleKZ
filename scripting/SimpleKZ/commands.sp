@@ -19,7 +19,7 @@ void RegisterCommands() {
 	RegConsoleCmd("sm_speed", CommandToggleInfoPanel, "[KZ] Toggle visibility of the centre information panel.");
 	RegConsoleCmd("sm_hideweapon", CommandToggleHideWeapon, "[KZ] Toggle visibility of your weapon.");
 	RegConsoleCmd("sm_pistol", CommandPistolMenu, "[KZ] Open the pistol selection menu.");
-	RegConsoleCmd("sm_showkeys", CommandToggleShowKeys, "[KZ] Toggles showing your key presses to yourself.");
+	RegConsoleCmd("sm_keys", CommandToggleShowKeys, "[KZ] Toggles showing your key presses to yourself.");
 	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
 	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
 }
