@@ -8,19 +8,24 @@ void UpdateInfoPanel(int client) {
 	MovementPlayer player = g_MovementPlayer[client];
 	if (gB_UsingInfoPanel[player.id]) {
 		if (IsPlayerAlive(player.id)) {
-			PrintHintText(player.id, "%s", GetInfoPanelTextAlive(player));
+			if (gB_ShowingKeys[player.id]) {
+				PrintHintText(player.id, "%s", GetInfoPanelWithKeys(player));
+			}
+			else {
+				PrintHintText(player.id, "%s", GetInfoPanel(player));
+			}
 		}
 		else {
 			int spectatedPlayer = GetSpectatedPlayer(player.id);
 			if (IsValidClient(spectatedPlayer)) {
-				PrintHintText(player.id, "%s", GetInfoPanelTextSpectating(g_MovementPlayer[spectatedPlayer]));
+				PrintHintText(player.id, "%s", GetInfoPanelWithKeys(g_MovementPlayer[spectatedPlayer]));
 			}
 		}
 	}
 }
 
-char[] GetInfoPanelTextAlive(MovementPlayer player) {
-	char infoPanelText[192];
+char[] GetInfoPanel(MovementPlayer player) {
+	char infoPanelText[256];
 	Format(infoPanelText, sizeof(infoPanelText), 
 		"<font color='#4d4d4d'>%s %s\n%s %s", 
 		GetInfoPanelTimeString(player), 
@@ -30,8 +35,8 @@ char[] GetInfoPanelTextAlive(MovementPlayer player) {
 	return infoPanelText;
 }
 
-char[] GetInfoPanelTextSpectating(MovementPlayer player) {
-	char infoPanelText[256];
+char[] GetInfoPanelWithKeys(MovementPlayer player) {
+	char infoPanelText[320];
 	Format(infoPanelText, sizeof(infoPanelText), 
 		"<font color='#4d4d4d'>%s %s\n%s %s\n%s", 
 		GetInfoPanelTimeString(player), 
@@ -63,9 +68,9 @@ char[] GetInfoPanelTimeString(MovementPlayer player) {
 }
 
 char[] GetInfoPanelPausedString(MovementPlayer player) {
-	char pausedString[16];
+	char pausedString[64];
 	if (gB_Paused[player.id]) {
-		pausedString = "(PAUSED)";
+		pausedString = "(<font color='#999999'>PAUSED</font>)";
 	}
 	else {
 		pausedString = "";
@@ -94,7 +99,7 @@ char[] GetInfoPanelSpeedString(MovementPlayer player) {
 }
 
 char[] GetInfoPanelTakeoffString(MovementPlayer player) {
-	char takeoffString[48];
+	char takeoffString[64];
 	if (!player.onGround && !player.onLadder && !player.noclipping) {
 		if (MT_GetHitPerf(player.id)) {
 			Format(takeoffString, sizeof(takeoffString), 

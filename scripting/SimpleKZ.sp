@@ -71,6 +71,7 @@ float gF_SavedAngles[MAXPLAYERS + 1][3];
 
 bool gB_UsingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
 bool gB_UsingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
+bool gB_ShowingKeys[MAXPLAYERS + 1] =  { false, ... };
 bool gB_HidingPlayers[MAXPLAYERS + 1] =  { false, ... };
 bool gB_HidingWeapon[MAXPLAYERS + 1] =  { false, ... };
 int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };

@@ -6,9 +6,7 @@
 
 void RegisterCommands() {
 	RegConsoleCmd("sm_menu", CommandToggleMenu, "[KZ] Toggles the visibility of the teleport menu.");
-	RegConsoleCmd("sm_save", CommandMakeCheckpoint, "[KZ] Save a checkpoint.");
 	RegConsoleCmd("sm_checkpoint", CommandMakeCheckpoint, "[KZ] Save a checkpoint.");
-	RegConsoleCmd("sm_back", CommandMakeCheckpoint, "[KZ] Save a checkpoint.");
 	RegConsoleCmd("sm_gocheck", CommandTeleportToCheckpoint, "[KZ] Teleport to the checkpoint.");
 	RegConsoleCmd("sm_undo", CommandUndoTeleport, "[KZ] Undo teleport to checkpoint.");
 	RegConsoleCmd("sm_start", CommandTeleportToStart, "[KZ] Teleports you to the start of the map.");
@@ -21,7 +19,7 @@ void RegisterCommands() {
 	RegConsoleCmd("sm_speed", CommandToggleInfoPanel, "[KZ] Toggle visibility of the centre information panel.");
 	RegConsoleCmd("sm_hideweapon", CommandToggleHideWeapon, "[KZ] Toggle visibility of your weapon.");
 	RegConsoleCmd("sm_pistol", CommandPistolMenu, "[KZ] Open the pistol selection menu.");
-	RegConsoleCmd("sm_usp", CommandPistolMenu, "[KZ] Open the pistol selection menu.");
+	RegConsoleCmd("sm_showkeys", CommandToggleShowKeys, "[KZ] Toggles showing your key presses to yourself.");
 	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
 	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
 }
@@ -184,5 +182,17 @@ public Action CommandEnableNoclip(int client, int args) {
 
 public Action CommandDisableNoclip(int client, int args) {
 	g_MovementPlayer[client].moveType = MOVETYPE_WALK;
+	return Plugin_Handled;
+}
+
+public Action CommandToggleShowKeys(int client, int args) {
+	if (gB_ShowingKeys[client]) {
+		gB_ShowingKeys[client] = false;
+		PrintToChat(client, "[\x06KZ\x01] You are no longer showing your key presses to yourself.");
+	}
+	else {
+		gB_ShowingKeys[client] = true;
+		PrintToChat(client, "[\x06KZ\x01] You are now showing your key presses to yourself.");
+	}
 	return Plugin_Handled;
 } 

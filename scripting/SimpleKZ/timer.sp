@@ -343,24 +343,24 @@ void UpdateTeleportMenuItems(int client) {
 }
 
 void TeleportMenuAddItemCheckpoint(int client) {
-	AddMenuItem(gH_TeleportMenu[client], "Make a Checkpoint", "Save");
+	AddMenuItem(gH_TeleportMenu[client], "Make a Checkpoint", "Checkpoint");
 }
 
 void TeleportMenuAddItemTeleport(int client) {
 	if (gI_CheckpointsSet[client] > 0) {
-		AddMenuItem(gH_TeleportMenu[client], "Go Back to Checkpoint", "Back");
+		AddMenuItem(gH_TeleportMenu[client], "Go Back to Checkpoint", "Teleport");
 	}
 	else {
-		AddMenuItem(gH_TeleportMenu[client], "Can't Go Back to Checkpoint", "Back", ITEMDRAW_DISABLED);
+		AddMenuItem(gH_TeleportMenu[client], "Can't Go Back to Checkpoint", "Teleport", ITEMDRAW_DISABLED);
 	}
 }
 
 void TeleportMenuAddItemUndo(int client) {
 	if (gI_TeleportsUsed[client] > 0 && gB_LastTeleportOnGround[client]) {
-		AddMenuItem(gH_TeleportMenu[client], "Undo", "Undo");
+		AddMenuItem(gH_TeleportMenu[client], "Undo", "Undo TP");
 	}
 	else {
-		AddMenuItem(gH_TeleportMenu[client], "Can't Undo", "Undo", ITEMDRAW_DISABLED);
+		AddMenuItem(gH_TeleportMenu[client], "Can't Undo", "Undo TP", ITEMDRAW_DISABLED);
 	}
 }
 
@@ -380,10 +380,10 @@ void TeleportMenuAddItemPause(int client) {
 
 void TeleportMenuAddItemStart(int client) {
 	if (gB_HasStartPosition[client]) {
-		AddMenuItem(gH_TeleportMenu[client], "Teleport to Start", "Start");
+		AddMenuItem(gH_TeleportMenu[client], "Teleport to Start", "Restart");
 	}
 	else {
-		AddMenuItem(gH_TeleportMenu[client], "Teleport to Spawn", "Spawn");
+		AddMenuItem(gH_TeleportMenu[client], "Teleport to Spawn", "Respawn");
 	}
 }
 
