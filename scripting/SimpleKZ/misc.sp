@@ -15,6 +15,20 @@ float FloatMax(float a, float b) {
 	return b;
 }
 
+bool IntToBool(int value) {
+	if (value == 0) {
+		return false;
+	}
+	return true;
+}
+
+int BoolToInt(bool boolean) {
+	if (boolean) {
+		return 1;
+	}
+	return 0;
+}
+
 void SetupMovementMethodmaps() {
 	for (int client = 1; client <= MaxClients; client++) {
 		g_MovementPlayer[client] = new MovementPlayer(client);
@@ -24,7 +38,7 @@ void SetupMovementMethodmaps() {
 void LoadKZConfig() {
 	char kzConfigPath[] = "sourcemod/simplekz/kz.cfg";
 	char kzConfigPathFull[64];
-	Format(kzConfigPathFull, sizeof(kzConfigPathFull), "cfg/%s", kzConfigPath);
+	FormatEx(kzConfigPathFull, sizeof(kzConfigPathFull), "cfg/%s", kzConfigPath);
 	
 	if (FileExists(kzConfigPathFull)) {
 		ServerCommand("exec %s", kzConfigPath);
@@ -71,7 +85,7 @@ void TeleportToOtherPlayer(int client, int target)
 		CS_RespawnPlayer(client);
 	}
 	TeleportEntity(client, targetOrigin, targetAngles, view_as<float>( { 0.0, 0.0, -100.0 } ));
-	PrintToChat(client, "[KZ] You have teleported to %s.", targetName);
+	PrintToChat(client, "[\x06KZ\x01] You have teleported to %s.", targetName);
 }
 
 int GetRunType(int client) {
@@ -119,12 +133,12 @@ void JoinTeam(int client, int team) {
 /*=====  String Formatters  ======*/
 
 char[] GetRunTypeString(int client) {
-	char runTypeString[64];
+	char runTypeString[4];
 	if (GetRunType(client) == 0) {
-		Format(runTypeString, sizeof(runTypeString), "PRO");
+		FormatEx(runTypeString, sizeof(runTypeString), "PRO");
 	}
 	else {
-		Format(runTypeString, sizeof(runTypeString), "TP");
+		FormatEx(runTypeString, sizeof(runTypeString), "TP");
 	}
 	return runTypeString;
 }
@@ -134,18 +148,25 @@ char[] GetEndTimeString(int client) {
 	GetClientName(client, clientName, sizeof(clientName));
 	
 	if (GetRunType(client) == 0) {
-		Format(endTimeString, sizeof(endTimeString), "[KZ] %s finished in %s (%s).", 
-			clientName, TimerFormatTime(gF_CurrentTime[client]), GetRunTypeString(client));
+		FormatEx(endTimeString, sizeof(endTimeString), 
+			"[\x06KZ\x01] \x05%s\x01 finished in \x0A%s\x01 (\x0APRO\x01).", 
+			clientName, 
+			TimerFormatTime(gF_CurrentTime[client]), 
+			GetRunTypeString(client));
 	}
 	else {
-		Format(endTimeString, sizeof(endTimeString), "[KZ] %s finished in %s (TPs: %d, Waste: %s).", 
-			clientName, TimerFormatTime(gF_CurrentTime[client]), gI_TeleportsUsed[client], TimerFormatTime(gF_WastedTime[client]));
+		FormatEx(endTimeString, sizeof(endTimeString), 
+			"[\x06KZ\x01] \x05%s\x01 finished in \x09%s\x01 (\x09%d\x01 TP | \x08%s\x01).", 
+			clientName, 
+			TimerFormatTime(gF_CurrentTime[client]), 
+			gI_TeleportsUsed[client], 
+			TimerFormatTime(gF_CurrentTime[client] - gF_WastedTime[client]));
 	}
 	return endTimeString;
 }
 
 char[] TimerFormatTime(float timeToFormat) {
-	char formattedTime[64];
+	char formattedTime[16];
 	
 	int roundedTime = RoundFloat(timeToFormat * 100); // Time rounded to number of centiseconds
 	
@@ -158,10 +179,10 @@ char[] TimerFormatTime(float timeToFormat) {
 	int hours = roundedTime;
 	
 	if (hours == 0) {
-		Format(formattedTime, sizeof(formattedTime), "%02d:%02d.%02d", minutes, seconds, centiseconds);
+		FormatEx(formattedTime, sizeof(formattedTime), "%02d:%02d.%02d", minutes, seconds, centiseconds);
 	}
 	else {
-		Format(formattedTime, sizeof(formattedTime), "%d:%02d:%02d.%02d", hours, minutes, seconds, centiseconds);
+		FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d:%02d.%02d", hours, minutes, seconds, centiseconds);
 	}
 	return formattedTime;
 }
@@ -170,7 +191,7 @@ char[] TimerFormatTime(float timeToFormat) {
 
 /*=====  Pistol Menu ======*/
 
-// Pistol Entity Names
+// Pistol Entity Names (entity class name, alias, team that buys it)
 char gC_Pistols[NUMBER_OF_PISTOLS][3][] = 
 {
 	{ "weapon_hkp2000", "P2K / USP", "CT" }, 

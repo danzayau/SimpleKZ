@@ -140,10 +140,10 @@ void TeleportToStart(int client) {
 
 void MakeCheckpoint(int client) {
 	if (!IsPlayerAlive(client)) {
-		PrintToChat(client, "[KZ] You must be alive to make a checkpoint.");
+		PrintToChat(client, "[\x06KZ\x01] You must be alive to make a checkpoint.");
 	}
 	else if (!g_MovementPlayer[client].onGround) {
-		PrintToChat(client, "[KZ] You can't make a checkpoint midair.");
+		PrintToChat(client, "[\x06KZ\x01] You can't make a checkpoint midair.");
 	}
 	else {
 		gI_CheckpointsSet[client]++;
@@ -156,10 +156,10 @@ void MakeCheckpoint(int client) {
 
 void TeleportToCheckpoint(int client) {
 	if (!IsPlayerAlive(client)) {
-		PrintToChat(client, "[KZ] You must be alive to teleport to a checkpoint.");
+		PrintToChat(client, "[\x06KZ\x01] You must be alive to teleport to a checkpoint.");
 	}
 	else if (gI_CheckpointsSet[client] == 0) {
-		PrintToChat(client, "[KZ] You don't have a checkpoint set.");
+		PrintToChat(client, "[\x06KZ\x01] You don't have a checkpoint set.");
 	}
 	else {
 		AddWastedTimeTeleportToCheckpoint(client);
@@ -170,13 +170,13 @@ void TeleportToCheckpoint(int client) {
 
 void UndoTeleport(int client) {
 	if (!IsPlayerAlive(client)) {
-		PrintToChat(client, "[KZ] You must be alive to undo a teleport.");
+		PrintToChat(client, "[\x06KZ\x01] You must be alive to undo a teleport.");
 	}
 	else if (gI_TeleportsUsed[client] < 1) {
-		PrintToChat(client, "[KZ] You don't have a teleport to undo.");
+		PrintToChat(client, "[\x06KZ\x01] You don't have a teleport to undo.");
 	}
 	else if (!gB_LastTeleportOnGround[client]) {
-		PrintToChat(client, "[KZ] You can't undo because you teleported midair.");
+		PrintToChat(client, "[\x06KZ\x01] You can't undo because you teleported midair.");
 	}
 	else {
 		AddWastedTimeUndoTeleport(client);
@@ -197,10 +197,10 @@ void TogglePause(int client) {
 	}
 	else {
 		if (gB_HasResumedInThisRun[client] && gF_CurrentTime[client] - gF_LastResumeTime[client] < PAUSE_COOLDOWN_AFTER_RESUMING) {
-			PrintToChat(client, "[KZ] You can't pause because you just resumed.");
+			PrintToChat(client, "[\x06KZ\x01] You can't pause because you just resumed.");
 		}
 		else if (!g_MovementPlayer[client].onGround) {
-			PrintToChat(client, "[KZ] You can't pause in midair.");
+			PrintToChat(client, "[\x06KZ\x01] You can't pause in midair.");
 		}
 		else {
 			gB_Paused[client] = true;
@@ -343,24 +343,24 @@ void UpdateTeleportMenuItems(int client) {
 }
 
 void TeleportMenuAddItemCheckpoint(int client) {
-	AddMenuItem(gH_TeleportMenu[client], "Make a Checkpoint", "Save");
+	AddMenuItem(gH_TeleportMenu[client], "Make a Checkpoint", "Checkpoint");
 }
 
 void TeleportMenuAddItemTeleport(int client) {
 	if (gI_CheckpointsSet[client] > 0) {
-		AddMenuItem(gH_TeleportMenu[client], "Go Back to Checkpoint", "Back");
+		AddMenuItem(gH_TeleportMenu[client], "Go Back to Checkpoint", "Teleport");
 	}
 	else {
-		AddMenuItem(gH_TeleportMenu[client], "Can't Go Back to Checkpoint", "Back", ITEMDRAW_DISABLED);
+		AddMenuItem(gH_TeleportMenu[client], "Can't Go Back to Checkpoint", "Teleport", ITEMDRAW_DISABLED);
 	}
 }
 
 void TeleportMenuAddItemUndo(int client) {
 	if (gI_TeleportsUsed[client] > 0 && gB_LastTeleportOnGround[client]) {
-		AddMenuItem(gH_TeleportMenu[client], "Undo", "Undo");
+		AddMenuItem(gH_TeleportMenu[client], "Undo", "Undo TP");
 	}
 	else {
-		AddMenuItem(gH_TeleportMenu[client], "Can't Undo", "Undo", ITEMDRAW_DISABLED);
+		AddMenuItem(gH_TeleportMenu[client], "Can't Undo", "Undo TP", ITEMDRAW_DISABLED);
 	}
 }
 
@@ -380,10 +380,10 @@ void TeleportMenuAddItemPause(int client) {
 
 void TeleportMenuAddItemStart(int client) {
 	if (gB_HasStartPosition[client]) {
-		AddMenuItem(gH_TeleportMenu[client], "Teleport to Start", "Start");
+		AddMenuItem(gH_TeleportMenu[client], "Teleport to Start", "Restart");
 	}
 	else {
-		AddMenuItem(gH_TeleportMenu[client], "Teleport to Spawn", "Spawn");
+		AddMenuItem(gH_TeleportMenu[client], "Teleport to Spawn", "Respawn");
 	}
 }
 

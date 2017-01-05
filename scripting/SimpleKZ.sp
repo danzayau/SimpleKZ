@@ -14,7 +14,7 @@ Plugin myinfo =
 	name = "Simple KZ", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer.", 
-	version = "0.3", 
+	version = "0.4", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -71,9 +71,14 @@ float gF_SavedAngles[MAXPLAYERS + 1][3];
 
 bool gB_UsingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
 bool gB_UsingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
+bool gB_ShowingKeys[MAXPLAYERS + 1] =  { false, ... };
 bool gB_HidingPlayers[MAXPLAYERS + 1] =  { false, ... };
 bool gB_HidingWeapon[MAXPLAYERS + 1] =  { false, ... };
 int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
+
+Database gDB_Database = null;
+bool gB_ConnectedToDatabase = false;
+char gC_SteamID[MAXPLAYERS + 1][24];
 
 
 
@@ -83,6 +88,7 @@ int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
 #include "SimpleKZ/timer.sp"
 #include "SimpleKZ/infopanel.sp"
 #include "SimpleKZ/misc.sp"
+#include "SimpleKZ/database.sp"
 #include "SimpleKZ/api.sp"
 
 
@@ -106,6 +112,7 @@ public void OnPluginStart() {
 	// Translations
 	LoadTranslations("common.phrases");
 	
+	DB_SetupDatabase();
 	SetupMovementMethodmaps();
 	SetupTeleportMenuAll();
 	SetupPistolMenu();
@@ -121,30 +128,35 @@ public void OnMapStart() {
 	LoadKZConfig();
 }
 
+public void OnClientAuthorized(int client) {
+	GetClientAuthId(client, AuthId_Steam2, gC_SteamID[client], 24, true);
+	DB_LoadPlayerPreferences(client);
+}
+
+public void OnClientDisconnect(int client) {
+	DB_SavePlayerPreferences(client);
+}
+
 public void OnClientPutInServer(int client) {
 	// Get rid of bots when they join
 	if (IsFakeClient(client)) {
 		ServerCommand("bot_quota 0");
 	}
 	else {
-		//LoadClientOptions(client);
-		gB_UsingTeleportMenu[client] = true;
-		gB_UsingInfoPanel[client] = true;
-		gB_HidingWeapon[client] = false;
-		gI_Pistol[client] = 0;
 		SetupTimer(client);
-		gB_HasSavedPosition[client] = false;
 		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
 	}
 }
 
 public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	CreateTimer(0.0, CleanHUD, client); // Clean HUD (using a 1 frame timer or else it won't work)
-	SetEntProp(client, Prop_Data, "m_takedamage", 0, 1); // Godmode
-	SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true); // No Block
-	SetDrawViewModel(client, !gB_HidingWeapon[client]); // Hide weapon
-	GivePlayerPistol(client, gI_Pistol[client]); // Give player their preffered pistol
+	if (!IsFakeClient(client)) {
+		CreateTimer(0.0, CleanHUD, client); // Clean HUD (using a 1 frame timer or else it won't work)
+		SetEntProp(client, Prop_Data, "m_takedamage", 0, 1); // Godmode
+		SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true); // No Block
+		SetDrawViewModel(client, !gB_HidingWeapon[client]); // Hide weapon
+		GivePlayerPistol(client, gI_Pistol[client]); // Give player their preffered pistol
+	}
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2]) {
