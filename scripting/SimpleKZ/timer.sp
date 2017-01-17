@@ -107,6 +107,7 @@ public void OnButtonPress(const char[] name, int caller, int activator, float de
 void StartButtonPress(int client) {
 	// Have to be on ground and not noclipping to start the timer
 	if (g_MovementPlayer[client].onGround && !g_MovementPlayer[client].noclipping) {
+		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
 		StartTimer(client);
 	}
 }

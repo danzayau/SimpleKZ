@@ -18,8 +18,9 @@ void RegisterCommands() {
 	RegConsoleCmd("sm_spec", CommandSpec, "[KZ] Spectate another player.");
 	RegConsoleCmd("sm_speed", CommandToggleInfoPanel, "[KZ] Toggle visibility of the centre information panel.");
 	RegConsoleCmd("sm_hideweapon", CommandToggleHideWeapon, "[KZ] Toggle visibility of your weapon.");
-	RegConsoleCmd("sm_pistol", CommandPistolMenu, "[KZ] Open the pistol selection menu.");
 	RegConsoleCmd("sm_keys", CommandToggleShowKeys, "[KZ] Toggles showing your key presses to yourself.");
+	RegConsoleCmd("sm_measure", CommandMeasureMenu, "[KZ] Open the measure menu.");
+	RegConsoleCmd("sm_pistol", CommandPistolMenu, "[KZ] Open the pistol selection menu.");
 	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
 	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
 }
@@ -167,24 +168,6 @@ public Action CommandToggleHideWeapon(int client, int args) {
 	return Plugin_Handled;
 }
 
-public Action CommandPistolMenu(int client, int args) {
-	DisplayMenu(gH_PistolMenu, client, MENU_TIME_FOREVER);
-}
-
-public Action CommandEnableNoclip(int client, int args) {
-	if (gB_TimerRunning[client]) {
-		PrintToChat(client, "[\x06KZ\x01] Your time has been stopped because you used +noclip.");
-	}
-	ForceStopTimer(client);
-	g_MovementPlayer[client].moveType = MOVETYPE_NOCLIP;
-	return Plugin_Handled;
-}
-
-public Action CommandDisableNoclip(int client, int args) {
-	g_MovementPlayer[client].moveType = MOVETYPE_WALK;
-	return Plugin_Handled;
-}
-
 public Action CommandToggleShowKeys(int client, int args) {
 	if (gB_ShowingKeys[client]) {
 		gB_ShowingKeys[client] = false;
@@ -195,4 +178,23 @@ public Action CommandToggleShowKeys(int client, int args) {
 		PrintToChat(client, "[\x06KZ\x01] You are now showing your key presses to yourself.");
 	}
 	return Plugin_Handled;
-} 
+}
+
+public Action CommandMeasureMenu(int client, int args) {
+	DisplayMenu(gH_MeasureMenu, client, MENU_TIME_FOREVER);
+}
+
+public Action CommandPistolMenu(int client, int args) {
+	DisplayMenu(gH_PistolMenu, client, MENU_TIME_FOREVER);
+}
+
+public Action CommandEnableNoclip(int client, int args) {
+	g_MovementPlayer[client].moveType = MOVETYPE_NOCLIP;
+	return Plugin_Handled;
+}
+
+public Action CommandDisableNoclip(int client, int args) {
+	g_MovementPlayer[client].moveType = MOVETYPE_WALK;
+	return Plugin_Handled;
+}
+
