@@ -107,6 +107,7 @@ public void OnButtonPress(const char[] name, int caller, int activator, float de
 void StartButtonPress(int client) {
 	// Have to be on ground and not noclipping to start the timer
 	if (g_MovementPlayer[client].onGround && !g_MovementPlayer[client].noclipping) {
+		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
 		StartTimer(client);
 	}
 }
@@ -295,9 +296,9 @@ public int MenuHandler_Timer(Menu menu, MenuAction action, int param1, int param
 			switch (param2) {
 				case 0:MakeCheckpoint(param1);
 				case 1:TeleportToCheckpoint(param1);
-				case 2:UndoTeleport(param1);
-				case 3:TogglePause(param1);
-				case 4:TeleportToStart(param1);
+				case 2:TogglePause(param1);
+				case 3:TeleportToStart(param1);
+				case 4:UndoTeleport(param1);
 			}
 		}
 		else {
@@ -323,9 +324,9 @@ void TeleportMenuAddItems(int client) {
 		SetMenuTitle(gH_TeleportMenu[client], "");
 		TeleportMenuAddItemCheckpoint(client);
 		TeleportMenuAddItemTeleport(client);
-		TeleportMenuAddItemUndo(client);
 		TeleportMenuAddItemPause(client);
 		TeleportMenuAddItemStart(client);
+		TeleportMenuAddItemUndo(client);
 	}
 	else {
 		if (gB_TimerRunning[client]) {

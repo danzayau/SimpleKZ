@@ -14,7 +14,7 @@ Plugin myinfo =
 	name = "Simple KZ", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer.", 
-	version = "0.4", 
+	version = "0.4.2", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -31,8 +31,9 @@ Plugin myinfo =
 
 MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
 
-Handle gH_TeleportMenu[MAXPLAYERS + 1];
-Handle gH_PistolMenu;
+Handle gH_TeleportMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+Handle gH_PistolMenu = INVALID_HANDLE;
+Handle gH_MeasureMenu = INVALID_HANDLE;
 
 bool gB_TimerRunning[MAXPLAYERS + 1];
 float gF_CurrentTime[MAXPLAYERS + 1];
@@ -69,6 +70,10 @@ bool gB_HasSavedPosition[MAXPLAYERS + 1];
 float gF_SavedOrigin[MAXPLAYERS + 1][3];
 float gF_SavedAngles[MAXPLAYERS + 1][3];
 
+Database gDB_Database = null;
+bool gB_ConnectedToDatabase = false;
+char gC_SteamID[MAXPLAYERS + 1][24];
+
 bool gB_UsingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
 bool gB_UsingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
 bool gB_ShowingKeys[MAXPLAYERS + 1] =  { false, ... };
@@ -76,9 +81,11 @@ bool gB_HidingPlayers[MAXPLAYERS + 1] =  { false, ... };
 bool gB_HidingWeapon[MAXPLAYERS + 1] =  { false, ... };
 int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
 
-Database gDB_Database = null;
-bool gB_ConnectedToDatabase = false;
-char gC_SteamID[MAXPLAYERS + 1][24];
+int g_iGlowSprite;
+float gF_MeasurePos[MAXPLAYERS + 1][2][3];
+bool gB_MeasurePosSet[MAXPLAYERS + 1][2];
+Handle gH_P2PRed[MAXPLAYERS + 1];
+Handle gH_P2PGreen[MAXPLAYERS + 1];
 
 
 
@@ -115,6 +122,7 @@ public void OnPluginStart() {
 	DB_SetupDatabase();
 	SetupMovementMethodmaps();
 	SetupTeleportMenuAll();
+	SetupMeasureMenu();
 	SetupPistolMenu();
 }
 
@@ -126,6 +134,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnMapStart() {
 	LoadKZConfig();
+	g_iGlowSprite = PrecacheModel("materials/sprites/bluelaser1.vmt", true);
 }
 
 public void OnClientAuthorized(int client) {
@@ -134,6 +143,7 @@ public void OnClientAuthorized(int client) {
 }
 
 public void OnClientDisconnect(int client) {
+	MeasureResetPos(client);
 	DB_SavePlayerPreferences(client);
 }
 
@@ -202,4 +212,12 @@ public Action CommandJoinTeam(int client, const char[] command, int argc) {
 	int team = StringToInt(teamString);
 	JoinTeam(client, team);
 	return Plugin_Handled;
+}
+
+// Prevent noclipping during runs
+public void OnStartNoclipping(int client) {
+	if (gB_TimerRunning[client]) {
+		PrintToChat(client, "[\x06KZ\x01] Your time has been stopped because you used noclip.");
+	}
+	ForceStopTimer(client);
 } 

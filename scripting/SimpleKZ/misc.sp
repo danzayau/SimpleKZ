@@ -1,6 +1,6 @@
 /*	misc.sp
 
-	Miscellaneous, non-specific functions.
+	Miscellaneous stuff.
 */
 
 
@@ -238,4 +238,178 @@ void GivePlayerPistol(int client, int pistol) {
 	if (1 <= playerTeam && playerTeam <= 3) {
 		CS_SwitchTeam(client, playerTeam);
 	}
+}
+
+
+
+/*=====  Measure Menu ======*/
+// Credits to DaFox (https://forums.alliedmods.net/showthread.php?t=88830?t=88830)
+
+void SetupMeasureMenu() {
+	gH_MeasureMenu = CreateMenu(MenuHandler_Measure);
+	SetMenuTitle(gH_MeasureMenu, "Measure");
+	AddMenuItem(gH_MeasureMenu, "", "Point A (Red)");
+	AddMenuItem(gH_MeasureMenu, "", "Point B (Green)");
+	AddMenuItem(gH_MeasureMenu, "", "Find Distance");
+	AddMenuItem(gH_MeasureMenu, "", "Reset");
+}
+
+public int MenuHandler_Measure(Handle menu, MenuAction action, int param1, int param2) {
+	if (action == MenuAction_Select) {
+		switch (param2) {
+			case 0: {  //Point 1 (Red)
+				MeasureGetPos(param1, 0);
+			}
+			case 1: {  //Point 2 (Green)
+				MeasureGetPos(param1, 1);
+			}
+			case 2: {  //Find Distance
+				if (gB_MeasurePosSet[param1][0] && gB_MeasurePosSet[param1][1]) {
+					float vDist = GetVectorDistance(gF_MeasurePos[param1][0], gF_MeasurePos[param1][1]);
+					float vHightDist = (gF_MeasurePos[param1][0][2] - gF_MeasurePos[param1][1][2]);
+					PrintToChat(param1, "[\x06KZ\x01] Distance: %.2f, Height Offset: %.2f.", vDist, vHightDist);
+					
+					MeasureBeam(param1, gF_MeasurePos[param1][0], gF_MeasurePos[param1][1], 4.0, 2.0, 0, 0, 255);
+				}
+				else {
+					PrintToChat(param1, "[\x06KZ\x01] You must set both points to measure a distance.");
+				}
+			}
+			case 3: {  //Reset
+				MeasureResetPos(param1);
+			}
+		}
+		DisplayMenu(gH_MeasureMenu, param1, MENU_TIME_FOREVER);
+	}
+	else if (action == MenuAction_Cancel) {
+		MeasureResetPos(param1);
+	}
+}
+
+void MeasureGetPos(int client, int arg) {
+	float origin[3];
+	float angles[3];
+	
+	GetClientEyePosition(client, origin);
+	GetClientEyeAngles(client, angles);
+	
+	Handle trace = TR_TraceRayFilterEx(origin, angles, MASK_SHOT, RayType_Infinite, TraceFilterPlayers, client);
+	
+	if (!TR_DidHit(trace)) {
+		CloseHandle(trace);
+		PrintToChat(client, "[\x06KZ\x01] You are not aiming at anything solid!");
+		return;
+	}
+	
+	TR_GetEndPosition(origin, trace);
+	CloseHandle(trace);
+	
+	gF_MeasurePos[client][arg][0] = origin[0];
+	gF_MeasurePos[client][arg][1] = origin[1];
+	gF_MeasurePos[client][arg][2] = origin[2];
+	
+	if (arg == 0) {
+		if (gH_P2PRed[client] != INVALID_HANDLE) {
+			CloseHandle(gH_P2PRed[client]);
+			gH_P2PRed[client] = INVALID_HANDLE;
+		}
+		gB_MeasurePosSet[client][0] = true;
+		gH_P2PRed[client] = CreateTimer(1.0, Timer_P2PRed, client, TIMER_REPEAT);
+		P2PXBeam(client, 0);
+	}
+	else {
+		if (gH_P2PGreen[client] != INVALID_HANDLE) {
+			CloseHandle(gH_P2PGreen[client]);
+			gH_P2PGreen[client] = INVALID_HANDLE;
+		}
+		gB_MeasurePosSet[client][1] = true;
+		P2PXBeam(client, 1);
+		gH_P2PGreen[client] = CreateTimer(1.0, Timer_P2PGreen, client, TIMER_REPEAT);
+	}
+}
+
+public Action Timer_P2PRed(Handle timer, any client) {
+	P2PXBeam(client, 0);
+}
+
+public Action Timer_P2PGreen(Handle timer, any client) {
+	P2PXBeam(client, 1);
+}
+
+void P2PXBeam(int client, int arg) {
+	float Origin0[3];
+	float Origin1[3];
+	float Origin2[3];
+	float Origin3[3];
+	
+	Origin0[0] = (gF_MeasurePos[client][arg][0] + 8.0);
+	Origin0[1] = (gF_MeasurePos[client][arg][1] + 8.0);
+	Origin0[2] = gF_MeasurePos[client][arg][2];
+	
+	Origin1[0] = (gF_MeasurePos[client][arg][0] - 8.0);
+	Origin1[1] = (gF_MeasurePos[client][arg][1] - 8.0);
+	Origin1[2] = gF_MeasurePos[client][arg][2];
+	
+	Origin2[0] = (gF_MeasurePos[client][arg][0] + 8.0);
+	Origin2[1] = (gF_MeasurePos[client][arg][1] - 8.0);
+	Origin2[2] = gF_MeasurePos[client][arg][2];
+	
+	Origin3[0] = (gF_MeasurePos[client][arg][0] - 8.0);
+	Origin3[1] = (gF_MeasurePos[client][arg][1] + 8.0);
+	Origin3[2] = gF_MeasurePos[client][arg][2];
+	
+	if (arg == 0) {
+		MeasureBeam(client, Origin0, Origin1, 0.97, 2.0, 255, 0, 0);
+		MeasureBeam(client, Origin2, Origin3, 0.97, 2.0, 255, 0, 0);
+	}
+	else {
+		MeasureBeam(client, Origin0, Origin1, 0.97, 2.0, 0, 255, 0);
+		MeasureBeam(client, Origin2, Origin3, 0.97, 2.0, 0, 255, 0);
+	}
+}
+
+void MeasureBeam(int client, float vecStart[3], float vecEnd[3], float life, float width, int r, int g, int b) {
+	TE_Start("BeamPoints");
+	TE_WriteNum("m_nModelIndex", g_iGlowSprite);
+	TE_WriteNum("m_nHaloIndex", 0);
+	TE_WriteNum("m_nStartFrame", 0);
+	TE_WriteNum("m_nFrameRate", 0);
+	TE_WriteFloat("m_fLife", life);
+	TE_WriteFloat("m_fWidth", width);
+	TE_WriteFloat("m_fEndWidth", width);
+	TE_WriteNum("m_nFadeLength", 0);
+	TE_WriteFloat("m_fAmplitude", 0.0);
+	TE_WriteNum("m_nSpeed", 0);
+	TE_WriteNum("r", r);
+	TE_WriteNum("g", g);
+	TE_WriteNum("b", b);
+	TE_WriteNum("a", 255);
+	TE_WriteNum("m_nFlags", 0);
+	TE_WriteVector("m_vecStartPoint", vecStart);
+	TE_WriteVector("m_vecEndPoint", vecEnd);
+	TE_SendToClient(client);
+}
+
+void MeasureResetPos(int client) {
+	if (gH_P2PRed[client] != INVALID_HANDLE) {
+		CloseHandle(gH_P2PRed[client]);
+		gH_P2PRed[client] = INVALID_HANDLE;
+	}
+	if (gH_P2PGreen[client] != INVALID_HANDLE) {
+		CloseHandle(gH_P2PGreen[client]);
+		gH_P2PGreen[client] = INVALID_HANDLE;
+	}
+	gB_MeasurePosSet[client][0] = false;
+	gB_MeasurePosSet[client][1] = false;
+	
+	gF_MeasurePos[client][0][0] = 0.0; //This is stupid.
+	gF_MeasurePos[client][0][1] = 0.0;
+	gF_MeasurePos[client][0][2] = 0.0;
+	gF_MeasurePos[client][1][0] = 0.0;
+	gF_MeasurePos[client][1][1] = 0.0;
+	gF_MeasurePos[client][1][2] = 0.0;
+}
+
+public bool TraceFilterPlayers(int entity, int contentsMask) {
+	return (entity > MaxClients);
 } 
