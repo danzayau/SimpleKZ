@@ -27,16 +27,16 @@ void RegisterCommands() {
 
 
 
-/*======  Command Handlers  ======*/
+/*===============================  Command Handlers  ===============================*/
 
 public Action CommandToggleMenu(int client, int args) {
-	if (gB_UsingTeleportMenu[client]) {
-		gB_UsingTeleportMenu[client] = false;
+	if (gB_ShowingTeleportMenu[client]) {
+		gB_ShowingTeleportMenu[client] = false;
 		CloseTeleportMenu(client);
 		PrintToChat(client, "[\x06KZ\x01] Your teleport menu has been disabled.");
 	}
 	else {
-		gB_UsingTeleportMenu[client] = true;
+		gB_ShowingTeleportMenu[client] = true;
 		PrintToChat(client, "[\x06KZ\x01] Your teleport menu has been enabled.");
 	}
 	return Plugin_Handled;
@@ -74,12 +74,12 @@ public Action CommandStopsound(int client, int args) {
 }
 
 public Action CommandHide(int client, int args) {
-	if (gB_HidingPlayers[client]) {
-		gB_HidingPlayers[client] = false;
+	if (!gB_ShowingPlayers[client]) {
+		gB_ShowingPlayers[client] = true;
 		PrintToChat(client, "[\x06KZ\x01] You are now showing other players.");
 	}
 	else {
-		gB_HidingPlayers[client] = true;
+		gB_ShowingPlayers[client] = false;
 		PrintToChat(client, "[\x06KZ\x01] You are now hiding other players.");
 	}
 	return Plugin_Handled;
@@ -144,27 +144,27 @@ public Action CommandSpec(int client, int args) {
 }
 
 public Action CommandToggleInfoPanel(int client, int args) {
-	if (gB_UsingInfoPanel[client]) {
-		gB_UsingInfoPanel[client] = false;
+	if (gB_ShowingInfoPanel[client]) {
+		gB_ShowingInfoPanel[client] = false;
 		PrintToChat(client, "[\x06KZ\x01] Your centre info panel has been disabled.");
 	}
 	else {
-		gB_UsingInfoPanel[client] = true;
+		gB_ShowingInfoPanel[client] = true;
 		PrintToChat(client, "[\x06KZ\x01] Your centre info panel has been enabled.");
 	}
 	return Plugin_Handled;
 }
 
 public Action CommandToggleHideWeapon(int client, int args) {
-	if (gB_HidingWeapon[client]) {
-		gB_HidingWeapon[client] = false;
+	if (!gB_ShowingWeapon[client]) {
+		gB_ShowingWeapon[client] = true;
 		PrintToChat(client, "[\x06KZ\x01] You are now showing your weapon.");
 	}
 	else {
-		gB_HidingWeapon[client] = true;
+		gB_ShowingWeapon[client] = false;
 		PrintToChat(client, "[\x06KZ\x01] You are now hiding your weapon.");
 	}
-	SetDrawViewModel(client, !gB_HidingWeapon[client]);
+	SetDrawViewModel(client, gB_ShowingWeapon[client]);
 	return Plugin_Handled;
 }
 
@@ -197,4 +197,3 @@ public Action CommandDisableNoclip(int client, int args) {
 	g_MovementPlayer[client].moveType = MOVETYPE_WALK;
 	return Plugin_Handled;
 }
-

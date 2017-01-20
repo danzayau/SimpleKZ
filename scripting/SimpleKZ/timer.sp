@@ -51,6 +51,7 @@ void EndTimer(int client) {
 		EmitSoundToClient(client, "buttons/bell1.wav");
 		gB_TimerRunning[client] = false;
 		PrintToChatAll("%s", GetEndTimeString(client));
+		DB_ProcessEndTimer(client);
 		CloseTeleportMenu(client);
 	}
 }
@@ -83,7 +84,7 @@ void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
 
 
 
-/*=====  Start and End Buttons  ======*/
+/*===============================  Start and End Buttons  ===============================*/
 
 public void OnButtonPress(const char[] name, int caller, int activator, float delay) {
 	if (IsValidEntity(caller) && IsValidClient(activator)) {
@@ -118,7 +119,7 @@ void EndButtonPress(int client) {
 
 
 
-/*=====  Timer Commands  ======*/
+/*===============================  Timer Commands  ===============================*/
 
 void TeleportToStart(int client) {
 	// Leave spectators if necessary
@@ -213,7 +214,7 @@ void TogglePause(int client) {
 
 
 
-/*======  Wasted Time Tracking  ======*/
+/*===============================  Wasted Time Tracking  ===============================*/
 
 void AddWastedTimeTeleportToStart(int client) {
 	float addedWastedTime = 0.0;
@@ -268,7 +269,7 @@ bool TeleportToStartWasLatestTeleport(int client) {
 
 
 
-/*====== Teleport Menu  ======*/
+/*===============================  Teleport Menu  ===============================*/
 
 void SetupTeleportMenuAll() {
 	for (int client = 1; client <= MaxClients; client++) {
@@ -283,7 +284,7 @@ void SetupTeleportMenu(int client) {
 }
 
 void UpdateTeleportMenu(int client) {
-	if (GetClientMenu(client) == MenuSource_None && gB_UsingTeleportMenu[client] && !gB_TeleportMenuIsShowing[client]) {
+	if (GetClientMenu(client) == MenuSource_None && gB_ShowingTeleportMenu[client] && !gB_TeleportMenuIsShowing[client]) {
 		UpdateTeleportMenuItems(client);
 		DisplayMenu(gH_TeleportMenu[client], client, MENU_TIME_FOREVER);
 		gB_TeleportMenuIsShowing[client] = true;
@@ -331,7 +332,7 @@ void TeleportMenuAddItems(int client) {
 	else {
 		if (gB_TimerRunning[client]) {
 			SetMenuTitle(gH_TeleportMenu[client], "PAUSED\n%s %s", 
-				GetRunTypeString(client), 
+				GetCurrentRunTypeString(gI_TeleportsUsed[client]), 
 				TimerFormatTime(gF_CurrentTime[client]));
 		}
 		TeleportMenuAddItemRejoin(client);
@@ -390,4 +391,74 @@ void TeleportMenuAddItemStart(int client) {
 
 void TeleportMenuAddItemRejoin(int client) {
 	AddMenuItem(gH_TeleportMenu[client], "Leave Spectators", "Rejoin");
+}
+
+
+
+/*===============================  Other  ===============================*/
+
+int GetCurrentRunType(int client) {
+	// Returns 0 for PRO run
+	if (gI_TeleportsUsed[client] == 0) {
+		return 0;
+	}
+	// Returns 1 for TP run
+	else {
+		return 1;
+	}
+}
+
+char[] GetCurrentRunTypeString(int client) {
+	char runTypeString[4];
+	if (GetCurrentRunType(client) == 0) {
+		FormatEx(runTypeString, sizeof(runTypeString), "PRO");
+	}
+	else {
+		FormatEx(runTypeString, sizeof(runTypeString), "TP");
+	}
+	return runTypeString;
+}
+
+char[] GetEndTimeString(int client) {
+	char endTimeString[256], clientName[64];
+	GetClientName(client, clientName, sizeof(clientName));
+	
+	if (GetCurrentRunType(client) == 0) {
+		FormatEx(endTimeString, sizeof(endTimeString), 
+			"[\x06KZ\x01] \x05%s\x01 finished in \x0B%s\x01 (\x0BPRO\x01).", 
+			clientName, 
+			TimerFormatTime(gF_CurrentTime[client]), 
+			GetCurrentRunTypeString(client));
+	}
+	else {
+		FormatEx(endTimeString, sizeof(endTimeString), 
+			"[\x06KZ\x01] \x05%s\x01 finished in \x09%s\x01 (\x09%d\x01 TP | \x08%s\x01).", 
+			clientName, 
+			TimerFormatTime(gF_CurrentTime[client]), 
+			gI_TeleportsUsed[client], 
+			TimerFormatTime(gF_CurrentTime[client] - gF_WastedTime[client]));
+	}
+	return endTimeString;
+}
+
+char[] TimerFormatTime(float timeToFormat) {
+	char formattedTime[16];
+	
+	int roundedTime = RoundFloat(timeToFormat * 100); // Time rounded to number of centiseconds
+	
+	int centiseconds = roundedTime % 100;
+	roundedTime = (roundedTime - centiseconds) / 100;
+	int seconds = roundedTime % 60;
+	roundedTime = (roundedTime - seconds) / 60;
+	int minutes = roundedTime % 60;
+	roundedTime = (roundedTime - minutes) / 60;
+	int hours = roundedTime;
+	
+	if (hours == 0) {
+		FormatEx(formattedTime, sizeof(formattedTime), "%02d:%02d.%02d", minutes, seconds, centiseconds);
+	}
+	else {
+		FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d:%02d.%02d", hours, minutes, seconds, centiseconds);
+	}
+	return formattedTime;
 } 

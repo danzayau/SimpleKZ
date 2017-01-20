@@ -4,7 +4,7 @@
 */
 
 
-/*======  Forwards  ======*/
+/*===============================  Forwards  ===============================*/
 
 Handle gH_Forward_SimpleKZ_OnTimerStarted;
 Handle gH_Forward_SimpleKZ_OnTimerEnded;
@@ -23,7 +23,7 @@ void Call_SimpleKZ_OnTimerStarted(int client) {
 void Call_SimpleKZ_OnTimerEnded(int client) {
 	Call_StartForward(gH_Forward_SimpleKZ_OnTimerEnded);
 	Call_PushCell(client);
-	Call_PushFloat(gF_CurrentTime[client]);
+	Call_PushFloat(gF_CurrentTime[client] - gF_WastedTime[client]);
 	Call_PushCell(gI_TeleportsUsed[client]);
 	Call_PushFloat(gF_WastedTime[client]);
 	Call_Finish();
@@ -31,7 +31,7 @@ void Call_SimpleKZ_OnTimerEnded(int client) {
 
 
 
-/*======  Natives  ======*/
+/*===============================  Natives  ===============================*/
 
 void CreateNatives() {
 	CreateNative("SimpleKZ_StartTimer", Native_StartTimer);

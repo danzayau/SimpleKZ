@@ -1,11 +1,19 @@
 /*	misc.sp
 
-	Miscellaneous stuff.
+	Miscellaneous functions.
 */
 
 
+/*===============================  General  ===============================*/
+
 bool IsValidClient(int client) {
 	return 1 <= client && client <= MaxClients && IsClientInGame(client);
+}
+
+void SetupMovementMethodmaps() {
+	for (int client = 1; client <= MaxClients; client++) {
+		g_MovementPlayer[client] = new MovementPlayer(client);
+	}
 }
 
 float FloatMax(float a, float b) {
@@ -15,24 +23,11 @@ float FloatMax(float a, float b) {
 	return b;
 }
 
-bool IntToBool(int value) {
-	if (value == 0) {
-		return false;
-	}
-	return true;
-}
-
 int BoolToInt(bool boolean) {
 	if (boolean) {
 		return 1;
 	}
 	return 0;
-}
-
-void SetupMovementMethodmaps() {
-	for (int client = 1; client <= MaxClients; client++) {
-		g_MovementPlayer[client] = new MovementPlayer(client);
-	}
 }
 
 void LoadKZConfig() {
@@ -52,13 +47,9 @@ void AddCommandListeners() {
 	AddCommandListener(CommandJoinTeam, "jointeam");
 }
 
-int GetSpectatedPlayer(int client) {
-	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-}
 
-void SetDrawViewModel(int client, bool drawViewModel) {
-	SetEntProp(client, Prop_Send, "m_bDrawViewmodel", drawViewModel);
-}
+
+/*===============================  Client  ===============================*/
 
 public Action CleanHUD(Handle timer, int client) {
 	// Hide radar
@@ -66,42 +57,8 @@ public Action CleanHUD(Handle timer, int client) {
 	SetEntProp(client, Prop_Send, "m_iHideHUD", clientEntFlags | (1 << 12));
 }
 
-void TeleportToOtherPlayer(int client, int target)
-{
-	float targetOrigin[3];
-	float targetAngles[3];
-	char targetName[MAX_NAME_LENGTH];
-	
-	g_MovementPlayer[target].GetOrigin(targetOrigin);
-	g_MovementPlayer[target].GetEyeAngles(targetOrigin);
-	GetClientName(target, targetName, MAX_NAME_LENGTH);
-	
-	// Leave spectators if necessary
-	if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
-		CS_SwitchTeam(client, CS_TEAM_T);
-	}
-	// Respawn the player if necessary
-	if (!IsPlayerAlive(client)) {
-		CS_RespawnPlayer(client);
-	}
-	TeleportEntity(client, targetOrigin, targetAngles, view_as<float>( { 0.0, 0.0, -100.0 } ));
-	PrintToChat(client, "[\x06KZ\x01] You have teleported to %s.", targetName);
-}
-
-int GetRunType(int client) {
-	// Returns 0 for PRO run
-	if (gI_TeleportsUsed[client] == 0) {
-		return 0;
-	}
-	// Returns 1 for TP run
-	else {
-		return 1;
-	}
-}
-
-void FreezePlayer(int client) {
-	g_MovementPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
-	g_MovementPlayer[client].moveType = MOVETYPE_NONE;
+void SetDrawViewModel(int client, bool drawViewModel) {
+	SetEntProp(client, Prop_Send, "m_bDrawViewmodel", drawViewModel);
 }
 
 void JoinTeam(int client, int team) {
@@ -128,78 +85,50 @@ void JoinTeam(int client, int team) {
 	CloseTeleportMenu(client);
 }
 
-
-
-/*=====  String Formatters  ======*/
-
-char[] GetRunTypeString(int client) {
-	char runTypeString[4];
-	if (GetRunType(client) == 0) {
-		FormatEx(runTypeString, sizeof(runTypeString), "PRO");
-	}
-	else {
-		FormatEx(runTypeString, sizeof(runTypeString), "TP");
-	}
-	return runTypeString;
+int GetSpectatedPlayer(int client) {
+	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
 }
 
-char[] GetEndTimeString(int client) {
-	char endTimeString[256], clientName[64];
-	GetClientName(client, clientName, sizeof(clientName));
+void TeleportToOtherPlayer(int client, int target)
+{
+	float targetOrigin[3];
+	float targetAngles[3];
+	char targetName[MAX_NAME_LENGTH];
 	
-	if (GetRunType(client) == 0) {
-		FormatEx(endTimeString, sizeof(endTimeString), 
-			"[\x06KZ\x01] \x05%s\x01 finished in \x0A%s\x01 (\x0APRO\x01).", 
-			clientName, 
-			TimerFormatTime(gF_CurrentTime[client]), 
-			GetRunTypeString(client));
+	g_MovementPlayer[target].GetOrigin(targetOrigin);
+	g_MovementPlayer[target].GetEyeAngles(targetOrigin);
+	GetClientName(target, targetName, MAX_NAME_LENGTH);
+	
+	// Leave spectators if necessary
+	if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
+		CS_SwitchTeam(client, CS_TEAM_T);
 	}
-	else {
-		FormatEx(endTimeString, sizeof(endTimeString), 
-			"[\x06KZ\x01] \x05%s\x01 finished in \x09%s\x01 (\x09%d\x01 TP | \x08%s\x01).", 
-			clientName, 
-			TimerFormatTime(gF_CurrentTime[client]), 
-			gI_TeleportsUsed[client], 
-			TimerFormatTime(gF_CurrentTime[client] - gF_WastedTime[client]));
+	// Respawn the player if necessary
+	if (!IsPlayerAlive(client)) {
+		CS_RespawnPlayer(client);
 	}
-	return endTimeString;
+	TeleportEntity(client, targetOrigin, targetAngles, view_as<float>( { 0.0, 0.0, -100.0 } ));
+	PrintToChat(client, "[\x06KZ\x01] You have teleported to %s.", targetName);
 }
 
-char[] TimerFormatTime(float timeToFormat) {
-	char formattedTime[16];
-	
-	int roundedTime = RoundFloat(timeToFormat * 100); // Time rounded to number of centiseconds
-	
-	int centiseconds = roundedTime % 100;
-	roundedTime = (roundedTime - centiseconds) / 100;
-	int seconds = roundedTime % 60;
-	roundedTime = (roundedTime - seconds) / 60;
-	int minutes = roundedTime % 60;
-	roundedTime = (roundedTime - minutes) / 60;
-	int hours = roundedTime;
-	
-	if (hours == 0) {
-		FormatEx(formattedTime, sizeof(formattedTime), "%02d:%02d.%02d", minutes, seconds, centiseconds);
-	}
-	else {
-		FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d:%02d.%02d", hours, minutes, seconds, centiseconds);
-	}
-	return formattedTime;
+void FreezePlayer(int client) {
+	g_MovementPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
+	g_MovementPlayer[client].moveType = MOVETYPE_NONE;
 }
 
 
 
-/*=====  Pistol Menu ======*/
+/*===============================  Pistol Menu ===============================*/
 
 // Pistol Entity Names (entity class name, alias, team that buys it)
 char gC_Pistols[NUMBER_OF_PISTOLS][3][] = 
 {
-	{ "weapon_hkp2000", "P2K / USP", "CT" }, 
-	{ "weapon_glock", "Glock", "T" }, 
+	{ "weapon_hkp2000", "P2000 / USP-S", "CT" }, 
+	{ "weapon_glock", "Glock-18", "T" }, 
 	{ "weapon_p250", "P250", "EITHER" }, 
+	{ "weapon_elite", "Dual Berettas", "EITHER" }, 
 	{ "weapon_deagle", "Deagle", "EITHER" }, 
-	{ "weapon_elite", "Dualies", "EITHER" }, 
-	{ "weapon_cz75a", "CZ75", "EITHER" }, 
+	{ "weapon_cz75a", "CZ75-Auto", "EITHER" }, 
 	{ "weapon_fiveseven", "Five-SeveN", "CT" }, 
 	{ "weapon_tec9", "Tec-9", "T" }
 };
@@ -242,7 +171,7 @@ void GivePlayerPistol(int client, int pistol) {
 
 
 
-/*=====  Measure Menu ======*/
+/*===============================  Measure Menu ===============================*/
 // Credits to DaFox (https://forums.alliedmods.net/showthread.php?t=88830?t=88830)
 
 void SetupMeasureMenu() {
@@ -370,7 +299,7 @@ void P2PXBeam(int client, int arg) {
 
 void MeasureBeam(int client, float vecStart[3], float vecEnd[3], float life, float width, int r, int g, int b) {
 	TE_Start("BeamPoints");
-	TE_WriteNum("m_nModelIndex", g_iGlowSprite);
+	TE_WriteNum("m_nModelIndex", gI_GlowSprite);
 	TE_WriteNum("m_nHaloIndex", 0);
 	TE_WriteNum("m_nStartFrame", 0);
 	TE_WriteNum("m_nFrameRate", 0);

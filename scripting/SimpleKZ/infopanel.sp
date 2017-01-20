@@ -6,7 +6,7 @@
 
 void UpdateInfoPanel(int client) {
 	MovementPlayer player = g_MovementPlayer[client];
-	if (gB_UsingInfoPanel[player.id]) {
+	if (gB_ShowingInfoPanel[player.id]) {
 		if (IsPlayerAlive(player.id)) {
 			if (gB_ShowingKeys[player.id]) {
 				PrintHintText(player.id, "%s", GetInfoPanelWithKeys(player));
