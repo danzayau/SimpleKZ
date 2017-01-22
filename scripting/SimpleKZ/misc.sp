@@ -48,14 +48,21 @@ void AddCommandListeners() {
 }
 
 void OnMapStartVariableUpdates() {
+	UpdateCurrentMap();
+	gI_GlowSprite = PrecacheModel("materials/sprites/bluelaser1.vmt", true); // Measure
+}
+
+void UpdateCurrentMap() {
 	// Store map name
 	GetCurrentMap(gC_CurrentMap, sizeof(gC_CurrentMap));
 	// Get just the map name (e.g. remove workshop/id/ prefix)
 	char mapPieces[6][32];
 	int lastPiece = ExplodeString(gC_CurrentMap, "/", mapPieces, sizeof(mapPieces), sizeof(mapPieces[]));
 	FormatEx(gC_CurrentMap, sizeof(gC_CurrentMap), "%s", mapPieces[lastPiece - 1]);
-	
-	gI_GlowSprite = PrecacheModel("materials/sprites/bluelaser1.vmt", true);
+}
+
+void FakePrecacheSound(const char[] szPath) {
+	AddToStringTable(FindStringTable("soundprecache"), szPath);
 }
 
 char[] FormatTimeFloat(float timeToFormat) {

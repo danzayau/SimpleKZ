@@ -211,6 +211,7 @@ void DB_SetupDatabase() {
 	
 	gB_ConnectedToDB = true;
 	GetClientSteamIDAll(); // Ensures these are set for already connected clients (e.g. on plugin reload)
+	UpdateCurrentMap(); // Ensures map variable is set (e.g. on plugin reload)
 	DB_CreateTables();
 }
 
@@ -354,11 +355,66 @@ void DB_ProcessEndTimer(int client) {
 		return;
 	}
 	
+	DataPack data = CreateDataPack();
+	data.WriteCell(client);
+	data.WriteFloat(gF_CurrentTime[client]);
+	data.WriteCell(gI_TeleportsUsed[client]);
+	
+	Transaction txn = SQL_CreateTransaction();
 	char query[512];
 	// Save time to DB
 	FormatEx(query, sizeof(query), sql_times_insert, 
 		gC_SteamID[client], gC_CurrentMap, gF_CurrentTime[client], gI_TeleportsUsed[client], (gF_CurrentTime[client] - gF_WastedTime[client]));
-	SQL_TQuery(gH_DB, DB_Callback_Generic, query);
+	txn.AddQuery(query);
+	// Get Map WR
+	FormatEx(query, sizeof(query), sql_times_gettop, gC_CurrentMap, 1);
+	txn.AddQuery(query);
+	// Get PRO WR
+	if (gI_TeleportsUsed[client] == 0) {
+		FormatEx(query, sizeof(query), sql_times_gettoppro, gC_CurrentMap, 1);
+		txn.AddQuery(query);
+	}
+	
+	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_ProcessEndTimer, DB_TxnFailure_Generic, data);
+}
+
+public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
+	data.Reset();
+	int client = data.ReadCell();
+	float runTime = data.ReadFloat();
+	int teleportsUsed = data.ReadCell();
+	CloseHandle(data);
+	
+	bool newRecord = false;
+	bool newRecordPro = false;
+	
+	SQL_FetchRow(results[1]);
+	if (runTime == SQL_FetchFloat(results[1], 1)) {
+		newRecord = true;
+	}
+	SQL_FetchRow(results[2]);
+	if (teleportsUsed == 0 && runTime == SQL_FetchFloat(results[2], 1)) {
+		newRecordPro = true;
+	}
+	
+	if (newRecord || newRecordPro) {
+		char playerName[MAX_NAME_LENGTH];
+		GetClientName(client, playerName, MAX_NAME_LENGTH);
+		if (newRecord) {
+			if (!newRecordPro) {  // Only new MAP Record
+				PrintToChatAll("[\x06KZ\x01] \x05%s\x01 beat the \x09MAP RECORD\x01!", playerName, gC_CurrentMap);
+				EmitSoundToAll("*/commander/commander_comment_01.wav");
+			}
+			else {  // and PRO Record
+				PrintToChatAll("[\x06KZ\x01] \x05%s\x01 beat the \x09MAP RECORD\x01 and the \x0BPRO RECORD\x01!", playerName, gC_CurrentMap);
+				EmitSoundToAll("*/commander/commander_comment_05.wav");
+			}
+		}
+		else {  // Only new PRO Record
+			PrintToChatAll("[\x06KZ\x01] \x05%s\x01 beat the \x0BPRO RECORD\x01!", playerName, gC_CurrentMap);
+			EmitSoundToAll("*/commander/commander_comment_02.wav");
+		}
+	}
 }
 
 
@@ -462,12 +518,12 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	
 	// Print PB Info
 	if (!hasPB) {
-		PrintToChat(client, "  No times by you were found!");
+		PrintToChat(client, "  You don't have a time on \x05%s\x01... yet.", map);
 	}
 	else if (!hasPBPro) {
 		PrintToChat(client, 
-			"  \x09MAP PB\x01: %s (\x09%d\x01 TP | \x08%s\x01) - #\x05%d\x01/%d", 
-			FormatTimeFloat(runTime), teleportsUsed, FormatTimeFloat(theoreticalRunTime), rank, maxRank);
+			"  \x09MAP PB\x01: %s - #\x05%d\x01/%d (\x09%d\x01 TP | \x08%s\x01) ", 
+			FormatTimeFloat(runTime), rank, maxRank, teleportsUsed, FormatTimeFloat(theoreticalRunTime));
 		PrintToChat(client, 
 			"  \x0BPRO PB\x01: None!");
 	}
@@ -478,8 +534,8 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	}
 	else {
 		PrintToChat(client, 
-			"  \x09MAP PB\x01: %s (\x09%d\x01 TP | \x08%s\x01) - #\x05%d\x01/%d", 
-			FormatTimeFloat(runTime), teleportsUsed, FormatTimeFloat(theoreticalRunTime), rank, maxRank);
+			"  \x09MAP PB\x01: %s - #\x05%d\x01/%d (\x09%d\x01 TP | \x08%s\x01) ", 
+			FormatTimeFloat(runTime), rank, maxRank, teleportsUsed, FormatTimeFloat(theoreticalRunTime));
 		PrintToChat(client, 
 			"  \x0BPRO PB\x01: %s - #\x05%d\x01/%d", 
 			FormatTimeFloat(runTimePro), rankPro, maxRankPro);
@@ -503,10 +559,10 @@ void DB_PrintMapRecords(int client, const char[] map) {
 	Transaction txn = SQL_CreateTransaction();
 	char query[512];
 	
-	// Get Map Top
+	// Get Map WR
 	FormatEx(query, sizeof(query), sql_times_gettop, map, 1);
 	txn.AddQuery(query);
-	// Get PRO Top
+	// Get PRO WR
 	FormatEx(query, sizeof(query), sql_times_gettoppro, map, 1);
 	txn.AddQuery(query);
 	
@@ -540,13 +596,14 @@ public void DB_TxnSuccess_PrintMapRecords(Handle db, DataPack data, int numQueri
 		SQL_FetchString(results[0], 0, recordHolder, sizeof(recordHolder));
 		runTime = SQL_FetchFloat(results[0], 1);
 		teleportsUsed = SQL_FetchInt(results[0], 2);
-	}
-	if (SQL_GetRowCount(results[1]) > 0) {
-		hasRecordPro = true;
 		
-		SQL_FetchRow(results[1]);
-		SQL_FetchString(results[1], 0, recordHolderPro, sizeof(recordHolderPro));
-		runTimePro = SQL_FetchFloat(results[1], 1);
+		if (SQL_GetRowCount(results[1]) > 0) {
+			hasRecordPro = true;
+			
+			SQL_FetchRow(results[1]);
+			SQL_FetchString(results[1], 0, recordHolderPro, sizeof(recordHolderPro));
+			runTimePro = SQL_FetchFloat(results[1], 1);
+		}
 	}
 	
 	// Print WR info
