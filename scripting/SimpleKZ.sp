@@ -21,14 +21,17 @@ Plugin myinfo =
 
 
 
-/*======  Definitions  ======*/
+/*===============================  Definitions  ===============================*/
 
 #define PAUSE_COOLDOWN_AFTER_RESUMING 0.5
 #define NUMBER_OF_PISTOLS 8
 
+#define MYSQL 0
+#define SQLITE 1
 
 
-/*======  Global Variables  ======*/
+
+/*===============================  Global Variables  ===============================*/
 
 // Timer
 bool gB_TimerRunning[MAXPLAYERS + 1] =  { false, ... };
@@ -75,16 +78,10 @@ Handle gH_P2PGreen[MAXPLAYERS + 1];
 // Database
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
+int g_DBType;
 char gC_CurrentMap[32];
 char gC_SteamID[MAXPLAYERS + 1][24];
 char gC_Country[MAXPLAYERS + 1][45];
-
-bool gB_HasPBPro[MAXPLAYERS + 1] =  { false, ... };
-float gF_PBProTime[MAXPLAYERS + 1];
-bool gB_HasPBTP[MAXPLAYERS + 1] =  { false, ... };
-float gF_PBTPTime[MAXPLAYERS + 1];
-int gI_PBTPTeleportsUsed[MAXPLAYERS + 1];
-float gF_PBTPTheoreticalTime[MAXPLAYERS + 1];
 
 bool gB_ShowingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
 bool gB_ShowingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
@@ -98,14 +95,18 @@ MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
 Handle gH_PistolMenu = INVALID_HANDLE;
 Handle gH_TeleportMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1] =  { false, ... };
+Handle gH_MapTopMenu[MAXPLAYERS + 1] = INVALID_HANDLE;
+char gC_MapTopMap[MAXPLAYERS + 1][33];
+Handle gH_MapTopSubmenu[MAXPLAYERS + 1] = INVALID_HANDLE;
 
 
 
-/*======  Includes  ======*/
+/*===============================  Includes  ===============================*/
 
 #include "SimpleKZ/commands.sp"
 #include "SimpleKZ/timer.sp"
 #include "SimpleKZ/infopanel.sp"
+#include "SimpleKZ/menus.sp"
 #include "SimpleKZ/misc.sp"
 #include "SimpleKZ/database.sp"
 #include "SimpleKZ/api.sp"
@@ -136,9 +137,7 @@ public void OnPluginStart() {
 	
 	// Setup
 	SetupMovementMethodmaps();
-	SetupTeleportMenuAll();
-	SetupMeasureMenu();
-	SetupPistolMenu();
+	SetupMenus();
 	DB_SetupDatabase();
 }
 
@@ -153,29 +152,22 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 /*===============================  Map and Client Events  ===============================*/
 
 public void OnMapStart() {
-	// Store map name
-	GetCurrentMap(gC_CurrentMap, sizeof(gC_CurrentMap));
-	// Get just the map name (e.g. remove workshop/id/ prefix)
-	char mapPieces[6][32];
-	int lastPiece = ExplodeString(gC_CurrentMap, "/", mapPieces, sizeof(mapPieces), sizeof(mapPieces[]));
-	Format(gC_CurrentMap, sizeof(gC_CurrentMap), "%s", mapPieces[lastPiece - 1]);
-	
 	LoadKZConfig();
-	gI_GlowSprite = PrecacheModel("materials/sprites/bluelaser1.vmt", true);
+	OnMapStartVariableUpdates();
+	
+	// Database
+	if (!gB_ConnectedToDB) {
+		DB_SetupDatabase();
+	}
+	DB_SaveMapInfo();
 }
 
 public void OnClientAuthorized(int client) {
 	if (!IsFakeClient(client)) {
-		char clientIP[32];
-		GetClientIP(client, clientIP, sizeof(clientIP));
-		if (!GeoipCountry(clientIP, gC_Country[client], sizeof(gC_Country[]))) {
-			gC_Country[client] = "Unknown";
-		}
-		GetClientAuthId(client, AuthId_Steam2, gC_SteamID[client], 24, true);
-		
+		GetClientCountry(client);
+		GetClientSteamID(client);		
 		DB_SavePlayerInfo(client);
 		DB_LoadPreferences(client);
-		DB_LoadPBs(client);
 	}
 }
 
@@ -202,7 +194,7 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 		SetEntProp(client, Prop_Data, "m_takedamage", 0, 1); // Godmode
 		SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true); // No Block
 		SetDrawViewModel(client, gB_ShowingWeapon[client]); // Hide weapon
-		GivePlayerPistol(client, gI_Pistol[client]); // Give player their preffered pistol
+		GivePlayerPistol(client, gI_Pistol[client]); // Give player their preferred pistol
 	}
 }
 

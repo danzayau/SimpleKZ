@@ -46,21 +46,16 @@ void StartTimer(int client) {
 }
 
 void EndTimer(int client) {
-	if (gB_TimerRunning[client]) {
-		Call_SimpleKZ_OnTimerEnded(client);
-		EmitSoundToClient(client, "buttons/bell1.wav");
-		gB_TimerRunning[client] = false;
-		PrintToChatAll("%s", GetEndTimeString(client));
-		DB_ProcessEndTimer(client);
-		CloseTeleportMenu(client);
-	}
+	Call_SimpleKZ_OnTimerEnded(client);
+	EmitSoundToClient(client, "buttons/bell1.wav");
+	gB_TimerRunning[client] = false;
+	PrintToChatAll("%s", GetEndTimeString(client));
+	DB_ProcessEndTimer(client);
+	CloseTeleportMenu(client);
 }
 
 void ForceStopTimer(int client) {
-	if (gB_TimerRunning[client]) {
-		gB_TimerRunning[client] = false;
-		TimerRestart(client);
-	}
+	gB_TimerRunning[client] = false;
 }
 
 void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
@@ -114,7 +109,9 @@ void StartButtonPress(int client) {
 }
 
 void EndButtonPress(int client) {
-	EndTimer(client);
+	if (gB_TimerRunning[client]) {
+		EndTimer(client);
+	}
 }
 
 
@@ -269,132 +266,6 @@ bool TeleportToStartWasLatestTeleport(int client) {
 
 
 
-/*===============================  Teleport Menu  ===============================*/
-
-void SetupTeleportMenuAll() {
-	for (int client = 1; client <= MaxClients; client++) {
-		SetupTeleportMenu(client);
-	}
-}
-
-void SetupTeleportMenu(int client) {
-	gH_TeleportMenu[client] = CreateMenu(MenuHandler_Timer);
-	SetMenuExitButton(gH_TeleportMenu[client], false);
-	SetMenuOptionFlags(gH_TeleportMenu[client], MENUFLAG_NO_SOUND);
-}
-
-void UpdateTeleportMenu(int client) {
-	if (GetClientMenu(client) == MenuSource_None && gB_ShowingTeleportMenu[client] && !gB_TeleportMenuIsShowing[client]) {
-		UpdateTeleportMenuItems(client);
-		DisplayMenu(gH_TeleportMenu[client], client, MENU_TIME_FOREVER);
-		gB_TeleportMenuIsShowing[client] = true;
-	}
-}
-
-public int MenuHandler_Timer(Menu menu, MenuAction action, int param1, int param2) {
-	if (action == MenuAction_Select) {
-		if (IsPlayerAlive(param1)) {
-			switch (param2) {
-				case 0:MakeCheckpoint(param1);
-				case 1:TeleportToCheckpoint(param1);
-				case 2:TogglePause(param1);
-				case 3:TeleportToStart(param1);
-				case 4:UndoTeleport(param1);
-			}
-		}
-		else {
-			switch (param2) {
-				case 0:JoinTeam(param1, CS_TEAM_CT);
-			}
-		}
-	}
-	else if (action == MenuAction_Cancel) {
-		gB_TeleportMenuIsShowing[param1] = false;
-	}
-}
-
-void CloseTeleportMenu(int client) {
-	if (gB_TeleportMenuIsShowing[client]) {
-		CancelClientMenu(client);
-		gB_TeleportMenuIsShowing[client] = false;
-	}
-}
-
-void TeleportMenuAddItems(int client) {
-	if (IsPlayerAlive(client)) {
-		SetMenuTitle(gH_TeleportMenu[client], "");
-		TeleportMenuAddItemCheckpoint(client);
-		TeleportMenuAddItemTeleport(client);
-		TeleportMenuAddItemPause(client);
-		TeleportMenuAddItemStart(client);
-		TeleportMenuAddItemUndo(client);
-	}
-	else {
-		if (gB_TimerRunning[client]) {
-			SetMenuTitle(gH_TeleportMenu[client], "PAUSED\n%s %s", 
-				GetCurrentRunTypeString(gI_TeleportsUsed[client]), 
-				TimerFormatTime(gF_CurrentTime[client]));
-		}
-		TeleportMenuAddItemRejoin(client);
-	}
-}
-
-void UpdateTeleportMenuItems(int client) {
-	RemoveAllMenuItems(gH_TeleportMenu[client]);
-	TeleportMenuAddItems(client);
-}
-
-void TeleportMenuAddItemCheckpoint(int client) {
-	AddMenuItem(gH_TeleportMenu[client], "Make a Checkpoint", "Checkpoint");
-}
-
-void TeleportMenuAddItemTeleport(int client) {
-	if (gI_CheckpointsSet[client] > 0) {
-		AddMenuItem(gH_TeleportMenu[client], "Go Back to Checkpoint", "Teleport");
-	}
-	else {
-		AddMenuItem(gH_TeleportMenu[client], "Can't Go Back to Checkpoint", "Teleport", ITEMDRAW_DISABLED);
-	}
-}
-
-void TeleportMenuAddItemUndo(int client) {
-	if (gI_TeleportsUsed[client] > 0 && gB_LastTeleportOnGround[client]) {
-		AddMenuItem(gH_TeleportMenu[client], "Undo", "Undo TP");
-	}
-	else {
-		AddMenuItem(gH_TeleportMenu[client], "Can't Undo", "Undo TP", ITEMDRAW_DISABLED);
-	}
-}
-
-void TeleportMenuAddItemPause(int client) {
-	if (gB_TimerRunning[client]) {
-		if (!gB_Paused[client]) {
-			AddMenuItem(gH_TeleportMenu[client], "Pause Timer", "Pause");
-		}
-		else {
-			AddMenuItem(gH_TeleportMenu[client], "Resume Timer", "Resume");
-		}
-	}
-	else {
-		AddMenuItem(gH_TeleportMenu[client], "Can't Pause", "Pause", ITEMDRAW_DISABLED);
-	}
-}
-
-void TeleportMenuAddItemStart(int client) {
-	if (gB_HasStartPosition[client]) {
-		AddMenuItem(gH_TeleportMenu[client], "Teleport to Start", "Restart");
-	}
-	else {
-		AddMenuItem(gH_TeleportMenu[client], "Teleport to Spawn", "Respawn");
-	}
-}
-
-void TeleportMenuAddItemRejoin(int client) {
-	AddMenuItem(gH_TeleportMenu[client], "Leave Spectators", "Rejoin");
-}
-
-
-
 /*===============================  Other  ===============================*/
 
 int GetCurrentRunType(int client) {
@@ -427,38 +298,16 @@ char[] GetEndTimeString(int client) {
 		FormatEx(endTimeString, sizeof(endTimeString), 
 			"[\x06KZ\x01] \x05%s\x01 finished in \x0B%s\x01 (\x0BPRO\x01).", 
 			clientName, 
-			TimerFormatTime(gF_CurrentTime[client]), 
+			FormatTimeFloat(gF_CurrentTime[client]), 
 			GetCurrentRunTypeString(client));
 	}
 	else {
 		FormatEx(endTimeString, sizeof(endTimeString), 
 			"[\x06KZ\x01] \x05%s\x01 finished in \x09%s\x01 (\x09%d\x01 TP | \x08%s\x01).", 
 			clientName, 
-			TimerFormatTime(gF_CurrentTime[client]), 
+			FormatTimeFloat(gF_CurrentTime[client]), 
 			gI_TeleportsUsed[client], 
-			TimerFormatTime(gF_CurrentTime[client] - gF_WastedTime[client]));
+			FormatTimeFloat(gF_CurrentTime[client] - gF_WastedTime[client]));
 	}
 	return endTimeString;
-}
-
-char[] TimerFormatTime(float timeToFormat) {
-	char formattedTime[16];
-	
-	int roundedTime = RoundFloat(timeToFormat * 100); // Time rounded to number of centiseconds
-	
-	int centiseconds = roundedTime % 100;
-	roundedTime = (roundedTime - centiseconds) / 100;
-	int seconds = roundedTime % 60;
-	roundedTime = (roundedTime - seconds) / 60;
-	int minutes = roundedTime % 60;
-	roundedTime = (roundedTime - minutes) / 60;
-	int hours = roundedTime;
-	
-	if (hours == 0) {
-		FormatEx(formattedTime, sizeof(formattedTime), "%02d:%02d.%02d", minutes, seconds, centiseconds);
-	}
-	else {
-		FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d:%02d.%02d", hours, minutes, seconds, centiseconds);
-	}
-	return formattedTime;
 } 

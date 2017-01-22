@@ -47,6 +47,59 @@ void AddCommandListeners() {
 	AddCommandListener(CommandJoinTeam, "jointeam");
 }
 
+void OnMapStartVariableUpdates() {
+	// Store map name
+	GetCurrentMap(gC_CurrentMap, sizeof(gC_CurrentMap));
+	// Get just the map name (e.g. remove workshop/id/ prefix)
+	char mapPieces[6][32];
+	int lastPiece = ExplodeString(gC_CurrentMap, "/", mapPieces, sizeof(mapPieces), sizeof(mapPieces[]));
+	FormatEx(gC_CurrentMap, sizeof(gC_CurrentMap), "%s", mapPieces[lastPiece - 1]);
+	
+	gI_GlowSprite = PrecacheModel("materials/sprites/bluelaser1.vmt", true);
+}
+
+char[] FormatTimeFloat(float timeToFormat) {
+	char formattedTime[12];
+	
+	int roundedTime = RoundFloat(timeToFormat * 100); // Time rounded to number of centiseconds
+	
+	int centiseconds = roundedTime % 100;
+	roundedTime = (roundedTime - centiseconds) / 100;
+	int seconds = roundedTime % 60;
+	roundedTime = (roundedTime - seconds) / 60;
+	int minutes = roundedTime % 60;
+	roundedTime = (roundedTime - minutes) / 60;
+	int hours = roundedTime;
+	
+	if (hours == 0) {
+		FormatEx(formattedTime, sizeof(formattedTime), "%02d:%02d.%02d", minutes, seconds, centiseconds);
+	}
+	else {
+		FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d:%02d.%02d", hours, minutes, seconds, centiseconds);
+	}
+	return formattedTime;
+}
+
+void GetClientCountry(int client) {
+	char clientIP[32];
+	GetClientIP(client, clientIP, sizeof(clientIP));
+	if (!GeoipCountry(clientIP, gC_Country[client], sizeof(gC_Country[]))) {
+		gC_Country[client] = "Unknown";
+	}
+}
+
+void GetClientSteamID(int client) {
+	GetClientAuthId(client, AuthId_Steam2, gC_SteamID[client], 24, true);	
+}
+
+void GetClientSteamIDAll() {
+	for (int client = 1; client <= MaxClients; client++) {
+		if (IsClientAuthorized(client)) {
+			GetClientSteamID(client);
+		}
+	}
+}
+
 
 
 /*===============================  Client  ===============================*/
@@ -55,6 +108,15 @@ public Action CleanHUD(Handle timer, int client) {
 	// Hide radar
 	int clientEntFlags = GetEntProp(client, Prop_Send, "m_iHideHUD");
 	SetEntProp(client, Prop_Send, "m_iHideHUD", clientEntFlags | (1 << 12));
+}
+
+void SetDefaultPreferences(int client) {
+	gB_ShowingTeleportMenu[client] = true;
+	gB_ShowingInfoPanel[client] = true;
+	gB_ShowingKeys[client] = false;
+	gB_ShowingPlayers[client] = true;
+	gB_ShowingWeapon[client] = true;
+	gI_Pistol[client] = 0;
 }
 
 void SetDrawViewModel(int client, bool drawViewModel) {
@@ -114,231 +176,4 @@ void TeleportToOtherPlayer(int client, int target)
 void FreezePlayer(int client) {
 	g_MovementPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
 	g_MovementPlayer[client].moveType = MOVETYPE_NONE;
-}
-
-
-
-/*===============================  Pistol Menu ===============================*/
-
-// Pistol Entity Names (entity class name, alias, team that buys it)
-char gC_Pistols[NUMBER_OF_PISTOLS][3][] = 
-{
-	{ "weapon_hkp2000", "P2000 / USP-S", "CT" }, 
-	{ "weapon_glock", "Glock-18", "T" }, 
-	{ "weapon_p250", "P250", "EITHER" }, 
-	{ "weapon_elite", "Dual Berettas", "EITHER" }, 
-	{ "weapon_deagle", "Deagle", "EITHER" }, 
-	{ "weapon_cz75a", "CZ75-Auto", "EITHER" }, 
-	{ "weapon_fiveseven", "Five-SeveN", "CT" }, 
-	{ "weapon_tec9", "Tec-9", "T" }
-};
-
-void SetupPistolMenu() {
-	gH_PistolMenu = CreateMenu(MenuHandler_Pistol);
-	SetMenuTitle(gH_PistolMenu, "Pick a Pistol");
-	for (int pistol = 0; pistol < NUMBER_OF_PISTOLS; pistol++) {
-		AddMenuItem(gH_PistolMenu, gC_Pistols[pistol][1], gC_Pistols[pistol][1]);
-	}
-}
-
-public int MenuHandler_Pistol(Menu menu, MenuAction action, int param1, int param2) {
-	if (action == MenuAction_Select) {
-		gI_Pistol[param1] = param2;
-		GivePlayerPistol(param1, param2);
-	}
-}
-
-void GivePlayerPistol(int client, int pistol) {
-	int playerTeam = GetClientTeam(client);
-	// Switch teams to the side that buys that gun so that gun skins load
-	if (strcmp(gC_Pistols[pistol][2], "CT") == 0 && playerTeam != CS_TEAM_CT) {
-		CS_SwitchTeam(client, CS_TEAM_CT);
-	}
-	else if (strcmp(gC_Pistols[pistol][2], "T") == 0 && playerTeam != CS_TEAM_T) {
-		CS_SwitchTeam(client, CS_TEAM_T);
-	}
-	// Give the player this pistol
-	int currentPistol = GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY);
-	if (currentPistol != -1) {
-		RemovePlayerItem(client, currentPistol);
-	}
-	GivePlayerItem(client, gC_Pistols[pistol][0]);
-	// Go back to original team
-	if (1 <= playerTeam && playerTeam <= 3) {
-		CS_SwitchTeam(client, playerTeam);
-	}
-}
-
-
-
-/*===============================  Measure Menu ===============================*/
-// Credits to DaFox (https://forums.alliedmods.net/showthread.php?t=88830?t=88830)
-
-void SetupMeasureMenu() {
-	gH_MeasureMenu = CreateMenu(MenuHandler_Measure);
-	SetMenuTitle(gH_MeasureMenu, "Measure");
-	AddMenuItem(gH_MeasureMenu, "", "Point A (Red)");
-	AddMenuItem(gH_MeasureMenu, "", "Point B (Green)");
-	AddMenuItem(gH_MeasureMenu, "", "Find Distance");
-	AddMenuItem(gH_MeasureMenu, "", "Reset");
-}
-
-public int MenuHandler_Measure(Handle menu, MenuAction action, int param1, int param2) {
-	if (action == MenuAction_Select) {
-		switch (param2) {
-			case 0: {  //Point 1 (Red)
-				MeasureGetPos(param1, 0);
-			}
-			case 1: {  //Point 2 (Green)
-				MeasureGetPos(param1, 1);
-			}
-			case 2: {  //Find Distance
-				if (gB_MeasurePosSet[param1][0] && gB_MeasurePosSet[param1][1]) {
-					float vDist = GetVectorDistance(gF_MeasurePos[param1][0], gF_MeasurePos[param1][1]);
-					float vHightDist = (gF_MeasurePos[param1][0][2] - gF_MeasurePos[param1][1][2]);
-					PrintToChat(param1, "[\x06KZ\x01] Distance: %.2f, Height Offset: %.2f.", vDist, vHightDist);
-					
-					MeasureBeam(param1, gF_MeasurePos[param1][0], gF_MeasurePos[param1][1], 4.0, 2.0, 0, 0, 255);
-				}
-				else {
-					PrintToChat(param1, "[\x06KZ\x01] You must set both points to measure a distance.");
-				}
-			}
-			case 3: {  //Reset
-				MeasureResetPos(param1);
-			}
-		}
-		DisplayMenu(gH_MeasureMenu, param1, MENU_TIME_FOREVER);
-	}
-	else if (action == MenuAction_Cancel) {
-		MeasureResetPos(param1);
-	}
-}
-
-void MeasureGetPos(int client, int arg) {
-	float origin[3];
-	float angles[3];
-	
-	GetClientEyePosition(client, origin);
-	GetClientEyeAngles(client, angles);
-	
-	Handle trace = TR_TraceRayFilterEx(origin, angles, MASK_SHOT, RayType_Infinite, TraceFilterPlayers, client);
-	
-	if (!TR_DidHit(trace)) {
-		CloseHandle(trace);
-		PrintToChat(client, "[\x06KZ\x01] You are not aiming at anything solid!");
-		return;
-	}
-	
-	TR_GetEndPosition(origin, trace);
-	CloseHandle(trace);
-	
-	gF_MeasurePos[client][arg][0] = origin[0];
-	gF_MeasurePos[client][arg][1] = origin[1];
-	gF_MeasurePos[client][arg][2] = origin[2];
-	
-	if (arg == 0) {
-		if (gH_P2PRed[client] != INVALID_HANDLE) {
-			CloseHandle(gH_P2PRed[client]);
-			gH_P2PRed[client] = INVALID_HANDLE;
-		}
-		gB_MeasurePosSet[client][0] = true;
-		gH_P2PRed[client] = CreateTimer(1.0, Timer_P2PRed, client, TIMER_REPEAT);
-		P2PXBeam(client, 0);
-	}
-	else {
-		if (gH_P2PGreen[client] != INVALID_HANDLE) {
-			CloseHandle(gH_P2PGreen[client]);
-			gH_P2PGreen[client] = INVALID_HANDLE;
-		}
-		gB_MeasurePosSet[client][1] = true;
-		P2PXBeam(client, 1);
-		gH_P2PGreen[client] = CreateTimer(1.0, Timer_P2PGreen, client, TIMER_REPEAT);
-	}
-}
-
-public Action Timer_P2PRed(Handle timer, any client) {
-	P2PXBeam(client, 0);
-}
-
-public Action Timer_P2PGreen(Handle timer, any client) {
-	P2PXBeam(client, 1);
-}
-
-void P2PXBeam(int client, int arg) {
-	float Origin0[3];
-	float Origin1[3];
-	float Origin2[3];
-	float Origin3[3];
-	
-	Origin0[0] = (gF_MeasurePos[client][arg][0] + 8.0);
-	Origin0[1] = (gF_MeasurePos[client][arg][1] + 8.0);
-	Origin0[2] = gF_MeasurePos[client][arg][2];
-	
-	Origin1[0] = (gF_MeasurePos[client][arg][0] - 8.0);
-	Origin1[1] = (gF_MeasurePos[client][arg][1] - 8.0);
-	Origin1[2] = gF_MeasurePos[client][arg][2];
-	
-	Origin2[0] = (gF_MeasurePos[client][arg][0] + 8.0);
-	Origin2[1] = (gF_MeasurePos[client][arg][1] - 8.0);
-	Origin2[2] = gF_MeasurePos[client][arg][2];
-	
-	Origin3[0] = (gF_MeasurePos[client][arg][0] - 8.0);
-	Origin3[1] = (gF_MeasurePos[client][arg][1] + 8.0);
-	Origin3[2] = gF_MeasurePos[client][arg][2];
-	
-	if (arg == 0) {
-		MeasureBeam(client, Origin0, Origin1, 0.97, 2.0, 255, 0, 0);
-		MeasureBeam(client, Origin2, Origin3, 0.97, 2.0, 255, 0, 0);
-	}
-	else {
-		MeasureBeam(client, Origin0, Origin1, 0.97, 2.0, 0, 255, 0);
-		MeasureBeam(client, Origin2, Origin3, 0.97, 2.0, 0, 255, 0);
-	}
-}
-
-void MeasureBeam(int client, float vecStart[3], float vecEnd[3], float life, float width, int r, int g, int b) {
-	TE_Start("BeamPoints");
-	TE_WriteNum("m_nModelIndex", gI_GlowSprite);
-	TE_WriteNum("m_nHaloIndex", 0);
-	TE_WriteNum("m_nStartFrame", 0);
-	TE_WriteNum("m_nFrameRate", 0);
-	TE_WriteFloat("m_fLife", life);
-	TE_WriteFloat("m_fWidth", width);
-	TE_WriteFloat("m_fEndWidth", width);
-	TE_WriteNum("m_nFadeLength", 0);
-	TE_WriteFloat("m_fAmplitude", 0.0);
-	TE_WriteNum("m_nSpeed", 0);
-	TE_WriteNum("r", r);
-	TE_WriteNum("g", g);
-	TE_WriteNum("b", b);
-	TE_WriteNum("a", 255);
-	TE_WriteNum("m_nFlags", 0);
-	TE_WriteVector("m_vecStartPoint", vecStart);
-	TE_WriteVector("m_vecEndPoint", vecEnd);
-	TE_SendToClient(client);
-}
-
-void MeasureResetPos(int client) {
-	if (gH_P2PRed[client] != INVALID_HANDLE) {
-		CloseHandle(gH_P2PRed[client]);
-		gH_P2PRed[client] = INVALID_HANDLE;
-	}
-	if (gH_P2PGreen[client] != INVALID_HANDLE) {
-		CloseHandle(gH_P2PGreen[client]);
-		gH_P2PGreen[client] = INVALID_HANDLE;
-	}
-	gB_MeasurePosSet[client][0] = false;
-	gB_MeasurePosSet[client][1] = false;
-	
-	gF_MeasurePos[client][0][0] = 0.0; //This is stupid.
-	gF_MeasurePos[client][0][1] = 0.0;
-	gF_MeasurePos[client][0][2] = 0.0;
-	gF_MeasurePos[client][1][0] = 0.0;
-	gF_MeasurePos[client][1][1] = 0.0;
-	gF_MeasurePos[client][1][2] = 0.0;
-}
-
-public bool TraceFilterPlayers(int entity, int contentsMask) {
-	return (entity > MaxClients);
 } 
