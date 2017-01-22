@@ -133,6 +133,10 @@ void TeleportToStart(int client) {
 		if (!IsPlayerAlive(client)) {
 			CS_RespawnPlayer(client);
 		}
+		// Stop the timer if on a kzpro_ map
+		if (gB_CurrentMapIsKZPro) {
+			gB_TimerRunning[client] = false;
+		}
 		AddWastedTimeTeleportToStart(client);
 		TimerDoTeleport(client, gF_StartOrigin[client], gF_StartAngles[client]);
 	}
@@ -164,6 +168,9 @@ void TeleportToCheckpoint(int client) {
 	}
 	else if (gI_CheckpointsSet[client] == 0) {
 		PrintToChat(client, "[\x06KZ\x01] You don't have a checkpoint set.");
+	}
+	else if (gB_CurrentMapIsKZPro && gB_TimerRunning[client]) {
+		PrintToChat(client, "[\x06KZ\x01] You can't use teleports during a run on a \x05kzpro_\x01 map.");
 	}
 	else {
 		AddWastedTimeTeleportToCheckpoint(client);

@@ -80,7 +80,7 @@ Handle gH_P2PGreen[MAXPLAYERS + 1];
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
 int g_DBType = NONE;
-char gC_CurrentMap[32];
+char gC_CurrentMap[64];
 char gC_SteamID[MAXPLAYERS + 1][24];
 char gC_Country[MAXPLAYERS + 1][45];
 
@@ -91,14 +91,17 @@ bool gB_ShowingPlayers[MAXPLAYERS + 1] =  { true, ... };
 bool gB_ShowingWeapon[MAXPLAYERS + 1] =  { true, ... };
 int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
 
-// Other
-MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
+// Menus
 Handle gH_PistolMenu = INVALID_HANDLE;
 Handle gH_TeleportMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1] =  { false, ... };
 Handle gH_MapTopMenu[MAXPLAYERS + 1] = INVALID_HANDLE;
-char gC_MapTopMap[MAXPLAYERS + 1][33];
+char gC_MapTopMap[MAXPLAYERS + 1][64];
 Handle gH_MapTopSubmenu[MAXPLAYERS + 1] = INVALID_HANDLE;
+
+// Other
+MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
+bool gB_CurrentMapIsKZPro;
 
 
 

@@ -12,7 +12,7 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
  * **Timer** - Simple timer that keeps track and tells you how long you took to complete the map.
  * **Teleport Menu** - Make a checkpoint and teleport back to it. Also tracks time wasted using teleports.
  * **Optional Database** - Store player preferences and times using SQLite or MySQL.
- * **Essential Extras** - Noclip, hide other players, spectate command, goto command, speed panel, and more.
+ * **Essential Extras** - Noclip, hide players, !spec, !goto, speed panel, pistols, kzpro_ and more!
  * **API** - Forwards and natives for you to use in other plugins (see [simplekz.inc](scripting/include/simplekz.inc)).
 
 ============================
