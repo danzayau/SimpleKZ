@@ -2,6 +2,7 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <cstrike>
+#include <geoip>
 #include <movement>
 #include <movementtweaker>
 #include <simplekz>
@@ -13,48 +14,46 @@ Plugin myinfo =
 {
 	name = "Simple KZ", 
 	author = "DanZay", 
-	description = "A simple KZ plugin with timer.", 
-	version = "0.4.2", 
+	description = "A simple KZ plugin with timer and optional database.", 
+	version = "0.5", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
 
 
-/*======  Definitions  ======*/
+/*===============================  Definitions  ===============================*/
 
 #define PAUSE_COOLDOWN_AFTER_RESUMING 0.5
 #define NUMBER_OF_PISTOLS 8
 
+#define NONE -1
+#define MYSQL 0
+#define SQLITE 1
 
 
-/*======  Global Variables  ======*/
 
-MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
+/*===============================  Global Variables  ===============================*/
 
-Handle gH_TeleportMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-Handle gH_PistolMenu = INVALID_HANDLE;
-Handle gH_MeasureMenu = INVALID_HANDLE;
-
-bool gB_TimerRunning[MAXPLAYERS + 1];
+// Timer
+bool gB_TimerRunning[MAXPLAYERS + 1] =  { false, ... };
 float gF_CurrentTime[MAXPLAYERS + 1];
-
-bool gB_Paused[MAXPLAYERS + 1];
+bool gB_Paused[MAXPLAYERS + 1] =  { false, ... };
 float gF_LastResumeTime[MAXPLAYERS + 1];
-bool gB_HasResumedInThisRun[MAXPLAYERS + 1];
+bool gB_HasResumedInThisRun[MAXPLAYERS + 1] =  { false, ... };
 
-bool gB_HasStartPosition[MAXPLAYERS + 1];
+// Checkpoints and Teleports
+bool gB_HasStartedThisMap[MAXPLAYERS + 1] =  { false, ... };
 float gF_StartOrigin[MAXPLAYERS + 1][3];
 float gF_StartAngles[MAXPLAYERS + 1][3];
-
 int gI_CheckpointsSet[MAXPLAYERS + 1];
 int gI_TeleportsUsed[MAXPLAYERS + 1];
 float gF_CheckpointOrigin[MAXPLAYERS + 1][3];
 float gF_CheckpointAngles[MAXPLAYERS + 1][3];
-
 bool gB_LastTeleportOnGround[MAXPLAYERS + 1];
 float gF_UndoOrigin[MAXPLAYERS + 1][3];
 float gF_UndoAngle[MAXPLAYERS + 1][3];
 
+// Wasted Time
 float gF_LastCheckpointTime[MAXPLAYERS + 1];
 float gF_LastGoCheckTime[MAXPLAYERS + 1];
 float gF_LastGoCheckWastedTime[MAXPLAYERS + 1];
@@ -64,43 +63,61 @@ float gF_LastTeleportToStartTime[MAXPLAYERS + 1];
 float gF_LastTeleportToStartWastedTime[MAXPLAYERS + 1];
 float gF_WastedTime[MAXPLAYERS + 1];
 
-bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1];
-
-bool gB_HasSavedPosition[MAXPLAYERS + 1];
+// Position Restoration
+bool gB_HasSavedPosition[MAXPLAYERS + 1] =  { false, ... };
 float gF_SavedOrigin[MAXPLAYERS + 1][3];
 float gF_SavedAngles[MAXPLAYERS + 1][3];
 
-Database gDB_Database = null;
-bool gB_ConnectedToDatabase = false;
-char gC_SteamID[MAXPLAYERS + 1][24];
-
-bool gB_UsingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
-bool gB_UsingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
-bool gB_ShowingKeys[MAXPLAYERS + 1] =  { false, ... };
-bool gB_HidingPlayers[MAXPLAYERS + 1] =  { false, ... };
-bool gB_HidingWeapon[MAXPLAYERS + 1] =  { false, ... };
-int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
-
-int g_iGlowSprite;
-float gF_MeasurePos[MAXPLAYERS + 1][2][3];
+// Measure
+Handle gH_MeasureMenu = INVALID_HANDLE;
+int gI_GlowSprite;
 bool gB_MeasurePosSet[MAXPLAYERS + 1][2];
+float gF_MeasurePos[MAXPLAYERS + 1][2][3];
 Handle gH_P2PRed[MAXPLAYERS + 1];
 Handle gH_P2PGreen[MAXPLAYERS + 1];
 
+// Database
+Database gH_DB = null;
+bool gB_ConnectedToDB = false;
+int g_DBType = NONE;
+char gC_CurrentMap[64];
+char gC_SteamID[MAXPLAYERS + 1][24];
+char gC_Country[MAXPLAYERS + 1][45];
+
+bool gB_ShowingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
+bool gB_ShowingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
+bool gB_ShowingKeys[MAXPLAYERS + 1] =  { false, ... };
+bool gB_ShowingPlayers[MAXPLAYERS + 1] =  { true, ... };
+bool gB_ShowingWeapon[MAXPLAYERS + 1] =  { true, ... };
+int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
+
+// Menus
+Handle gH_PistolMenu = INVALID_HANDLE;
+Handle gH_TeleportMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1] =  { false, ... };
+Handle gH_MapTopMenu[MAXPLAYERS + 1] = INVALID_HANDLE;
+char gC_MapTopMap[MAXPLAYERS + 1][64];
+Handle gH_MapTopSubmenu[MAXPLAYERS + 1] = INVALID_HANDLE;
+
+// Other
+MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
+bool gB_CurrentMapIsKZPro;
 
 
-/*======  Includes  ======*/
+
+/*===============================  Includes  ===============================*/
 
 #include "SimpleKZ/commands.sp"
 #include "SimpleKZ/timer.sp"
 #include "SimpleKZ/infopanel.sp"
+#include "SimpleKZ/menus.sp"
 #include "SimpleKZ/misc.sp"
 #include "SimpleKZ/database.sp"
 #include "SimpleKZ/api.sp"
 
 
 
-/*======  Events  ======*/
+/*===============================  Plugin Events  ===============================*/
 
 public void OnPluginStart() {
 	// Check if game is CS:GO
@@ -108,22 +125,24 @@ public void OnPluginStart() {
 	if (gameEngine != Engine_CSGO) {
 		SetFailState("This plugin is for CS:GO.");
 	}
+	
 	CreateGlobalForwards();
 	RegisterCommands();
 	AddCommandListeners();
+	
 	// Hooks
 	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Pre);
 	HookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);
 	HookEntityOutput("func_button", "OnPressed", OnButtonPress);
 	AddNormalSoundHook(view_as<NormalSHook>(OnNormalSound));
+	
 	// Translations
 	LoadTranslations("common.phrases");
 	
-	DB_SetupDatabase();
+	// Setup
 	SetupMovementMethodmaps();
-	SetupTeleportMenuAll();
-	SetupMeasureMenu();
-	SetupPistolMenu();
+	SetupMenus();
+	DB_SetupDatabase();
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
@@ -132,19 +151,27 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	return APLRes_Success;
 }
 
+
+
+/*===============================  Map and Client Events  ===============================*/
+
 public void OnMapStart() {
 	LoadKZConfig();
-	g_iGlowSprite = PrecacheModel("materials/sprites/bluelaser1.vmt", true);
+	OnMapStartVariableUpdates();
+	DB_SaveMapInfo();
+	
+	FakePrecacheSound("*/commander/commander_comment_01.wav");
+	FakePrecacheSound("*/commander/commander_comment_02.wav");
+	FakePrecacheSound("*/commander/commander_comment_05.wav");
 }
 
 public void OnClientAuthorized(int client) {
-	GetClientAuthId(client, AuthId_Steam2, gC_SteamID[client], 24, true);
-	DB_LoadPlayerPreferences(client);
-}
-
-public void OnClientDisconnect(int client) {
-	MeasureResetPos(client);
-	DB_SavePlayerPreferences(client);
+	if (!IsFakeClient(client)) {
+		GetClientCountry(client);
+		GetClientSteamID(client);
+		DB_SavePlayerInfo(client);
+		DB_LoadPreferences(client);
+	}
 }
 
 public void OnClientPutInServer(int client) {
@@ -154,8 +181,13 @@ public void OnClientPutInServer(int client) {
 	}
 	else {
 		SetupTimer(client);
+		MeasureResetPos(client);
 		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
 	}
+}
+
+public void OnClientDisconnect(int client) {
+	DB_UpdatePreferences(client);
 }
 
 public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
@@ -164,8 +196,8 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 		CreateTimer(0.0, CleanHUD, client); // Clean HUD (using a 1 frame timer or else it won't work)
 		SetEntProp(client, Prop_Data, "m_takedamage", 0, 1); // Godmode
 		SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true); // No Block
-		SetDrawViewModel(client, !gB_HidingWeapon[client]); // Hide weapon
-		GivePlayerPistol(client, gI_Pistol[client]); // Give player their preffered pistol
+		SetDrawViewModel(client, gB_ShowingWeapon[client]); // Hide weapon
+		GivePlayerPistol(client, gI_Pistol[client]); // Give player their preferred pistol
 	}
 }
 
@@ -175,22 +207,35 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	UpdateInfoPanel(client);
 }
 
+
+
+/*===============================  Miscellaneous Events  ===============================*/
+
 // Stop round from ever ending
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
+	return Plugin_Handled;
+}
+
+// Hide other players
+public Action OnSetTransmit(int entity, int client) {
+	if (!gB_ShowingPlayers[client] && entity != client && entity != GetSpectatedPlayer(client)) {
+		return Plugin_Handled;
+	}
+	return Plugin_Continue;
+}
+
+// Allow unlimited team changes
+public Action CommandJoinTeam(int client, const char[] command, int argc) {
+	char teamString[4];
+	GetCmdArgString(teamString, sizeof(teamString));
+	int team = StringToInt(teamString);
+	JoinTeam(client, team);
 	return Plugin_Handled;
 }
 
 // Stop join team messages from showing up
 public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) {
 	SetEventBroadcast(event, true);
-	return Plugin_Continue;
-}
-
-// Hide other players
-public Action OnSetTransmit(int entity, int client) {
-	if (gB_HidingPlayers[client] && entity != client && entity != GetSpectatedPlayer(client)) {
-		return Plugin_Handled;
-	}
 	return Plugin_Continue;
 }
 
@@ -203,15 +248,6 @@ public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
-}
-
-// Allow unlimited team changes, and force menu update
-public Action CommandJoinTeam(int client, const char[] command, int argc) {
-	char teamString[4];
-	GetCmdArgString(teamString, sizeof(teamString));
-	int team = StringToInt(teamString);
-	JoinTeam(client, team);
-	return Plugin_Handled;
 }
 
 // Prevent noclipping during runs

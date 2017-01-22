@@ -12,7 +12,7 @@ void TimerTick(int client) {
 
 void SetupTimer(int client) {
 	gB_TimerRunning[client] = false;
-	gB_HasStartPosition[client] = false;
+	gB_HasStartedThisMap[client] = false;
 	TimerRestart(client);
 }
 
@@ -39,27 +39,28 @@ void StartTimer(int client) {
 	EmitSoundToClient(client, "buttons/button9.wav");
 	TimerRestart(client);
 	gB_TimerRunning[client] = true;
-	gB_HasStartPosition[client] = true;
+	if (!gB_HasStartedThisMap[client]) {
+		gB_HasStartedThisMap[client] = true;
+		if (gB_ConnectedToDB) {
+			DB_PrintPBs(client, client, gC_CurrentMap);
+		}
+	}
 	g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
 	g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
 	CloseTeleportMenu(client);
 }
 
 void EndTimer(int client) {
-	if (gB_TimerRunning[client]) {
-		Call_SimpleKZ_OnTimerEnded(client);
-		EmitSoundToClient(client, "buttons/bell1.wav");
-		gB_TimerRunning[client] = false;
-		PrintToChatAll("%s", GetEndTimeString(client));
-		CloseTeleportMenu(client);
-	}
+	Call_SimpleKZ_OnTimerEnded(client);
+	EmitSoundToClient(client, "buttons/bell1.wav");
+	gB_TimerRunning[client] = false;
+	PrintToChatAll("%s", GetEndTimeString(client));
+	DB_ProcessEndTimer(client);
+	CloseTeleportMenu(client);
 }
 
 void ForceStopTimer(int client) {
-	if (gB_TimerRunning[client]) {
-		gB_TimerRunning[client] = false;
-		TimerRestart(client);
-	}
+	gB_TimerRunning[client] = false;
 }
 
 void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
@@ -83,7 +84,7 @@ void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
 
 
 
-/*=====  Start and End Buttons  ======*/
+/*===============================  Start and End Buttons  ===============================*/
 
 public void OnButtonPress(const char[] name, int caller, int activator, float delay) {
 	if (IsValidEntity(caller) && IsValidClient(activator)) {
@@ -113,22 +114,28 @@ void StartButtonPress(int client) {
 }
 
 void EndButtonPress(int client) {
-	EndTimer(client);
+	if (gB_TimerRunning[client]) {
+		EndTimer(client);
+	}
 }
 
 
 
-/*=====  Timer Commands  ======*/
+/*===============================  Timer Commands  ===============================*/
 
 void TeleportToStart(int client) {
 	// Leave spectators if necessary
 	if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
 		CS_SwitchTeam(client, CS_TEAM_CT);
 	}
-	if (gB_HasStartPosition[client]) {
+	if (gB_HasStartedThisMap[client]) {
 		// Respawn the player if necessary
 		if (!IsPlayerAlive(client)) {
 			CS_RespawnPlayer(client);
+		}
+		// Stop the timer if on a kzpro_ map
+		if (gB_CurrentMapIsKZPro) {
+			gB_TimerRunning[client] = false;
 		}
 		AddWastedTimeTeleportToStart(client);
 		TimerDoTeleport(client, gF_StartOrigin[client], gF_StartAngles[client]);
@@ -161,6 +168,9 @@ void TeleportToCheckpoint(int client) {
 	}
 	else if (gI_CheckpointsSet[client] == 0) {
 		PrintToChat(client, "[\x06KZ\x01] You don't have a checkpoint set.");
+	}
+	else if (gB_CurrentMapIsKZPro && gB_TimerRunning[client]) {
+		PrintToChat(client, "[\x06KZ\x01] You can't use teleports during a run on a \x05kzpro_\x01 map.");
 	}
 	else {
 		AddWastedTimeTeleportToCheckpoint(client);
@@ -213,7 +223,7 @@ void TogglePause(int client) {
 
 
 
-/*======  Wasted Time Tracking  ======*/
+/*===============================  Wasted Time Tracking  ===============================*/
 
 void AddWastedTimeTeleportToStart(int client) {
 	float addedWastedTime = 0.0;
@@ -268,126 +278,48 @@ bool TeleportToStartWasLatestTeleport(int client) {
 
 
 
-/*====== Teleport Menu  ======*/
+/*===============================  Other  ===============================*/
 
-void SetupTeleportMenuAll() {
-	for (int client = 1; client <= MaxClients; client++) {
-		SetupTeleportMenu(client);
+int GetCurrentRunType(int client) {
+	// Returns 0 for PRO run
+	if (gI_TeleportsUsed[client] == 0) {
+		return 0;
+	}
+	// Returns 1 for TP run
+	else {
+		return 1;
 	}
 }
 
-void SetupTeleportMenu(int client) {
-	gH_TeleportMenu[client] = CreateMenu(MenuHandler_Timer);
-	SetMenuExitButton(gH_TeleportMenu[client], false);
-	SetMenuOptionFlags(gH_TeleportMenu[client], MENUFLAG_NO_SOUND);
-}
-
-void UpdateTeleportMenu(int client) {
-	if (GetClientMenu(client) == MenuSource_None && gB_UsingTeleportMenu[client] && !gB_TeleportMenuIsShowing[client]) {
-		UpdateTeleportMenuItems(client);
-		DisplayMenu(gH_TeleportMenu[client], client, MENU_TIME_FOREVER);
-		gB_TeleportMenuIsShowing[client] = true;
-	}
-}
-
-public int MenuHandler_Timer(Menu menu, MenuAction action, int param1, int param2) {
-	if (action == MenuAction_Select) {
-		if (IsPlayerAlive(param1)) {
-			switch (param2) {
-				case 0:MakeCheckpoint(param1);
-				case 1:TeleportToCheckpoint(param1);
-				case 2:TogglePause(param1);
-				case 3:TeleportToStart(param1);
-				case 4:UndoTeleport(param1);
-			}
-		}
-		else {
-			switch (param2) {
-				case 0:JoinTeam(param1, CS_TEAM_CT);
-			}
-		}
-	}
-	else if (action == MenuAction_Cancel) {
-		gB_TeleportMenuIsShowing[param1] = false;
-	}
-}
-
-void CloseTeleportMenu(int client) {
-	if (gB_TeleportMenuIsShowing[client]) {
-		CancelClientMenu(client);
-		gB_TeleportMenuIsShowing[client] = false;
-	}
-}
-
-void TeleportMenuAddItems(int client) {
-	if (IsPlayerAlive(client)) {
-		SetMenuTitle(gH_TeleportMenu[client], "");
-		TeleportMenuAddItemCheckpoint(client);
-		TeleportMenuAddItemTeleport(client);
-		TeleportMenuAddItemPause(client);
-		TeleportMenuAddItemStart(client);
-		TeleportMenuAddItemUndo(client);
+char[] GetCurrentRunTypeString(int client) {
+	char runTypeString[4];
+	if (GetCurrentRunType(client) == 0) {
+		FormatEx(runTypeString, sizeof(runTypeString), "PRO");
 	}
 	else {
-		if (gB_TimerRunning[client]) {
-			SetMenuTitle(gH_TeleportMenu[client], "PAUSED\n%s %s", 
-				GetRunTypeString(client), 
-				TimerFormatTime(gF_CurrentTime[client]));
-		}
-		TeleportMenuAddItemRejoin(client);
+		FormatEx(runTypeString, sizeof(runTypeString), "TP");
 	}
+	return runTypeString;
 }
 
-void UpdateTeleportMenuItems(int client) {
-	RemoveAllMenuItems(gH_TeleportMenu[client]);
-	TeleportMenuAddItems(client);
-}
-
-void TeleportMenuAddItemCheckpoint(int client) {
-	AddMenuItem(gH_TeleportMenu[client], "Make a Checkpoint", "Checkpoint");
-}
-
-void TeleportMenuAddItemTeleport(int client) {
-	if (gI_CheckpointsSet[client] > 0) {
-		AddMenuItem(gH_TeleportMenu[client], "Go Back to Checkpoint", "Teleport");
+char[] GetEndTimeString(int client) {
+	char endTimeString[256], clientName[64];
+	GetClientName(client, clientName, sizeof(clientName));
+	
+	if (GetCurrentRunType(client) == 0) {
+		FormatEx(endTimeString, sizeof(endTimeString), 
+			"[\x06KZ\x01] \x05%s\x01 finished in \x0B%s\x01 (\x0BPRO\x01).", 
+			clientName, 
+			FormatTimeFloat(gF_CurrentTime[client]), 
+			GetCurrentRunTypeString(client));
 	}
 	else {
-		AddMenuItem(gH_TeleportMenu[client], "Can't Go Back to Checkpoint", "Teleport", ITEMDRAW_DISABLED);
+		FormatEx(endTimeString, sizeof(endTimeString), 
+			"[\x06KZ\x01] \x05%s\x01 finished in \x09%s\x01 (\x09%d\x01 TP | \x08%s\x01).", 
+			clientName, 
+			FormatTimeFloat(gF_CurrentTime[client]), 
+			gI_TeleportsUsed[client], 
+			FormatTimeFloat(gF_CurrentTime[client] - gF_WastedTime[client]));
 	}
-}
-
-void TeleportMenuAddItemUndo(int client) {
-	if (gI_TeleportsUsed[client] > 0 && gB_LastTeleportOnGround[client]) {
-		AddMenuItem(gH_TeleportMenu[client], "Undo", "Undo TP");
-	}
-	else {
-		AddMenuItem(gH_TeleportMenu[client], "Can't Undo", "Undo TP", ITEMDRAW_DISABLED);
-	}
-}
-
-void TeleportMenuAddItemPause(int client) {
-	if (gB_TimerRunning[client]) {
-		if (!gB_Paused[client]) {
-			AddMenuItem(gH_TeleportMenu[client], "Pause Timer", "Pause");
-		}
-		else {
-			AddMenuItem(gH_TeleportMenu[client], "Resume Timer", "Resume");
-		}
-	}
-	else {
-		AddMenuItem(gH_TeleportMenu[client], "Can't Pause", "Pause", ITEMDRAW_DISABLED);
-	}
-}
-
-void TeleportMenuAddItemStart(int client) {
-	if (gB_HasStartPosition[client]) {
-		AddMenuItem(gH_TeleportMenu[client], "Teleport to Start", "Restart");
-	}
-	else {
-		AddMenuItem(gH_TeleportMenu[client], "Teleport to Spawn", "Respawn");
-	}
-}
-
-void TeleportMenuAddItemRejoin(int client) {
-	AddMenuItem(gH_TeleportMenu[client], "Leave Spectators", "Rejoin");
+	return endTimeString;
 } 

@@ -3,7 +3,7 @@
 	Author: DanZay
 */
 
-/*=====  Double Include Prevention  ======*/
+/*===============================  Double Include Prevention  ===============================*/
 #if defined _simplekz_included_
 #endinput
 #endif
@@ -11,7 +11,7 @@
 
 
 
-/*=====  Forwards  ======*/
+/*===============================  Forwards  ===============================*/
 
 /**
  * Called when the player starts their timer.
@@ -26,15 +26,15 @@ forward void SimpleKZ_OnTimerStarted(int client);
  *
  * @param client			Client entity index.
  * @param time				Player's end time.
- * @param teleports			Number of teleports the player used.
- * @param wastedTime		Time wasted using teleports (0.0 for PRO runs).
+ * @param teleportsUsed		Number of teleports the player used.
+ * @param theoreticalTime	Theoretical end time without using teleports.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerEnded(int client, float time, int teleports, float wastedTime);
+forward void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, float theoreticalTime);
 
 
 
-/*=====  Natives  ======*/
+/*===============================  Natives  ===============================*/
 
 /**
  * Starts the players timer.

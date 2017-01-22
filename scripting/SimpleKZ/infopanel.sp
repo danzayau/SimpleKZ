@@ -6,7 +6,7 @@
 
 void UpdateInfoPanel(int client) {
 	MovementPlayer player = g_MovementPlayer[client];
-	if (gB_UsingInfoPanel[player.id]) {
+	if (gB_ShowingInfoPanel[player.id]) {
 		if (IsPlayerAlive(player.id)) {
 			if (gB_ShowingKeys[player.id]) {
 				PrintHintText(player.id, "%s", GetInfoPanelWithKeys(player));
@@ -50,15 +50,15 @@ char[] GetInfoPanelWithKeys(MovementPlayer player) {
 char[] GetInfoPanelTimeString(MovementPlayer player) {
 	char timeString[64];
 	if (gB_TimerRunning[player.id]) {
-		if (GetRunType(player.id) == 0) {
+		if (GetCurrentRunType(player.id) == 0) {
 			FormatEx(timeString, sizeof(timeString), 
 				" <b>Time</b>: <font color='#6699ff'>%s</font>", 
-				TimerFormatTime(gF_CurrentTime[player.id]));
+				FormatTimeFloat(gF_CurrentTime[player.id]));
 		}
 		else {
 			FormatEx(timeString, sizeof(timeString), 
 				" <b>Time</b>: <font color='#ffdd99'>%s</font>", 
-				TimerFormatTime(gF_CurrentTime[player.id]));
+				FormatTimeFloat(gF_CurrentTime[player.id]));
 		}
 	}
 	else {
