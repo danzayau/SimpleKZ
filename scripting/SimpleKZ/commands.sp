@@ -5,22 +5,22 @@
 
 
 void RegisterCommands() {
-	RegConsoleCmd("sm_menu", CommandToggleMenu, "[KZ] Toggles the visibility of the teleport menu.");
-	RegConsoleCmd("sm_checkpoint", CommandMakeCheckpoint, "[KZ] Save a checkpoint.");
-	RegConsoleCmd("sm_gocheck", CommandTeleportToCheckpoint, "[KZ] Teleport to the checkpoint.");
-	RegConsoleCmd("sm_undo", CommandUndoTeleport, "[KZ] Undo teleport to checkpoint.");
-	RegConsoleCmd("sm_start", CommandTeleportToStart, "[KZ] Teleports you to the start of the map.");
-	RegConsoleCmd("sm_r", CommandTeleportToStart, "[KZ] Teleports you to the start of the map.");
-	RegConsoleCmd("sm_pause", CommandTogglePause, "[KZ] Toggles pausing your timer and stopping you in your position.");
-	RegConsoleCmd("sm_stop", CommandStopTimer, "[KZ] Stops your timer.");
-	RegConsoleCmd("sm_stopsound", CommandStopsound, "[KZ] Stops all sounds e.g. map soundscapes (music).");
-	RegConsoleCmd("sm_hide", CommandHide, "[KZ] Hides other players.");
-	RegConsoleCmd("sm_goto", CommandGoto, "[KZ] Teleport to another player.");
-	RegConsoleCmd("sm_spec", CommandSpec, "[KZ] Spectate another player.");
+	RegConsoleCmd("sm_menu", CommandToggleMenu, "[KZ] Toggle the visibility of the teleport menu.");
+	RegConsoleCmd("sm_checkpoint", CommandMakeCheckpoint, "[KZ] Set your checkpoint.");
+	RegConsoleCmd("sm_gocheck", CommandTeleportToCheckpoint, "[KZ] Teleport to your checkpoint.");
+	RegConsoleCmd("sm_undo", CommandUndoTeleport, "[KZ] Undo teleport.");
+	RegConsoleCmd("sm_start", CommandTeleportToStart, "[KZ] Teleport to the start of the map.");
+	RegConsoleCmd("sm_r", CommandTeleportToStart, "[KZ] Teleport to the start of the map.");
+	RegConsoleCmd("sm_pause", CommandTogglePause, "[KZ] Toggle pausing your timer and stopping you in your position.");
+	RegConsoleCmd("sm_stop", CommandStopTimer, "[KZ] Stop your timer.");
+	RegConsoleCmd("sm_stopsound", CommandStopsound, "[KZ] Stop all sounds e.g. map soundscapes (music).");
+	RegConsoleCmd("sm_goto", CommandGoto, "[KZ] Teleport to another player. Usage: !goto <player>");
+	RegConsoleCmd("sm_spec", CommandSpec, "[KZ] Spectate another player. Usage: !spec <player>");
+	RegConsoleCmd("sm_hide", CommandHide, "[KZ] Toggle hiding other players.");
 	RegConsoleCmd("sm_speed", CommandToggleInfoPanel, "[KZ] Toggle visibility of the centre information panel.");
 	RegConsoleCmd("sm_hideweapon", CommandToggleHideWeapon, "[KZ] Toggle visibility of your weapon.");
-	RegConsoleCmd("sm_keys", CommandToggleShowKeys, "[KZ] Toggles showing your key presses to yourself.");
-	RegConsoleCmd("sm_measure", CommandMeasureMenu, "[KZ] Open the measure menu.");
+	RegConsoleCmd("sm_keys", CommandToggleShowKeys, "[KZ] Toggles showing of your own key presses.");
+	RegConsoleCmd("sm_measure", CommandMeasureMenu, "[KZ] Open the measurement menu.");
 	RegConsoleCmd("sm_pistol", CommandPistolMenu, "[KZ] Open the pistol selection menu.");
 	RegConsoleCmd("sm_noclip", CommandToggleNoclip, "[KZ] Toggle noclip.");
 	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
@@ -88,18 +88,6 @@ public Action CommandStopsound(int client, int args) {
 	return Plugin_Handled;
 }
 
-public Action CommandHide(int client, int args) {
-	if (!gB_ShowingPlayers[client]) {
-		gB_ShowingPlayers[client] = true;
-		PrintToChat(client, "[\x06KZ\x01] You are now showing other players.");
-	}
-	else {
-		gB_ShowingPlayers[client] = false;
-		PrintToChat(client, "[\x06KZ\x01] You are now hiding other players.");
-	}
-	return Plugin_Handled;
-}
-
 public Action CommandGoto(int client, int args) {
 	// If no arguments, respond with error message
 	if (args < 1) {
@@ -154,6 +142,18 @@ public Action CommandSpec(int client, int args) {
 				SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", target);
 			}
 		}
+	}
+	return Plugin_Handled;
+}
+
+public Action CommandHide(int client, int args) {
+	if (!gB_ShowingPlayers[client]) {
+		gB_ShowingPlayers[client] = true;
+		PrintToChat(client, "[\x06KZ\x01] You are now showing other players.");
+	}
+	else {
+		gB_ShowingPlayers[client] = false;
+		PrintToChat(client, "[\x06KZ\x01] You are now hiding other players.");
 	}
 	return Plugin_Handled;
 }
