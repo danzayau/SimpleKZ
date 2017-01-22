@@ -170,6 +170,10 @@ public int MenuHandler_Pistol(Menu menu, MenuAction action, int param1, int para
 }
 
 void GivePlayerPistol(int client, int pistol) {
+	if (!IsPlayerAlive(client)) {
+		return;
+	}
+	
 	int playerTeam = GetClientTeam(client);
 	// Switch teams to the side that buys that gun so that gun skins load
 	if (strcmp(gC_Pistols[pistol][2], "CT") == 0 && playerTeam != CS_TEAM_CT) {
