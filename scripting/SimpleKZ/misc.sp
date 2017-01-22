@@ -89,7 +89,7 @@ void GetClientCountry(int client) {
 }
 
 void GetClientSteamID(int client) {
-	GetClientAuthId(client, AuthId_Steam2, gC_SteamID[client], 24, true);	
+	GetClientAuthId(client, AuthId_Steam2, gC_SteamID[client], 24, true);
 }
 
 void GetClientSteamIDAll() {
@@ -98,6 +98,10 @@ void GetClientSteamIDAll() {
 			GetClientSteamID(client);
 		}
 	}
+}
+
+void PrintNoDBMessage(int client) {
+	PrintToChat(client, "[\x06KZ\x01] This server isn't connected to a \x06SimpleKZ\x01 database.");
 }
 
 

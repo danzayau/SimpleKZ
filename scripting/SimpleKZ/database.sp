@@ -192,7 +192,7 @@ void DB_SetupDatabase() {
 	char error[255];
 	gH_DB = SQL_Connect("simplekz", true, error, sizeof(error));
 	if (gH_DB == INVALID_HANDLE) {
-		PrintToServer("[SimpleKZ] No database connection established: %s", error);
+		PrintToServer("[SimpleKZ] Database connection unsuccessful: %s \n[SimpleKZ] Proceeding without database.", error);
 		return;
 	}
 	
@@ -367,7 +367,7 @@ void DB_ProcessEndTimer(int client) {
 
 void DB_PrintPBs(int client, int target, const char[] map) {
 	if (!gB_ConnectedToDB) {
-		PrintToChat(client, "[\x06KZ\x01] This server isn't connected to a \x06SimpleKZ\x01 database.");
+		PrintNoDBMessage(client);
 		return;
 	}
 	
@@ -492,7 +492,7 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 
 void DB_PrintMapRecords(int client, const char[] map) {
 	if (!gB_ConnectedToDB) {
-		PrintToChat(client, "[\x06KZ\x01] This server isn't connected to a \x06SimpleKZ\x01 database.");
+		PrintNoDBMessage(client);
 		return;
 	}
 	

@@ -155,17 +155,13 @@ public void OnMapStart() {
 	LoadKZConfig();
 	OnMapStartVariableUpdates();
 	
-	// Database
-	if (!gB_ConnectedToDB) {
-		DB_SetupDatabase();
-	}
 	DB_SaveMapInfo();
 }
 
 public void OnClientAuthorized(int client) {
 	if (!IsFakeClient(client)) {
 		GetClientCountry(client);
-		GetClientSteamID(client);		
+		GetClientSteamID(client);
 		DB_SavePlayerInfo(client);
 		DB_LoadPreferences(client);
 	}

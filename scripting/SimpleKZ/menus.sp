@@ -402,7 +402,7 @@ public int MenuHandler_MapTopSubmenu(Menu menu, MenuAction action, int param1, i
 
 void OpenMapTopMenu(int client) {
 	if (!gB_ConnectedToDB) {
-		PrintToChat(client, "[\x06KZ\x01] This server does not have a \x06SimpleKZ\x01 database.");
+		PrintNoDBMessage(client);
 		return;
 	}
 	SetMenuTitle(gH_MapTopMenu[client], "Map Top - %s", gC_MapTopMap[client]);
