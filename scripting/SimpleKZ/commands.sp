@@ -27,11 +27,11 @@ void RegisterCommands() {
 	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
 	
 	// Database commands
-	RegConsoleCmd("sm_maprank", CommandMapRank, "[KZ] Prints map rank to chat. Usage: !maprank <player> <map>");
-	RegConsoleCmd("sm_pb", CommandMapRank, "[KZ] Prints map rank to chat. Usage: !maprank <player> <map>");
+	RegConsoleCmd("sm_maprank", CommandMapRank, "[KZ] Prints map time and rank to chat. Usage: !maprank <player> <map>");
+	RegConsoleCmd("sm_pb", CommandMapRank, "[KZ] Prints map time and rank to chat. Usage: !maprank <player> <map>");
 	RegConsoleCmd("sm_maprecord", CommandMapRecord, "[KZ] Prints map record times to chat. Usage: !maprecord <map>");
 	RegConsoleCmd("sm_wr", CommandMapRecord, "[KZ] Prints map record times to chat. Usage: !maprecord <map>");
-	RegConsoleCmd("sm_maptop", CommandMapTop, "[KZ] Opens menu with the top times of a map. Usage !maptop <map>");
+	RegConsoleCmd("sm_maptop", CommandMapTop, "[KZ] Opens a menu showing the top times of a map. Usage !maptop <map>");
 }
 
 

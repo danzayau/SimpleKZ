@@ -69,7 +69,7 @@ char sql_maps_create[] =
 "CREATE TABLE IF NOT EXISTS Maps ("
 ..."Map VARCHAR(32) NOT NULL, "
 ..."Tier TINYINT UNSIGNED, "
-..."Active TINYINT(1) NOT NULL DEFAULT '0', "
+..."InMapPool TINYINT(1) NOT NULL DEFAULT '0', "
 ..."CONSTRAINT PK_Maps PRIMARY KEY (Map));";
 
 char sqlite_maps_insert[] = 
