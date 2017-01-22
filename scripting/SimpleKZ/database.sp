@@ -392,9 +392,11 @@ public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueri
 	if (runTime == SQL_FetchFloat(results[1], 1)) {
 		newRecord = true;
 	}
-	SQL_FetchRow(results[2]);
-	if (teleportsUsed == 0 && runTime == SQL_FetchFloat(results[2], 1)) {
-		newRecordPro = true;
+	if (gI_TeleportsUsed[client] == 0) {
+		SQL_FetchRow(results[2]);
+		if (teleportsUsed == 0 && runTime == SQL_FetchFloat(results[2], 1)) {
+			newRecordPro = true;
+		}
 	}
 	
 	if (newRecord || newRecordPro) {
