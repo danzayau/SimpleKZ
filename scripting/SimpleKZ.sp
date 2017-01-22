@@ -26,6 +26,7 @@ Plugin myinfo =
 #define PAUSE_COOLDOWN_AFTER_RESUMING 0.5
 #define NUMBER_OF_PISTOLS 8
 
+#define NONE -1
 #define MYSQL 0
 #define SQLITE 1
 
@@ -41,7 +42,7 @@ float gF_LastResumeTime[MAXPLAYERS + 1];
 bool gB_HasResumedInThisRun[MAXPLAYERS + 1] =  { false, ... };
 
 // Checkpoints and Teleports
-bool gB_HasStartPosition[MAXPLAYERS + 1] =  { false, ... };
+bool gB_HasStartedThisMap[MAXPLAYERS + 1] =  { false, ... };
 float gF_StartOrigin[MAXPLAYERS + 1][3];
 float gF_StartAngles[MAXPLAYERS + 1][3];
 int gI_CheckpointsSet[MAXPLAYERS + 1];
@@ -78,7 +79,7 @@ Handle gH_P2PGreen[MAXPLAYERS + 1];
 // Database
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
-int g_DBType;
+int g_DBType = NONE;
 char gC_CurrentMap[32];
 char gC_SteamID[MAXPLAYERS + 1][24];
 char gC_Country[MAXPLAYERS + 1][45];

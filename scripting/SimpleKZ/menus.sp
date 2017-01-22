@@ -125,7 +125,7 @@ void TeleportMenuAddItemPause(int client) {
 }
 
 void TeleportMenuAddItemStart(int client) {
-	if (gB_HasStartPosition[client]) {
+	if (gB_HasStartedThisMap[client]) {
 		AddMenuItem(gH_TeleportMenu[client], "", "Restart");
 	}
 	else {

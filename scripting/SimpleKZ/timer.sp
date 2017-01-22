@@ -12,7 +12,7 @@ void TimerTick(int client) {
 
 void SetupTimer(int client) {
 	gB_TimerRunning[client] = false;
-	gB_HasStartPosition[client] = false;
+	gB_HasStartedThisMap[client] = false;
 	TimerRestart(client);
 }
 
@@ -39,7 +39,12 @@ void StartTimer(int client) {
 	EmitSoundToClient(client, "buttons/button9.wav");
 	TimerRestart(client);
 	gB_TimerRunning[client] = true;
-	gB_HasStartPosition[client] = true;
+	if (!gB_HasStartedThisMap[client]) {
+		gB_HasStartedThisMap[client] = true;
+		if (gB_ConnectedToDB) {
+			DB_PrintPBs(client, client, gC_CurrentMap);
+		}
+	}
 	g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
 	g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
 	CloseTeleportMenu(client);
@@ -123,7 +128,7 @@ void TeleportToStart(int client) {
 	if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
 		CS_SwitchTeam(client, CS_TEAM_CT);
 	}
-	if (gB_HasStartPosition[client]) {
+	if (gB_HasStartedThisMap[client]) {
 		// Respawn the player if necessary
 		if (!IsPlayerAlive(client)) {
 			CS_RespawnPlayer(client);

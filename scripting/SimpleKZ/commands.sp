@@ -78,6 +78,7 @@ public Action CommandTogglePause(int client, int args) {
 
 public Action CommandStopTimer(int client, int args) {
 	ForceStopTimer(client);
+	PrintToChat(client, "[\x06KZ\x01] You have stopped your timer.");
 	return Plugin_Handled;
 }
 
