@@ -157,7 +157,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnMapStart() {
 	LoadKZConfig();
-	OnMapStartVariableUpdates();	
+	OnMapStartVariableUpdates();
 	DB_SaveMapInfo();
 	
 	FakePrecacheSound("*/commander/commander_comment_01.wav");

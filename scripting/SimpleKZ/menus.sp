@@ -204,8 +204,7 @@ void SetupMeasureMenu() {
 	SetMenuTitle(gH_MeasureMenu, "Measure");
 	AddMenuItem(gH_MeasureMenu, "", "Point A (Green)");
 	AddMenuItem(gH_MeasureMenu, "", "Point B (Red)");
-	AddMenuItem(gH_MeasureMenu, "", "Find Distance");
-	AddMenuItem(gH_MeasureMenu, "", "Reset");
+	AddMenuItem(gH_MeasureMenu, "", "Get Distance");
 }
 
 public int MenuHandler_Measure(Handle menu, MenuAction action, int param1, int param2) {
@@ -228,9 +227,6 @@ public int MenuHandler_Measure(Handle menu, MenuAction action, int param1, int p
 				else {
 					PrintToChat(param1, "[\x06KZ\x01] You must set both points to measure a distance.");
 				}
-			}
-			case 3: {  //Reset
-				MeasureResetPos(param1);
 			}
 		}
 		DisplayMenu(gH_MeasureMenu, param1, MENU_TIME_FOREVER);
