@@ -174,7 +174,7 @@ void TeleportToOtherPlayer(int client, int target)
 	char targetName[MAX_NAME_LENGTH];
 	
 	g_MovementPlayer[target].GetOrigin(targetOrigin);
-	g_MovementPlayer[target].GetEyeAngles(targetOrigin);
+	g_MovementPlayer[target].GetEyeAngles(targetAngles);
 	GetClientName(target, targetName, MAX_NAME_LENGTH);
 	
 	// Leave spectators if necessary
