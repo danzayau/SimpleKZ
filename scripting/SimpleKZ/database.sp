@@ -192,7 +192,7 @@ void DB_SetupDatabase() {
 	char error[255];
 	gH_DB = SQL_Connect("simplekz", true, error, sizeof(error));
 	if (gH_DB == INVALID_HANDLE) {
-		PrintToServer("[SimpleKZ] Database connection unsuccessful: %s \n[SimpleKZ] Proceeding without database.", error);
+		PrintToServer("%T", "Database_ConnectionFailed", LANG_SERVER, error);
 		return;
 	}
 	
@@ -205,7 +205,7 @@ void DB_SetupDatabase() {
 		g_DBType = MYSQL;
 	}
 	else {
-		PrintToServer("[SimpleKZ] Invalid database driver (use SQLite or MySQL).");
+		PrintToServer("%T", "Database_InvalidDriver", LANG_SERVER);
 		return;
 	}
 	
@@ -233,13 +233,13 @@ void DB_CreateTables() {
 // Error check callback for queries don't return any results
 public void DB_Callback_Generic(Handle database, Handle results, const char[] error, int client) {
 	if (results == INVALID_HANDLE) {
-		SetFailState("[SimpleKZ] Database query error: %s", error);
+		SetFailState("%T", "Database_QueryError", LANG_SERVER, error);
 	}
 }
 
 // Error report callback for failed txns
 public void DB_TxnFailure_Generic(Handle db, any data, int numQueries, const char[] error, int failIndex, any[] queryData) {
-	SetFailState("[SimpleKZ] Database txn error: %s", error);
+	SetFailState("%T", "Database_TransactionError", LANG_SERVER, error);
 }
 
 
@@ -400,20 +400,18 @@ public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueri
 	}
 	
 	if (newRecord || newRecordPro) {
-		char playerName[MAX_NAME_LENGTH];
-		GetClientName(client, playerName, MAX_NAME_LENGTH);
 		if (newRecord) {
 			if (!newRecordPro) {  // Only new MAP Record
-				PrintToChatAll("[\x06KZ\x01] \x05%s\x01 beat the \x09MAP RECORD\x01!", playerName, gC_CurrentMap);
+				CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapRecord", client);
 				EmitSoundToAll("*/commander/commander_comment_01.wav");
 			}
 			else {  // and PRO Record
-				PrintToChatAll("[\x06KZ\x01] \x05%s\x01 beat the \x09MAP RECORD\x01 and the \x0BPRO RECORD\x01!", playerName, gC_CurrentMap);
+				CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapAndProRecord", client);
 				EmitSoundToAll("*/commander/commander_comment_05.wav");
 			}
 		}
 		else {  // Only new PRO Record
-			PrintToChatAll("[\x06KZ\x01] \x05%s\x01 beat the \x0BPRO RECORD\x01!", playerName, gC_CurrentMap);
+			CPrintToChatAll("%t %t", "KZ_Tag", "BeatProRecord", client);
 			EmitSoundToAll("*/commander/commander_comment_02.wav");
 		}
 	}
@@ -425,7 +423,7 @@ public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueri
 
 void DB_PrintPBs(int client, int target, const char[] map) {
 	if (!gB_ConnectedToDB) {
-		PrintNoDBMessage(client);
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
 		return;
 	}
 	
@@ -482,12 +480,10 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	int maxRankPro;
 	
 	if (target == client) {
-		PrintToChat(client, "[\x06KZ\x01] Personal Best Times on \x05%s\x01", map);
+		CPrintToChat(client, "%t %t", "KZ_Tag", "PB_Header_Self", map);
 	}
 	else {
-		char targetName[MAX_NAME_LENGTH];
-		GetClientName(target, targetName, MAX_NAME_LENGTH);
-		PrintToChat(client, "[\x06KZ\x01] Best Times by \x05%s\x01 on \x05%s\x01", targetName, map);
+		CPrintToChat(client, "%t %t", "KZ_Tag", "PB_Header", map, target);
 	}
 	
 	// Get PB info from results
@@ -520,27 +516,23 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	
 	// Print PB Info
 	if (!hasPB) {
-		PrintToChat(client, "  You don't have a time on \x05%s\x01... yet.", map);
+		if (target == client) {
+			CPrintToChat(client, "  %t", "PB_NoTimes_Self", map);
+		}
+		else {
+			CPrintToChat(client, "  %t", "PB_NoTimes", map);
+		}
 	}
 	else if (!hasPBPro) {
-		PrintToChat(client, 
-			"  \x09MAP PB\x01: %s - #\x05%d\x01/%d (\x09%d\x01 TP | \x08%s\x01) ", 
-			FormatTimeFloat(runTime), rank, maxRank, teleportsUsed, FormatTimeFloat(theoreticalRunTime));
-		PrintToChat(client, 
-			"  \x0BPRO PB\x01: None!");
+		CPrintToChat(client, "  %t", "PB_Map", FormatTimeFloat(runTime), rank, maxRank, teleportsUsed, FormatTimeFloat(theoreticalRunTime));
+		CPrintToChat(client, "  %t", "PB_Pro_None");
 	}
 	else if (teleportsUsed == 0) {
-		PrintToChat(client, 
-			"  \x09MAP PB\x01: %s - #\x05%d\x01/%d (\x0BPRO\x01 #\x05%d\x01/%d)", 
-			FormatTimeFloat(runTime), rank, maxRank, rankPro, maxRankPro);
+		CPrintToChat(client, "  %t", "PB_Map_Pro", FormatTimeFloat(runTime), rank, maxRank, rankPro, maxRankPro);
 	}
 	else {
-		PrintToChat(client, 
-			"  \x09MAP PB\x01: %s - #\x05%d\x01/%d (\x09%d\x01 TP | \x08%s\x01) ", 
-			FormatTimeFloat(runTime), rank, maxRank, teleportsUsed, FormatTimeFloat(theoreticalRunTime));
-		PrintToChat(client, 
-			"  \x0BPRO PB\x01: %s - #\x05%d\x01/%d", 
-			FormatTimeFloat(runTimePro), rankPro, maxRankPro);
+		CPrintToChat(client, "  %t", "PB_Map", FormatTimeFloat(runTime), rank, maxRank, teleportsUsed, FormatTimeFloat(theoreticalRunTime));
+		CPrintToChat(client, "  %t", "PB_Pro", FormatTimeFloat(runTimePro), rankPro, maxRankPro);
 	}
 }
 
@@ -550,7 +542,7 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 
 void DB_PrintMapRecords(int client, const char[] map) {
 	if (!gB_ConnectedToDB) {
-		PrintNoDBMessage(client);
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
 		return;
 	}
 	
@@ -588,7 +580,7 @@ public void DB_TxnSuccess_PrintMapRecords(Handle db, DataPack data, int numQueri
 	char recordHolderPro[33];
 	float runTimePro;
 	
-	PrintToChat(client, "[\x06KZ\x01] Server Records for \x05%s\x01", map);
+	CPrintToChat(client, "%t %t", "KZ_Tag", "WR_Header", map);
 	
 	// Get WR info from results
 	if (SQL_GetRowCount(results[0]) > 0) {
@@ -610,26 +602,18 @@ public void DB_TxnSuccess_PrintMapRecords(Handle db, DataPack data, int numQueri
 	
 	// Print WR info
 	if (!hasRecord) {
-		PrintToChat(client, "  No times found!");
+		CPrintToChat(client, "  %t", "WR_NoTimes");
 	}
 	else if (!hasRecordPro) {
-		PrintToChat(client, 
-			"  \x09MAP RECORD\x01: %s (\x09%d\x01 TP) by \x05%s\x01", 
-			FormatTimeFloat(runTime), teleportsUsed, recordHolder);
-		PrintToChat(client, "  \x0BPRO RECORD\x01: None!");
+		CPrintToChat(client, "  %t", "WR_Map", FormatTimeFloat(runTime), teleportsUsed, recordHolder);
+		CPrintToChat(client, "  %t", "WR_Pro_None");
 	}
 	else if (teleportsUsed == 0) {
-		PrintToChat(client, 
-			"  \x09MAP RECORD\x01: %s (\x0BPRO\x01) by \x05%s\x01", 
-			FormatTimeFloat(runTimePro), recordHolderPro);
+		CPrintToChat(client, "  %t", "WR_Map_Pro", FormatTimeFloat(runTimePro), recordHolderPro);
 	}
 	else {
-		PrintToChat(client, 
-			"  \x09MAP RECORD\x01: %s (\x09%d\x01 TP) by \x05%s\x01", 
-			FormatTimeFloat(runTime), teleportsUsed, recordHolder);
-		PrintToChat(client, 
-			"  \x0BPRO RECORD\x01: %s by \x05%s\x01", 
-			FormatTimeFloat(runTimePro), recordHolderPro);
+		CPrintToChat(client, "  %t", "WR_Map", FormatTimeFloat(runTime), teleportsUsed, recordHolder);
+		CPrintToChat(client, "  %t", "WR_Pro", FormatTimeFloat(runTimePro), recordHolderPro);
 	}
 }
 
@@ -655,7 +639,7 @@ public void DB_Callback_OpenMapTop(Handle db, Handle results, const char[] error
 	CloseHandle(data);
 	
 	if (SQL_GetRowCount(results) == 0) {
-		PrintToChat(client, "[\x06KZ\x01] No times were found for map \x05%s\x01.", map);
+		CPrintToChat(client, "%t %t", "KZ_Tag", "MapTop_None", map);
 		OpenMapTopMenu(client);
 		return;
 	}
@@ -702,7 +686,7 @@ public void DB_Callback_OpenMapTopPro(Handle db, Handle results, const char[] er
 	CloseHandle(data);
 	
 	if (SQL_GetRowCount(results) == 0) {
-		PrintToChat(client, "[\x06KZ\x01] No \x0BPRO\x01 times were found for map \x05%s\x01.", map);
+		CPrintToChat(client, "%t %t", "KZ_Tag", "MapTop_Pro_None", map);
 		OpenMapTopMenu(client);
 		return;
 	}

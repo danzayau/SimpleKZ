@@ -12,13 +12,14 @@ void RegisterCommands() {
 	RegConsoleCmd("sm_start", CommandTeleportToStart, "[KZ] Teleport to the start of the map.");
 	RegConsoleCmd("sm_r", CommandTeleportToStart, "[KZ] Teleport to the start of the map.");
 	RegConsoleCmd("sm_pause", CommandTogglePause, "[KZ] Toggle pausing your timer and stopping you in your position.");
+	RegConsoleCmd("sm_resume", CommandTogglePause, "[KZ] Toggle pausing your timer and stopping you in your position.");
 	RegConsoleCmd("sm_stop", CommandStopTimer, "[KZ] Stop your timer.");
 	RegConsoleCmd("sm_stopsound", CommandStopsound, "[KZ] Stop all sounds e.g. map soundscapes (music).");
 	RegConsoleCmd("sm_goto", CommandGoto, "[KZ] Teleport to another player. Usage: !goto <player>");
 	RegConsoleCmd("sm_spec", CommandSpec, "[KZ] Spectate another player. Usage: !spec <player>");
-	RegConsoleCmd("sm_hide", CommandHide, "[KZ] Toggle hiding other players.");
+	RegConsoleCmd("sm_hide", CommandToggleShowingPlayers, "[KZ] Toggle hiding other players.");
 	RegConsoleCmd("sm_speed", CommandToggleInfoPanel, "[KZ] Toggle visibility of the centre information panel.");
-	RegConsoleCmd("sm_hideweapon", CommandToggleHideWeapon, "[KZ] Toggle visibility of your weapon.");
+	RegConsoleCmd("sm_hideweapon", CommandToggleShowingWeapon, "[KZ] Toggle visibility of your weapon.");
 	RegConsoleCmd("sm_keys", CommandToggleShowKeys, "[KZ] Toggles showing of your own key presses.");
 	RegConsoleCmd("sm_measure", CommandMeasureMenu, "[KZ] Open the measurement menu.");
 	RegConsoleCmd("sm_pistol", CommandPistolMenu, "[KZ] Open the pistol selection menu.");
@@ -42,11 +43,11 @@ public Action CommandToggleMenu(int client, int args) {
 	if (gB_ShowingTeleportMenu[client]) {
 		gB_ShowingTeleportMenu[client] = false;
 		CloseTeleportMenu(client);
-		PrintToChat(client, "[\x06KZ\x01] Your teleport menu has been disabled.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "TeleportMenu_Disable");
 	}
 	else {
 		gB_ShowingTeleportMenu[client] = true;
-		PrintToChat(client, "[\x06KZ\x01] Your teleport menu has been enabled.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "TeleportMenu_Enable");
 	}
 	return Plugin_Handled;
 }
@@ -78,20 +79,20 @@ public Action CommandTogglePause(int client, int args) {
 
 public Action CommandStopTimer(int client, int args) {
 	ForceStopTimer(client);
-	PrintToChat(client, "[\x06KZ\x01] You have stopped your timer.");
+	CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Generic");
 	return Plugin_Handled;
 }
 
 public Action CommandStopsound(int client, int args) {
 	ClientCommand(client, "snd_playsounds Music.StopAllExceptMusic");
-	PrintToChat(client, "[\x06KZ\x01] You have stopped all sounds.");
+	CPrintToChat(client, "%t %t", "KZ_Tag", "StopSound");
 	return Plugin_Handled;
 }
 
 public Action CommandGoto(int client, int args) {
 	// If no arguments, respond with error message
 	if (args < 1) {
-		PrintToChat(client, "[\x06KZ\x01] Please specify a player to go to.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Goto_NoPlayer");
 	}
 	// Otherwise try to teleport to the player
 	else {
@@ -101,15 +102,15 @@ public Action CommandGoto(int client, int args) {
 		int target = FindTarget(client, specifiedPlayer, false, false);
 		if (target != -1) {
 			if (target == client) {
-				PrintToChat(client, "[\x06KZ\x01] You can't teleport to yourself.");
+				CPrintToChat(client, "%t %t", "KZ_Tag", "Goto_NotYourself");
 			}
 			else if (!IsPlayerAlive(target)) {
-				PrintToChat(client, "[\x06KZ\x01] The player you specified is not alive.");
+				CPrintToChat(client, "%t %t", "KZ_Tag", "Goto_NotAlive");
 			}
 			else {
 				TeleportToOtherPlayer(client, target);
 				if (gB_TimerRunning[client]) {
-					PrintToChat(client, "[\x06KZ\x01] Your time has been stopped because you used !goto.");
+					CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Goto");
 				}
 				ForceStopTimer(client);
 			}
@@ -131,10 +132,10 @@ public Action CommandSpec(int client, int args) {
 		int target = FindTarget(client, specifiedPlayer, false, false);
 		if (target != -1) {
 			if (target == client) {
-				PrintToChat(client, "[\x06KZ\x01] You can't spectate yourself.");
+				CPrintToChat(client, "%t %t", "KZ_Tag", "Spec_NotYourself");
 			}
 			else if (!IsPlayerAlive(target)) {
-				PrintToChat(client, "[\x06KZ\x01] The player you specified is not alive.");
+				CPrintToChat(client, "%t %t", "KZ_Tag", "Spec_NotAlive");
 			}
 			else {
 				JoinTeam(client, CS_TEAM_SPECTATOR);
@@ -146,14 +147,14 @@ public Action CommandSpec(int client, int args) {
 	return Plugin_Handled;
 }
 
-public Action CommandHide(int client, int args) {
-	if (!gB_ShowingPlayers[client]) {
-		gB_ShowingPlayers[client] = true;
-		PrintToChat(client, "[\x06KZ\x01] You are now showing other players.");
+public Action CommandToggleShowingPlayers(int client, int args) {
+	if (gB_ShowingPlayers[client]) {
+		gB_ShowingPlayers[client] = false;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowPlayers_Disable");
 	}
 	else {
-		gB_ShowingPlayers[client] = false;
-		PrintToChat(client, "[\x06KZ\x01] You are now hiding other players.");
+		gB_ShowingPlayers[client] = true;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowPlayers_Enable");
 	}
 	return Plugin_Handled;
 }
@@ -161,23 +162,23 @@ public Action CommandHide(int client, int args) {
 public Action CommandToggleInfoPanel(int client, int args) {
 	if (gB_ShowingInfoPanel[client]) {
 		gB_ShowingInfoPanel[client] = false;
-		PrintToChat(client, "[\x06KZ\x01] Your centre info panel has been disabled.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "InfoPanel_Disable");
 	}
 	else {
 		gB_ShowingInfoPanel[client] = true;
-		PrintToChat(client, "[\x06KZ\x01] Your centre info panel has been enabled.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "InfoPanel_Enable");
 	}
 	return Plugin_Handled;
 }
 
-public Action CommandToggleHideWeapon(int client, int args) {
+public Action CommandToggleShowingWeapon(int client, int args) {
 	if (!gB_ShowingWeapon[client]) {
 		gB_ShowingWeapon[client] = true;
-		PrintToChat(client, "[\x06KZ\x01] You are now showing your weapon.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "HideWeapon_Disable");
 	}
 	else {
 		gB_ShowingWeapon[client] = false;
-		PrintToChat(client, "[\x06KZ\x01] You are now hiding your weapon.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "HideWeapon_Enable");
 	}
 	SetDrawViewModel(client, gB_ShowingWeapon[client]);
 	return Plugin_Handled;
@@ -186,21 +187,21 @@ public Action CommandToggleHideWeapon(int client, int args) {
 public Action CommandToggleShowKeys(int client, int args) {
 	if (gB_ShowingKeys[client]) {
 		gB_ShowingKeys[client] = false;
-		PrintToChat(client, "[\x06KZ\x01] You are no longer showing your key presses to yourself.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowKeys_Disable");
 	}
 	else {
 		gB_ShowingKeys[client] = true;
-		PrintToChat(client, "[\x06KZ\x01] You are now showing your key presses to yourself.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowKeys_Enable");
 	}
 	return Plugin_Handled;
 }
 
 public Action CommandMeasureMenu(int client, int args) {
-	DisplayMenu(gH_MeasureMenu, client, MENU_TIME_FOREVER);
+	DisplayMenu(gH_MeasureMenu[client], client, MENU_TIME_FOREVER);
 }
 
 public Action CommandPistolMenu(int client, int args) {
-	DisplayMenu(gH_PistolMenu, client, MENU_TIME_FOREVER);
+	DisplayMenu(gH_PistolMenu[client], client, MENU_TIME_FOREVER);
 }
 
 public Action CommandToggleNoclip(int client, int args) {

@@ -112,10 +112,6 @@ void GetClientSteamIDAll() {
 	}
 }
 
-void PrintNoDBMessage(int client) {
-	PrintToChat(client, "[\x06KZ\x01] This server isn't connected to a \x06SimpleKZ\x01 database.");
-}
-
 
 
 /*===============================  Client  ===============================*/
@@ -171,11 +167,9 @@ void TeleportToOtherPlayer(int client, int target)
 {
 	float targetOrigin[3];
 	float targetAngles[3];
-	char targetName[MAX_NAME_LENGTH];
 	
 	g_MovementPlayer[target].GetOrigin(targetOrigin);
 	g_MovementPlayer[target].GetEyeAngles(targetAngles);
-	GetClientName(target, targetName, MAX_NAME_LENGTH);
 	
 	// Leave spectators if necessary
 	if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
@@ -186,7 +180,7 @@ void TeleportToOtherPlayer(int client, int target)
 		CS_RespawnPlayer(client);
 	}
 	TeleportEntity(client, targetOrigin, targetAngles, view_as<float>( { 0.0, 0.0, -100.0 } ));
-	PrintToChat(client, "[\x06KZ\x01] You have teleported to %s.", targetName);
+	CPrintToChat(client, "%t %t", "KZ_Tag", "Goto_Success", target);
 }
 
 void FreezePlayer(int client) {

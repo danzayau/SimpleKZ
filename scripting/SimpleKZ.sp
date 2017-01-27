@@ -1,8 +1,11 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
-#include <cstrike>
+#include <basecomm>
 #include <geoip>
+#include <cstrike>
+
+#include <colorvariables>
 #include <movement>
 #include <movementtweaker>
 #include <simplekz>
@@ -15,7 +18,7 @@ Plugin myinfo =
 	name = "Simple KZ", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer and optional database.", 
-	version = "0.5", 
+	version = "0.5.1", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -68,14 +71,6 @@ bool gB_HasSavedPosition[MAXPLAYERS + 1] =  { false, ... };
 float gF_SavedOrigin[MAXPLAYERS + 1][3];
 float gF_SavedAngles[MAXPLAYERS + 1][3];
 
-// Measure
-Handle gH_MeasureMenu = INVALID_HANDLE;
-int gI_GlowSprite;
-bool gB_MeasurePosSet[MAXPLAYERS + 1][2];
-float gF_MeasurePos[MAXPLAYERS + 1][2][3];
-Handle gH_P2PRed[MAXPLAYERS + 1];
-Handle gH_P2PGreen[MAXPLAYERS + 1];
-
 // Database
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
@@ -92,12 +87,20 @@ bool gB_ShowingWeapon[MAXPLAYERS + 1] =  { true, ... };
 int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
 
 // Menus
-Handle gH_PistolMenu = INVALID_HANDLE;
+Handle gH_PistolMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 Handle gH_TeleportMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1] =  { false, ... };
-Handle gH_MapTopMenu[MAXPLAYERS + 1] = INVALID_HANDLE;
+Handle gH_MapTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 char gC_MapTopMap[MAXPLAYERS + 1][64];
 Handle gH_MapTopSubmenu[MAXPLAYERS + 1] = INVALID_HANDLE;
+
+// Measure
+Handle gH_MeasureMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+int gI_GlowSprite;
+bool gB_MeasurePosSet[MAXPLAYERS + 1][2];
+float gF_MeasurePos[MAXPLAYERS + 1][2][3];
+Handle gH_P2PRed[MAXPLAYERS + 1];
+Handle gH_P2PGreen[MAXPLAYERS + 1];
 
 // Other
 MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
@@ -134,14 +137,17 @@ public void OnPluginStart() {
 	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Pre);
 	HookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);
 	HookEntityOutput("func_button", "OnPressed", OnButtonPress);
+	AddCommandListener(OnSay, "say");
+	AddCommandListener(OnSay, "say_team");
 	AddNormalSoundHook(view_as<NormalSHook>(OnNormalSound));
 	
 	// Translations
 	LoadTranslations("common.phrases");
+	LoadTranslations("simplekz.phrases");
 	
 	// Setup
 	SetupMovementMethodmaps();
-	SetupMenus();
+	CreateMenus();
 	DB_SetupDatabase();
 }
 
@@ -171,6 +177,12 @@ public void OnClientAuthorized(int client) {
 		GetClientSteamID(client);
 		DB_SavePlayerInfo(client);
 		DB_LoadPreferences(client);
+		
+		UpdatePistolMenu(client);
+		UpdateMeasureMenu(client);
+		UpdateMapTopMenu(client);
+		SetupTimer(client);
+		MeasureResetPos(client);
 	}
 }
 
@@ -180,8 +192,6 @@ public void OnClientPutInServer(int client) {
 		ServerCommand("bot_quota 0");
 	}
 	else {
-		SetupTimer(client);
-		MeasureResetPos(client);
 		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
 	}
 }
@@ -233,10 +243,44 @@ public Action CommandJoinTeam(int client, const char[] command, int argc) {
 	return Plugin_Handled;
 }
 
-// Stop join team messages from showing up
+// Custom join team messages (inspired by JWL - http://lucidrainbows.com/kz-sourcemod-plugins/)
 public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) {
 	SetEventBroadcast(event, true);
 	return Plugin_Continue;
+}
+
+// Adjust player messages, and automatically lower case commands
+public Action OnSay(int client, const char[] command, int argc) {
+	if (BaseComm_IsClientGagged(client)) {
+		return Plugin_Handled;
+	}
+	
+	char message[128];
+	GetCmdArgString(message, sizeof(message));
+	StripQuotes(message);
+	
+	// Change to lower case (potential) command messages
+	if (((message[0] == '/') || (message[0] == '!')) && IsCharUpper(message[1])) {
+		for (int i = 1; i <= strlen(message); i++) {
+			message[i] = CharToLower(message[i]);
+		}
+		FakeClientCommand(client, "say %s", message);
+		return Plugin_Handled;
+	}
+	
+	// Don't print the message if it is a chat trigger
+	if (IsChatTrigger()) {
+		return Plugin_Handled;
+	}
+	
+	// Print the message to chat
+	if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
+		CPrintToChatAll("{bluegrey}%N{default}: %s", client, message);
+	}
+	else {
+		CPrintToChatAll("{lime}%N{default}: %s", client, message);
+	}
+	return Plugin_Handled;
 }
 
 // Prevent sounds
@@ -253,7 +297,7 @@ public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &
 // Prevent noclipping during runs
 public void OnStartNoclipping(int client) {
 	if (gB_TimerRunning[client]) {
-		PrintToChat(client, "[\x06KZ\x01] Your time has been stopped because you used noclip.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Noclip");
+		ForceStopTimer(client);
 	}
-	ForceStopTimer(client);
 } 
