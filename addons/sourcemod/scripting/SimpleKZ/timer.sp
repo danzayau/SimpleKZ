@@ -32,6 +32,8 @@ void TimerRestart(int client) {
 	gF_LastTeleportToStartWastedTime[client] = 0.0;
 	gF_WastedTime[client] = 0.0;
 	gB_HasSavedPosition[client] = false;
+	gI_Splits[client] = 0;
+	gF_SplitRunTime[client] = 0.0;
 }
 
 void StartTimer(int client) {
@@ -61,6 +63,7 @@ void EndTimer(int client) {
 
 void ForceStopTimer(int client) {
 	gB_TimerRunning[client] = false;
+	gB_Paused[client] = false;
 }
 
 void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
@@ -88,7 +91,7 @@ void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
 
 public void OnButtonPress(const char[] name, int caller, int activator, float delay) {
 	if (IsValidEntity(caller) && IsValidClient(activator)) {
-		char tempString[64];
+		char tempString[32];
 		// Get the class name of the activator
 		GetEdictClassname(activator, tempString, sizeof(tempString));
 		if (StrEqual(tempString, "player")) {
@@ -198,7 +201,7 @@ void UndoTeleport(int client) {
 
 void TogglePause(int client) {
 	if (!gB_TimerRunning[client]) {
-		return;
+		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
 	}
 	else if (gB_Paused[client]) {
 		gB_Paused[client] = false;
@@ -293,7 +296,7 @@ int GetCurrentRunType(int client) {
 
 void PrintEndTimeString(int client) {
 	if (GetCurrentRunType(client) == 0) {
-		PrintToChatAll("%t %t", "KZ_Tag", "BeatMapPro", 
+		CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapPro", 
 			client, FormatTimeFloat(gF_CurrentTime[client]));
 	}
 	else {

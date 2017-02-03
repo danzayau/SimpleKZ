@@ -92,26 +92,6 @@ char[] FormatTimeFloat(float timeToFormat) {
 	return formattedTime;
 }
 
-void GetClientCountry(int client) {
-	char clientIP[32];
-	GetClientIP(client, clientIP, sizeof(clientIP));
-	if (!GeoipCountry(clientIP, gC_Country[client], sizeof(gC_Country[]))) {
-		gC_Country[client] = "Unknown";
-	}
-}
-
-void GetClientSteamID(int client) {
-	GetClientAuthId(client, AuthId_Steam2, gC_SteamID[client], 24, true);
-}
-
-void GetClientSteamIDAll() {
-	for (int client = 1; client <= MaxClients; client++) {
-		if (IsClientAuthorized(client)) {
-			GetClientSteamID(client);
-		}
-	}
-}
-
 
 
 /*===============================  Client  ===============================*/
@@ -186,4 +166,129 @@ void TeleportToOtherPlayer(int client, int target)
 void FreezePlayer(int client) {
 	g_MovementPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
 	g_MovementPlayer[client].moveType = MOVETYPE_NONE;
+}
+
+void ToggleNoclip(int client) {
+	if (g_MovementPlayer[client].moveType != MOVETYPE_NOCLIP) {
+		g_MovementPlayer[client].moveType = MOVETYPE_NOCLIP;
+	}
+	else {
+		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
+	}
+}
+
+void GetClientCountry(int client) {
+	char clientIP[32];
+	GetClientIP(client, clientIP, sizeof(clientIP));
+	if (!GeoipCountry(clientIP, gC_Country[client], sizeof(gC_Country[]))) {
+		gC_Country[client] = "Unknown";
+	}
+}
+
+void GetClientSteamID(int client) {
+	GetClientAuthId(client, AuthId_Steam2, gC_SteamID[client], 24, true);
+}
+
+void GetClientSteamIDAll() {
+	for (int client = 1; client <= MaxClients; client++) {
+		if (IsClientAuthorized(client)) {
+			GetClientSteamID(client);
+		}
+	}
+}
+
+
+
+/*===============================  Options  ===============================*/
+
+void ToggleTeleportMenu(int client) {
+	if (gB_ShowingTeleportMenu[client]) {
+		gB_ShowingTeleportMenu[client] = false;
+		CloseTeleportMenu(client);
+		CPrintToChat(client, "%t %t", "KZ_Tag", "TeleportMenu_Disable");
+	}
+	else {
+		gB_ShowingTeleportMenu[client] = true;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "TeleportMenu_Enable");
+	}
+}
+
+void ToggleShowPlayers(int client) {
+	if (gB_ShowingPlayers[client]) {
+		gB_ShowingPlayers[client] = false;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowPlayers_Disable");
+	}
+	else {
+		gB_ShowingPlayers[client] = true;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowPlayers_Enable");
+	}
+}
+
+void ToggleInfoPanel(int client) {
+	if (gB_ShowingInfoPanel[client]) {
+		gB_ShowingInfoPanel[client] = false;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "InfoPanel_Disable");
+	}
+	else {
+		gB_ShowingInfoPanel[client] = true;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "InfoPanel_Enable");
+	}
+}
+
+void ToggleShowWeapon(int client) {
+	if (gB_ShowingWeapon[client]) {
+		gB_ShowingWeapon[client] = false;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowWeapon_Disable");
+	}
+	else {
+		gB_ShowingWeapon[client] = true;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowWeapon_Enable");
+	}
+	SetDrawViewModel(client, gB_ShowingWeapon[client]);
+}
+
+void ToggleShowKeys(int client) {
+	if (gB_ShowingKeys[client]) {
+		gB_ShowingKeys[client] = false;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowKeys_Disable");
+	}
+	else {
+		gB_ShowingKeys[client] = true;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowKeys_Enable");
+	}
+}
+
+
+
+/*===============================  Split  ===============================*/
+
+void SetupSplits(int client) {
+	gI_Splits[client] = 0;
+}
+
+void SplitMake(int client) {
+	if ((GetGameTime() - gF_SplitGameTime[client]) < MINIMUM_SPLIT_TIME) { // Ignore split spam
+		return;
+	}
+	
+	gI_Splits[client]++;
+	
+	if (gB_TimerRunning[client]) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Split_Make", 
+			gI_Splits[client], 
+			FormatTimeFloat(gF_CurrentTime[client] - gF_SplitRunTime[client]), 
+			FormatTimeFloat(gF_CurrentTime[client]));
+	}
+	else {
+		if (gI_Splits[client] == 1) {
+			CPrintToChat(client, "%t %t", "KZ_Tag", "Split_MakeFirst");
+		}
+		else {
+			CPrintToChat(client, "%t %t", "KZ_Tag", "Split_Make_TimerStopped", 
+				FormatTimeFloat(GetGameTime() - gF_SplitGameTime[client]));
+		}
+	}
+	
+	gF_SplitRunTime[client] = gF_CurrentTime[client];
+	gF_SplitGameTime[client] = GetGameTime();
 } 

@@ -17,15 +17,17 @@ void RegisterCommands() {
 	RegConsoleCmd("sm_stopsound", CommandStopsound, "[KZ] Stop all sounds e.g. map soundscapes (music).");
 	RegConsoleCmd("sm_goto", CommandGoto, "[KZ] Teleport to another player. Usage: !goto <player>");
 	RegConsoleCmd("sm_spec", CommandSpec, "[KZ] Spectate another player. Usage: !spec <player>");
-	RegConsoleCmd("sm_hide", CommandToggleShowingPlayers, "[KZ] Toggle hiding other players.");
+	RegConsoleCmd("sm_options", CommandOptions, "[KZ] Open up the options menu.");
+	RegConsoleCmd("sm_hide", CommandToggleShowPlayers, "[KZ] Toggle hiding other players.");
 	RegConsoleCmd("sm_speed", CommandToggleInfoPanel, "[KZ] Toggle visibility of the centre information panel.");
-	RegConsoleCmd("sm_hideweapon", CommandToggleShowingWeapon, "[KZ] Toggle visibility of your weapon.");
+	RegConsoleCmd("sm_hideweapon", CommandToggleShowWeapon, "[KZ] Toggle visibility of your weapon.");
 	RegConsoleCmd("sm_keys", CommandToggleShowKeys, "[KZ] Toggles showing of your own key presses.");
 	RegConsoleCmd("sm_measure", CommandMeasureMenu, "[KZ] Open the measurement menu.");
 	RegConsoleCmd("sm_pistol", CommandPistolMenu, "[KZ] Open the pistol selection menu.");
-	RegConsoleCmd("sm_noclip", CommandToggleNoclip, "[KZ] Toggle noclip.");
+	RegConsoleCmd("sm_nc", CommandToggleNoclip, "[KZ] Toggle noclip.");
 	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
 	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
+	RegConsoleCmd("sm_split", CommandSplit, "[KZ] Make a split for timing purposes.");
 	
 	// Database commands
 	RegConsoleCmd("sm_maprank", CommandMapRank, "[KZ] Prints map time and rank to chat. Usage: !maprank <player> <map>");
@@ -40,15 +42,7 @@ void RegisterCommands() {
 /*===============================  Command Handlers  ===============================*/
 
 public Action CommandToggleMenu(int client, int args) {
-	if (gB_ShowingTeleportMenu[client]) {
-		gB_ShowingTeleportMenu[client] = false;
-		CloseTeleportMenu(client);
-		CPrintToChat(client, "%t %t", "KZ_Tag", "TeleportMenu_Disable");
-	}
-	else {
-		gB_ShowingTeleportMenu[client] = true;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "TeleportMenu_Enable");
-	}
+	ToggleTeleportMenu(client);
 	return Plugin_Handled;
 }
 
@@ -147,70 +141,43 @@ public Action CommandSpec(int client, int args) {
 	return Plugin_Handled;
 }
 
-public Action CommandToggleShowingPlayers(int client, int args) {
-	if (gB_ShowingPlayers[client]) {
-		gB_ShowingPlayers[client] = false;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowPlayers_Disable");
-	}
-	else {
-		gB_ShowingPlayers[client] = true;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowPlayers_Enable");
-	}
+public Action CommandOptions(int client, int args) {
+	DisplayOptionsMenu(client);
+	return Plugin_Handled;
+}
+
+public Action CommandToggleShowPlayers(int client, int args) {
+	ToggleShowPlayers(client);
 	return Plugin_Handled;
 }
 
 public Action CommandToggleInfoPanel(int client, int args) {
-	if (gB_ShowingInfoPanel[client]) {
-		gB_ShowingInfoPanel[client] = false;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "InfoPanel_Disable");
-	}
-	else {
-		gB_ShowingInfoPanel[client] = true;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "InfoPanel_Enable");
-	}
+	ToggleInfoPanel(client);
 	return Plugin_Handled;
 }
 
-public Action CommandToggleShowingWeapon(int client, int args) {
-	if (!gB_ShowingWeapon[client]) {
-		gB_ShowingWeapon[client] = true;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "HideWeapon_Disable");
-	}
-	else {
-		gB_ShowingWeapon[client] = false;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "HideWeapon_Enable");
-	}
-	SetDrawViewModel(client, gB_ShowingWeapon[client]);
+public Action CommandToggleShowWeapon(int client, int args) {
+	ToggleShowWeapon(client);
 	return Plugin_Handled;
 }
 
 public Action CommandToggleShowKeys(int client, int args) {
-	if (gB_ShowingKeys[client]) {
-		gB_ShowingKeys[client] = false;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowKeys_Disable");
-	}
-	else {
-		gB_ShowingKeys[client] = true;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowKeys_Enable");
-	}
+	ToggleShowKeys(client);
 	return Plugin_Handled;
 }
 
 public Action CommandMeasureMenu(int client, int args) {
-	DisplayMenu(gH_MeasureMenu[client], client, MENU_TIME_FOREVER);
+	DisplayMeasureMenu(client);
+	return Plugin_Handled;
 }
 
 public Action CommandPistolMenu(int client, int args) {
-	DisplayMenu(gH_PistolMenu[client], client, MENU_TIME_FOREVER);
+	DisplayPistolMenu(client);
+	return Plugin_Handled;
 }
 
 public Action CommandToggleNoclip(int client, int args) {
-	if (g_MovementPlayer[client].moveType != MOVETYPE_NOCLIP) {
-		g_MovementPlayer[client].moveType = MOVETYPE_NOCLIP;
-	}
-	else {
-		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
-	}
+	ToggleNoclip(client);
 	return Plugin_Handled;
 }
 
@@ -221,6 +188,11 @@ public Action CommandEnableNoclip(int client, int args) {
 
 public Action CommandDisableNoclip(int client, int args) {
 	g_MovementPlayer[client].moveType = MOVETYPE_WALK;
+	return Plugin_Handled;
+}
+
+public Action CommandSplit(int client, int args) {
+	SplitMake(client);
 	return Plugin_Handled;
 }
 
@@ -274,6 +246,6 @@ public Action CommandMapTop(int client, int args) {
 	else {
 		GetCmdArg(1, gC_MapTopMap[client], sizeof(gC_MapTopMap[]));
 	}
-	OpenMapTopMenu(client);
+	DisplayMapTopMenu(client);
 	return Plugin_Handled;
 } 

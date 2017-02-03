@@ -18,7 +18,7 @@ Plugin myinfo =
 	name = "Simple KZ", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer and optional database.", 
-	version = "0.5.1", 
+	version = "0.6.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -26,7 +26,8 @@ Plugin myinfo =
 
 /*===============================  Definitions  ===============================*/
 
-#define PAUSE_COOLDOWN_AFTER_RESUMING 0.5
+#define PAUSE_COOLDOWN_AFTER_RESUMING 1.0
+#define MINIMUM_SPLIT_TIME 1.0
 #define NUMBER_OF_PISTOLS 8
 
 #define NONE -1
@@ -93,6 +94,8 @@ bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1] =  { false, ... };
 Handle gH_MapTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 char gC_MapTopMap[MAXPLAYERS + 1][64];
 Handle gH_MapTopSubmenu[MAXPLAYERS + 1] = INVALID_HANDLE;
+Handle gH_OptionsMenu[MAXPLAYERS + 1];
+bool gB_CameFromOptionsMenu[MAXPLAYERS + 1];
 
 // Measure
 Handle gH_MeasureMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
@@ -102,6 +105,11 @@ float gF_MeasurePos[MAXPLAYERS + 1][2][3];
 Handle gH_P2PRed[MAXPLAYERS + 1];
 Handle gH_P2PGreen[MAXPLAYERS + 1];
 
+// Splits
+int gI_Splits[MAXPLAYERS + 1];
+float gF_SplitRunTime[MAXPLAYERS + 1];
+float gF_SplitGameTime[MAXPLAYERS + 1];
+
 // Other
 MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
 bool gB_CurrentMapIsKZPro;
@@ -109,6 +117,9 @@ bool gB_CurrentMapIsKZPro;
 
 
 /*===============================  Includes  ===============================*/
+
+// Global Variable Includes
+#include "SimpleKZ/sql.sp"
 
 #include "SimpleKZ/commands.sp"
 #include "SimpleKZ/timer.sp"
@@ -126,7 +137,7 @@ public void OnPluginStart() {
 	// Check if game is CS:GO
 	EngineVersion gameEngine = GetEngineVersion();
 	if (gameEngine != Engine_CSGO) {
-		SetFailState("This plugin is for CS:GO.");
+		SetFailState("This plugin is only for CS:GO.");
 	}
 	
 	CreateGlobalForwards();
@@ -181,8 +192,10 @@ public void OnClientAuthorized(int client) {
 		UpdatePistolMenu(client);
 		UpdateMeasureMenu(client);
 		UpdateMapTopMenu(client);
+		UpdateOptionsMenu(client);
 		SetupTimer(client);
 		MeasureResetPos(client);
+		SetupSplits(client);
 	}
 }
 
@@ -243,7 +256,7 @@ public Action CommandJoinTeam(int client, const char[] command, int argc) {
 	return Plugin_Handled;
 }
 
-// Custom join team messages (inspired by JWL - http://lucidrainbows.com/kz-sourcemod-plugins/)
+// Block join team messages
 public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) {
 	SetEventBroadcast(event, true);
 	return Plugin_Continue;

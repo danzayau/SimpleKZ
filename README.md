@@ -19,9 +19,9 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
 
 ### Requirements
 
- * **Tested Against**: SourceMod 1.7 Latest, 1.8 Latest, 1.9 Latest
- * [**MovementAPI Plugin**](https://github.com/danzayau/MovementAPI)
- * [**MovementTweaker Plugin**](https://github.com/danzayau/MovementTweaker)
+ * **Tested Against**: SourceMod 1.7 Latest / 1.8 Latest / 1.9 Latest
+ * [**MovementAPI Plugin (0.5.0)**](https://github.com/danzayau/MovementAPI)
+ * [**MovementTweaker Plugin (0.6.0)**](https://github.com/danzayau/MovementTweaker)
 
 ### Installation
 
@@ -42,17 +42,18 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
  * ```!stopsound``` - Stop all sounds e.g. map soundscapes (music).
  * ```!spec``` - Join spectators or spectate a specified player.
  * ```!goto``` - Teleport to another player. Usage: ```!goto <player>```.
+ * ```!options``` - Open the options menu.
  * ```!hide``` - Toggles the visibility of other players.
  * ```!speed``` - Toggle visibility of the centre information panel.
  * ```!hideweapon``` - Toggle visibility of your weapon.
  * ```!keys``` - Toggles showing of your own key presses.
- * ```!measure``` - Open the measurement menu..
+ * ```!measure``` - Open the measurement menu.
  * ```!pistol``` - Open the pistol selection menu.
- * ```!noclip``` - Toggle noclip.
+ * ```!nc``` - Toggle noclip.
  * ```+noclip``` - Noclip (bind a key to it in console).
  
 ### Database Commands
  
- * ```!maprank```/```!pb``` - Prints map time and rank to chat. Usage: ```!maprank <player> <map>```
- * ```!maprecord```/```!wr``` - Prints map record times to chat. Usage: ```!maprecord <map>```
- * ```!maptop``` - Opens a menu showing the top times of a map. Usage ```!maptop <map>```
+ * ```!maprank```/```!pb``` - Prints map time and rank to chat. Usage: ```!maprank <player> <map>```.
+ * ```!maprecord```/```!wr``` - Prints map record times to chat. Usage: ```!maprecord <map>```.
+ * ```!maptop``` - Opens a menu showing the top times of a map. Usage ```!maptop <map>```.

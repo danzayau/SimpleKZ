@@ -5,8 +5,8 @@
 
 
 void UpdateInfoPanel(int client) {
-	MovementPlayer player = g_MovementPlayer[client];
-	if (gB_ShowingInfoPanel[player.id]) {
+	if (gB_ShowingInfoPanel[client]) {
+		MovementPlayer player = g_MovementPlayer[client];
 		if (IsPlayerAlive(player.id)) {
 			if (gB_ShowingKeys[player.id]) {
 				PrintHintText(player.id, "%s", GetInfoPanelWithKeys(player));
@@ -142,42 +142,42 @@ char[] GetInfoPanelKeysString(MovementPlayer player) {
 }
 
 int GetInfoPanelWString(MovementPlayer player) {
-	if (player.buttons & IN_FORWARD) {
+	if (GetClientButtons(player.id) & IN_FORWARD) {
 		return 'W';
 	}
 	return '_';
 }
 
 int GetInfoPanelAString(MovementPlayer player) {
-	if (player.buttons & IN_MOVELEFT) {
+	if (GetClientButtons(player.id) & IN_MOVELEFT) {
 		return 'A';
 	}
 	return '_';
 }
 
 int GetInfoPanelSString(MovementPlayer player) {
-	if (player.buttons & IN_BACK) {
+	if (GetClientButtons(player.id) & IN_BACK) {
 		return 'S';
 	}
 	return '_';
 }
 
 int GetInfoPanelDString(MovementPlayer player) {
-	if (player.buttons & IN_MOVERIGHT) {
+	if (GetClientButtons(player.id) & IN_MOVERIGHT) {
 		return 'D';
 	}
 	return '_';
 }
 
 int GetInfoPanelCrouchString(MovementPlayer player) {
-	if (player.buttons & IN_DUCK) {
+	if (GetClientButtons(player.id) & IN_DUCK) {
 		return 'C';
 	}
 	return '_';
 }
 
 int GetInfoPanelJumpString(MovementPlayer player) {
-	if (player.buttons & IN_JUMP) {
+	if (GetClientButtons(player.id) & IN_JUMP) {
 		return 'J';
 	}
 	return '_';
