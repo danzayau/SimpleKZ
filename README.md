@@ -51,6 +51,7 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
  * ```!pistol``` - Open the pistol selection menu.
  * ```!nc``` - Toggle noclip.
  * ```+noclip``` - Noclip (bind a key to it in console).
+ * ```!split``` - Make a time split for timing purposes.
  
 ### Database Commands
  

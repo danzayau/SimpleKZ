@@ -27,7 +27,7 @@ void RegisterCommands() {
 	RegConsoleCmd("sm_nc", CommandToggleNoclip, "[KZ] Toggle noclip.");
 	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
 	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
-	RegConsoleCmd("sm_split", CommandSplit, "[KZ] Make a split for timing purposes.");
+	RegConsoleCmd("sm_split", CommandSplit, "[KZ] Make a time split for timing purposes.");
 	
 	// Database commands
 	RegConsoleCmd("sm_maprank", CommandMapRank, "[KZ] Prints map time and rank to chat. Usage: !maprank <player> <map>");
