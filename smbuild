@@ -1,7 +1,15 @@
-Plugin(source='scripting/SimpleKZ.sp')
+Plugin(
+	name='SimpleKZ',
+	source='addons/sourcemod/scripting/SimpleKZ.sp',
+)
+
+Plugin(
+	name='SimpleKZRanks',
+	source='addons/sourcemod/scripting/SimpleKZRanks.sp',
+)
 
 Package(name='SimpleKZ',
-        plugins=['SimpleKZ'],
+        plugins=['SimpleKZ', 'SimpleKZRanks],
         filegroups={
             '.':['README.md', 'LICENSE'],
         },
