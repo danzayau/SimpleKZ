@@ -30,6 +30,7 @@ Plugin myinfo =
 #define MINIMUM_SPLIT_TIME 1.0
 #define NUMBER_OF_PISTOLS 8
 
+// Database Types
 #define NONE -1
 #define MYSQL 0
 #define SQLITE 1
@@ -92,9 +93,6 @@ int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
 Handle gH_PistolMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 Handle gH_TeleportMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1] =  { false, ... };
-Handle gH_MapTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-char gC_MapTopMap[MAXPLAYERS + 1][64];
-Handle gH_MapTopSubmenu[MAXPLAYERS + 1] = INVALID_HANDLE;
 Handle gH_OptionsMenu[MAXPLAYERS + 1];
 bool gB_CameFromOptionsMenu[MAXPLAYERS + 1];
 
@@ -163,7 +161,6 @@ public void OnPluginStart() {
 	// Setup
 	SetupMovementMethodmaps();
 	CreateMenus();
-	DB_SetupDatabase();
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
@@ -178,12 +175,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnMapStart() {
 	LoadKZConfig();
+	DB_SetupDatabase();
 	OnMapStartVariableUpdates();
-	DB_SaveMapInfo();
-	
-	FakePrecacheSound("*/commander/commander_comment_01.wav");
-	FakePrecacheSound("*/commander/commander_comment_02.wav");
-	FakePrecacheSound("*/commander/commander_comment_05.wav");
 }
 
 public void OnClientAuthorized(int client) {
@@ -195,7 +188,6 @@ public void OnClientAuthorized(int client) {
 		
 		UpdatePistolMenu(client);
 		UpdateMeasureMenu(client);
-		UpdateMapTopMenu(client);
 		UpdateOptionsMenu(client);
 		SetupTimer(client);
 		MeasureResetPos(client);

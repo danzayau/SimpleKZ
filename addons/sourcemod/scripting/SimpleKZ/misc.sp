@@ -66,10 +66,6 @@ void UpdateCurrentMap() {
 	gB_CurrentMapIsKZPro = StrEqual(mapPrefix[0], "kzpro", false);
 }
 
-void FakePrecacheSound(const char[] szPath) {
-	AddToStringTable(FindStringTable("soundprecache"), szPath);
-}
-
 char[] FormatTimeFloat(float timeToFormat) {
 	char formattedTime[12];
 	

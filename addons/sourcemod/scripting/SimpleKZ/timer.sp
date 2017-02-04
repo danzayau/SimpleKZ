@@ -43,9 +43,6 @@ void StartTimer(int client) {
 	gB_TimerRunning[client] = true;
 	if (!gB_HasStartedThisMap[client]) {
 		gB_HasStartedThisMap[client] = true;
-		if (gB_ConnectedToDB) {
-			DB_PrintPBs(client, client, gC_CurrentMap);
-		}
 	}
 	CloseTeleportMenu(client);
 }
@@ -55,7 +52,6 @@ void EndTimer(int client) {
 	EmitSoundToClient(client, "buttons/bell1.wav");
 	gB_TimerRunning[client] = false;
 	PrintEndTimeString(client);
-	DB_ProcessEndTimer(client);
 	CloseTeleportMenu(client);
 }
 
