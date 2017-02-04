@@ -158,19 +158,6 @@ void TeleportAddItemRejoin(int client) {
 
 /*===============================  Pistol Menu ===============================*/
 
-// Pistol Entity Names (entity class name, alias, team that buys it)
-char gC_Pistols[NUMBER_OF_PISTOLS][3][] = 
-{
-	{ "weapon_hkp2000", "P2000 / USP-S", "CT" }, 
-	{ "weapon_glock", "Glock-18", "T" }, 
-	{ "weapon_p250", "P250", "EITHER" }, 
-	{ "weapon_elite", "Dual Berettas", "EITHER" }, 
-	{ "weapon_deagle", "Deagle", "EITHER" }, 
-	{ "weapon_cz75a", "CZ75-Auto", "EITHER" }, 
-	{ "weapon_fiveseven", "Five-SeveN", "CT" }, 
-	{ "weapon_tec9", "Tec-9", "T" }
-};
-
 void CreatePistolMenuAll() {
 	for (int client = 1; client <= MaxClients; client++) {
 		CreatePistolMenu(client);
@@ -190,7 +177,7 @@ void DisplayPistolMenu(int client) {
 void UpdatePistolMenu(int client) {
 	SetMenuTitle(gH_PistolMenu[client], "%T", "PistolMenu_Title", client);
 	RemoveAllMenuItems(gH_PistolMenu[client]);
-	for (int pistol = 0; pistol < NUMBER_OF_PISTOLS; pistol++) {
+	for (int pistol = 0; pistol < sizeof(gC_Pistols); pistol++) {
 		AddMenuItem(gH_PistolMenu[client], "", gC_Pistols[pistol][1]);
 	}
 }

@@ -31,6 +31,23 @@ void RegisterCommands() {
 
 
 
+/*===============================  Command Listener Handlers  ===============================*/
+
+public Action CommandBlock(int client, const char[] command, int argc) {
+	return Plugin_Handled;
+}
+
+// Allow unlimited team changes
+public Action CommandJoinTeam(int client, const char[] command, int argc) {
+	char teamString[4];
+	GetCmdArgString(teamString, sizeof(teamString));
+	int team = StringToInt(teamString);
+	JoinTeam(client, team);
+	return Plugin_Handled;
+}
+
+
+
 /*===============================  Command Handlers  ===============================*/
 
 public Action CommandToggleMenu(int client, int args) {

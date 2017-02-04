@@ -117,7 +117,7 @@ public void DB_Callback_LoadPreferences(Handle db, Handle results, const char[] 
 		gB_ShowingWeapon[client] = view_as<bool>(SQL_FetchInt(results, 4));
 		gB_AutoRestart[client] = view_as<bool>(SQL_FetchInt(results, 5));
 		int pistolNumber = SQL_FetchInt(results, 6);
-		if (pistolNumber >= NUMBER_OF_PISTOLS) {
+		if (pistolNumber >= sizeof(gC_Pistols)) {
 			pistolNumber = 0;
 		}
 		gI_Pistol[client] = pistolNumber;

@@ -45,6 +45,10 @@ void LoadKZConfig() {
 
 void AddCommandListeners() {
 	AddCommandListener(CommandJoinTeam, "jointeam");
+	// Block radio commands
+	for (int i = 0; i < sizeof(gC_RadioCommands); i++) {
+		AddCommandListener(CommandBlock, gC_RadioCommands[i]);
+	}
 }
 
 void OnMapStartVariableUpdates() {

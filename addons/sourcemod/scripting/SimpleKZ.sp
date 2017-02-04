@@ -114,6 +114,24 @@ MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
 bool gB_CurrentMapIsKZPro;
 int g_OldButtons[MAXPLAYERS + 1];
 
+// Pistol Entity Names (entity class name, alias, team that buys it)
+char gC_Pistols[][][] = 
+{
+	{ "weapon_hkp2000", "P2000 / USP-S", "CT" }, 
+	{ "weapon_glock", "Glock-18", "T" }, 
+	{ "weapon_p250", "P250", "EITHER" }, 
+	{ "weapon_elite", "Dual Berettas", "EITHER" }, 
+	{ "weapon_deagle", "Deagle", "EITHER" }, 
+	{ "weapon_cz75a", "CZ75-Auto", "EITHER" }, 
+	{ "weapon_fiveseven", "Five-SeveN", "CT" }, 
+	{ "weapon_tec9", "Tec-9", "T" }
+};
+
+// Radio commands
+char gC_RadioCommands[][] =  { "coverme", "takepoint", "holdpos", "regroup", "followme", "takingfire", "go", 
+	"fallback", "sticktog", "getinpos", "stormfront", "report", "roger", "enemyspot", "needbackup", "sectorclear", 
+	"inposition", "reportingin", "getout", "negative", "enemydown", "compliment", "thanks", "cheer" };
+
 
 
 /*===============================  Includes  ===============================*/
@@ -250,15 +268,6 @@ public Action OnSetTransmit(int entity, int client) {
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
-}
-
-// Allow unlimited team changes
-public Action CommandJoinTeam(int client, const char[] command, int argc) {
-	char teamString[4];
-	GetCmdArgString(teamString, sizeof(teamString));
-	int team = StringToInt(teamString);
-	JoinTeam(client, team);
-	return Plugin_Handled;
 }
 
 // Block join team messages
