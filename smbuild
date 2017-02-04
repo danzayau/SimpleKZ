@@ -1,11 +1,9 @@
-Plugin(
-	name='SimpleKZ',
-	source='addons/sourcemod/scripting/SimpleKZ.sp',
+Plugin(name='SimpleKZ',
+        source='addons/sourcemod/scripting/SimpleKZ.sp',
 )
 
-Plugin(
-	name='SimpleKZRanks',
-	source='addons/sourcemod/scripting/SimpleKZRanks.sp',
+Plugin(name='SimpleKZRanks',
+        source='addons/sourcemod/scripting/SimpleKZRanks.sp',
 )
 
 Package(name='SimpleKZ',
