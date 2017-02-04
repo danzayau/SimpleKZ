@@ -197,6 +197,18 @@ void GetClientSteamIDAll() {
 	}
 }
 
+void PrintConnectMessage(int client) {
+	char clientName[MAX_NAME_LENGTH];
+	GetClientName(client, clientName, MAX_NAME_LENGTH);
+	CPrintToChatAll("%T", "Client_Connect", client, clientName, gC_Country[client]);
+}
+
+void PrintDisconnectMessage(int client, const char[] reason) {
+	char clientName[MAX_NAME_LENGTH];
+	GetClientName(client, clientName, MAX_NAME_LENGTH);
+	CPrintToChatAll("%T", "Client_Disconnect", client, clientName, reason);
+}
+
 
 
 /*===============================  Options  ===============================*/

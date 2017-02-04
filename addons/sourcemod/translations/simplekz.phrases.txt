@@ -301,6 +301,18 @@
 	{
 		"en"		"{grey}You have made your first split."
 	}
+	"Client_Connect"
+	{
+		// Bill has connected from Australia.
+		"#format"	"{1:s},{2:s}"
+		"en"		"{lime}{1}{grey} has connected from {default}{2}{grey}."
+	}
+	"Client_Disconnect"
+	{
+		// Bill has disconnected (Disconnect).
+		"#format"	"{1:s},{2:s}"
+		"en"		"{lime}{1}{grey} has disconnected ({2})."
+	}
 	
 	
 	// Database Errors ////////////////////////////////////////////////////////////

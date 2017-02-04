@@ -147,8 +147,10 @@ public void OnPluginStart() {
 	AddCommandListeners();
 	
 	// Hooks
+	HookEvent("player_disconnect", OnPlayerDisconnect, EventHookMode_Pre);
 	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Pre);
 	HookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);
+	HookEvent("player_death", OnPlayerDeath, EventHookMode_Pre);
 	HookEntityOutput("func_button", "OnPressed", OnButtonPress);
 	AddCommandListener(OnSay, "say");
 	AddCommandListener(OnSay, "say_team");
@@ -198,6 +200,8 @@ public void OnClientAuthorized(int client) {
 		SetupTimer(client);
 		MeasureResetPos(client);
 		SetupSplits(client);
+		
+		PrintConnectMessage(client);
 	}
 }
 
@@ -211,8 +215,14 @@ public void OnClientPutInServer(int client) {
 	}
 }
 
-public void OnClientDisconnect(int client) {
-	DB_UpdatePreferences(client);
+public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) {
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	if (!IsFakeClient(client)) {
+		DB_UpdatePreferences(client);
+		char reason[64];
+		GetEventString(event, "reason", reason, sizeof(reason));
+		PrintDisconnectMessage(client, reason);
+	}
 }
 
 public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
@@ -276,7 +286,7 @@ public Action OnSay(int client, const char[] command, int argc) {
 	StripQuotes(message);
 	
 	// Change to lower case (potential) command messages
-	if (((message[0] == '/') || (message[0] == '!')) && IsCharUpper(message[1])) {
+	if ((message[0] == '/' || message[0] == '!') && IsCharUpper(message[1])) {
 		for (int i = 1; i <= strlen(message); i++) {
 			message[i] = CharToLower(message[i]);
 		}
@@ -284,8 +294,8 @@ public Action OnSay(int client, const char[] command, int argc) {
 		return Plugin_Handled;
 	}
 	
-	// Don't print the message if it is a chat trigger
-	if (IsChatTrigger()) {
+	// Don't print the message if it is a chat trigger, or starts with @, or is empty
+	if (IsChatTrigger() || message[0] == '@' || !message[0]) {
 		return Plugin_Handled;
 	}
 	
@@ -314,6 +324,14 @@ public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &
 public void OnStartNoclipping(int client) {
 	if (gB_TimerRunning[client]) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Noclip");
+		ForceStopTimer(client);
+	}
+}
+
+// Force stop timer when a player dies
+public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	if (!IsFakeClient(client)) {
 		ForceStopTimer(client);
 	}
 } 
