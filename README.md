@@ -28,6 +28,7 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
  * Extract ```SimpleKZ.zip``` to ```csgo/``` in your server directory.
  * Check the config file ```csgo/cfg/sourcemod/SimpleKZ/SimpleKZ.cfg``` is appropriate for your server.
  * **Optional:** Add a database called ```simplekz``` to ```csgo/addons/sourcemod/configs/databases.cfg``` for storing player preferences, player times and more. An example of this using SQLite can be found [here](http://pastebin.com/UMNyQzPg).
+ * SimpleKZ will work without SimpleKZRanks if you do not wish to record times or use related features.
 
 ============================
 
