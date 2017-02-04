@@ -32,6 +32,8 @@ void TimerRestart(int client) {
 	gF_LastTeleportToStartWastedTime[client] = 0.0;
 	gF_WastedTime[client] = 0.0;
 	gB_HasSavedPosition[client] = false;
+	gI_Splits[client] = 0;
+	gF_SplitRunTime[client] = 0.0;
 }
 
 void StartTimer(int client) {
@@ -41,12 +43,7 @@ void StartTimer(int client) {
 	gB_TimerRunning[client] = true;
 	if (!gB_HasStartedThisMap[client]) {
 		gB_HasStartedThisMap[client] = true;
-		if (gB_ConnectedToDB) {
-			DB_PrintPBs(client, client, gC_CurrentMap);
-		}
 	}
-	g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
-	g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
 	CloseTeleportMenu(client);
 }
 
@@ -54,13 +51,13 @@ void EndTimer(int client) {
 	Call_SimpleKZ_OnTimerEnded(client);
 	EmitSoundToClient(client, "buttons/bell1.wav");
 	gB_TimerRunning[client] = false;
-	PrintToChatAll("%s", GetEndTimeString(client));
-	DB_ProcessEndTimer(client);
+	PrintEndTimeString(client);
 	CloseTeleportMenu(client);
 }
 
 void ForceStopTimer(int client) {
 	gB_TimerRunning[client] = false;
+	gB_Paused[client] = false;
 }
 
 void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
@@ -88,17 +85,17 @@ void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
 
 public void OnButtonPress(const char[] name, int caller, int activator, float delay) {
 	if (IsValidEntity(caller) && IsValidClient(activator)) {
-		char tempString[64];
+		char tempString[32];
 		// Get the class name of the activator
 		GetEdictClassname(activator, tempString, sizeof(tempString));
 		if (StrEqual(tempString, "player")) {
 			// Get the name of the pressed func_button
 			GetEntPropString(caller, Prop_Data, "m_iName", tempString, sizeof(tempString));
 			// Check if button entity name is something we want to do something with
-			if (StrEqual(tempString, "climb_startbutton")) {
+			if (StrEqual(tempString, "climb_startbutton", false)) {
 				StartButtonPress(activator);
 			}
-			else if (StrEqual(tempString, "climb_endbutton")) {
+			else if (StrEqual(tempString, "climb_endbutton", false)) {
 				EndButtonPress(activator);
 			}
 		}
@@ -109,6 +106,8 @@ void StartButtonPress(int client) {
 	// Have to be on ground and not noclipping to start the timer
 	if (g_MovementPlayer[client].onGround && !g_MovementPlayer[client].noclipping) {
 		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
+		g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
+		g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
 		StartTimer(client);
 	}
 }
@@ -117,6 +116,21 @@ void EndButtonPress(int client) {
 	if (gB_TimerRunning[client]) {
 		EndTimer(client);
 	}
+}
+
+void CheckForStartButtonPress(int client) {
+	// If didnt just start time, and just pressed +use button
+	if (!(gB_TimerRunning[client] && gF_CurrentTime[client] < 0.1)
+		 && !(g_OldButtons[client] & IN_USE) && GetClientButtons(client) & IN_USE) {
+		// If player is at their start position, start their timer and update their start angles
+		float origin[3];
+		g_MovementPlayer[client].GetOrigin(origin);
+		if (GetVectorDistance(origin, gF_StartOrigin[client]) == 0.0) {
+			g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
+			StartTimer(client);
+		}
+	}
+	g_OldButtons[client] = GetClientButtons(client);
 }
 
 
@@ -139,6 +153,9 @@ void TeleportToStart(int client) {
 		}
 		AddWastedTimeTeleportToStart(client);
 		TimerDoTeleport(client, gF_StartOrigin[client], gF_StartAngles[client]);
+		if (gB_AutoRestart[client]) {
+			StartTimer(client);
+		}
 	}
 	else {
 		CS_RespawnPlayer(client);
@@ -148,10 +165,10 @@ void TeleportToStart(int client) {
 
 void MakeCheckpoint(int client) {
 	if (!IsPlayerAlive(client)) {
-		PrintToChat(client, "[\x06KZ\x01] You must be alive to make a checkpoint.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Checkpoint_NotAlive");
 	}
 	else if (!g_MovementPlayer[client].onGround) {
-		PrintToChat(client, "[\x06KZ\x01] You can't make a checkpoint midair.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Checkpoint_Midair");
 	}
 	else {
 		gI_CheckpointsSet[client]++;
@@ -164,13 +181,13 @@ void MakeCheckpoint(int client) {
 
 void TeleportToCheckpoint(int client) {
 	if (!IsPlayerAlive(client)) {
-		PrintToChat(client, "[\x06KZ\x01] You must be alive to teleport to a checkpoint.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Teleport_NotAlive");
 	}
 	else if (gI_CheckpointsSet[client] == 0) {
-		PrintToChat(client, "[\x06KZ\x01] You don't have a checkpoint set.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Teleport_NoCheckpoint");
 	}
 	else if (gB_CurrentMapIsKZPro && gB_TimerRunning[client]) {
-		PrintToChat(client, "[\x06KZ\x01] You can't use teleports during a run on a \x05kzpro_\x01 map.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Teleport_KZPro");
 	}
 	else {
 		AddWastedTimeTeleportToCheckpoint(client);
@@ -181,13 +198,13 @@ void TeleportToCheckpoint(int client) {
 
 void UndoTeleport(int client) {
 	if (!IsPlayerAlive(client)) {
-		PrintToChat(client, "[\x06KZ\x01] You must be alive to undo a teleport.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Undo_NotAlive");
 	}
 	else if (gI_TeleportsUsed[client] < 1) {
-		PrintToChat(client, "[\x06KZ\x01] You don't have a teleport to undo.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Undo_NoTeleport");
 	}
 	else if (!gB_LastTeleportOnGround[client]) {
-		PrintToChat(client, "[\x06KZ\x01] You can't undo because you teleported midair.");
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Undo_Midair");
 	}
 	else {
 		AddWastedTimeUndoTeleport(client);
@@ -198,7 +215,7 @@ void UndoTeleport(int client) {
 
 void TogglePause(int client) {
 	if (!gB_TimerRunning[client]) {
-		return;
+		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
 	}
 	else if (gB_Paused[client]) {
 		gB_Paused[client] = false;
@@ -208,10 +225,10 @@ void TogglePause(int client) {
 	}
 	else {
 		if (gB_HasResumedInThisRun[client] && gF_CurrentTime[client] - gF_LastResumeTime[client] < PAUSE_COOLDOWN_AFTER_RESUMING) {
-			PrintToChat(client, "[\x06KZ\x01] You can't pause because you just resumed.");
+			CPrintToChat(client, "%t %t", "KZ_Tag", "Pause_JustResumed");
 		}
 		else if (!g_MovementPlayer[client].onGround) {
-			PrintToChat(client, "[\x06KZ\x01] You can't pause in midair.");
+			CPrintToChat(client, "%t %t", "KZ_Tag", "Pause_Midair");
 		}
 		else {
 			gB_Paused[client] = true;
@@ -291,35 +308,13 @@ int GetCurrentRunType(int client) {
 	}
 }
 
-char[] GetCurrentRunTypeString(int client) {
-	char runTypeString[4];
+void PrintEndTimeString(int client) {
 	if (GetCurrentRunType(client) == 0) {
-		FormatEx(runTypeString, sizeof(runTypeString), "PRO");
+		CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapPro", 
+			client, FormatTimeFloat(gF_CurrentTime[client]));
 	}
 	else {
-		FormatEx(runTypeString, sizeof(runTypeString), "TP");
+		CPrintToChatAll("%t %t", "KZ_Tag", "BeatMap", 
+			client, FormatTimeFloat(gF_CurrentTime[client]), gI_TeleportsUsed[client], FormatTimeFloat(gF_CurrentTime[client] - gF_WastedTime[client]));
 	}
-	return runTypeString;
-}
-
-char[] GetEndTimeString(int client) {
-	char endTimeString[256], clientName[64];
-	GetClientName(client, clientName, sizeof(clientName));
-	
-	if (GetCurrentRunType(client) == 0) {
-		FormatEx(endTimeString, sizeof(endTimeString), 
-			"[\x06KZ\x01] \x05%s\x01 finished in \x0B%s\x01 (\x0BPRO\x01).", 
-			clientName, 
-			FormatTimeFloat(gF_CurrentTime[client]), 
-			GetCurrentRunTypeString(client));
-	}
-	else {
-		FormatEx(endTimeString, sizeof(endTimeString), 
-			"[\x06KZ\x01] \x05%s\x01 finished in \x09%s\x01 (\x09%d\x01 TP | \x08%s\x01).", 
-			clientName, 
-			FormatTimeFloat(gF_CurrentTime[client]), 
-			gI_TeleportsUsed[client], 
-			FormatTimeFloat(gF_CurrentTime[client] - gF_WastedTime[client]));
-	}
-	return endTimeString;
 } 

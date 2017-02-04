@@ -5,8 +5,8 @@
 
 
 void UpdateInfoPanel(int client) {
-	MovementPlayer player = g_MovementPlayer[client];
-	if (gB_ShowingInfoPanel[player.id]) {
+	if (gB_ShowingInfoPanel[client]) {
+		MovementPlayer player = g_MovementPlayer[client];
 		if (IsPlayerAlive(player.id)) {
 			if (gB_ShowingKeys[player.id]) {
 				PrintHintText(player.id, "%s", GetInfoPanelWithKeys(player));
@@ -52,17 +52,22 @@ char[] GetInfoPanelTimeString(MovementPlayer player) {
 	if (gB_TimerRunning[player.id]) {
 		if (GetCurrentRunType(player.id) == 0) {
 			FormatEx(timeString, sizeof(timeString), 
-				" <b>Time</b>: <font color='#6699ff'>%s</font>", 
+				" <b>%T</b>: <font color='#6699ff'>%s</font>", 
+				"Time", player.id, 
 				FormatTimeFloat(gF_CurrentTime[player.id]));
 		}
 		else {
 			FormatEx(timeString, sizeof(timeString), 
-				" <b>Time</b>: <font color='#ffdd99'>%s</font>", 
+				" <b>%T</b>: <font color='#ffdd99'>%s</font>", 
+				"Time", player.id, 
 				FormatTimeFloat(gF_CurrentTime[player.id]));
 		}
 	}
 	else {
-		timeString = " <b>Time</b>: Stopped";
+		FormatEx(timeString, sizeof(timeString), 
+			" <b>%T</b>: %T", 
+			"Time", player.id, 
+			"Stopped", player.id);
 	}
 	return timeString;
 }
@@ -70,7 +75,9 @@ char[] GetInfoPanelTimeString(MovementPlayer player) {
 char[] GetInfoPanelPausedString(MovementPlayer player) {
 	char pausedString[64];
 	if (gB_Paused[player.id]) {
-		pausedString = "(<font color='#999999'>PAUSED</font>)";
+		FormatEx(pausedString, sizeof(pausedString), 
+			"(<font color='#999999'>%T</font>)", 
+			"Paused", player.id);
 	}
 	else {
 		pausedString = "";
@@ -83,12 +90,14 @@ char[] GetInfoPanelSpeedString(MovementPlayer player) {
 	if (!gB_Paused[player.id]) {
 		if (player.onGround || player.onLadder || player.noclipping) {
 			FormatEx(speedString, sizeof(speedString), 
-				" <b>Speed</b>: <font color='#999999'>%.0f</font> u/s", 
+				" <b>%T</b>: <font color='#999999'>%.0f</font> u/s", 
+				"Speed", player.id, 
 				RoundFloat(player.speed * 10) / 10.0);
 		}
 		else {
 			FormatEx(speedString, sizeof(speedString), 
-				" <b>Speed</b>: <font color='#999999'>%.0f</font>", 
+				" <b>%T</b>: <font color='#999999'>%.0f</font>", 
+				"Speed", player.id, 
 				RoundFloat(player.speed * 10) / 10.0);
 		}
 	}
@@ -121,7 +130,8 @@ char[] GetInfoPanelTakeoffString(MovementPlayer player) {
 char[] GetInfoPanelKeysString(MovementPlayer player) {
 	char keysString[64];
 	FormatEx(keysString, sizeof(keysString), 
-		" <b>Keys:</b> <font color='#999999'>%c %c %c %c   %c %c</font>", 
+		" <b>%T</b>: <font color='#999999'>%c %c %c %c   %c %c</font>", 
+		"Keys", player.id, 
 		GetInfoPanelAString(player), 
 		GetInfoPanelWString(player), 
 		GetInfoPanelSString(player), 
@@ -132,42 +142,42 @@ char[] GetInfoPanelKeysString(MovementPlayer player) {
 }
 
 int GetInfoPanelWString(MovementPlayer player) {
-	if (player.buttons & IN_FORWARD) {
+	if (GetClientButtons(player.id) & IN_FORWARD) {
 		return 'W';
 	}
 	return '_';
 }
 
 int GetInfoPanelAString(MovementPlayer player) {
-	if (player.buttons & IN_MOVELEFT) {
+	if (GetClientButtons(player.id) & IN_MOVELEFT) {
 		return 'A';
 	}
 	return '_';
 }
 
 int GetInfoPanelSString(MovementPlayer player) {
-	if (player.buttons & IN_BACK) {
+	if (GetClientButtons(player.id) & IN_BACK) {
 		return 'S';
 	}
 	return '_';
 }
 
 int GetInfoPanelDString(MovementPlayer player) {
-	if (player.buttons & IN_MOVERIGHT) {
+	if (GetClientButtons(player.id) & IN_MOVERIGHT) {
 		return 'D';
 	}
 	return '_';
 }
 
 int GetInfoPanelCrouchString(MovementPlayer player) {
-	if (player.buttons & IN_DUCK) {
+	if (GetClientButtons(player.id) & IN_DUCK) {
 		return 'C';
 	}
 	return '_';
 }
 
 int GetInfoPanelJumpString(MovementPlayer player) {
-	if (player.buttons & IN_JUMP) {
+	if (GetClientButtons(player.id) & IN_JUMP) {
 		return 'J';
 	}
 	return '_';

@@ -1,0 +1,464 @@
+"Phrases"
+{
+	// General ////////////////////////////////////////////////////////////
+	"Time"
+	{
+		"en"		"Time"
+	}
+	"Stopped"
+	{
+		"en"		"Stopped"
+	}
+	"Paused"
+	{
+		"en"		"PAUSED"
+	}
+	"Speed"
+	{
+		"en"		"Speed"
+	}
+	"Keys"
+	{
+		"en"		"Keys"
+	}
+
+
+	// Chat Messages ////////////////////////////////////////////////////////////
+	"KZ_Tag"
+	{
+		"en"		"{grey}[{lightgreen}KZ{grey}]"
+	}
+	"TimeStopped_Generic"
+	{
+		"en"		"{darkred}Your timer has been stopped."
+	}
+	"TimeStopped_Noclip"
+	{
+		"en"		"{darkred}Your timer has been stopped because you noclipped."	
+	}
+	"TimeStopped_Goto"
+	{
+		"en"		"{darkred}Your timer has been stopped because you used !goto."
+	}
+	"Checkpoint_NotAlive"
+	{
+		"en"		"{darkred}You must be alive to make a checkpoint."
+	}
+	"Checkpoint_Midair"
+	{
+		"en"		"{darkred}You can't make a checkpoint midair."
+	}
+	"Teleport_NotAlive"
+	{
+		"en"		"{darkred}You must be alive to teleport to your checkpoint."
+	}
+	"Teleport_NoCheckpoint"
+	{
+		"en"		"{darkred}You don't have a checkpoint set."
+	}
+	"Teleport_KZPro"
+	{
+		"en"		"{darkred}You can't teleport to your checkpoint on a {lime}kzpro_{darkred} map."
+	}
+	"Undo_NotAlive"
+	{
+		"en"		"{darkred}You must be alive to undo a teleport."
+	}
+	"Undo_NoTeleport"
+	{
+		"en"		"{darkred}You don't have a teleport to undo."
+	}
+	"Undo_Midair"
+	{
+		"en"		"{darkred}You can't undo because you teleported midair."
+	}
+	"Pause_JustResumed"
+	{
+		"en"		"{darkred}You can't pause because you just resumed."
+	}
+	"Pause_Midair"
+	{
+		"en"		"{darkred}You can't pause in midair."
+	}
+	"TeleportMenu_Enable"
+	{
+		"en"		"{grey}Your teleport menu has been enabled."
+	}
+	"TeleportMenu_Disable"
+	{
+		"en"		"{grey}Your teleport menu has been disabled."
+	}
+	"ShowPlayers_Enable"
+	{
+		"en"		"{grey}You are now showing other players."
+	}
+	"ShowPlayers_Disable"
+	{
+		"en"		"{grey}You are now hiding other players."
+	}
+	"InfoPanel_Enable"
+	{
+		"en"		"{grey}Your centre information panel has been enabled."
+	}
+	"InfoPanel_Disable"
+	{
+		"en"		"{grey}Your centre information panel has been disabled."
+	}
+	"ShowWeapon_Enable"
+	{
+		"en"		"{grey}You are now showing your weapon."
+	}
+	"ShowWeapon_Disable"
+	{
+		"en"		"{grey}You are now hiding your weapon."
+	}
+	"ShowKeys_Enable"
+	{
+		"en"		"{grey}You are now showing your key presses to yourself."
+	}
+	"ShowKeys_Disable"
+	{
+		"en"		"{grey}You are no longer showing your key presses to yourself."
+	}
+	"AutoRestart_Enable"
+	{
+		"en"		"{grey}Your timer will now restart when you teleport to start."
+	}
+	"AutoRestart_Disable"
+	{
+		"en"		"{grey}Your timer will no longer restart you teleport to start."
+	}
+	"StopSound"
+	{
+		"en"		"{grey}You have stopped all sounds."
+	}
+	"Goto_Success"
+	{
+		// You have teleported to Bill.
+		"#format"	"{1:N}"
+		"en"		"{grey}You have teleported to {lime}{1}{grey}."
+	}
+	"Goto_NoPlayer"
+	{
+		"en"		"{darkred}Please specify a player to go to."
+	}
+	"Goto_NotYourself"
+	{
+		"en"		"{darkred}You can't teleport to yourself."
+	}
+	"Goto_NotAlive"
+	{
+		"en"		"{darkred}The player you specified is not alive."
+	}
+	"Spec_NotYourself"
+	{
+		"en"		"{darkred}You can't spectate yourself."
+	}
+	"Spec_NotAlive"
+	{
+		"en"		"{darkred}The player you specified is not alive."
+	}
+	"Measure_Result"
+	{
+		// Distance: 123.45, Vertical: 12.34.
+		"#format"	"{1:.2f},{2:.2f}"
+		"en"		"{grey}Distance: {default}{1}{grey}, Vertical {default}{2}{grey}."
+	}
+	"Measure_PointsNotSet"
+	{
+		"en"		"{darkred}You must set both points to measure a distance."
+	}
+	"Measure_NotAimingAtSolid"
+	{
+		"en"		"{darkred}You are not aiming at anything solid!"
+	}
+	"Database_NotConnected"
+	{
+		"en"		"{grey}This server isn't connected to a {lime}SimpleKZ{grey} database."
+	}
+	"Split_Make"
+	{
+		// Segment 8:  01:23.45 - Time: 12:34.56
+		"#format"	"{1:d},{2:s},{3:s}"
+		"en"		"{green}Segment {default}{1}{grey}:  {default}{2}{grey}  -  Time: {default}{3}"
+	}
+	"Split_Make_TimerStopped"
+	{
+		// Time since last split:  01:23.45
+		"#format"	"{1:s}"
+		"en"		"{grey}Time since last split:  {default}{1}{grey}"
+	}
+	"Split_MakeFirst"
+	{
+		"en"		"{grey}You have made your first split. Make another to see how much time has passed."
+	}
+	"Client_Connect"
+	{
+		// Bill has connected from Australia.
+		"#format"	"{1:s},{2:s}"
+		"en"		"{lime}{1}{grey} has connected from {default}{2}{grey}."
+	}
+	"Client_Disconnect"
+	{
+		// Bill has disconnected (Disconnect).
+		"#format"	"{1:s},{2:s}"
+		"en"		"{lime}{1}{grey} has disconnected ({2})."
+	}
+	
+	
+	// Database Errors ////////////////////////////////////////////////////////////
+	"Database_ConnectionFailed"
+	{
+		"#format"	"{1:s}"
+		"en"		"[SimpleKZ] Database connection failed: {1} \n[SimpleKZ] Proceeding without database."
+	}
+	"Database_InvalidDriver"
+	{
+		"en"		"[SimpleKZ] Invalid database driver (use SQLite or MySQL)."
+	}
+	"Database_QueryError"
+	{
+		"#format"	"{1:s}"
+		"en"		"[SimpleKZ] Database query error: {1}"
+	}
+	"Database_TransactionError"
+	{
+		"#format"	"{1:s}"
+		"en"		"[SimpleKZ] Database transaction error: {1}"
+	}
+	
+	
+	// Teleport Menu ////////////////////////////////////////////////////////////
+	"TPMenu_Checkpoint"
+	{
+		"en"		"Checkpoint"
+	}
+	"TPMenu_Teleport"
+	{
+		"en"		"Teleport"
+	}
+	"TPMenu_Undo"
+	{
+		"en"		"Undo TP"
+	}
+	"TPMenu_Pause"
+	{
+		"en"		"Pause"
+	}
+	"TPMenu_Resume"
+	{
+		"en"		"Resume"
+	}
+	"TPMenu_Restart"
+	{
+		"en"		"Restart"
+	}
+	"TPMenu_Respawn"
+	{
+		"en"		"Respawn"
+	}
+	"TPMenu_Split"
+	{
+		"en"		"Split"
+	}
+	"TPMenu_Rejoin"
+	{
+		"en"		"Rejoin"
+	}
+	
+	// Measure Menu ////////////////////////////////////////////////////////////
+	"MeasureMenu_Title"
+	{
+		"en"		"Measure"
+	}
+	"MeasureMenu_PointA"
+	{
+		"en"		"Point A (Green)"
+	}
+	"MeasureMenu_PointB"
+	{
+		"en"		"Point B (Red)"
+	}
+	"MeasureMenu_GetDistance"
+	{
+		"en"		"Get Distance"
+	}
+	
+	
+	// Pistol Menu ////////////////////////////////////////////////////////////
+	"PistolMenu_Title"
+	{
+		"en"		"Pick a Pistol"
+	}
+	
+	
+	// Map Top Menu ////////////////////////////////////////////////////////////
+	"MapTopMenu_Title"
+	{
+		// Map Top (kz_map)
+		"#format"	"{1:s}"
+		"en"		"Map Top ({1})"
+	}
+	"MapTopMenu_Top20"
+	{
+		"en"		"Top 20"
+	}
+	"MapTopMenu_Top20Pro"
+	{
+		"en"		"Top 20 Pro"
+	}
+	
+	// Options Menu Menu ////////////////////////////////////////////////////////////
+	"OptionsMenu_Title"
+	{
+		"en"		"Options"
+	}
+	"OptionsMenu_Enabled"
+	{
+		"en"		"Enabled"
+	}
+	"OptionsMenu_Disabled"
+	{
+		"en"		"Disabled"
+	}
+	"OptionsMenu_TeleportMenu"
+	{
+		"en"		"Teleport menu"
+	}
+	"OptionsMenu_InfoPanel"
+	{
+		"en"		"Centre panel"
+	}
+	"OptionsMenu_ShowPlayers"
+	{
+		"en"		"Show players"
+	}
+	"OptionsMenu_ShowWeapon"
+	{
+		"en"		"Show weapon"
+	}
+	"OptionsMenu_ShowKeys"
+	{
+		"en"		"Show own keys"
+	}
+	"OptionsMenu_AutoRestart"
+	{
+		"en"		"Auto restart"
+	}
+	"OptionsMenu_Pistol"
+	{
+		"en"		"Pistol"
+	}
+	
+	
+	// SimpleKZ Ranks ////////////////////////////////////////////////////////////
+	"BeatMap"
+	{
+		// Bill finished in 01:23.45 (4 TP | 01.02.34).
+		"#format"	"{1:N},{2:s},{3:d},{4:s}"
+		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({yellow}{3} TP{grey} | {grey}{4}{grey})."
+	}
+	"BeatMapPro"
+	{
+		// Bill finished in 01:23.45 (PRO).
+		"#format"	"{1:N},{2:s}"
+		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey})."
+	}
+	"BeatMapRecord"
+	{
+		"#format"	"{1:N}"
+		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD{grey}!"
+	}
+	"BeatProRecord"
+	{
+		"#format"	"{1:N}"
+		"en"		"{lime}{1}{grey} beat the {blue}PRO RECORD{grey}!"
+	}
+	"BeatMapAndProRecord"
+	{
+		"#format"	"{1:N}"
+		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD{grey} and the {blue}PRO RECORD{grey}!"
+	}
+	"PB_Header"
+	{	
+		// Best times by Bill on kz_map
+		"#format"	"{1:s},{2:N}"
+		"en"		"{grey}Best Times by {lime}{2}{grey} on {lime}{1}"
+	}
+	"PB_Header_Self"
+	{
+		"#format"	"{1:s}"
+		"en"		"{grey}Personal Best Times on {lime}{1}"
+	}
+	"PB_NoTimes"
+	{
+		"en"		"{grey}They don't have a time... yet."
+	}
+	"PB_NoTimes_Self"
+	{
+		"en"		"{grey}You don't have a time... yet."
+	}
+	"PB_Map"
+	{
+		// MAP PB: 01:23.45 - #4/123 (5 TP | 01:01.23)
+		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:s}"
+		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} - #{default}{2}{grey}/{3}  ({yellow}{4} TP{grey} | {grey}{5}{grey})"
+	}
+	"PB_Map_Pro"
+	{
+		// MAP PB: 01:23.45 - #4/123 (PRO #3/12)
+		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:d}"
+		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} - #{default}{2}{grey}/{3} ({blue}PRO{grey} #{default}{4}{grey}/{5})"
+	}
+	"PB_Pro"
+	{
+		// PRO PB: 01:23.45 - #4/123
+		"#format"	"{1:s},{2:d},{3:d}"
+		"en"		"{blue}PRO PB{grey}: {default}{1}{grey} - #{default}{2}{grey}/{3}"
+	}
+	"PB_Pro_None"
+	{
+		"en"		"{blue}PRO PB{grey}: None!"
+	}
+	"WR_Header"
+	{
+		"#format"	"{1:s}"
+		"en"		"{grey}Server Records on {lime}{1}"
+	}
+	"WR_NoTimes"
+	{
+		"en"		"{grey}No times found!"
+	}
+	"WR_Map"
+	{
+		// MAP RECORD: 01:23.45 (4 TP) by Bill
+		"#format"	"{1:s},{2:d},{3:s}"
+		"en"		"{yellow}MAP RECORD{grey}: {default}{1}{grey} ({yellow}{2} TP{grey}) by {lime}{3}"
+	}
+	"WR_Map_Pro"
+	{
+		// MAP RECORD: 01:23.45 (PRO) by Bill
+		"#format"	"{1:s},{2:s}"
+		"en"		"{yellow}MAP RECORD{grey}: {default}{1}{grey} ({blue}PRO{grey}) by {lime}{2}"
+	}
+	"WR_Pro"
+	{
+		// PRO RECORD: 01:23.45 by Bill
+		"#format"	"{1:s},{2:s}"
+		"en"		"{blue}PRO RECORD{grey}: {default}{1}{grey} by {lime}{2}"
+	}
+	"WR_Pro_None"
+	{
+		"en"		"{blue}PRO RECORD{grey}: None!"
+	}
+	"MapTop_None"
+	{
+		"#format"	"{1:s}"
+		"en"		"{grey}No times were found on {lime}{1}{grey}."
+	}
+	"MapTop_Pro_None"
+	{
+		"#format"	"{1:s}"
+		"en"		"{grey}No {blue}PRO{grey} times were found on {lime}{1}{grey}."
+	}
+}
