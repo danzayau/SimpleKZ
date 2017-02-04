@@ -216,11 +216,7 @@ public void OnClientAuthorized(int client) {
 }
 
 public void OnClientPutInServer(int client) {
-	// Get rid of bots when they join
-	if (IsFakeClient(client)) {
-		ServerCommand("bot_quota 0");
-	}
-	else {
+	if (!IsFakeClient(client)) {
 		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
 	}
 }
