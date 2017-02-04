@@ -85,6 +85,7 @@ bool gB_ShowingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
 bool gB_ShowingKeys[MAXPLAYERS + 1] =  { false, ... };
 bool gB_ShowingPlayers[MAXPLAYERS + 1] =  { true, ... };
 bool gB_ShowingWeapon[MAXPLAYERS + 1] =  { true, ... };
+bool gB_AutoRestart[MAXPLAYERS + 1];
 int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
 
 // Menus
@@ -113,6 +114,7 @@ float gF_SplitGameTime[MAXPLAYERS + 1];
 // Other
 MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
 bool gB_CurrentMapIsKZPro;
+int g_OldButtons[MAXPLAYERS + 1];
 
 
 
@@ -228,6 +230,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	TimerTick(client);
 	UpdateTeleportMenu(client);
 	UpdateInfoPanel(client);
+	CheckForStartButtonPress(client);
 }
 
 

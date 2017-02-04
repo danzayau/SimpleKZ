@@ -45,6 +45,7 @@ public int MenuHandler_TeleportMenu(Menu menu, MenuAction action, int param1, in
 				case 2:TogglePause(param1);
 				case 3:TeleportToStart(param1);
 				case 4:UndoTeleport(param1);
+				case 5:SplitMake(param1);
 			}
 		}
 		else {
@@ -72,6 +73,7 @@ void TeleportAddItems(int client) {
 		TeleportAddItemPause(client);
 		TeleportAddItemStart(client);
 		TeleportAddItemUndo(client);
+		TeleportAddItemSplit(client);
 	}
 	else {
 		TeleportAddItemRejoin(client);
@@ -139,6 +141,12 @@ void TeleportAddItemStart(int client) {
 		FormatEx(text, sizeof(text), "%T", "TPMenu_Respawn", client);
 		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
+}
+
+void TeleportAddItemSplit(int client) {
+	char text[16];
+	FormatEx(text, sizeof(text), "%T", "TPMenu_Split", client);
+	AddMenuItem(gH_TeleportMenu[client], "", text);
 }
 
 void TeleportAddItemRejoin(int client) {
@@ -479,11 +487,12 @@ void CreateOptionsMenu(int client) {
 	gH_OptionsMenu[client] = CreateMenu(MenuHandler_Options);
 	SetMenuOptionFlags(gH_OptionsMenu[client], MENUFLAG_NO_SOUND);
 	SetMenuExitButton(gH_OptionsMenu[client], true);
+	SetMenuPagination(gH_OptionsMenu[client], 7);
 }
 
-void DisplayOptionsMenu(int client) {
+void DisplayOptionsMenu(int client, int atItem = 0) {
 	UpdateOptionsMenu(client);
-	DisplayMenu(gH_OptionsMenu[client], client, MENU_TIME_FOREVER);
+	DisplayMenuAtItem(gH_OptionsMenu[client], client, atItem, MENU_TIME_FOREVER);
 }
 
 void UpdateOptionsMenu(int client) {
@@ -495,6 +504,27 @@ void UpdateOptionsMenu(int client) {
 	OptionsAddItemShowWeapon(client);
 	OptionsAddItemShowKeys(client);
 	OptionsAddItemPistol(client);
+	OptionsAddItemAutoRestart(client);
+}
+
+public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int param2) {
+	if (action == MenuAction_Select) {
+		switch (param2) {
+			case 0:ToggleTeleportMenu(param1);
+			case 1:ToggleInfoPanel(param1);
+			case 2:ToggleShowPlayers(param1);
+			case 3:ToggleShowWeapon(param1);
+			case 4:ToggleShowKeys(param1);
+			case 5: {
+				gB_CameFromOptionsMenu[param1] = true;
+				DisplayPistolMenu(param1);
+			}
+			case 6:ToggleAutoRestart(param1);
+		}
+		if (param2 != 5) {
+			DisplayOptionsMenu(param1, param2 / 6 * 6); // Round item number down to multiple of 6
+		}
+	}
 }
 
 void OptionsAddItemTeleportMenu(int client) {
@@ -557,27 +587,20 @@ void OptionsAddItemShowKeys(int client) {
 	}
 }
 
+void OptionsAddItemAutoRestart(int client) {
+	char text[32];
+	if (gB_AutoRestart[client]) {
+		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_AutoRestart", client, "OptionsMenu_Enabled", client);
+		AddMenuItem(gH_OptionsMenu[client], "", text);
+	}
+	else {
+		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_AutoRestart", client, "OptionsMenu_Disabled", client);
+		AddMenuItem(gH_OptionsMenu[client], "", text);
+	}
+}
+
 void OptionsAddItemPistol(int client) {
 	char text[32];
 	FormatEx(text, sizeof(text), "%T - %s", "OptionsMenu_Pistol", client, gC_Pistols[gI_Pistol[client]][1]);
 	AddMenuItem(gH_OptionsMenu[client], "", text);
-}
-
-public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int param2) {
-	if (action == MenuAction_Select) {
-		switch (param2) {
-			case 0:ToggleTeleportMenu(param1);
-			case 1:ToggleInfoPanel(param1);
-			case 2:ToggleShowPlayers(param1);
-			case 3:ToggleShowWeapon(param1);
-			case 4:ToggleShowKeys(param1);
-			case 5: {
-				gB_CameFromOptionsMenu[param1] = true;
-				DisplayPistolMenu(param1);
-			}
-		}
-		if (param2 != 5) {
-			DisplayOptionsMenu(param1);
-		}
-	}
 } 

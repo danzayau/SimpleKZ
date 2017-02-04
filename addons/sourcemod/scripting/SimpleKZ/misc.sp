@@ -247,6 +247,17 @@ void ToggleShowWeapon(int client) {
 	SetDrawViewModel(client, gB_ShowingWeapon[client]);
 }
 
+void ToggleAutoRestart(int client) {
+	if (gB_AutoRestart[client]) {
+		gB_AutoRestart[client] = false;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "AutoRestart_Disable");
+	}
+	else {
+		gB_AutoRestart[client] = true;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "AutoRestart_Enable");
+	}
+}
+
 void ToggleShowKeys(int client) {
 	if (gB_ShowingKeys[client]) {
 		gB_ShowingKeys[client] = false;
@@ -267,12 +278,12 @@ void SetupSplits(int client) {
 }
 
 void SplitMake(int client) {
-	if ((GetGameTime() - gF_SplitGameTime[client]) < MINIMUM_SPLIT_TIME) { // Ignore split spam
+	if ((GetGameTime() - gF_SplitGameTime[client]) < MINIMUM_SPLIT_TIME) {  // Ignore split spam
+		CloseTeleportMenu(client);
 		return;
 	}
 	
 	gI_Splits[client]++;
-	
 	if (gB_TimerRunning[client]) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "Split_Make", 
 			gI_Splits[client], 
@@ -288,7 +299,8 @@ void SplitMake(int client) {
 				FormatTimeFloat(GetGameTime() - gF_SplitGameTime[client]));
 		}
 	}
-	
 	gF_SplitRunTime[client] = gF_CurrentTime[client];
 	gF_SplitGameTime[client] = GetGameTime();
+	
+	CloseTeleportMenu(client);
 } 

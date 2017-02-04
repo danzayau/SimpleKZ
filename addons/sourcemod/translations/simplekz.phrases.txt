@@ -120,6 +120,14 @@
 	{
 		"en"		"{grey}You are no longer showing your key presses to yourself."
 	}
+	"AutoRestart_Enable"
+	{
+		"en"		"{grey}Your timer will now restart when you teleport to start."
+	}
+	"AutoRestart_Disable"
+	{
+		"en"		"{grey}Your timer will no longer restart you teleport to start."
+	}
 	"StopSound"
 	{
 		"en"		"{grey}You have stopped all sounds."
@@ -346,6 +354,10 @@
 	{
 		"en"		"Respawn"
 	}
+	"TPMenu_Split"
+	{
+		"en"		"Split"
+	}
 	"TPMenu_Rejoin"
 	{
 		"en"		"Rejoin"
@@ -425,6 +437,10 @@
 	"OptionsMenu_ShowKeys"
 	{
 		"en"		"Show own keys"
+	}
+	"OptionsMenu_AutoRestart"
+	{
+		"en"		"Auto restart"
 	}
 	"OptionsMenu_Pistol"
 	{

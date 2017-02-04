@@ -21,7 +21,6 @@ void RegisterCommands() {
 	RegConsoleCmd("sm_hide", CommandToggleShowPlayers, "[KZ] Toggle hiding other players.");
 	RegConsoleCmd("sm_speed", CommandToggleInfoPanel, "[KZ] Toggle visibility of the centre information panel.");
 	RegConsoleCmd("sm_hideweapon", CommandToggleShowWeapon, "[KZ] Toggle visibility of your weapon.");
-	RegConsoleCmd("sm_keys", CommandToggleShowKeys, "[KZ] Toggles showing of your own key presses.");
 	RegConsoleCmd("sm_measure", CommandMeasureMenu, "[KZ] Open the measurement menu.");
 	RegConsoleCmd("sm_pistol", CommandPistolMenu, "[KZ] Open the pistol selection menu.");
 	RegConsoleCmd("sm_nc", CommandToggleNoclip, "[KZ] Toggle noclip.");
@@ -158,11 +157,6 @@ public Action CommandToggleInfoPanel(int client, int args) {
 
 public Action CommandToggleShowWeapon(int client, int args) {
 	ToggleShowWeapon(client);
-	return Plugin_Handled;
-}
-
-public Action CommandToggleShowKeys(int client, int args) {
-	ToggleShowKeys(client);
 	return Plugin_Handled;
 }
 

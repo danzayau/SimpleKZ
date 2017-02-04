@@ -46,7 +46,6 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
  * ```!hide``` - Toggles the visibility of other players.
  * ```!speed``` - Toggle visibility of the centre information panel.
  * ```!hideweapon``` - Toggle visibility of your weapon.
- * ```!keys``` - Toggles showing of your own key presses.
  * ```!measure``` - Open the measurement menu.
  * ```!pistol``` - Open the pistol selection menu.
  * ```!nc``` - Toggle noclip.

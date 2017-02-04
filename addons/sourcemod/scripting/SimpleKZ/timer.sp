@@ -47,8 +47,6 @@ void StartTimer(int client) {
 			DB_PrintPBs(client, client, gC_CurrentMap);
 		}
 	}
-	g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
-	g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
 	CloseTeleportMenu(client);
 }
 
@@ -98,10 +96,10 @@ public void OnButtonPress(const char[] name, int caller, int activator, float de
 			// Get the name of the pressed func_button
 			GetEntPropString(caller, Prop_Data, "m_iName", tempString, sizeof(tempString));
 			// Check if button entity name is something we want to do something with
-			if (StrEqual(tempString, "climb_startbutton")) {
+			if (StrEqual(tempString, "climb_startbutton", false)) {
 				StartButtonPress(activator);
 			}
-			else if (StrEqual(tempString, "climb_endbutton")) {
+			else if (StrEqual(tempString, "climb_endbutton", false)) {
 				EndButtonPress(activator);
 			}
 		}
@@ -112,6 +110,8 @@ void StartButtonPress(int client) {
 	// Have to be on ground and not noclipping to start the timer
 	if (g_MovementPlayer[client].onGround && !g_MovementPlayer[client].noclipping) {
 		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
+		g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
+		g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
 		StartTimer(client);
 	}
 }
@@ -120,6 +120,21 @@ void EndButtonPress(int client) {
 	if (gB_TimerRunning[client]) {
 		EndTimer(client);
 	}
+}
+
+void CheckForStartButtonPress(int client) {
+	// If didnt just start time, and just pressed +use button
+	if (!(gB_TimerRunning[client] && gF_CurrentTime[client] < 0.1)
+		 && !(g_OldButtons[client] & IN_USE) && GetClientButtons(client) & IN_USE) {
+		// If player is at their start position, start their timer and update their start angles
+		float origin[3];
+		g_MovementPlayer[client].GetOrigin(origin);
+		if (GetVectorDistance(origin, gF_StartOrigin[client]) == 0.0) {
+			g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
+			StartTimer(client);
+		}
+	}
+	g_OldButtons[client] = GetClientButtons(client);
 }
 
 
@@ -142,6 +157,9 @@ void TeleportToStart(int client) {
 		}
 		AddWastedTimeTeleportToStart(client);
 		TimerDoTeleport(client, gF_StartOrigin[client], gF_StartAngles[client]);
+		if (gB_AutoRestart[client]) {
+			StartTimer(client);
+		}
 	}
 	else {
 		CS_RespawnPlayer(client);
