@@ -53,21 +53,21 @@ char[] GetInfoPanelTimeString(MovementPlayer player) {
 		if (GetCurrentRunType(player.id) == 0) {
 			FormatEx(timeString, sizeof(timeString), 
 				" <b>%T</b>: <font color='#6699ff'>%s</font>", 
-				"Time", player.id, 
+				"InfoPanel_Time", player.id, 
 				FormatTimeFloat(gF_CurrentTime[player.id]));
 		}
 		else {
 			FormatEx(timeString, sizeof(timeString), 
 				" <b>%T</b>: <font color='#ffdd99'>%s</font>", 
-				"Time", player.id, 
+				"InfoPanel_Time", player.id, 
 				FormatTimeFloat(gF_CurrentTime[player.id]));
 		}
 	}
 	else {
 		FormatEx(timeString, sizeof(timeString), 
 			" <b>%T</b>: %T", 
-			"Time", player.id, 
-			"Stopped", player.id);
+			"InfoPanel_Time", player.id, 
+			"InfoPanel_Stopped", player.id);
 	}
 	return timeString;
 }
@@ -77,7 +77,7 @@ char[] GetInfoPanelPausedString(MovementPlayer player) {
 	if (gB_Paused[player.id]) {
 		FormatEx(pausedString, sizeof(pausedString), 
 			"(<font color='#999999'>%T</font>)", 
-			"Paused", player.id);
+			"InfoPanel_Paused", player.id);
 	}
 	else {
 		pausedString = "";
@@ -91,13 +91,13 @@ char[] GetInfoPanelSpeedString(MovementPlayer player) {
 		if (player.onGround || player.onLadder || player.noclipping) {
 			FormatEx(speedString, sizeof(speedString), 
 				" <b>%T</b>: <font color='#999999'>%.0f</font> u/s", 
-				"Speed", player.id, 
+				"InfoPanel_Speed", player.id, 
 				RoundFloat(player.speed * 10) / 10.0);
 		}
 		else {
 			FormatEx(speedString, sizeof(speedString), 
 				" <b>%T</b>: <font color='#999999'>%.0f</font>", 
-				"Speed", player.id, 
+				"InfoPanel_Speed", player.id, 
 				RoundFloat(player.speed * 10) / 10.0);
 		}
 	}
@@ -131,7 +131,7 @@ char[] GetInfoPanelKeysString(MovementPlayer player) {
 	char keysString[64];
 	FormatEx(keysString, sizeof(keysString), 
 		" <b>%T</b>: <font color='#999999'>%c %c %c %c   %c %c</font>", 
-		"Keys", player.id, 
+		"InfoPanel_Keys", player.id, 
 		GetInfoPanelAString(player), 
 		GetInfoPanelWString(player), 
 		GetInfoPanelSString(player), 

@@ -1,28 +1,5 @@
 "Phrases"
 {
-	// General ////////////////////////////////////////////////////////////
-	"Time"
-	{
-		"en"		"Time"
-	}
-	"Stopped"
-	{
-		"en"		"Stopped"
-	}
-	"Paused"
-	{
-		"en"		"PAUSED"
-	}
-	"Speed"
-	{
-		"en"		"Speed"
-	}
-	"Keys"
-	{
-		"en"		"Keys"
-	}
-
-
 	// Chat Messages ////////////////////////////////////////////////////////////
 	"KZ_Tag"
 	{
@@ -180,7 +157,7 @@
 	{
 		// Segment 8:  01:23.45 - Time: 12:34.56
 		"#format"	"{1:d},{2:s},{3:s}"
-		"en"		"{green}Segment {default}{1}{grey}:  {default}{2}{grey}  -  Time: {default}{3}"
+		"en"		"{green}Segment {default}{1}{grey}:  {default}{2}{grey}  -  Total: {default}{3}"
 	}
 	"Split_Make_TimerStopped"
 	{
@@ -191,6 +168,10 @@
 	"Split_MakeFirst"
 	{
 		"en"		"{grey}You have made your first split. Make another to see how much time has passed."
+	}
+	"Split_Reset"
+	{
+		"en"		"{grey}You have reset your timer and your splits."
 	}
 	"Client_Connect"
 	{
@@ -225,6 +206,29 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"[SimpleKZ] Database transaction error: {1}"
+	}
+	
+	
+	// Info Panel ////////////////////////////////////////////////////////////
+	"InfoPanel_Time"
+	{
+		"en"		"Time"
+	}
+	"InfoPanel_Stopped"
+	{
+		"en"		"Stopped"
+	}
+	"InfoPanel_Paused"
+	{
+		"en"		"PAUSED"
+	}
+	"InfoPanel_Speed"
+	{
+		"en"		"Speed"
+	}
+	"InfoPanel_Keys"
+	{
+		"en"		"Keys"
 	}
 	
 	
