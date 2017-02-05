@@ -20,8 +20,8 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
 ### Requirements
 
  * **Tested Against**: SourceMod 1.7 Latest / 1.8 Latest / 1.9 Latest
- * [**MovementAPI Plugin (0.5.0)**](https://github.com/danzayau/MovementAPI)
- * [**MovementTweaker Plugin (0.6.0)**](https://github.com/danzayau/MovementTweaker)
+ * [**MovementAPI Plugin**](https://github.com/danzayau/MovementAPI) (included)
+ * [**MovementTweaker Plugin**](https://github.com/danzayau/MovementTweaker) (included)
 
 ### Installation
 
