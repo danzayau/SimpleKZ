@@ -113,6 +113,7 @@ float gF_SplitGameTime[MAXPLAYERS + 1];
 MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
 bool gB_CurrentMapIsKZPro;
 int g_OldButtons[MAXPLAYERS + 1];
+ConVar gCV_FullAlltalk;
 
 // Pistol Entity Names (entity class name, alias, team that buys it)
 char gC_Pistols[][][] = 
@@ -167,10 +168,12 @@ public void OnPluginStart() {
 	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Pre);
 	HookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);
 	HookEvent("player_death", OnPlayerDeath, EventHookMode_Pre);
+	HookEvent("round_start", OnRoundStart, EventHookMode_Pre);
 	HookEntityOutput("func_button", "OnPressed", OnButtonPress);
 	AddCommandListener(OnSay, "say");
 	AddCommandListener(OnSay, "say_team");
 	AddNormalSoundHook(view_as<NormalSHook>(OnNormalSound));
+	gCV_FullAlltalk = FindConVar("sv_full_alltalk");
 	
 	// Translations
 	LoadTranslations("common.phrases");
@@ -332,3 +335,8 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 		ForceStopTimer(client);
 	}
 } 
+
+// Force full alltalk on round start
+public void OnRoundStart(Event event, const char[] name, bool dontBroadcast) {
+	SetConVarInt(gCV_FullAlltalk, 1);
+}
