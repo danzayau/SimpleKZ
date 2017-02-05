@@ -32,13 +32,13 @@ void TimerRestart(int client) {
 	gF_LastTeleportToStartWastedTime[client] = 0.0;
 	gF_WastedTime[client] = 0.0;
 	gB_HasSavedPosition[client] = false;
-	gI_Splits[client] = 0;
-	gF_SplitRunTime[client] = 0.0;
+	ResetSplits(client);
 }
 
 void StartTimer(int client) {
 	Call_SimpleKZ_OnTimerStarted(client);
 	EmitSoundToClient(client, "buttons/button9.wav");
+	EmitSoundToClientSpectators(client, "buttons/button9.wav");
 	TimerRestart(client);
 	gB_TimerRunning[client] = true;
 	if (!gB_HasStartedThisMap[client]) {
@@ -50,6 +50,7 @@ void StartTimer(int client) {
 void EndTimer(int client) {
 	Call_SimpleKZ_OnTimerEnded(client);
 	EmitSoundToClient(client, "buttons/bell1.wav");
+	EmitSoundToClientSpectators(client, "buttons/bell1.wav");
 	gB_TimerRunning[client] = false;
 	PrintEndTimeString(client);
 	CloseTeleportMenu(client);

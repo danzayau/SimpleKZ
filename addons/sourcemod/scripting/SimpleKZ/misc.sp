@@ -92,6 +92,14 @@ char[] FormatTimeFloat(float timeToFormat) {
 	return formattedTime;
 }
 
+void EmitSoundToClientSpectators(int client, const char[] sound) {
+	for (int i = 1; i <= MaxClients; i++) {
+		if (IsValidClient(i) && GetSpectatedPlayer(i) == client) {
+			EmitSoundToClient(i, sound);
+		}
+	}
+}
+
 
 
 /*===============================  Client  ===============================*/
@@ -287,6 +295,15 @@ void ToggleShowKeys(int client) {
 
 void SetupSplits(int client) {
 	gI_Splits[client] = 0;
+	gF_SplitRunTime[client] = 0.0;
+}
+
+void ResetSplits(int client) {
+	if (gI_Splits[client] != 0) {
+		gI_Splits[client] = 0;
+		gF_SplitRunTime[client] = 0.0;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Split_Reset");
+	}
 }
 
 void SplitMake(int client) {

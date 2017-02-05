@@ -8,12 +8,12 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-Plugin myinfo = 
+public Plugin myinfo = 
 {
 	name = "Simple KZ - Ranks Module", 
 	author = "DanZay", 
 	description = "Player ranks module for SimpleKZ.", 
-	version = "0.1.0", 
+	version = "0.6.1", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
