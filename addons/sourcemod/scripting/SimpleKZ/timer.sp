@@ -28,6 +28,7 @@ public void SimpleKZ_OnTimerEnded(int client, const char[] map, float time, int 
 public void SimpleKZ_OnTimerForceStopped(int client) {
 	gB_TimerRunning[client] = false;
 	gB_Paused[client] = false;
+	CloseTeleportMenu(client);
 }
 
 

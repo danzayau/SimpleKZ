@@ -20,12 +20,13 @@ public Plugin myinfo =
 
 /*===============================  Global Variables  ===============================*/
 
+char gC_CurrentMap[64];
+char gC_SteamID[MAXPLAYERS + 1][24];
+
 // Database
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
 DatabaseType g_DBType = NONE;
-char gC_CurrentMap[64];
-char gC_SteamID[MAXPLAYERS + 1][24];
 
 // Menus
 Handle gH_MapTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
@@ -78,9 +79,15 @@ public void OnLibraryRemoved(const char[] name) {
 	}
 }
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
+	RegPluginLibrary("SimpleKZRanks");
+	return APLRes_Success;
+}
+
 
 
 /*===============================  SimpleKZ Events  ===============================*/
+
 public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
 	gB_ConnectedToDB = true;
 	gH_DB = database;

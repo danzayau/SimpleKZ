@@ -90,7 +90,7 @@ public int Native_ForceStopTimer(Handle plugin, int numParams) {
 
 public int Native_GetCurrentTime(Handle plugin, int numParams) {
 	if (gB_TimerRunning[GetNativeCell(1)]) {
-		return gB_CurrentTime[GetNativeCell(1)];
+		return view_as<int>(gF_CurrentTime[GetNativeCell(1)]);
 	}
-	return -1.0;
+	return view_as<int>(-1.0);
 } 
