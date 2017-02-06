@@ -6,16 +6,6 @@
 
 /*===============================  General  ===============================*/
 
-bool IsValidClient(int client) {
-	return 1 <= client && client <= MaxClients && IsClientInGame(client);
-}
-
-void SetupMovementMethodmaps() {
-	for (int client = 1; client <= MaxClients; client++) {
-		g_MovementPlayer[client] = new MovementPlayer(client);
-	}
-}
-
 float FloatMax(float a, float b) {
 	if (a > b) {
 		return a;
@@ -30,6 +20,24 @@ int BoolToInt(bool boolean) {
 	return 0;
 }
 
+void SetupMovementMethodmaps() {
+	for (int client = 1; client <= MaxClients; client++) {
+		g_MovementPlayer[client] = new MovementPlayer(client);
+	}
+}
+
+void AddCommandListeners() {
+	AddCommandListener(CommandJoinTeam, "jointeam");
+	// Block radio commands
+	for (int i = 0; i < sizeof(gC_RadioCommands); i++) {
+		AddCommandListener(CommandBlock, gC_RadioCommands[i]);
+	}
+}
+
+bool IsValidClient(int client) {
+	return 1 <= client && client <= MaxClients && IsClientInGame(client);
+}
+
 void LoadKZConfig() {
 	char kzConfigPath[] = "sourcemod/simplekz/kz.cfg";
 	char kzConfigPathFull[64];
@@ -40,14 +48,6 @@ void LoadKZConfig() {
 	}
 	else {
 		SetFailState("Failed to load config (cfg/%s not found).", kzConfigPath);
-	}
-}
-
-void AddCommandListeners() {
-	AddCommandListener(CommandJoinTeam, "jointeam");
-	// Block radio commands
-	for (int i = 0; i < sizeof(gC_RadioCommands); i++) {
-		AddCommandListener(CommandBlock, gC_RadioCommands[i]);
 	}
 }
 
@@ -92,14 +92,6 @@ char[] FormatTimeFloat(float timeToFormat) {
 	return formattedTime;
 }
 
-void EmitSoundToClientSpectators(int client, const char[] sound) {
-	for (int i = 1; i <= MaxClients; i++) {
-		if (IsValidClient(i) && GetSpectatedPlayer(i) == client) {
-			EmitSoundToClient(i, sound);
-		}
-	}
-}
-
 
 
 /*===============================  Client  ===============================*/
@@ -108,15 +100,6 @@ public Action CleanHUD(Handle timer, int client) {
 	// Hide radar
 	int clientEntFlags = GetEntProp(client, Prop_Send, "m_iHideHUD");
 	SetEntProp(client, Prop_Send, "m_iHideHUD", clientEntFlags | (1 << 12));
-}
-
-void SetDefaultPreferences(int client) {
-	gB_ShowingTeleportMenu[client] = true;
-	gB_ShowingInfoPanel[client] = true;
-	gB_ShowingKeys[client] = false;
-	gB_ShowingPlayers[client] = true;
-	gB_ShowingWeapon[client] = true;
-	gI_Pistol[client] = 0;
 }
 
 void SetDrawViewModel(int client, bool drawViewModel) {
@@ -129,7 +112,7 @@ void JoinTeam(int client, int team) {
 		g_MovementPlayer[client].GetEyeAngles(gF_SavedAngles[client]);
 		gB_HasSavedPosition[client] = true;
 		if (gB_TimerRunning[client]) {
-			gB_Paused[client] = true;
+			Pause(client);
 		}
 		ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 	}
@@ -139,16 +122,17 @@ void JoinTeam(int client, int team) {
 		CS_RespawnPlayer(client);
 		if (gB_HasSavedPosition[client]) {
 			TeleportEntity(client, gF_SavedOrigin[client], gF_SavedAngles[client], view_as<float>( { 0.0, 0.0, -50.0 } ));
+			gB_HasSavedPosition[client] = false;
 			if (gB_Paused[client]) {
 				FreezePlayer(client);
 			}
 		}
+		else {
+			// The player will be teleported to the spawn point, so force stop their timer
+			SimpleKZ_OnTimerForceStopped(client);
+		}
 	}
 	CloseTeleportMenu(client);
-}
-
-int GetSpectatedPlayer(int client) {
-	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
 }
 
 void TeleportToOtherPlayer(int client, int target)
@@ -169,6 +153,18 @@ void TeleportToOtherPlayer(int client, int target)
 	}
 	TeleportEntity(client, targetOrigin, targetAngles, view_as<float>( { 0.0, 0.0, -100.0 } ));
 	CPrintToChat(client, "%t %t", "KZ_Tag", "Goto_Success", target);
+}
+
+int GetSpectatedPlayer(int client) {
+	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+}
+
+void EmitSoundToClientSpectators(int client, const char[] sound) {
+	for (int i = 1; i <= MaxClients; i++) {
+		if (IsValidClient(i) && GetSpectatedPlayer(i) == client) {
+			EmitSoundToClient(i, sound);
+		}
+	}
 }
 
 void FreezePlayer(int client) {
@@ -220,6 +216,15 @@ void PrintDisconnectMessage(int client, const char[] reason) {
 
 
 /*===============================  Options  ===============================*/
+
+void SetDefaultPreferences(int client) {
+	gB_ShowingTeleportMenu[client] = true;
+	gB_ShowingInfoPanel[client] = true;
+	gB_ShowingKeys[client] = false;
+	gB_ShowingPlayers[client] = true;
+	gB_ShowingWeapon[client] = true;
+	gI_Pistol[client] = 0;
+}
 
 void ToggleTeleportMenu(int client) {
 	if (gB_ShowingTeleportMenu[client]) {
@@ -291,7 +296,7 @@ void ToggleShowKeys(int client) {
 
 
 
-/*===============================  Split  ===============================*/
+/*===============================  Splits  ===============================*/
 
 void SetupSplits(int client) {
 	gI_Splits[client] = 0;

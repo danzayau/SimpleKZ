@@ -15,10 +15,10 @@
 
 public Plugin myinfo = 
 {
-	name = "Simple KZ", 
+	name = "Simple KZ Core", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer and optional database.", 
-	version = "0.6.1", 
+	version = "0.7.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -28,12 +28,7 @@ public Plugin myinfo =
 
 #define PAUSE_COOLDOWN_AFTER_RESUMING 1.0
 #define MINIMUM_SPLIT_TIME 1.0
-#define NUMBER_OF_PISTOLS 8
-
-// Database Types
-#define NONE -1
-#define MYSQL 0
-#define SQLITE 1
+#define MAX_DISTANCE_FROM_BUTTON 48.0
 
 
 
@@ -76,7 +71,7 @@ float gF_SavedAngles[MAXPLAYERS + 1][3];
 // Database
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
-int g_DBType = NONE;
+DatabaseType g_DBType = NONE;
 char gC_CurrentMap[64];
 char gC_SteamID[MAXPLAYERS + 1][24];
 char gC_Country[MAXPLAYERS + 1][45];
@@ -210,7 +205,7 @@ public void OnClientAuthorized(int client) {
 		UpdatePistolMenu(client);
 		UpdateMeasureMenu(client);
 		UpdateOptionsMenu(client);
-		SetupTimer(client);
+		TimerSetup(client);
 		MeasureResetPos(client);
 		SetupSplits(client);
 		
@@ -324,7 +319,7 @@ public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &
 public void OnStartNoclipping(int client) {
 	if (gB_TimerRunning[client]) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Noclip");
-		ForceStopTimer(client);
+		SimpleKZ_ForceStopTimer(client);
 	}
 }
 
@@ -332,11 +327,11 @@ public void OnStartNoclipping(int client) {
 public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (!IsFakeClient(client)) {
-		ForceStopTimer(client);
+		SimpleKZ_ForceStopTimer(client);
 	}
-} 
+}
 
 // Force full alltalk on round start
 public void OnRoundStart(Event event, const char[] name, bool dontBroadcast) {
 	SetConVarInt(gCV_FullAlltalk, 1);
-}
+} 

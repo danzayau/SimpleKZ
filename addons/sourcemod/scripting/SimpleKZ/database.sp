@@ -70,19 +70,21 @@ void DB_SavePlayerInfo(int client) {
 	GetClientName(client, clientName, MAX_NAME_LENGTH);
 	SQL_EscapeString(gH_DB, clientName, clientNameEscaped, MAX_NAME_LENGTH * 2 + 1);
 	
-	if (g_DBType == SQLITE) {
-		Transaction txn = SQL_CreateTransaction();
-		// UPDATE OR IGNORE
-		FormatEx(query, sizeof(query), sql_players_update, clientNameEscaped, gC_Country[client], gC_SteamID[client]);
-		txn.AddQuery(query);
-		// INSERT OR IGNORE
-		FormatEx(query, sizeof(query), sql_players_insert, clientNameEscaped, gC_Country[client], gC_SteamID[client]);
-		txn.AddQuery(query);
-		SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, 0, DBPrio_High);
-	}
-	else if (g_DBType == MYSQL) {
-		FormatEx(query, sizeof(query), mysql_players_saveinfo, gC_SteamID[client], clientNameEscaped, gC_Country[client]);
-		SQL_TQuery(gH_DB, DB_Callback_Generic, query, 0, DBPrio_High);
+	switch (g_DBType) {
+		case SQLITE: {
+			Transaction txn = SQL_CreateTransaction();
+			// UPDATE OR IGNORE
+			FormatEx(query, sizeof(query), sql_players_update, clientNameEscaped, gC_Country[client], gC_SteamID[client]);
+			txn.AddQuery(query);
+			// INSERT OR IGNORE
+			FormatEx(query, sizeof(query), sql_players_insert, clientNameEscaped, gC_Country[client], gC_SteamID[client]);
+			txn.AddQuery(query);
+			SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, 0, DBPrio_High);
+		}
+		case MYSQL: {
+			FormatEx(query, sizeof(query), mysql_players_saveinfo, gC_SteamID[client], clientNameEscaped, gC_Country[client]);
+			SQL_TQuery(gH_DB, DB_Callback_Generic, query, 0, DBPrio_High);
+		}
 	}
 }
 

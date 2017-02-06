@@ -1,6 +1,6 @@
 /*	api.sp
 
-	API for other plugins.
+	Simple KZ Core API.
 */
 
 
@@ -8,11 +8,17 @@
 
 Handle gH_Forward_SimpleKZ_OnTimerStarted;
 Handle gH_Forward_SimpleKZ_OnTimerEnded;
+Handle gH_Forward_SimpleKZ_OnTimerPaused;
+Handle gH_Forward_SimpleKZ_OnTimerResumed;
+Handle gH_Forward_SimpleKZ_OnTimerForceStopped;
 Handle gH_Forward_SimpleKZ_OnDatabaseConnect;
 
 void CreateGlobalForwards() {
 	gH_Forward_SimpleKZ_OnTimerStarted = CreateGlobalForward("SimpleKZ_OnTimerStarted", ET_Event, Param_Cell, Param_String, Param_Cell);
 	gH_Forward_SimpleKZ_OnTimerEnded = CreateGlobalForward("SimpleKZ_OnTimerEnded", ET_Event, Param_Cell, Param_String, Param_Float, Param_Cell, Param_Float);
+	gH_Forward_SimpleKZ_OnTimerPaused = CreateGlobalForward("SimpleKZ_OnTimerPaused", ET_Event, Param_Cell);
+	gH_Forward_SimpleKZ_OnTimerResumed = CreateGlobalForward("SimpleKZ_OnTimerResumed", ET_Event, Param_Cell);
+	gH_Forward_SimpleKZ_OnTimerForceStopped = CreateGlobalForward("SimpleKZ_OnTimerForceStopped", ET_Event, Param_Cell);
 	gH_Forward_SimpleKZ_OnDatabaseConnect = CreateGlobalForward("SimpleKZ_OnDatabaseConnect", ET_Event, Param_Cell, Param_Cell);
 }
 
@@ -34,6 +40,24 @@ void Call_SimpleKZ_OnTimerEnded(int client) {
 	Call_Finish();
 }
 
+void Call_SimpleKZ_OnTimerPaused(int client) {
+	Call_StartForward(gH_Forward_SimpleKZ_OnTimerPaused);
+	Call_PushCell(client);
+	Call_Finish();
+}
+
+void Call_SimpleKZ_OnTimerResumed(int client) {
+	Call_StartForward(gH_Forward_SimpleKZ_OnTimerResumed);
+	Call_PushCell(client);
+	Call_Finish();
+}
+
+void Call_SimpleKZ_OnTimerForceStopped(int client) {
+	Call_StartForward(gH_Forward_SimpleKZ_OnTimerForceStopped);
+	Call_PushCell(client);
+	Call_Finish();
+}
+
 void Call_SimpleKZ_OnDatabaseConnect() {
 	Call_StartForward(gH_Forward_SimpleKZ_OnDatabaseConnect);
 	Call_PushCell(gH_DB);
@@ -52,17 +76,13 @@ void CreateNatives() {
 }
 
 public int Native_StartTimer(Handle plugin, int numParams) {
-	StartTimer(GetNativeCell(1));
+	Call_SimpleKZ_OnTimerStarted(GetNativeCell(1));
 }
 
 public int Native_EndTimer(Handle plugin, int numParams) {
-	EndTimer(GetNativeCell(1));
+	Call_SimpleKZ_OnTimerEnded(GetNativeCell(1));
 }
 
 public int Native_ForceStopTimer(Handle plugin, int numParams) {
-	ForceStopTimer(GetNativeCell(1));
+	Call_SimpleKZ_OnTimerForceStopped(GetNativeCell(1));
 }
-
-public int Native_ConnectedToDB(Handle plugin, int numParams) {
-	return view_as<int>(gB_ConnectedToDB);
-} 

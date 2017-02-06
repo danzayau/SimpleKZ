@@ -9,11 +9,13 @@
 void DB_CreateTables() {
 	Transaction txn = SQL_CreateTransaction();
 	txn.AddQuery(sql_maps_create);
-	if (g_DBType == SQLITE) {
-		txn.AddQuery(sqlite_times_create);
-	}
-	else if (g_DBType == MYSQL) {
-		txn.AddQuery(mysql_times_create);
+	switch (g_DBType) {
+		case SQLITE: {
+			txn.AddQuery(sqlite_times_create);
+		}
+		case MYSQL: {
+			txn.AddQuery(mysql_times_create);
+		}
 	}
 	txn.AddQuery(sql_times_createindex_mapsteamid);
 	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic);
@@ -41,13 +43,15 @@ void DB_SaveMapInfo() {
 	}
 	
 	char query[512];
-	if (g_DBType == SQLITE) {
-		FormatEx(query, sizeof(query), sqlite_maps_insert, gC_CurrentMap);
-		SQL_TQuery(gH_DB, DB_Callback_Generic, query);
-	}
-	else if (g_DBType == MYSQL) {
-		FormatEx(query, sizeof(query), mysql_maps_insert, gC_CurrentMap);
-		SQL_TQuery(gH_DB, DB_Callback_Generic, query);
+	switch (g_DBType) {
+		case SQLITE: {
+			FormatEx(query, sizeof(query), sqlite_maps_insert, gC_CurrentMap);
+			SQL_TQuery(gH_DB, DB_Callback_Generic, query);
+		}
+		case MYSQL: {
+			FormatEx(query, sizeof(query), mysql_maps_insert, gC_CurrentMap);
+			SQL_TQuery(gH_DB, DB_Callback_Generic, query);
+		}
 	}
 }
 
@@ -62,6 +66,7 @@ void DB_ProcessEndTimer(int client, const char[] map, float runTime, int telepor
 	
 	DataPack data = CreateDataPack();
 	data.WriteCell(client);
+	data.WriteString(map);
 	data.WriteFloat(runTime);
 	data.WriteCell(teleportsUsed);
 	
@@ -86,6 +91,8 @@ void DB_ProcessEndTimer(int client, const char[] map, float runTime, int telepor
 public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
 	data.Reset();
 	int client = data.ReadCell();
+	char map[64];
+	data.ReadString(map, sizeof(map));
 	float runTime = data.ReadFloat();
 	int teleportsUsed = data.ReadCell();
 	CloseHandle(data);
@@ -106,18 +113,21 @@ public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueri
 	
 	if (newRecord || newRecordPro) {
 		if (newRecord) {
-			if (!newRecordPro) {  // Only new MAP Record
+			if (!newRecordPro) {  // New MAP RECORD
 				CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapRecord", client);
 				EmitSoundToAll("*/commander/commander_comment_01.wav");
+				Call_SimpleKZ_OnGetRecord(client, MAP_RECORD);
 			}
-			else {  // and PRO Record
+			else {  // New MAP RECORD and PRO RECORD
 				CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapAndProRecord", client);
 				EmitSoundToAll("*/commander/commander_comment_05.wav");
+				Call_SimpleKZ_OnGetRecord(client, MAP_AND_PRO_RECORD);
 			}
 		}
-		else {  // Only new PRO Record
+		else {  // New PRO RECORD
 			CPrintToChatAll("%t %t", "KZ_Tag", "BeatProRecord", client);
 			EmitSoundToAll("*/commander/commander_comment_02.wav");
+			Call_SimpleKZ_OnGetRecord(client, PRO_RECORD);
 		}
 	}
 }
@@ -150,13 +160,13 @@ void DB_PrintPBs(int client, int target, const char[] map) {
 	FormatEx(query, sizeof(query), sql_times_getcompletions, map);
 	txn.AddQuery(query);
 	
-	// Get Pro PB
+	// Get PRO PB
 	FormatEx(query, sizeof(query), sql_times_getpbpro, gC_SteamID[target], map);
 	txn.AddQuery(query);
-	// Get Pro Rank
+	// Get PRO Rank
 	FormatEx(query, sizeof(query), sql_times_getrankpro, gC_SteamID[target], map, map);
 	txn.AddQuery(query);
-	// Get Number of Players with Times
+	// Get Number of Players with PRO Times
 	FormatEx(query, sizeof(query), sql_times_getcompletionspro, map);
 	txn.AddQuery(query);
 	

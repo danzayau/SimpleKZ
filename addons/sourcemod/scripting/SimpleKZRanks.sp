@@ -1,6 +1,5 @@
 #include <sourcemod>
 #include <sdktools>
-#include <cstrike>
 
 #include <colorvariables>
 #include <simplekz>
@@ -10,21 +9,12 @@
 
 public Plugin myinfo = 
 {
-	name = "Simple KZ - Ranks Module", 
+	name = "Simple KZ Ranks", 
 	author = "DanZay", 
 	description = "Player ranks module for SimpleKZ.", 
-	version = "0.6.1", 
+	version = "0.7.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
-
-
-
-/*===============================  Definitions  ===============================*/
-
-// Database Types
-#define NONE -1
-#define MYSQL 0
-#define SQLITE 1
 
 
 
@@ -33,7 +23,7 @@ public Plugin myinfo =
 // Database
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
-int g_DBType = NONE;
+DatabaseType g_DBType = NONE;
 char gC_CurrentMap[64];
 char gC_SteamID[MAXPLAYERS + 1][24];
 
@@ -53,6 +43,7 @@ Handle gH_MapTopSubmenu[MAXPLAYERS + 1] = INVALID_HANDLE;
 #include "SimpleKZRanks/database.sp"
 #include "SimpleKZRanks/menus.sp"
 #include "SimpleKZRanks/misc.sp"
+#include "SimpleKZRanks/api.sp"
 
 
 
@@ -65,6 +56,7 @@ public void OnPluginStart() {
 		SetFailState("This plugin is only for CS:GO.");
 	}
 	
+	CreateGlobalForwards();
 	RegisterCommands();
 	
 	// Translations
@@ -72,6 +64,18 @@ public void OnPluginStart() {
 	LoadTranslations("simplekz.phrases");
 	
 	CreateMenus();
+}
+
+public void OnAllPluginsLoaded() {
+	if (!LibraryExists("SimpleKZ")) {
+		SetFailState("This plugin requires the SimpleKZ core plugin.");
+	}
+}
+
+public void OnLibraryRemoved(const char[] name) {
+	if (StrEqual(name, "SimpleKZ")) {
+		SetFailState("This plugin requires the SimpleKZ core plugin.");
+	}
 }
 
 
@@ -95,7 +99,7 @@ public void OnMapStart() {
 	FakePrecacheSound("*/commander/commander_comment_05.wav");
 }
 
-public void SimpleKZ_OnDatabaseConnect(Database database, int DBType) {
+public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
 	gB_ConnectedToDB = true;
 	gH_DB = database;
 	g_DBType = DBType;
