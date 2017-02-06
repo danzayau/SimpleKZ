@@ -16,9 +16,9 @@ enum RunType {
 }
 
 enum DatabaseType {
-	NONE = -1,
-	MYSQL,
-	SQLITE	
+	NONE = -1, 
+	MYSQL, 
+	SQLITE
 }
 
 
@@ -105,4 +105,12 @@ native void SimpleKZ_EndTimer(int client);
  * @param client    		Client entity index.
  * @noreturn
  */
-native void SimpleKZ_ForceStopTimer(int client); 
+native void SimpleKZ_ForceStopTimer(int client);
+
+/**
+ * Gets the player's current run time.
+ *
+ * @param client    		Client entity index.
+ * @return					The player's current run time. Returns -1.0 if not currently on a run.
+ */
+native float SimpleKZ_GetCurrentTime(int client); 
