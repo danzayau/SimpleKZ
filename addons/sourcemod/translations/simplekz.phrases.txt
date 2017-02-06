@@ -185,6 +185,18 @@
 		"#format"	"{1:s},{2:s}"
 		"en"		"{lime}{1}{grey} has disconnected ({2})."
 	}
+	"BeatMap"
+	{
+		// Bill finished in 01:23.45 (4 TP | 01.02.34).
+		"#format"	"{1:N},{2:s},{3:d},{4:s}"
+		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({yellow}{3} TP{grey} | {grey}{4}{grey})."
+	}
+	"BeatMapPro"
+	{
+		// Bill finished in 01:23.45 (PRO).
+		"#format"	"{1:N},{2:s}"
+		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey})."
+	}
 	
 	
 	// Database Errors ////////////////////////////////////////////////////////////
@@ -356,18 +368,6 @@
 	
 	
 	// SimpleKZ Ranks ////////////////////////////////////////////////////////////
-	"BeatMap"
-	{
-		// Bill finished in 01:23.45 (4 TP | 01.02.34).
-		"#format"	"{1:N},{2:s},{3:d},{4:s}"
-		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({yellow}{3} TP{grey} | {grey}{4}{grey})."
-	}
-	"BeatMapPro"
-	{
-		// Bill finished in 01:23.45 (PRO).
-		"#format"	"{1:N},{2:s}"
-		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey})."
-	}
 	"BeatMapRecord"
 	{
 		"#format"	"{1:N}"
@@ -412,13 +412,13 @@
 	{
 		// MAP PB: 01:23.45 - #4/123 (PRO #3/12)
 		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:d}"
-		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} - #{default}{2}{grey}/{3} ({blue}PRO{grey} #{default}{4}{grey}/{5})"
+		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} #{default}{2}{grey}/{3} ({blue}PRO{grey} #{default}{4}{grey}/{5})"
 	}
 	"PB_Pro"
 	{
 		// PRO PB: 01:23.45 - #4/123
 		"#format"	"{1:s},{2:d},{3:d}"
-		"en"		"{blue}PRO PB{grey}: {default}{1}{grey} - #{default}{2}{grey}/{3}"
+		"en"		"{blue}PRO PB{grey}: {default}{1}{grey} #{default}{2}{grey}/{3}"
 	}
 	"PB_Pro_None"
 	{

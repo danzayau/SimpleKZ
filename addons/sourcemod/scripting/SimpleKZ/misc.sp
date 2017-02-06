@@ -122,10 +122,10 @@ void JoinTeam(int client, int team) {
 		CS_RespawnPlayer(client);
 		if (gB_HasSavedPosition[client]) {
 			TeleportEntity(client, gF_SavedOrigin[client], gF_SavedAngles[client], view_as<float>( { 0.0, 0.0, -50.0 } ));
-			gB_HasSavedPosition[client] = false;
 			if (gB_Paused[client]) {
 				FreezePlayer(client);
 			}
+			gB_HasSavedPosition[client] = false;
 		}
 		else {
 			// The player will be teleported to the spawn point, so force stop their timer

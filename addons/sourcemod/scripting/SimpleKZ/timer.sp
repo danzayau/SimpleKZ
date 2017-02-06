@@ -99,9 +99,11 @@ public void OnButtonPress(const char[] name, int caller, int activator, float de
 			GetEntPropString(caller, Prop_Data, "m_iName", tempString, sizeof(tempString));
 			// Check if button entity name is something we want to do something with
 			if (StrEqual(tempString, "climb_startbutton", false)) {
+				g_MovementPlayer[activator].GetOrigin(gF_StartButtonOrigin[activator]);
 				StartButtonPress(activator);
 			}
 			else if (StrEqual(tempString, "climb_endbutton", false)) {
+				g_MovementPlayer[activator].GetOrigin(gF_EndButtonOrigin[activator]);
 				EndButtonPress(activator);
 			}
 		}
@@ -126,14 +128,16 @@ void EndButtonPress(int client) {
 
 void CheckForStartButtonPress(int client) {
 	// If didnt just start time, and just pressed +use button
-	if (!(gB_TimerRunning[client] && gF_CurrentTime[client] < 0.1)
-		 && !(g_OldButtons[client] & IN_USE) && GetClientButtons(client) & IN_USE) {
-		// If player is at their start position, start their timer and update their start angles
+	if (!(g_OldButtons[client] & IN_USE) && GetClientButtons(client) & IN_USE) {
 		float origin[3];
 		g_MovementPlayer[client].GetOrigin(origin);
-		if (GetVectorDistance(origin, gF_StartOrigin[client]) <= MAX_DISTANCE_FROM_BUTTON) {
-			g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
-			SimpleKZ_StartTimer(client);
+		
+		if (!(gB_TimerRunning[client] && gF_CurrentTime[client] < 0.1)
+			 && gB_HasStartedThisMap[client] && GetVectorDistance(origin, gF_StartButtonOrigin[client]) <= MAX_DISTANCE_FROM_BUTTON_ORIGIN) {
+			StartButtonPress(client);
+		}
+		else if (gB_HasEndedThisMap[client] && GetVectorDistance(origin, gF_EndButtonOrigin[client]) <= MAX_DISTANCE_FROM_BUTTON_ORIGIN) {
+			EndButtonPress(client);
 		}
 	}
 	g_OldButtons[client] = GetClientButtons(client);

@@ -28,7 +28,7 @@ public Plugin myinfo =
 
 #define PAUSE_COOLDOWN_AFTER_RESUMING 1.0
 #define MINIMUM_SPLIT_TIME 1.0
-#define MAX_DISTANCE_FROM_BUTTON 48.0
+#define MAX_DISTANCE_FROM_BUTTON_ORIGIN 40.0
 
 
 
@@ -41,8 +41,7 @@ bool gB_Paused[MAXPLAYERS + 1] =  { false, ... };
 float gF_LastResumeTime[MAXPLAYERS + 1];
 bool gB_HasResumedInThisRun[MAXPLAYERS + 1] =  { false, ... };
 
-// Checkpoints and Teleports
-bool gB_HasStartedThisMap[MAXPLAYERS + 1] =  { false, ... };
+// Saved Positions and Angles
 float gF_StartOrigin[MAXPLAYERS + 1][3];
 float gF_StartAngles[MAXPLAYERS + 1][3];
 int gI_CheckpointsSet[MAXPLAYERS + 1];
@@ -52,6 +51,12 @@ float gF_CheckpointAngles[MAXPLAYERS + 1][3];
 bool gB_LastTeleportOnGround[MAXPLAYERS + 1];
 float gF_UndoOrigin[MAXPLAYERS + 1][3];
 float gF_UndoAngle[MAXPLAYERS + 1][3];
+
+// Button Press Checking
+bool gB_HasStartedThisMap[MAXPLAYERS + 1] =  { false, ... };
+bool gB_HasEndedThisMap[MAXPLAYERS + 1] =  { false, ... };
+float gF_StartButtonOrigin[MAXPLAYERS + 1][3];
+float gF_EndButtonOrigin[MAXPLAYERS + 1][3];
 
 // Wasted Time
 float gF_LastCheckpointTime[MAXPLAYERS + 1];
