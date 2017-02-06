@@ -201,6 +201,7 @@ public void OnMapStart() {
 }
 
 public void OnClientAuthorized(int client) {
+	// Prepare for client arrival
 	if (!IsFakeClient(client)) {
 		GetClientCountry(client);
 		GetClientSteamID(client);
@@ -213,21 +214,26 @@ public void OnClientAuthorized(int client) {
 		TimerSetup(client);
 		MeasureResetPos(client);
 		SetupSplits(client);
-		
-		PrintConnectMessage(client);
 	}
 }
 
 public void OnClientPutInServer(int client) {
 	if (!IsFakeClient(client)) {
 		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
+		PrintConnectMessage(client);
+	}
+}
+
+public void OnClientDisconnect(int client) {  // Also calls at end of map
+	if (!IsFakeClient(client)) {
+		DB_SavePreferences(client);
 	}
 }
 
 public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) {
+	SetEventBroadcast(event, true);
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (!IsFakeClient(client)) {
-		DB_UpdatePreferences(client);
 		char reason[64];
 		GetEventString(event, "reason", reason, sizeof(reason));
 		PrintDisconnectMessage(client, reason);

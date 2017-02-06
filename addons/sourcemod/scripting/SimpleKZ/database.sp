@@ -126,7 +126,7 @@ public void DB_Callback_LoadPreferences(Handle db, Handle results, const char[] 
 	}
 }
 
-void DB_UpdatePreferences(int client) {
+void DB_SavePreferences(int client) {
 	if (!gB_ConnectedToDB) {
 		return;
 	}
@@ -143,4 +143,4 @@ void DB_UpdatePreferences(int client) {
 		gI_Pistol[client], 
 		gC_SteamID[client]);
 	SQL_TQuery(gH_DB, DB_Callback_Generic, query, client, DBPrio_High);
-} 
+}
