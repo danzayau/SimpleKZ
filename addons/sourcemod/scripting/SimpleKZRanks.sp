@@ -80,25 +80,7 @@ public void OnLibraryRemoved(const char[] name) {
 
 
 
-/*===============================  Miscellaneous Events  ===============================*/
-
-public void OnClientAuthorized(int client) {
-	if (!IsFakeClient(client)) {
-		GetClientSteamID(client);
-		
-		UpdateMapTopMenu(client);
-	}
-}
-
-public void OnMapStart() {
-	UpdateCurrentMap();
-	DB_SaveMapInfo();
-	
-	FakePrecacheSound("*/commander/commander_comment_01.wav");
-	FakePrecacheSound("*/commander/commander_comment_02.wav");
-	FakePrecacheSound("*/commander/commander_comment_05.wav");
-}
-
+/*===============================  SimpleKZ Events  ===============================*/
 public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
 	gB_ConnectedToDB = true;
 	gH_DB = database;
@@ -114,4 +96,40 @@ public void SimpleKZ_OnTimerStarted(int client, const char[] map, bool firstStar
 
 public void SimpleKZ_OnTimerEnded(int client, const char[] map, float time, int teleportsUsed, float theoreticalTime) {
 	DB_ProcessEndTimer(client, map, time, teleportsUsed, theoreticalTime);
+}
+
+public void SimpleKZ_OnGetRecord(int client, const char[] map, RecordType recordType, float runTime) {
+	switch (recordType) {
+		case PRO_RECORD: {
+			CPrintToChatAll("%t %t", "KZ_Tag", "BeatProRecord", client);
+			EmitSoundToAll("*/commander/commander_comment_02.wav");
+		}
+		case MAP_RECORD: {
+			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapRecord", client);
+			EmitSoundToAll("*/commander/commander_comment_01.wav");
+		}
+		case MAP_AND_PRO_RECORD: {
+			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapAndProRecord", client);
+			EmitSoundToAll("*/commander/commander_comment_05.wav");
+		}
+	}
+}
+
+
+
+/*===============================  Miscellaneous Events  ===============================*/
+
+public void OnClientAuthorized(int client) {
+	if (!IsFakeClient(client)) {
+		GetClientSteamID(client);
+		UpdateMapTopMenu(client);
+	}
+}
+
+public void OnMapStart() {
+	UpdateCurrentMap();
+	DB_SaveMapInfo();
+	FakePrecacheSound("*/commander/commander_comment_01.wav");
+	FakePrecacheSound("*/commander/commander_comment_02.wav");
+	FakePrecacheSound("*/commander/commander_comment_05.wav");
 } 

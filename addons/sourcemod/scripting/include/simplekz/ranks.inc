@@ -26,7 +26,9 @@ enum RecordType {
  * Called when the player breaks a record.
  *
  * @param client			Client entity index.
+ * @param map				The name of the map (without prefixes e.g. workshop/).
  * @param recordType		Type of record broken.
+ * @param runTime			The run time of the record.
  * @noreturn
  */
-forward void SimpleKZ_OnGetRecord(int client, RecordType recordType); 
+forward void SimpleKZ_OnGetRecord(int client, const char[] map, RecordType recordType, float runTime); 

@@ -1,6 +1,6 @@
 /*	database.sp
 	
-	Optional database for SimpleKZ.
+	Database interaction.
 */
 
 
@@ -76,10 +76,10 @@ void DB_ProcessEndTimer(int client, const char[] map, float runTime, int telepor
 	FormatEx(query, sizeof(query), sql_times_insert, 
 		gC_SteamID[client], map, runTime, teleportsUsed, theoreticalTime);
 	txn.AddQuery(query);
-	// Get Map WR
+	// Get MAP record information
 	FormatEx(query, sizeof(query), sql_times_gettop, map, 1);
 	txn.AddQuery(query);
-	// Get PRO WR
+	// Get PRO record information
 	if (teleportsUsed == 0) {
 		FormatEx(query, sizeof(query), sql_times_gettoppro, map, 1);
 		txn.AddQuery(query);
@@ -113,21 +113,15 @@ public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueri
 	
 	if (newRecord || newRecordPro) {
 		if (newRecord) {
-			if (!newRecordPro) {  // New MAP RECORD
-				CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapRecord", client);
-				EmitSoundToAll("*/commander/commander_comment_01.wav");
-				Call_SimpleKZ_OnGetRecord(client, MAP_RECORD);
+			if (!newRecordPro) {
+				Call_SimpleKZ_OnGetRecord(client, map, MAP_RECORD, runTime);
 			}
-			else {  // New MAP RECORD and PRO RECORD
-				CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapAndProRecord", client);
-				EmitSoundToAll("*/commander/commander_comment_05.wav");
-				Call_SimpleKZ_OnGetRecord(client, MAP_AND_PRO_RECORD);
+			else {
+				Call_SimpleKZ_OnGetRecord(client, map, MAP_AND_PRO_RECORD, runTime);
 			}
 		}
-		else {  // New PRO RECORD
-			CPrintToChatAll("%t %t", "KZ_Tag", "BeatProRecord", client);
-			EmitSoundToAll("*/commander/commander_comment_02.wav");
-			Call_SimpleKZ_OnGetRecord(client, PRO_RECORD);
+		else {
+			Call_SimpleKZ_OnGetRecord(client, map, PRO_RECORD, runTime);
 		}
 	}
 }
