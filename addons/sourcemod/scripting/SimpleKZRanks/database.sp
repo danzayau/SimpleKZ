@@ -45,11 +45,11 @@ void DB_SaveMapInfo() {
 	char query[512];
 	switch (g_DBType) {
 		case SQLITE: {
-			FormatEx(query, sizeof(query), sqlite_maps_insert, gC_CurrentMap);
+			FormatEx(query, sizeof(query), sqlite_maps_insert, gC_CurrentMap, view_as<int>(GetConVarBool(gCV_AutoAddMaps)));
 			SQL_TQuery(gH_DB, DB_Callback_Generic, query);
 		}
 		case MYSQL: {
-			FormatEx(query, sizeof(query), mysql_maps_insert, gC_CurrentMap);
+			FormatEx(query, sizeof(query), mysql_maps_insert, gC_CurrentMap, view_as<int>(GetConVarBool(gCV_AutoAddMaps)));
 			SQL_TQuery(gH_DB, DB_Callback_Generic, query);
 		}
 	}

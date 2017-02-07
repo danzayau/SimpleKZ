@@ -40,11 +40,12 @@ Handle gH_MapTopSubmenu[MAXPLAYERS + 1] = INVALID_HANDLE;
 // Global Variable Includes
 #include "SimpleKZRanks/sql.sp"
 
+#include "SimpleKZRanks/api.sp"
 #include "SimpleKZRanks/commands.sp"
+#include "SimpleKZRanks/convars.sp"
 #include "SimpleKZRanks/database.sp"
 #include "SimpleKZRanks/menus.sp"
 #include "SimpleKZRanks/misc.sp"
-#include "SimpleKZRanks/api.sp"
 
 
 
@@ -58,6 +59,8 @@ public void OnPluginStart() {
 	}
 	
 	CreateGlobalForwards();
+	RegisterConVars();
+	AutoExecConfig(true, "SimpleKZRanks", "sourcemod/SimpleKZ");
 	RegisterCommands();
 	
 	// Translations
@@ -69,12 +72,6 @@ public void OnPluginStart() {
 
 public void OnAllPluginsLoaded() {
 	if (!LibraryExists("SimpleKZ")) {
-		SetFailState("This plugin requires the SimpleKZ core plugin.");
-	}
-}
-
-public void OnLibraryRemoved(const char[] name) {
-	if (StrEqual(name, "SimpleKZ")) {
 		SetFailState("This plugin requires the SimpleKZ core plugin.");
 	}
 }

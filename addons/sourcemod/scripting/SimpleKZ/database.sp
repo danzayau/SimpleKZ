@@ -135,13 +135,13 @@ void DB_SavePreferences(int client) {
 	char query[512];
 	FormatEx(query, sizeof(query), 
 		sql_preferences_update, 
-		BoolToInt(gB_ShowingTeleportMenu[client]), 
-		BoolToInt(gB_ShowingInfoPanel[client]), 
-		BoolToInt(gB_ShowingKeys[client]), 
-		BoolToInt(gB_ShowingPlayers[client]), 
-		BoolToInt(gB_ShowingWeapon[client]), 
-		BoolToInt(gB_AutoRestart[client]), 
-		BoolToInt(gB_SlayOnEnd[client]), 
+		view_as<int>(gB_ShowingTeleportMenu[client]), 
+		view_as<int>(gB_ShowingInfoPanel[client]), 
+		view_as<int>(gB_ShowingKeys[client]), 
+		view_as<int>(gB_ShowingPlayers[client]), 
+		view_as<int>(gB_ShowingWeapon[client]), 
+		view_as<int>(gB_AutoRestart[client]), 
+		view_as<int>(gB_SlayOnEnd[client]), 
 		gI_Pistol[client], 
 		gC_SteamID[client]);
 	SQL_TQuery(gH_DB, DB_Callback_Generic, query, client, DBPrio_High);

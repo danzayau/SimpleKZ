@@ -142,13 +142,14 @@ char gC_RadioCommands[][] =  { "coverme", "takepoint", "holdpos", "regroup", "fo
 // Global Variable Includes
 #include "SimpleKZ/sql.sp"
 
+#include "SimpleKZ/api.sp"
 #include "SimpleKZ/commands.sp"
-#include "SimpleKZ/timer.sp"
+#include "SimpleKZ/convars.sp"
+#include "SimpleKZ/database.sp"
 #include "SimpleKZ/infopanel.sp"
 #include "SimpleKZ/menus.sp"
 #include "SimpleKZ/misc.sp"
-#include "SimpleKZ/database.sp"
-#include "SimpleKZ/api.sp"
+#include "SimpleKZ/timer.sp"
 
 
 
@@ -162,6 +163,8 @@ public void OnPluginStart() {
 	}
 	
 	CreateGlobalForwards();
+	RegisterConVars();
+	AutoExecConfig(true, "SimpleKZ", "sourcemod/SimpleKZ");
 	RegisterCommands();
 	AddCommandListeners();
 	
@@ -286,6 +289,10 @@ public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcas
 
 // Adjust player messages, and automatically lower case commands
 public Action OnSay(int client, const char[] command, int argc) {
+	if (!GetConVarBool(gCV_Chat)) {
+		return Plugin_Continue;
+	}
+	
 	if (BaseComm_IsClientGagged(client)) {
 		return Plugin_Handled;
 	}

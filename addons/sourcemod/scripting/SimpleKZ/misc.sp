@@ -13,13 +13,6 @@ float FloatMax(float a, float b) {
 	return b;
 }
 
-int BoolToInt(bool boolean) {
-	if (boolean) {
-		return 1;
-	}
-	return 0;
-}
-
 void SetupMovementMethodmaps() {
 	for (int client = 1; client <= MaxClients; client++) {
 		g_MovementPlayer[client] = new MovementPlayer(client);

@@ -8,21 +8,20 @@
 char sql_maps_create[] = 
 "CREATE TABLE IF NOT EXISTS Maps ("
 ..."Map VARCHAR(32) NOT NULL, "
-..."Tier TINYINT UNSIGNED, "
-..."InMapPool TINYINT(1) NOT NULL DEFAULT '0', "
+..."InRankedPool TINYINT(1) NOT NULL DEFAULT '0', "
 ..."CONSTRAINT PK_Maps PRIMARY KEY (Map));";
 
 char sqlite_maps_insert[] = 
 "INSERT OR IGNORE "
 ..."INTO Maps "
-..."(Map) "
-..."VALUES('%s');";
+..."(Map, InRankedPool) "
+..."VALUES('%s', %d);";
 
 char mysql_maps_insert[] = 
 "INSERT IGNORE "
 ..."INTO Maps "
-..."(Map) "
-..."VALUES('%s');";
+..."(Map, InRankedPool) "
+..."VALUES('%s', %d);";
 
 
 // Times
