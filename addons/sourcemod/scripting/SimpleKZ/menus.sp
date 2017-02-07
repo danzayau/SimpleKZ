@@ -44,7 +44,7 @@ public int MenuHandler_TeleportMenu(Menu menu, MenuAction action, int param1, in
 				case 2:TogglePause(param1);
 				case 3:TeleportToStart(param1);
 				case 4:UndoTeleport(param1);
-				case 5:SplitMake(param1);
+				case 5:SplitsMake(param1);
 			}
 		}
 		else {
@@ -439,6 +439,7 @@ void UpdateOptionsMenu(int client) {
 	OptionsAddItemShowKeys(client);
 	OptionsAddItemPistol(client);
 	OptionsAddItemAutoRestart(client);
+	OptionsAddItemSlayOnEnd(client);
 }
 
 public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int param2) {
@@ -454,6 +455,7 @@ public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int par
 				DisplayPistolMenu(param1);
 			}
 			case 6:ToggleAutoRestart(param1);
+			case 7:ToggleSlayOnEnd(param1);
 		}
 		if (param2 != 5) {
 			DisplayOptionsMenu(param1, param2 / 6 * 6); // Round item number down to multiple of 6
@@ -529,6 +531,18 @@ void OptionsAddItemAutoRestart(int client) {
 	}
 	else {
 		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_AutoRestart", client, "OptionsMenu_Disabled", client);
+		AddMenuItem(gH_OptionsMenu[client], "", text);
+	}
+}
+
+void OptionsAddItemSlayOnEnd(int client) {
+	char text[32];
+	if (gB_SlayOnEnd[client]) {
+		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_SlayOnEnd", client, "OptionsMenu_Enabled", client);
+		AddMenuItem(gH_OptionsMenu[client], "", text);
+	}
+	else {
+		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_SlayOnEnd", client, "OptionsMenu_Disabled", client);
 		AddMenuItem(gH_OptionsMenu[client], "", text);
 	}
 }

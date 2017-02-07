@@ -196,6 +196,6 @@ public Action CommandDisableNoclip(int client, int args) {
 }
 
 public Action CommandSplit(int client, int args) {
-	SplitMake(client);
+	SplitsMake(client);
 	return Plugin_Handled;
 } 

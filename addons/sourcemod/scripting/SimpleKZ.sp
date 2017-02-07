@@ -81,12 +81,14 @@ char gC_CurrentMap[64];
 char gC_SteamID[MAXPLAYERS + 1][24];
 char gC_Country[MAXPLAYERS + 1][45];
 
+// Preferences
 bool gB_ShowingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
 bool gB_ShowingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
 bool gB_ShowingKeys[MAXPLAYERS + 1] =  { false, ... };
 bool gB_ShowingPlayers[MAXPLAYERS + 1] =  { true, ... };
 bool gB_ShowingWeapon[MAXPLAYERS + 1] =  { true, ... };
-bool gB_AutoRestart[MAXPLAYERS + 1];
+bool gB_AutoRestart[MAXPLAYERS + 1] =  { false, ... };
+bool gB_SlayOnEnd[MAXPLAYERS + 1] =  { false, ... };
 int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
 
 // Menus
@@ -213,7 +215,7 @@ public void OnClientAuthorized(int client) {
 		UpdateOptionsMenu(client);
 		TimerSetup(client);
 		MeasureResetPos(client);
-		SetupSplits(client);
+		SplitsSetup(client);
 	}
 }
 
@@ -248,6 +250,7 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 		SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true); // No Block
 		SetDrawViewModel(client, gB_ShowingWeapon[client]); // Hide weapon
 		GivePlayerPistol(client, gI_Pistol[client]); // Give player their preferred pistol
+		CloseTeleportMenu(client);
 	}
 }
 

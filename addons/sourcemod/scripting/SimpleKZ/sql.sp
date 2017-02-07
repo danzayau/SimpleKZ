@@ -42,6 +42,7 @@ char sql_preferences_create[] =
 ..."ShowingPlayers TINYINT(1) NOT NULL DEFAULT '1', "
 ..."ShowingWeapon TINYINT(1) NOT NULL DEFAULT '1', "
 ..."AutoRestart TINYINT(1) NOT NULL DEFAULT '0', "
+..."SlayOnEnd TINYINT(1) NOT NULL DEFAULT '0', "
 ..."Pistol TINYINT UNSIGNED NOT NULL DEFAULT '0', "
 ..."CONSTRAINT PK_Preferences PRIMARY KEY (SteamID), "
 ..."CONSTRAINT FK_Preferences_SteamID FOREIGN KEY (SteamID) REFERENCES Players (SteamID) ON UPDATE CASCADE ON DELETE CASCADE);";
@@ -54,10 +55,10 @@ char sql_preferences_insert[] =
 
 char sql_preferences_update[] = 
 "UPDATE Preferences "
-..."SET ShowingTeleportMenu=%d, ShowingInfoPanel=%d, ShowingKeys=%d, ShowingPlayers=%d, ShowingWeapon=%d, AutoRestart=%d, Pistol=%d "
+..."SET ShowingTeleportMenu=%d, ShowingInfoPanel=%d, ShowingKeys=%d, ShowingPlayers=%d, ShowingWeapon=%d, AutoRestart=%d, SlayOnEnd=%d, Pistol=%d "
 ..."WHERE SteamID='%s';";
 
 char sql_preferences_get[] = 
-"SELECT ShowingTeleportMenu, ShowingInfoPanel, ShowingKeys, ShowingPlayers, ShowingWeapon, AutoRestart, Pistol "
+"SELECT ShowingTeleportMenu, ShowingInfoPanel, ShowingKeys, ShowingPlayers, ShowingWeapon, AutoRestart, SlayOnEnd, Pistol "
 ..."FROM Preferences "
 ..."WHERE SteamID='%s';"; 

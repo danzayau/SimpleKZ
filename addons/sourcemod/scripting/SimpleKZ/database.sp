@@ -117,8 +117,9 @@ public void DB_Callback_LoadPreferences(Handle db, Handle results, const char[] 
 		gB_ShowingKeys[client] = view_as<bool>(SQL_FetchInt(results, 2));
 		gB_ShowingPlayers[client] = view_as<bool>(SQL_FetchInt(results, 3));
 		gB_ShowingWeapon[client] = view_as<bool>(SQL_FetchInt(results, 4));
-		gB_AutoRestart[client] = view_as<bool>(SQL_FetchInt(results, 5));
-		int pistolNumber = SQL_FetchInt(results, 6);
+		gB_SlayOnEnd[client] = view_as<bool>(SQL_FetchInt(results, 5));
+		gB_AutoRestart[client] = view_as<bool>(SQL_FetchInt(results, 6));
+		int pistolNumber = SQL_FetchInt(results, 7);
 		if (pistolNumber >= sizeof(gC_Pistols)) {
 			pistolNumber = 0;
 		}
@@ -140,7 +141,8 @@ void DB_SavePreferences(int client) {
 		BoolToInt(gB_ShowingPlayers[client]), 
 		BoolToInt(gB_ShowingWeapon[client]), 
 		BoolToInt(gB_AutoRestart[client]), 
+		BoolToInt(gB_SlayOnEnd[client]), 
 		gI_Pistol[client], 
 		gC_SteamID[client]);
 	SQL_TQuery(gH_DB, DB_Callback_Generic, query, client, DBPrio_High);
-}
+} 

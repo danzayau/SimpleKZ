@@ -102,6 +102,10 @@ public Action CleanHUD(Handle timer, int client) {
 	SetEntProp(client, Prop_Send, "m_iHideHUD", clientEntFlags | (1 << 12));
 }
 
+public Action SlayPlayer(Handle timer, int client) {
+	ForcePlayerSuicide(client);
+}
+
 void SetDrawViewModel(int client, bool drawViewModel) {
 	SetEntProp(client, Prop_Send, "m_bDrawViewmodel", drawViewModel);
 }
@@ -223,6 +227,8 @@ void SetDefaultPreferences(int client) {
 	gB_ShowingKeys[client] = false;
 	gB_ShowingPlayers[client] = true;
 	gB_ShowingWeapon[client] = true;
+	gB_AutoRestart[client] = false;
+	gB_SlayOnEnd[client] = false;
 	gI_Pistol[client] = 0;
 }
 
@@ -272,17 +278,6 @@ void ToggleShowWeapon(int client) {
 	SetDrawViewModel(client, gB_ShowingWeapon[client]);
 }
 
-void ToggleAutoRestart(int client) {
-	if (gB_AutoRestart[client]) {
-		gB_AutoRestart[client] = false;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "AutoRestart_Disable");
-	}
-	else {
-		gB_AutoRestart[client] = true;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "AutoRestart_Enable");
-	}
-}
-
 void ToggleShowKeys(int client) {
 	if (gB_ShowingKeys[client]) {
 		gB_ShowingKeys[client] = false;
@@ -294,24 +289,48 @@ void ToggleShowKeys(int client) {
 	}
 }
 
+void ToggleAutoRestart(int client) {
+	if (gB_AutoRestart[client]) {
+		gB_AutoRestart[client] = false;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "AutoRestart_Disable");
+	}
+	else {
+		gB_AutoRestart[client] = true;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "AutoRestart_Enable");
+	}
+}
+
+void ToggleSlayOnEnd(int client) {
+	if (gB_SlayOnEnd[client]) {
+		gB_SlayOnEnd[client] = false;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "SlayOnEnd_Disable");
+	}
+	else {
+		gB_SlayOnEnd[client] = true;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "SlayOnEnd_Enable");
+	}
+}
+
 
 
 /*===============================  Splits  ===============================*/
 
-void SetupSplits(int client) {
+void SplitsSetup(int client) {
 	gI_Splits[client] = 0;
 	gF_SplitRunTime[client] = 0.0;
+	gF_SplitGameTime[client] = 0.0;
 }
 
-void ResetSplits(int client) {
-	if (gI_Splits[client] != 0) {
-		gI_Splits[client] = 0;
-		gF_SplitRunTime[client] = 0.0;
+void SplitsReset(int client) {
+	gI_Splits[client] = 0;
+	gF_SplitRunTime[client] = 0.0;
+	gF_SplitGameTime[client] = 0.0;
+	if (IsClientInGame(client) && gB_HasStartedThisMap[client]) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "Split_Reset");
 	}
 }
 
-void SplitMake(int client) {
+void SplitsMake(int client) {
 	if ((GetGameTime() - gF_SplitGameTime[client]) < MINIMUM_SPLIT_TIME) {  // Ignore split spam
 		CloseTeleportMenu(client);
 		return;

@@ -105,6 +105,14 @@
 	{
 		"en"		"{grey}Your timer will no longer restart you teleport to start."
 	}
+	"SlayOnEnd_Enable"
+	{
+		"en"		"{grey}You will now be slain after finishing the map. This helps de-glitch your demo recordings."
+	}
+	"SlayOnEnd_Disable"
+	{
+		"en"		"{grey}You will no longer be slain after finishing the map."
+	}
 	"StopSound"
 	{
 		"en"		"{grey}You have stopped all sounds."
@@ -360,6 +368,10 @@
 	"OptionsMenu_AutoRestart"
 	{
 		"en"		"Auto restart"
+	}
+	"OptionsMenu_SlayOnEnd"
+	{
+		"en"		"End timer slay"
 	}
 	"OptionsMenu_Pistol"
 	{

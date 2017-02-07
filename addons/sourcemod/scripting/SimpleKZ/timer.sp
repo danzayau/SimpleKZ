@@ -14,6 +14,7 @@ public void SimpleKZ_OnTimerStarted(int client, const char[] map, bool firstStar
 	if (!gB_HasStartedThisMap[client]) {
 		gB_HasStartedThisMap[client] = true;
 	}
+	SplitsReset(client);
 	CloseTeleportMenu(client);
 }
 
@@ -23,6 +24,9 @@ public void SimpleKZ_OnTimerEnded(int client, const char[] map, float time, int 
 	gB_TimerRunning[client] = false;
 	PrintEndTimeString(client);
 	CloseTeleportMenu(client);
+	if (gB_SlayOnEnd[client]) {
+		CreateTimer(3.0, SlayPlayer, client);
+	}
 }
 
 public void SimpleKZ_OnTimerForceStopped(int client) {
@@ -63,7 +67,6 @@ void TimerReset(int client) {
 	gF_LastTeleportToStartWastedTime[client] = 0.0;
 	gF_WastedTime[client] = 0.0;
 	gB_HasSavedPosition[client] = false;
-	ResetSplits(client);
 }
 
 void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
