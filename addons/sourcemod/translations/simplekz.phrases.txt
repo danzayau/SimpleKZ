@@ -181,6 +181,18 @@
 	{
 		"en"		"{grey}You have reset your timer and your splits."
 	}
+	"BeatMap"
+	{
+		// Bill finished in 01:23.45 (4 TP | 01.02.34).
+		"#format"	"{1:N},{2:s},{3:d},{4:s}"
+		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({yellow}{3} TP{grey} | {grey}{4}{grey})."
+	}
+	"BeatMapPro"
+	{
+		// Bill finished in 01:23.45 (PRO).
+		"#format"	"{1:N},{2:s}"
+		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey})."
+	}
 	"Client_Connect"
 	{
 		// Bill has connected from Australia.
@@ -193,17 +205,11 @@
 		"#format"	"{1:s},{2:s}"
 		"en"		"{lime}{1}{grey} has disconnected ({2})."
 	}
-	"BeatMap"
+	"FileOpen_Fail"
 	{
-		// Bill finished in 01:23.45 (4 TP | 01.02.34).
-		"#format"	"{1:N},{2:s},{3:d},{4:s}"
-		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({yellow}{3} TP{grey} | {grey}{4}{grey})."
-	}
-	"BeatMapPro"
-	{
-		// Bill finished in 01:23.45 (PRO).
-		"#format"	"{1:N},{2:s}"
-		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey})."
+		// There was a problem opening file: cfg/sourcemod/SimpleKZ/mappool.txt.
+		"#format"	"{1:s}"
+		"en"		"{grey}There was a problem opening file: {default}{1}{grey}."
 	}
 	
 	
@@ -482,5 +488,9 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{grey}No {blue}PRO{grey} times were found on {lime}{1}{grey}."
+	}
+	"MapPool_UpdateSuccess"
+	{
+		"en"		"The ranked map pool was successfully updated."
 	}
 }

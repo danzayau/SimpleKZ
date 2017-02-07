@@ -10,6 +10,8 @@ void RegisterCommands() {
 	RegConsoleCmd("sm_maprecord", CommandMapRecord, "[KZ] Prints map record times to chat. Usage: !maprecord <map>");
 	RegConsoleCmd("sm_wr", CommandMapRecord, "[KZ] Prints map record times to chat. Usage: !maprecord <map>");
 	RegConsoleCmd("sm_maptop", CommandMapTop, "[KZ] Opens a menu showing the top times of a map. Usage !maptop <map>");
+	
+	RegAdminCmd("sm_updatemappool", CommandUpdateMapPool, ADMFLAG_ROOT, "[KZ] Updates the ranked map pool with the list of maps in mappool.txt.");
 }
 
 
@@ -64,4 +66,8 @@ public Action CommandMapTop(int client, int args) {
 	}
 	DB_OpenMapTop(client, gC_MapTopMap[client]);
 	return Plugin_Handled;
+}
+
+public Action CommandUpdateMapPool(int client, int args) {
+	DB_UpdateMapPool(client);
 } 

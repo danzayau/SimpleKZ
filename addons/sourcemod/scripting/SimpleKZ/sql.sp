@@ -14,12 +14,12 @@ char sql_players_create[] =
 ..."LastSeen TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
 ..."CONSTRAINT PK_Player PRIMARY KEY (SteamID));";
 
-char sql_players_insert[] = 
+char sqlite_players_insert[] = 
 "INSERT OR IGNORE INTO Players "
 ..."(Alias, Country, SteamID) "
 ..."VALUES('%s', '%s', '%s');";
 
-char sql_players_update[] = 
+char sqlite_players_update[] = 
 "UPDATE OR IGNORE Players "
 ..."SET Alias='%s', Country='%s', LastSeen=CURRENT_TIMESTAMP "
 ..."WHERE SteamID='%s';";

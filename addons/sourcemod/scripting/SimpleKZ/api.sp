@@ -14,8 +14,8 @@ Handle gH_Forward_SimpleKZ_OnTimerForceStopped;
 Handle gH_Forward_SimpleKZ_OnDatabaseConnect;
 
 void CreateGlobalForwards() {
-	gH_Forward_SimpleKZ_OnTimerStarted = CreateGlobalForward("SimpleKZ_OnTimerStarted", ET_Event, Param_Cell, Param_String, Param_Cell);
-	gH_Forward_SimpleKZ_OnTimerEnded = CreateGlobalForward("SimpleKZ_OnTimerEnded", ET_Event, Param_Cell, Param_String, Param_Float, Param_Cell, Param_Float);
+	gH_Forward_SimpleKZ_OnTimerStarted = CreateGlobalForward("SimpleKZ_OnTimerStarted", ET_Event, Param_Cell, Param_Cell);
+	gH_Forward_SimpleKZ_OnTimerEnded = CreateGlobalForward("SimpleKZ_OnTimerEnded", ET_Event, Param_Cell, Param_Float, Param_Cell, Param_Float);
 	gH_Forward_SimpleKZ_OnTimerPaused = CreateGlobalForward("SimpleKZ_OnTimerPaused", ET_Event, Param_Cell);
 	gH_Forward_SimpleKZ_OnTimerResumed = CreateGlobalForward("SimpleKZ_OnTimerResumed", ET_Event, Param_Cell);
 	gH_Forward_SimpleKZ_OnTimerForceStopped = CreateGlobalForward("SimpleKZ_OnTimerForceStopped", ET_Event, Param_Cell);
@@ -25,7 +25,6 @@ void CreateGlobalForwards() {
 void Call_SimpleKZ_OnTimerStarted(int client) {
 	Call_StartForward(gH_Forward_SimpleKZ_OnTimerStarted);
 	Call_PushCell(client);
-	Call_PushString(gC_CurrentMap);
 	Call_PushCell(!gB_HasStartedThisMap[client]);
 	Call_Finish();
 }
@@ -33,7 +32,6 @@ void Call_SimpleKZ_OnTimerStarted(int client) {
 void Call_SimpleKZ_OnTimerEnded(int client) {
 	Call_StartForward(gH_Forward_SimpleKZ_OnTimerEnded);
 	Call_PushCell(client);
-	Call_PushString(gC_CurrentMap);
 	Call_PushFloat(gF_CurrentTime[client] - gF_WastedTime[client]);
 	Call_PushCell(gI_TeleportsUsed[client]);
 	Call_PushFloat(gF_WastedTime[client]);

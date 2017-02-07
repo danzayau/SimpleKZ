@@ -18,6 +18,12 @@ public Plugin myinfo =
 
 
 
+/*===============================  Definitions  ===============================*/
+
+#define MAPPOOL_FILE_PATH "cfg/sourcemod/SimpleKZ/mappool.cfg"
+
+
+
 /*===============================  Global Variables  ===============================*/
 
 char gC_CurrentMap[64];
@@ -42,7 +48,6 @@ Handle gH_MapTopSubmenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 
 #include "SimpleKZRanks/api.sp"
 #include "SimpleKZRanks/commands.sp"
-#include "SimpleKZRanks/convars.sp"
 #include "SimpleKZRanks/database.sp"
 #include "SimpleKZRanks/menus.sp"
 #include "SimpleKZRanks/misc.sp"
@@ -59,8 +64,6 @@ public void OnPluginStart() {
 	}
 	
 	CreateGlobalForwards();
-	RegisterConVars();
-	AutoExecConfig(true, "SimpleKZRanks", "sourcemod/SimpleKZ");
 	RegisterCommands();
 	
 	// Translations
@@ -92,14 +95,15 @@ public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
 	DB_CreateTables();
 }
 
-public void SimpleKZ_OnTimerStarted(int client, const char[] map, bool firstStart) {
+public void SimpleKZ_OnTimerStarted(int client, bool firstStart) {
 	if (firstStart) {
-		DB_PrintPBs(client, client, map);
+		DB_PrintMapRecords(client, gC_CurrentMap);
+		DB_PrintPBs(client, client, gC_CurrentMap);
 	}
 }
 
-public void SimpleKZ_OnTimerEnded(int client, const char[] map, float time, int teleportsUsed, float theoreticalTime) {
-	DB_ProcessEndTimer(client, map, time, teleportsUsed, theoreticalTime);
+public void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, float theoreticalTime) {
+	DB_ProcessEndTimer(client, gC_CurrentMap, time, teleportsUsed, theoreticalTime);
 }
 
 public void SimpleKZ_OnSetRecord(int client, const char[] map, RecordType recordType, float runTime) {

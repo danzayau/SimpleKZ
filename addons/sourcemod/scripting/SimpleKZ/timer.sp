@@ -6,7 +6,7 @@
 
 /*===============================  Timer Events  ===============================*/
 
-public void SimpleKZ_OnTimerStarted(int client, const char[] map, bool firstStart) {
+public void SimpleKZ_OnTimerStarted(int client, bool firstStart) {
 	EmitSoundToClient(client, "buttons/button9.wav");
 	EmitSoundToClientSpectators(client, "buttons/button9.wav");
 	TimerReset(client);
@@ -18,7 +18,7 @@ public void SimpleKZ_OnTimerStarted(int client, const char[] map, bool firstStar
 	CloseTeleportMenu(client);
 }
 
-public void SimpleKZ_OnTimerEnded(int client, const char[] map, float time, int teleportsUsed, float theoreticalTime) {
+public void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, float theoreticalTime) {
 	EmitSoundToClient(client, "buttons/bell1.wav");
 	EmitSoundToClientSpectators(client, "buttons/bell1.wav");
 	gB_TimerRunning[client] = false;

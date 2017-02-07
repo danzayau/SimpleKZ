@@ -74,10 +74,10 @@ void DB_SavePlayerInfo(int client) {
 		case SQLITE: {
 			Transaction txn = SQL_CreateTransaction();
 			// UPDATE OR IGNORE
-			FormatEx(query, sizeof(query), sql_players_update, clientNameEscaped, gC_Country[client], gC_SteamID[client]);
+			FormatEx(query, sizeof(query), sqlite_players_update, clientNameEscaped, gC_Country[client], gC_SteamID[client]);
 			txn.AddQuery(query);
 			// INSERT OR IGNORE
-			FormatEx(query, sizeof(query), sql_players_insert, clientNameEscaped, gC_Country[client], gC_SteamID[client]);
+			FormatEx(query, sizeof(query), sqlite_players_insert, clientNameEscaped, gC_Country[client], gC_SteamID[client]);
 			txn.AddQuery(query);
 			SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, 0, DBPrio_High);
 		}

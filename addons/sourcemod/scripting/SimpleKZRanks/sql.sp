@@ -12,16 +12,30 @@ char sql_maps_create[] =
 ..."CONSTRAINT PK_Maps PRIMARY KEY (Map));";
 
 char sqlite_maps_insert[] = 
-"INSERT OR IGNORE "
-..."INTO Maps "
+"INSERT OR IGNORE INTO Maps "
+..."(InRankedPool, Map) "
+..."VALUES(%d, '%s');";
+
+char sqlite_maps_update[] = 
+"UPDATE OR IGNORE Maps "
+..."SET InRankedPool=%d "
+..."WHERE Map='%s';";
+
+char mysql_maps_insert[] = 
+"INSERT IGNORE INTO Maps "
 ..."(Map, InRankedPool) "
 ..."VALUES('%s', %d);";
 
-char mysql_maps_insert[] = 
-"INSERT IGNORE "
-..."INTO Maps "
-..."(Map, InRankedPool) "
-..."VALUES('%s', %d);";
+char mysql_maps_upsert[] = 
+"INSERT INTO Maps "
+..."(InRankedPool, Map) "
+..."VALUES(%d, '%s') "
+..."ON DUPLICATE KEY UPDATE "
+..."InRankedPool=VALUES(InRankedPool), Map=VALUES(Map);";
+
+char sql_maps_reset_mappool[] = 
+"UPDATE Maps "
+..."SET InRankedPool=0;";
 
 char sql_maps_select_like[] = 
 "SELECT Map "

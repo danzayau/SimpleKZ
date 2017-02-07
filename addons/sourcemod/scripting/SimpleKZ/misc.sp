@@ -50,16 +50,15 @@ void OnMapStartVariableUpdates() {
 }
 
 void UpdateCurrentMap() {
-	// Store map name
-	GetCurrentMap(gC_CurrentMap, sizeof(gC_CurrentMap));
+	char map[64];
+	GetCurrentMap(map, sizeof(map));
 	// Get just the map name (e.g. remove workshop/id/ prefix)
 	char mapPieces[5][64];
-	int lastPiece = ExplodeString(gC_CurrentMap, "/", mapPieces, sizeof(mapPieces), sizeof(mapPieces[]));
-	FormatEx(gC_CurrentMap, sizeof(gC_CurrentMap), "%s", mapPieces[lastPiece - 1]);
-	
+	int lastPiece = ExplodeString(map, "/", mapPieces, sizeof(mapPieces), sizeof(mapPieces[]));
+	FormatEx(map, sizeof(map), "%s", mapPieces[lastPiece - 1]);
 	// Check for kzpro_ tag
 	char mapPrefix[1][64];
-	ExplodeString(gC_CurrentMap, "_", mapPrefix, sizeof(mapPrefix), sizeof(mapPrefix[]));
+	ExplodeString(map, "_", mapPrefix, sizeof(mapPrefix), sizeof(mapPrefix[]));
 	gB_CurrentMapIsKZPro = StrEqual(mapPrefix[0], "kzpro", false);
 }
 

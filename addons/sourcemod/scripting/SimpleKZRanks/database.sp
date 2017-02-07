@@ -45,14 +45,52 @@ void DB_SaveMapInfo() {
 	char query[512];
 	switch (g_DBType) {
 		case SQLITE: {
-			FormatEx(query, sizeof(query), sqlite_maps_insert, gC_CurrentMap, view_as<int>(GetConVarBool(gCV_AutoAddMaps)));
+			FormatEx(query, sizeof(query), sqlite_maps_insert, 0, gC_CurrentMap);
 			SQL_TQuery(gH_DB, DB_Callback_Generic, query);
 		}
 		case MYSQL: {
-			FormatEx(query, sizeof(query), mysql_maps_insert, gC_CurrentMap, view_as<int>(GetConVarBool(gCV_AutoAddMaps)));
+			FormatEx(query, sizeof(query), mysql_maps_insert, 0, gC_CurrentMap);
 			SQL_TQuery(gH_DB, DB_Callback_Generic, query);
 		}
 	}
+}
+
+void DB_UpdateMapPool(int client) {
+	Handle file = OpenFile(MAPPOOL_FILE_PATH, "r");
+	if (file == INVALID_HANDLE) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "FileOpen_Fail", MAPPOOL_FILE_PATH);
+		return;
+	}
+	
+	Transaction txn = SQL_CreateTransaction();
+	char line[33], query[512];
+	txn.AddQuery(sql_maps_reset_mappool);
+	while (ReadFileLine(file, line, sizeof(line))) {
+		if (line[0] == '\0' || line[0] == '/') {
+			continue;
+		}
+		switch (g_DBType) {
+			case SQLITE: {
+				// UPDATE OR IGNORE
+				FormatEx(query, sizeof(query), sqlite_maps_update, 1, line);
+				txn.AddQuery(query);
+				// INSERT OR IGNORE
+				FormatEx(query, sizeof(query), sqlite_maps_insert, 1, line);
+				txn.AddQuery(query);
+			}
+			case MYSQL: {
+				FormatEx(query, sizeof(query), mysql_maps_upsert, 1, line);
+				txn.AddQuery(query);
+			}
+		}
+	}
+	
+	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_UpdateMapPool, DB_TxnFailure_Generic, client, DBPrio_Low);
+	CloseHandle(file);
+}
+
+public void DB_TxnSuccess_UpdateMapPool(Handle db, int client, int numQueries, Handle[] results, any[] queryData) {
+	CPrintToChat(client, "%t %t", "KZ_Tag", "MapPool_UpdateSuccess");
 }
 
 

@@ -28,23 +28,21 @@ enum DatabaseType {
  * Called when the player starts their timer.
  *
  * @param client			Client entity index.
- * @param map				The name of the map (without prefixes e.g. workshop/).
  * @param firstStart		True if it is the player's first time starting since last map change.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerStarted(int client, const char[] map, bool firstStart);
+forward void SimpleKZ_OnTimerStarted(int client, bool firstStart);
 
 /**
  * Called when the player ends their timer.
  *
  * @param client			Client entity index.
- * @param map				The name of the map (without prefixes e.g. workshop/).
  * @param time				Player's end time.
  * @param teleportsUsed		Number of teleports the player used.
  * @param theoreticalTime	Theoretical end time without using teleports.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerEnded(int client, const char[] map, float time, int teleportsUsed, float theoreticalTime);
+forward void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, float theoreticalTime);
 
 /**
  * Called when the player pauses their timer.
