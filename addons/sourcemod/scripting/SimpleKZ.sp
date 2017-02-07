@@ -195,6 +195,15 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	return APLRes_Success;
 }
 
+public void OnLibraryAdded(const char[] name) {
+	// Send database info if dependent plugins load late
+	if (StrEqual(name, "SimpleKZRanks")) {
+		if (gB_ConnectedToDB) {
+			Call_SimpleKZ_OnDatabaseConnect();
+		}
+	}
+}
+
 
 
 /*===============================  Map and Client Events  ===============================*/

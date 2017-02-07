@@ -61,6 +61,7 @@ void DB_SaveMapInfo() {
 
 void DB_ProcessEndTimer(int client, const char[] map, float runTime, int teleportsUsed, float theoreticalTime) {
 	if (!gB_ConnectedToDB) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
 		return;
 	}
 	
@@ -91,7 +92,7 @@ void DB_ProcessEndTimer(int client, const char[] map, float runTime, int telepor
 public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
 	data.Reset();
 	int client = data.ReadCell();
-	char map[64];
+	char map[33];
 	data.ReadString(map, sizeof(map));
 	float runTime = data.ReadFloat();
 	int teleportsUsed = data.ReadCell();
@@ -114,14 +115,14 @@ public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueri
 	if (newRecord || newRecordPro) {
 		if (newRecord) {
 			if (!newRecordPro) {
-				Call_SimpleKZ_OnGetRecord(client, map, MAP_RECORD, runTime);
+				Call_SimpleKZ_OnSetRecord(client, map, MAP_RECORD, runTime);
 			}
 			else {
-				Call_SimpleKZ_OnGetRecord(client, map, MAP_AND_PRO_RECORD, runTime);
+				Call_SimpleKZ_OnSetRecord(client, map, MAP_AND_PRO_RECORD, runTime);
 			}
 		}
 		else {
-			Call_SimpleKZ_OnGetRecord(client, map, PRO_RECORD, runTime);
+			Call_SimpleKZ_OnSetRecord(client, map, PRO_RECORD, runTime);
 		}
 	}
 }
@@ -135,39 +136,69 @@ void DB_PrintPBs(int client, int target, const char[] map) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
 		return;
 	}
-	
+	// Step 1: Look for map name in database
 	DataPack data = CreateDataPack();
 	data.WriteCell(client);
 	data.WriteCell(target);
 	data.WriteString(map);
 	
-	Transaction txn = SQL_CreateTransaction();
-	char query[512];
+	char query[512], mapEscaped[129];
+	SQL_EscapeString(gH_DB, map, mapEscaped, sizeof(mapEscaped));
+	FormatEx(query, sizeof(query), sql_maps_select_like, mapEscaped, mapEscaped);
+	SQL_TQuery(gH_DB, DB_Callback_PrintPBs, query, data);
+}
+
+public void DB_Callback_PrintPBs(Handle db, Handle results, const char[] error, DataPack data) {
+	data.Reset();
+	int client = data.ReadCell();
+	int target = data.ReadCell();
+	char map[33];
+	data.ReadString(map, sizeof(map));
+	CloseHandle(data);
 	
-	// Get PB
-	FormatEx(query, sizeof(query), sql_times_getpb, gC_SteamID[target], map);
-	txn.AddQuery(query);
-	// Get Rank
-	FormatEx(query, sizeof(query), sql_times_getrank, gC_SteamID[target], map, map);
-	txn.AddQuery(query);
-	// Get Number of Players with Times
-	FormatEx(query, sizeof(query), sql_times_getcompletions, map);
-	txn.AddQuery(query);
+	if (SQL_GetRowCount(results) == 0) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "MapNotFound", map);
+		return;
+	}
 	
-	// Get PRO PB
-	FormatEx(query, sizeof(query), sql_times_getpbpro, gC_SteamID[target], map);
-	txn.AddQuery(query);
-	// Get PRO Rank
-	FormatEx(query, sizeof(query), sql_times_getrankpro, gC_SteamID[target], map, map);
-	txn.AddQuery(query);
-	// Get Number of Players with PRO Times
-	FormatEx(query, sizeof(query), sql_times_getcompletionspro, map);
-	txn.AddQuery(query);
-	
-	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_PrintPBs, DB_TxnFailure_Generic, data);
+	else if (SQL_FetchRow(results)) {
+		// Step 2: Got map name from database - now get PBs		
+		SQL_FetchString(results, 0, map, sizeof(map));
+		
+		data = CreateDataPack();
+		data.WriteCell(client);
+		data.WriteCell(target);
+		data.WriteString(map);
+		
+		Transaction txn = SQL_CreateTransaction();
+		char query[512];
+		
+		// Get PB
+		FormatEx(query, sizeof(query), sql_times_getpb, gC_SteamID[target], map);
+		txn.AddQuery(query);
+		// Get Rank
+		FormatEx(query, sizeof(query), sql_times_getrank, gC_SteamID[target], map, map);
+		txn.AddQuery(query);
+		// Get Number of Players with Times
+		FormatEx(query, sizeof(query), sql_times_getcompletions, map);
+		txn.AddQuery(query);
+		
+		// Get PRO PB
+		FormatEx(query, sizeof(query), sql_times_getpbpro, gC_SteamID[target], map);
+		txn.AddQuery(query);
+		// Get PRO Rank
+		FormatEx(query, sizeof(query), sql_times_getrankpro, gC_SteamID[target], map, map);
+		txn.AddQuery(query);
+		// Get Number of Players with PRO Times
+		FormatEx(query, sizeof(query), sql_times_getcompletionspro, map);
+		txn.AddQuery(query);
+		
+		SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_PrintPBs, DB_TxnFailure_Generic, data);
+	}
 }
 
 public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
+	// Step 3: Print the PB info
 	data.Reset();
 	int client = data.ReadCell();
 	int target = data.ReadCell();
@@ -254,25 +285,53 @@ void DB_PrintMapRecords(int client, const char[] map) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
 		return;
 	}
-	
+	// Step 1: Look for map name in database
 	DataPack data = CreateDataPack();
 	data.WriteCell(client);
 	data.WriteString(map);
 	
-	Transaction txn = SQL_CreateTransaction();
-	char query[512];
+	char query[512], mapEscaped[129];
+	SQL_EscapeString(gH_DB, map, mapEscaped, sizeof(mapEscaped));
+	FormatEx(query, sizeof(query), sql_maps_select_like, mapEscaped, mapEscaped);
+	SQL_TQuery(gH_DB, DB_Callback_PrintMapRecords, query, data);
+}
+
+public void DB_Callback_PrintMapRecords(Handle db, Handle results, const char[] error, DataPack data) {
+	// Step 2: Got map name from database - now get WRs
+	data.Reset();
+	int client = data.ReadCell();
+	char map[33];
+	data.ReadString(map, sizeof(map));
+	CloseHandle(data);
 	
-	// Get Map WR
-	FormatEx(query, sizeof(query), sql_times_gettop, map, 1);
-	txn.AddQuery(query);
-	// Get PRO WR
-	FormatEx(query, sizeof(query), sql_times_gettoppro, map, 1);
-	txn.AddQuery(query);
+	if (SQL_GetRowCount(results) == 0) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "MapNotFound", map);
+		return;
+	}
 	
-	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_PrintMapRecords, DB_TxnFailure_Generic, data);
+	else if (SQL_FetchRow(results)) {
+		SQL_FetchString(results, 0, map, sizeof(map));
+		
+		data = CreateDataPack();
+		data.WriteCell(client);
+		data.WriteString(map);
+		
+		Transaction txn = SQL_CreateTransaction();
+		char query[512];
+		
+		// Get Map WR
+		FormatEx(query, sizeof(query), sql_times_gettop, map, 1);
+		txn.AddQuery(query);
+		// Get PRO WR
+		FormatEx(query, sizeof(query), sql_times_gettoppro, map, 1);
+		txn.AddQuery(query);
+		
+		SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_PrintMapRecords, DB_TxnFailure_Generic, data);
+	}
 }
 
 public void DB_TxnSuccess_PrintMapRecords(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
+	// Step 3: Print the map records
 	data.Reset();
 	int client = data.ReadCell();
 	char map[33];
@@ -331,16 +390,44 @@ public void DB_TxnSuccess_PrintMapRecords(Handle db, DataPack data, int numQueri
 /*===============================  Map Top  ===============================*/
 
 void DB_OpenMapTop(int client, const char[] map) {
+	if (!gB_ConnectedToDB) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
+		return;
+	}
+	
+	char query[512], mapEscaped[129];
+	SQL_EscapeString(gH_DB, map, mapEscaped, sizeof(mapEscaped));
+	FormatEx(query, sizeof(query), sql_maps_select_like, mapEscaped, mapEscaped);
+	SQL_TQuery(gH_DB, DB_Callback_OpenMapTop, query, client);
+}
+
+public void DB_Callback_OpenMapTop(Handle db, Handle results, const char[] error, int client) {
+	if (SQL_GetRowCount(results) == 0) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "MapNotFound", gC_MapTopMap[client]);
+		return;
+	}
+	else if (SQL_FetchRow(results)) {
+		SQL_FetchString(results, 0, gC_MapTopMap[client], sizeof(gC_MapTopMap[]));
+		DisplayMapTopMenu(client);
+	}
+}
+
+void DB_OpenTop20(int client, const char[] map) {
+	if (!gB_ConnectedToDB) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
+		return;
+	}
+	
 	DataPack data = CreateDataPack();
 	data.WriteCell(client);
 	data.WriteString(map);
 	
 	char query[512];
 	FormatEx(query, sizeof(query), sql_times_gettop, map, 20);
-	SQL_TQuery(gH_DB, DB_Callback_OpenMapTop, query, data);
+	SQL_TQuery(gH_DB, DB_Callback_OpenTop20, query, data);
 }
 
-public void DB_Callback_OpenMapTop(Handle db, Handle results, const char[] error, DataPack data) {
+public void DB_Callback_OpenTop20(Handle db, Handle results, const char[] error, DataPack data) {
 	data.Reset();
 	int client = data.ReadCell();
 	char map[33];
@@ -348,7 +435,7 @@ public void DB_Callback_OpenMapTop(Handle db, Handle results, const char[] error
 	CloseHandle(data);
 	
 	if (SQL_GetRowCount(results) == 0) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "MapTop_None", map);
+		CPrintToChat(client, "%t %t", "KZ_Tag", "MapTop_NoTimes", map);
 		DisplayMapTopMenu(client);
 		return;
 	}
@@ -377,17 +464,22 @@ public void DB_Callback_OpenMapTop(Handle db, Handle results, const char[] error
 	DisplayMenu(gH_MapTopSubmenu[client], client, MENU_TIME_FOREVER);
 }
 
-void DB_OpenMapTopPro(int client, const char[] map) {
+void DB_OpenTop20Pro(int client, const char[] map) {
+	if (!gB_ConnectedToDB) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
+		return;
+	}
+	
 	DataPack data = CreateDataPack();
 	data.WriteCell(client);
 	data.WriteString(map);
 	
 	char query[512];
 	FormatEx(query, sizeof(query), sql_times_gettoppro, map, 20);
-	SQL_TQuery(gH_DB, DB_Callback_OpenMapTopPro, query, data);
+	SQL_TQuery(gH_DB, DB_Callback_OpenTop20Pro, query, data);
 }
 
-public void DB_Callback_OpenMapTopPro(Handle db, Handle results, const char[] error, DataPack data) {
+public void DB_Callback_OpenTop20Pro(Handle db, Handle results, const char[] error, DataPack data) {
 	data.Reset();
 	int client = data.ReadCell();
 	char map[33];
@@ -395,7 +487,7 @@ public void DB_Callback_OpenMapTopPro(Handle db, Handle results, const char[] er
 	CloseHandle(data);
 	
 	if (SQL_GetRowCount(results) == 0) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "MapTop_Pro_None", map);
+		CPrintToChat(client, "%t %t", "KZ_Tag", "MapTop_NoTimes_Pro", map);
 		DisplayMapTopMenu(client);
 		return;
 	}

@@ -130,11 +130,11 @@ void EndButtonPress(int client) {
 }
 
 void CheckForStartButtonPress(int client) {
-	// If didnt just start time, and just pressed +use button
+	// If just pressed +use button
 	if (!(g_OldButtons[client] & IN_USE) && GetClientButtons(client) & IN_USE) {
 		float origin[3];
 		g_MovementPlayer[client].GetOrigin(origin);
-		
+		// If didnt just start time
 		if (!(gB_TimerRunning[client] && gF_CurrentTime[client] < 0.1)
 			 && gB_HasStartedThisMap[client] && GetVectorDistance(origin, gF_StartButtonOrigin[client]) <= MAX_DISTANCE_FROM_BUTTON_ORIGIN) {
 			StartButtonPress(client);

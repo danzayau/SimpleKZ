@@ -29,9 +29,9 @@ bool gB_ConnectedToDB = false;
 DatabaseType g_DBType = NONE;
 
 // Menus
-Handle gH_MapTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 char gC_MapTopMap[MAXPLAYERS + 1][64];
-Handle gH_MapTopSubmenu[MAXPLAYERS + 1] = INVALID_HANDLE;
+Handle gH_MapTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+Handle gH_MapTopSubmenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 
 
 
@@ -102,7 +102,7 @@ public void SimpleKZ_OnTimerEnded(int client, const char[] map, float time, int 
 	DB_ProcessEndTimer(client, map, time, teleportsUsed, theoreticalTime);
 }
 
-public void SimpleKZ_OnGetRecord(int client, const char[] map, RecordType recordType, float runTime) {
+public void SimpleKZ_OnSetRecord(int client, const char[] map, RecordType recordType, float runTime) {
 	switch (recordType) {
 		case PRO_RECORD: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "BeatProRecord", client);

@@ -9,10 +9,10 @@
 Handle gH_Forward_SimpleKZ_OnGetRecord;
 
 void CreateGlobalForwards() {
-	gH_Forward_SimpleKZ_OnGetRecord = CreateGlobalForward("SimpleKZ_OnGetRecord", ET_Event, Param_Cell, Param_String, Param_Cell, Param_Float);
+	gH_Forward_SimpleKZ_OnGetRecord = CreateGlobalForward("SimpleKZ_OnSetRecord", ET_Event, Param_Cell, Param_String, Param_Cell, Param_Float);
 }
 
-void Call_SimpleKZ_OnGetRecord(int client, const char[] map, RecordType recordType, float runTime) {
+void Call_SimpleKZ_OnSetRecord(int client, const char[] map, RecordType recordType, float runTime) {
 	Call_StartForward(gH_Forward_SimpleKZ_OnGetRecord);
 	Call_PushCell(client);
 	Call_PushString(map);

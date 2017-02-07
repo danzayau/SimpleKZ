@@ -467,12 +467,18 @@
 	{
 		"en"		"{blue}PRO RECORD{grey}: None!"
 	}
-	"MapTop_None"
+	"MapNotFound"
+	{
+		// Your search for map kz_fakemap returned with no results.
+		"#format"	"{1:s}"
+		"en"		"{grey}Your search for map {lime}{1}{grey} returned with no results."
+	}
+	"MapTop_NoTimes"
 	{
 		"#format"	"{1:s}"
 		"en"		"{grey}No times were found on {lime}{1}{grey}."
 	}
-	"MapTop_Pro_None"
+	"MapTop_NoTimes_Pro"
 	{
 		"#format"	"{1:s}"
 		"en"		"{grey}No {blue}PRO{grey} times were found on {lime}{1}{grey}."

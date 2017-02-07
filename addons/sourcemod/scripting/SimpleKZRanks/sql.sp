@@ -23,6 +23,13 @@ char mysql_maps_insert[] =
 ..."(Map, InRankedPool) "
 ..."VALUES('%s', %d);";
 
+char sql_maps_select_like[] = 
+"SELECT Map "
+..."FROM Maps "
+..."WHERE Map LIKE '%%%s%%' "
+..."ORDER BY (Map='%s') DESC, LENGTH(Map) "
+..."LIMIT 1;";
+
 
 // Times
 char sqlite_times_create[] = 

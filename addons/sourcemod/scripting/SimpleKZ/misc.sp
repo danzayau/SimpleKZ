@@ -315,12 +315,12 @@ void SplitsSetup(int client) {
 }
 
 void SplitsReset(int client) {
+	if (IsClientInGame(client) && gB_HasStartedThisMap[client] && gI_Splits[client] != 0) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Split_Reset");
+	}
 	gI_Splits[client] = 0;
 	gF_SplitRunTime[client] = 0.0;
 	gF_SplitGameTime[client] = 0.0;
-	if (IsClientInGame(client) && gB_HasStartedThisMap[client]) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Split_Reset");
-	}
 }
 
 void SplitsMake(int client) {

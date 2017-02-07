@@ -62,6 +62,6 @@ public Action CommandMapTop(int client, int args) {
 	else {
 		GetCmdArg(1, gC_MapTopMap[client], sizeof(gC_MapTopMap[]));
 	}
-	DisplayMapTopMenu(client);
+	DB_OpenMapTop(client, gC_MapTopMap[client]);
 	return Plugin_Handled;
 } 
