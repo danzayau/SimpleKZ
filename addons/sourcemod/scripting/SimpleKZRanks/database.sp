@@ -12,12 +12,12 @@ void DB_CreateTables() {
 	switch (g_DBType) {
 		case SQLITE: {
 			txn.AddQuery(sqlite_times_create);
+			txn.AddQuery(sqlite_times_createindex_mapsteamid);
 		}
 		case MYSQL: {
 			txn.AddQuery(mysql_times_create);
 		}
-	}
-	txn.AddQuery(sql_times_createindex_mapsteamid);
+	}	
 	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic);
 }
 

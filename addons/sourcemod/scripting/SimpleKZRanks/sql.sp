@@ -23,8 +23,8 @@ char sqlite_maps_update[] =
 
 char mysql_maps_insert[] = 
 "INSERT IGNORE INTO Maps "
-..."(Map, InRankedPool) "
-..."VALUES('%s', %d);";
+..."(InRankedPool, Map) "
+..."VALUES(%d, '%s');";
 
 char mysql_maps_upsert[] = 
 "INSERT INTO Maps "
@@ -68,11 +68,12 @@ char mysql_times_create[] =
 ..."Teleports SMALLINT UNSIGNED NOT NULL, "
 ..."TheoreticalRunTime FLOAT UNSIGNED NOT NULL, "
 ..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."INDEX IX_MapSteamID (Map, SteamID), "
 ..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
 ..."CONSTRAINT FK_Times_SteamID FOREIGN KEY (SteamID) REFERENCES Players (SteamID) ON UPDATE CASCADE ON DELETE CASCADE, "
 ..."CONSTRAINT FK_Times_Map FOREIGN KEY (Map) REFERENCES Maps (Map) ON UPDATE CASCADE ON DELETE CASCADE);";
 
-char sql_times_createindex_mapsteamid[] = 
+char sqlite_times_createindex_mapsteamid[] = 
 "CREATE INDEX IF NOT EXISTS IX_MapSteamID "
 ..."ON Times (Map, SteamID);";
 
@@ -86,7 +87,7 @@ char sql_times_getpb[] =
 "SELECT MIN(RunTime), Teleports, TheoreticalRunTime "
 ..."FROM Times "
 ..."WHERE SteamID='%s' AND Map='%s' "
-..."GROUP BY Map;";
+..."GROUP BY Map, Teleports, TheoreticalRunTime;";
 
 char sql_times_getpbpro[] = 
 "SELECT MIN(RunTime) "
@@ -95,20 +96,20 @@ char sql_times_getpbpro[] =
 ..."GROUP BY Map;";
 
 char sql_times_gettop[] = 
-"SELECT Players.Alias, MIN(Times.RunTime), Times.Teleports, Times.TheoreticalRunTime, Created "
+"SELECT Players.Alias, MIN(Times.RunTime), Times.Teleports, Times.TheoreticalRunTime, Times.Created "
 ..."FROM Times "
 ..."INNER JOIN Players ON Players.SteamID=Times.SteamID "
 ..."WHERE Times.Map='%s' "
-..."GROUP BY Players.SteamID "
+..."GROUP BY Players.SteamID, Times.RunTime, Players.Alias, Times.Teleports, Times.TheoreticalRunTime, Times.Created "
 ..."ORDER BY Times.RunTime ASC "
 ..."LIMIT %d;";
 
 char sql_times_gettoppro[] = 
-"SELECT Players.Alias, MIN(Times.RunTime), Created "
+"SELECT Players.Alias, MIN(Times.RunTime), Times.Created "
 ..."FROM Times "
 ..."INNER JOIN Players ON Players.SteamID=Times.SteamID "
 ..."WHERE Times.Map='%s' AND Times.Teleports=0 "
-..."GROUP BY Players.SteamID "
+..."GROUP BY Players.SteamID, Times.RunTime, Players.Alias, Times.Created "
 ..."ORDER BY Times.RunTime ASC "
 ..."LIMIT %d;";
 
