@@ -1,5 +1,8 @@
 /* 	Simple KZ Core API
 	Author: DanZay
+	
+	Plugin Version: 0.7.0
+	Plugin Website: https://github.com/danzayau/SimpleKZ	
 */
 
 #if defined _simplekz_core_included_
