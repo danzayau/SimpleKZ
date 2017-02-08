@@ -32,7 +32,7 @@ char mysql_maps_upsert[] =
 ..."(InRankedPool, Map) "
 ..."VALUES(%d, '%s') "
 ..."ON DUPLICATE KEY UPDATE "
-..."InRankedPool=VALUES(InRankedPool), Map=VALUES(Map);";
+..."InRankedPool=VALUES(InRankedPool);";
 
 char sql_maps_reset_mappool[] = 
 "UPDATE Maps "
