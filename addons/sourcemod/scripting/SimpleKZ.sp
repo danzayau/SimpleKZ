@@ -15,10 +15,10 @@
 
 public Plugin myinfo = 
 {
-	name = "Simple KZ", 
+	name = "Simple KZ Core", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer and optional database.", 
-	version = "0.6.1", 
+	version = "0.7.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -28,12 +28,7 @@ public Plugin myinfo =
 
 #define PAUSE_COOLDOWN_AFTER_RESUMING 1.0
 #define MINIMUM_SPLIT_TIME 1.0
-#define NUMBER_OF_PISTOLS 8
-
-// Database Types
-#define NONE -1
-#define MYSQL 0
-#define SQLITE 1
+#define MAX_DISTANCE_FROM_BUTTON_ORIGIN 40.0
 
 
 
@@ -46,8 +41,7 @@ bool gB_Paused[MAXPLAYERS + 1] =  { false, ... };
 float gF_LastResumeTime[MAXPLAYERS + 1];
 bool gB_HasResumedInThisRun[MAXPLAYERS + 1] =  { false, ... };
 
-// Checkpoints and Teleports
-bool gB_HasStartedThisMap[MAXPLAYERS + 1] =  { false, ... };
+// Saved Positions and Angles
 float gF_StartOrigin[MAXPLAYERS + 1][3];
 float gF_StartAngles[MAXPLAYERS + 1][3];
 int gI_CheckpointsSet[MAXPLAYERS + 1];
@@ -57,6 +51,12 @@ float gF_CheckpointAngles[MAXPLAYERS + 1][3];
 bool gB_LastTeleportOnGround[MAXPLAYERS + 1];
 float gF_UndoOrigin[MAXPLAYERS + 1][3];
 float gF_UndoAngle[MAXPLAYERS + 1][3];
+
+// Button Press Checking
+bool gB_HasStartedThisMap[MAXPLAYERS + 1] =  { false, ... };
+bool gB_HasEndedThisMap[MAXPLAYERS + 1] =  { false, ... };
+float gF_StartButtonOrigin[MAXPLAYERS + 1][3];
+float gF_EndButtonOrigin[MAXPLAYERS + 1][3];
 
 // Wasted Time
 float gF_LastCheckpointTime[MAXPLAYERS + 1];
@@ -76,17 +76,18 @@ float gF_SavedAngles[MAXPLAYERS + 1][3];
 // Database
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
-int g_DBType = NONE;
-char gC_CurrentMap[64];
+DatabaseType g_DBType = NONE;
 char gC_SteamID[MAXPLAYERS + 1][24];
 char gC_Country[MAXPLAYERS + 1][45];
 
+// Preferences
 bool gB_ShowingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
 bool gB_ShowingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
 bool gB_ShowingKeys[MAXPLAYERS + 1] =  { false, ... };
 bool gB_ShowingPlayers[MAXPLAYERS + 1] =  { true, ... };
 bool gB_ShowingWeapon[MAXPLAYERS + 1] =  { true, ... };
-bool gB_AutoRestart[MAXPLAYERS + 1];
+bool gB_AutoRestart[MAXPLAYERS + 1] =  { false, ... };
+bool gB_SlayOnEnd[MAXPLAYERS + 1] =  { false, ... };
 int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
 
 // Menus
@@ -140,13 +141,14 @@ char gC_RadioCommands[][] =  { "coverme", "takepoint", "holdpos", "regroup", "fo
 // Global Variable Includes
 #include "SimpleKZ/sql.sp"
 
+#include "SimpleKZ/api.sp"
 #include "SimpleKZ/commands.sp"
-#include "SimpleKZ/timer.sp"
+#include "SimpleKZ/convars.sp"
+#include "SimpleKZ/database.sp"
 #include "SimpleKZ/infopanel.sp"
 #include "SimpleKZ/menus.sp"
 #include "SimpleKZ/misc.sp"
-#include "SimpleKZ/database.sp"
-#include "SimpleKZ/api.sp"
+#include "SimpleKZ/timer.sp"
 
 
 
@@ -160,6 +162,8 @@ public void OnPluginStart() {
 	}
 	
 	CreateGlobalForwards();
+	RegisterConVars();
+	AutoExecConfig(true, "SimpleKZ", "sourcemod/SimpleKZ");
 	RegisterCommands();
 	AddCommandListeners();
 	
@@ -190,6 +194,15 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	return APLRes_Success;
 }
 
+public void OnLibraryAdded(const char[] name) {
+	// Send database info if dependent plugins load late
+	if (StrEqual(name, "SimpleKZRanks")) {
+		if (gB_ConnectedToDB) {
+			Call_SimpleKZ_OnDatabaseConnect();
+		}
+	}
+}
+
 
 
 /*===============================  Map and Client Events  ===============================*/
@@ -201,6 +214,7 @@ public void OnMapStart() {
 }
 
 public void OnClientAuthorized(int client) {
+	// Prepare for client arrival
 	if (!IsFakeClient(client)) {
 		GetClientCountry(client);
 		GetClientSteamID(client);
@@ -210,24 +224,29 @@ public void OnClientAuthorized(int client) {
 		UpdatePistolMenu(client);
 		UpdateMeasureMenu(client);
 		UpdateOptionsMenu(client);
-		SetupTimer(client);
+		TimerSetup(client);
 		MeasureResetPos(client);
-		SetupSplits(client);
-		
-		PrintConnectMessage(client);
+		SplitsSetup(client);
 	}
 }
 
 public void OnClientPutInServer(int client) {
 	if (!IsFakeClient(client)) {
 		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
+		PrintConnectMessage(client);
+	}
+}
+
+public void OnClientDisconnect(int client) {  // Also calls at end of map
+	if (!IsFakeClient(client)) {
+		DB_SavePreferences(client);
 	}
 }
 
 public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (!IsFakeClient(client)) {
-		DB_UpdatePreferences(client);
+	if (IsValidClient(client) && !IsFakeClient(client)) {
+		SetEventBroadcast(event, true);
 		char reason[64];
 		GetEventString(event, "reason", reason, sizeof(reason));
 		PrintDisconnectMessage(client, reason);
@@ -242,6 +261,7 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 		SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true); // No Block
 		SetDrawViewModel(client, gB_ShowingWeapon[client]); // Hide weapon
 		GivePlayerPistol(client, gI_Pistol[client]); // Give player their preferred pistol
+		CloseTeleportMenu(client);
 	}
 }
 
@@ -277,6 +297,10 @@ public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcas
 
 // Adjust player messages, and automatically lower case commands
 public Action OnSay(int client, const char[] command, int argc) {
+	if (!GetConVarBool(gCV_Chat)) {
+		return Plugin_Continue;
+	}
+	
 	if (BaseComm_IsClientGagged(client)) {
 		return Plugin_Handled;
 	}
@@ -324,7 +348,7 @@ public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &
 public void OnStartNoclipping(int client) {
 	if (gB_TimerRunning[client]) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Noclip");
-		ForceStopTimer(client);
+		SimpleKZ_ForceStopTimer(client);
 	}
 }
 
@@ -332,11 +356,11 @@ public void OnStartNoclipping(int client) {
 public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (!IsFakeClient(client)) {
-		ForceStopTimer(client);
+		SimpleKZ_ForceStopTimer(client);
 	}
-} 
+}
 
 // Force full alltalk on round start
 public void OnRoundStart(Event event, const char[] name, bool dontBroadcast) {
 	SetConVarInt(gCV_FullAlltalk, 1);
-}
+} 

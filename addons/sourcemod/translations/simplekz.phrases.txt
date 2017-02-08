@@ -105,6 +105,14 @@
 	{
 		"en"		"{grey}Your timer will no longer restart you teleport to start."
 	}
+	"SlayOnEnd_Enable"
+	{
+		"en"		"{grey}You will now be slain after finishing the map. This helps de-glitch your demo recordings."
+	}
+	"SlayOnEnd_Disable"
+	{
+		"en"		"{grey}You will no longer be slain after finishing the map."
+	}
 	"StopSound"
 	{
 		"en"		"{grey}You have stopped all sounds."
@@ -173,6 +181,18 @@
 	{
 		"en"		"{grey}You have reset your timer and your splits."
 	}
+	"BeatMap"
+	{
+		// Bill finished in 01:23.45 (4 TP | 01.02.34).
+		"#format"	"{1:N},{2:s},{3:d},{4:s}"
+		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({yellow}{3} TP{grey} | {grey}{4}{grey})."
+	}
+	"BeatMapPro"
+	{
+		// Bill finished in 01:23.45 (PRO).
+		"#format"	"{1:N},{2:s}"
+		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey})."
+	}
 	"Client_Connect"
 	{
 		// Bill has connected from Australia.
@@ -184,6 +204,12 @@
 		// Bill has disconnected (Disconnect).
 		"#format"	"{1:s},{2:s}"
 		"en"		"{lime}{1}{grey} has disconnected ({2})."
+	}
+	"FileOpen_Fail"
+	{
+		// There was a problem opening file: cfg/sourcemod/SimpleKZ/mappool.txt.
+		"#format"	"{1:s}"
+		"en"		"{grey}There was a problem opening file: {default}{1}{grey}."
 	}
 	
 	
@@ -296,22 +322,6 @@
 	}
 	
 	
-	// Map Top Menu ////////////////////////////////////////////////////////////
-	"MapTopMenu_Title"
-	{
-		// Map Top (kz_map)
-		"#format"	"{1:s}"
-		"en"		"Map Top ({1})"
-	}
-	"MapTopMenu_Top20"
-	{
-		"en"		"Top 20"
-	}
-	"MapTopMenu_Top20Pro"
-	{
-		"en"		"Top 20 Pro"
-	}
-	
 	// Options Menu Menu ////////////////////////////////////////////////////////////
 	"OptionsMenu_Title"
 	{
@@ -349,25 +359,20 @@
 	{
 		"en"		"Auto restart"
 	}
+	"OptionsMenu_SlayOnEnd"
+	{
+		"en"		"End timer slay"
+	}
 	"OptionsMenu_Pistol"
 	{
 		"en"		"Pistol"
 	}
 	
-	
+	////////////////////////////////////////////////////////////
 	// SimpleKZ Ranks ////////////////////////////////////////////////////////////
-	"BeatMap"
-	{
-		// Bill finished in 01:23.45 (4 TP | 01.02.34).
-		"#format"	"{1:N},{2:s},{3:d},{4:s}"
-		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({yellow}{3} TP{grey} | {grey}{4}{grey})."
-	}
-	"BeatMapPro"
-	{
-		// Bill finished in 01:23.45 (PRO).
-		"#format"	"{1:N},{2:s}"
-		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey})."
-	}
+	////////////////////////////////////////////////////////////
+	
+	// Chat Messages ////////////////////////////////////////////////////////////
 	"BeatMapRecord"
 	{
 		"#format"	"{1:N}"
@@ -404,21 +409,21 @@
 	}
 	"PB_Map"
 	{
-		// MAP PB: 01:23.45 - #4/123 (5 TP | 01:01.23)
+		// MAP PB: 01:23.45 #4/123 (5 TP | 01:01.23)
 		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:s}"
-		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} - #{default}{2}{grey}/{3}  ({yellow}{4} TP{grey} | {grey}{5}{grey})"
+		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} #{default}{2}{grey}/{3}  ({yellow}{4} TP{grey} | {grey}{5}{grey})"
 	}
 	"PB_Map_Pro"
 	{
-		// MAP PB: 01:23.45 - #4/123 (PRO #3/12)
+		// MAP PB: 01:23.45 #4/123 (PRO #3/12)
 		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:d}"
-		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} - #{default}{2}{grey}/{3} ({blue}PRO{grey} #{default}{4}{grey}/{5})"
+		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} #{default}{2}{grey}/{3} ({blue}PRO{grey} #{default}{4}{grey}/{5})"
 	}
 	"PB_Pro"
 	{
-		// PRO PB: 01:23.45 - #4/123
+		// PRO PB: 01:23.45 #4/123
 		"#format"	"{1:s},{2:d},{3:d}"
-		"en"		"{blue}PRO PB{grey}: {default}{1}{grey} - #{default}{2}{grey}/{3}"
+		"en"		"{blue}PRO PB{grey}: {default}{1}{grey} #{default}{2}{grey}/{3}"
 	}
 	"PB_Pro_None"
 	{
@@ -455,14 +460,44 @@
 	{
 		"en"		"{blue}PRO RECORD{grey}: None!"
 	}
-	"MapTop_None"
+	"MapNotFound"
+	{
+		// Your search for map kz_fakemap returned with no results.
+		"#format"	"{1:s}"
+		"en"		"{grey}Your search for map {lime}{1}{grey} returned with no results."
+	}
+	"MapTop_NoTimes"
 	{
 		"#format"	"{1:s}"
 		"en"		"{grey}No times were found on {lime}{1}{grey}."
 	}
-	"MapTop_Pro_None"
+	"MapTop_NoTimes_Pro"
 	{
 		"#format"	"{1:s}"
 		"en"		"{grey}No {blue}PRO{grey} times were found on {lime}{1}{grey}."
+	}
+	"MapPool_UpdateSuccess"
+	{
+		"en"		"{grey}The ranked map pool was successfully updated."
+	}
+	
+	// Map Top Menu ////////////////////////////////////////////////////////////
+	"MapTopMenu_Title"
+	{
+		// Map Top (kz_map)
+		"#format"	"{1:s}"
+		"en"		"Map Top ({1})"
+	}
+	"MapTopMenu_Top20"
+	{
+		"en"		"Top 20"
+	}
+	"MapTopMenu_Top20Pro"
+	{
+		"en"		"Top 20 Pro"
+	}
+	"MapTopMenu_Top20Theoretical"
+	{
+		"en"		"Top 20 Theoretical"
 	}
 }

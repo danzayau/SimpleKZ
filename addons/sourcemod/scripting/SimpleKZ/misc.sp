@@ -6,8 +6,11 @@
 
 /*===============================  General  ===============================*/
 
-bool IsValidClient(int client) {
-	return 1 <= client && client <= MaxClients && IsClientInGame(client);
+float FloatMax(float a, float b) {
+	if (a > b) {
+		return a;
+	}
+	return b;
 }
 
 void SetupMovementMethodmaps() {
@@ -16,18 +19,16 @@ void SetupMovementMethodmaps() {
 	}
 }
 
-float FloatMax(float a, float b) {
-	if (a > b) {
-		return a;
+void AddCommandListeners() {
+	AddCommandListener(CommandJoinTeam, "jointeam");
+	// Block radio commands
+	for (int i = 0; i < sizeof(gC_RadioCommands); i++) {
+		AddCommandListener(CommandBlock, gC_RadioCommands[i]);
 	}
-	return b;
 }
 
-int BoolToInt(bool boolean) {
-	if (boolean) {
-		return 1;
-	}
-	return 0;
+bool IsValidClient(int client) {
+	return 1 <= client && client <= MaxClients && IsClientInGame(client);
 }
 
 void LoadKZConfig() {
@@ -43,30 +44,21 @@ void LoadKZConfig() {
 	}
 }
 
-void AddCommandListeners() {
-	AddCommandListener(CommandJoinTeam, "jointeam");
-	// Block radio commands
-	for (int i = 0; i < sizeof(gC_RadioCommands); i++) {
-		AddCommandListener(CommandBlock, gC_RadioCommands[i]);
-	}
-}
-
 void OnMapStartVariableUpdates() {
 	UpdateCurrentMap();
 	gI_GlowSprite = PrecacheModel("materials/sprites/bluelaser1.vmt", true); // Measure
 }
 
 void UpdateCurrentMap() {
-	// Store map name
-	GetCurrentMap(gC_CurrentMap, sizeof(gC_CurrentMap));
+	char map[64];
+	GetCurrentMap(map, sizeof(map));
 	// Get just the map name (e.g. remove workshop/id/ prefix)
 	char mapPieces[5][64];
-	int lastPiece = ExplodeString(gC_CurrentMap, "/", mapPieces, sizeof(mapPieces), sizeof(mapPieces[]));
-	FormatEx(gC_CurrentMap, sizeof(gC_CurrentMap), "%s", mapPieces[lastPiece - 1]);
-	
+	int lastPiece = ExplodeString(map, "/", mapPieces, sizeof(mapPieces), sizeof(mapPieces[]));
+	FormatEx(map, sizeof(map), "%s", mapPieces[lastPiece - 1]);
 	// Check for kzpro_ tag
 	char mapPrefix[1][64];
-	ExplodeString(gC_CurrentMap, "_", mapPrefix, sizeof(mapPrefix), sizeof(mapPrefix[]));
+	ExplodeString(map, "_", mapPrefix, sizeof(mapPrefix), sizeof(mapPrefix[]));
 	gB_CurrentMapIsKZPro = StrEqual(mapPrefix[0], "kzpro", false);
 }
 
@@ -92,14 +84,6 @@ char[] FormatTimeFloat(float timeToFormat) {
 	return formattedTime;
 }
 
-void EmitSoundToClientSpectators(int client, const char[] sound) {
-	for (int i = 1; i <= MaxClients; i++) {
-		if (IsValidClient(i) && GetSpectatedPlayer(i) == client) {
-			EmitSoundToClient(i, sound);
-		}
-	}
-}
-
 
 
 /*===============================  Client  ===============================*/
@@ -110,13 +94,8 @@ public Action CleanHUD(Handle timer, int client) {
 	SetEntProp(client, Prop_Send, "m_iHideHUD", clientEntFlags | (1 << 12));
 }
 
-void SetDefaultPreferences(int client) {
-	gB_ShowingTeleportMenu[client] = true;
-	gB_ShowingInfoPanel[client] = true;
-	gB_ShowingKeys[client] = false;
-	gB_ShowingPlayers[client] = true;
-	gB_ShowingWeapon[client] = true;
-	gI_Pistol[client] = 0;
+public Action SlayPlayer(Handle timer, int client) {
+	ForcePlayerSuicide(client);
 }
 
 void SetDrawViewModel(int client, bool drawViewModel) {
@@ -129,7 +108,7 @@ void JoinTeam(int client, int team) {
 		g_MovementPlayer[client].GetEyeAngles(gF_SavedAngles[client]);
 		gB_HasSavedPosition[client] = true;
 		if (gB_TimerRunning[client]) {
-			gB_Paused[client] = true;
+			Pause(client);
 		}
 		ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 	}
@@ -142,13 +121,14 @@ void JoinTeam(int client, int team) {
 			if (gB_Paused[client]) {
 				FreezePlayer(client);
 			}
+			gB_HasSavedPosition[client] = false;
+		}
+		else {
+			// The player will be teleported to the spawn point, so force stop their timer
+			SimpleKZ_OnTimerForceStopped(client);
 		}
 	}
 	CloseTeleportMenu(client);
-}
-
-int GetSpectatedPlayer(int client) {
-	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
 }
 
 void TeleportToOtherPlayer(int client, int target)
@@ -169,6 +149,18 @@ void TeleportToOtherPlayer(int client, int target)
 	}
 	TeleportEntity(client, targetOrigin, targetAngles, view_as<float>( { 0.0, 0.0, -100.0 } ));
 	CPrintToChat(client, "%t %t", "KZ_Tag", "Goto_Success", target);
+}
+
+int GetSpectatedPlayer(int client) {
+	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+}
+
+void EmitSoundToClientSpectators(int client, const char[] sound) {
+	for (int i = 1; i <= MaxClients; i++) {
+		if (IsValidClient(i) && GetSpectatedPlayer(i) == client) {
+			EmitSoundToClient(i, sound);
+		}
+	}
 }
 
 void FreezePlayer(int client) {
@@ -217,9 +209,29 @@ void PrintDisconnectMessage(int client, const char[] reason) {
 	CPrintToChatAll("%T", "Client_Disconnect", client, clientName, reason);
 }
 
+RunType GetCurrentRunType(int client) {
+	if (gI_TeleportsUsed[client] == 0) {
+		return PRO;
+	}
+	else {
+		return TP;
+	}
+}
+
 
 
 /*===============================  Options  ===============================*/
+
+void SetDefaultPreferences(int client) {
+	gB_ShowingTeleportMenu[client] = true;
+	gB_ShowingInfoPanel[client] = true;
+	gB_ShowingKeys[client] = false;
+	gB_ShowingPlayers[client] = true;
+	gB_ShowingWeapon[client] = true;
+	gB_AutoRestart[client] = false;
+	gB_SlayOnEnd[client] = false;
+	gI_Pistol[client] = 0;
+}
 
 void ToggleTeleportMenu(int client) {
 	if (gB_ShowingTeleportMenu[client]) {
@@ -267,17 +279,6 @@ void ToggleShowWeapon(int client) {
 	SetDrawViewModel(client, gB_ShowingWeapon[client]);
 }
 
-void ToggleAutoRestart(int client) {
-	if (gB_AutoRestart[client]) {
-		gB_AutoRestart[client] = false;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "AutoRestart_Disable");
-	}
-	else {
-		gB_AutoRestart[client] = true;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "AutoRestart_Enable");
-	}
-}
-
 void ToggleShowKeys(int client) {
 	if (gB_ShowingKeys[client]) {
 		gB_ShowingKeys[client] = false;
@@ -289,24 +290,48 @@ void ToggleShowKeys(int client) {
 	}
 }
 
-
-
-/*===============================  Split  ===============================*/
-
-void SetupSplits(int client) {
-	gI_Splits[client] = 0;
-	gF_SplitRunTime[client] = 0.0;
-}
-
-void ResetSplits(int client) {
-	if (gI_Splits[client] != 0) {
-		gI_Splits[client] = 0;
-		gF_SplitRunTime[client] = 0.0;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Split_Reset");
+void ToggleAutoRestart(int client) {
+	if (gB_AutoRestart[client]) {
+		gB_AutoRestart[client] = false;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "AutoRestart_Disable");
+	}
+	else {
+		gB_AutoRestart[client] = true;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "AutoRestart_Enable");
 	}
 }
 
-void SplitMake(int client) {
+void ToggleSlayOnEnd(int client) {
+	if (gB_SlayOnEnd[client]) {
+		gB_SlayOnEnd[client] = false;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "SlayOnEnd_Disable");
+	}
+	else {
+		gB_SlayOnEnd[client] = true;
+		CPrintToChat(client, "%t %t", "KZ_Tag", "SlayOnEnd_Enable");
+	}
+}
+
+
+
+/*===============================  Splits  ===============================*/
+
+void SplitsSetup(int client) {
+	gI_Splits[client] = 0;
+	gF_SplitRunTime[client] = 0.0;
+	gF_SplitGameTime[client] = 0.0;
+}
+
+void SplitsReset(int client) {
+	if (IsClientInGame(client) && gB_HasStartedThisMap[client] && gI_Splits[client] != 0) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Split_Reset");
+	}
+	gI_Splits[client] = 0;
+	gF_SplitRunTime[client] = 0.0;
+	gF_SplitGameTime[client] = 0.0;
+}
+
+void SplitsMake(int client) {
 	if ((GetGameTime() - gF_SplitGameTime[client]) < MINIMUM_SPLIT_TIME) {  // Ignore split spam
 		CloseTeleportMenu(client);
 		return;

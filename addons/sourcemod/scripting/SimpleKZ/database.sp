@@ -42,7 +42,7 @@ void DB_CreateTables() {
 	Transaction txn = SQL_CreateTransaction();
 	txn.AddQuery(sql_players_create);
 	txn.AddQuery(sql_preferences_create);
-	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic);
+	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, DBPrio_High);
 }
 
 // Error check callback for queries don't return any results
@@ -70,19 +70,21 @@ void DB_SavePlayerInfo(int client) {
 	GetClientName(client, clientName, MAX_NAME_LENGTH);
 	SQL_EscapeString(gH_DB, clientName, clientNameEscaped, MAX_NAME_LENGTH * 2 + 1);
 	
-	if (g_DBType == SQLITE) {
-		Transaction txn = SQL_CreateTransaction();
-		// UPDATE OR IGNORE
-		FormatEx(query, sizeof(query), sql_players_update, clientNameEscaped, gC_Country[client], gC_SteamID[client]);
-		txn.AddQuery(query);
-		// INSERT OR IGNORE
-		FormatEx(query, sizeof(query), sql_players_insert, clientNameEscaped, gC_Country[client], gC_SteamID[client]);
-		txn.AddQuery(query);
-		SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, 0, DBPrio_High);
-	}
-	else if (g_DBType == MYSQL) {
-		FormatEx(query, sizeof(query), mysql_players_saveinfo, gC_SteamID[client], clientNameEscaped, gC_Country[client]);
-		SQL_TQuery(gH_DB, DB_Callback_Generic, query, 0, DBPrio_High);
+	switch (g_DBType) {
+		case SQLITE: {
+			Transaction txn = SQL_CreateTransaction();
+			// UPDATE OR IGNORE
+			FormatEx(query, sizeof(query), sqlite_players_update, clientNameEscaped, gC_Country[client], gC_SteamID[client]);
+			txn.AddQuery(query);
+			// INSERT OR IGNORE
+			FormatEx(query, sizeof(query), sqlite_players_insert, clientNameEscaped, gC_Country[client], gC_SteamID[client]);
+			txn.AddQuery(query);
+			SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, 0, DBPrio_High);
+		}
+		case MYSQL: {
+			FormatEx(query, sizeof(query), mysql_players_saveinfo, gC_SteamID[client], clientNameEscaped, gC_Country[client]);
+			SQL_TQuery(gH_DB, DB_Callback_Generic, query, 0, DBPrio_High);
+		}
 	}
 }
 
@@ -115,8 +117,9 @@ public void DB_Callback_LoadPreferences(Handle db, Handle results, const char[] 
 		gB_ShowingKeys[client] = view_as<bool>(SQL_FetchInt(results, 2));
 		gB_ShowingPlayers[client] = view_as<bool>(SQL_FetchInt(results, 3));
 		gB_ShowingWeapon[client] = view_as<bool>(SQL_FetchInt(results, 4));
-		gB_AutoRestart[client] = view_as<bool>(SQL_FetchInt(results, 5));
-		int pistolNumber = SQL_FetchInt(results, 6);
+		gB_SlayOnEnd[client] = view_as<bool>(SQL_FetchInt(results, 5));
+		gB_AutoRestart[client] = view_as<bool>(SQL_FetchInt(results, 6));
+		int pistolNumber = SQL_FetchInt(results, 7);
 		if (pistolNumber >= sizeof(gC_Pistols)) {
 			pistolNumber = 0;
 		}
@@ -124,7 +127,7 @@ public void DB_Callback_LoadPreferences(Handle db, Handle results, const char[] 
 	}
 }
 
-void DB_UpdatePreferences(int client) {
+void DB_SavePreferences(int client) {
 	if (!gB_ConnectedToDB) {
 		return;
 	}
@@ -132,12 +135,13 @@ void DB_UpdatePreferences(int client) {
 	char query[512];
 	FormatEx(query, sizeof(query), 
 		sql_preferences_update, 
-		BoolToInt(gB_ShowingTeleportMenu[client]), 
-		BoolToInt(gB_ShowingInfoPanel[client]), 
-		BoolToInt(gB_ShowingKeys[client]), 
-		BoolToInt(gB_ShowingPlayers[client]), 
-		BoolToInt(gB_ShowingWeapon[client]), 
-		BoolToInt(gB_AutoRestart[client]), 
+		view_as<int>(gB_ShowingTeleportMenu[client]), 
+		view_as<int>(gB_ShowingInfoPanel[client]), 
+		view_as<int>(gB_ShowingKeys[client]), 
+		view_as<int>(gB_ShowingPlayers[client]), 
+		view_as<int>(gB_ShowingWeapon[client]), 
+		view_as<int>(gB_AutoRestart[client]), 
+		view_as<int>(gB_SlayOnEnd[client]), 
 		gI_Pistol[client], 
 		gC_SteamID[client]);
 	SQL_TQuery(gH_DB, DB_Callback_Generic, query, client, DBPrio_High);

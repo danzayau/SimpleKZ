@@ -81,7 +81,7 @@ public Action CommandTogglePause(int client, int args) {
 }
 
 public Action CommandStopTimer(int client, int args) {
-	ForceStopTimer(client);
+	SimpleKZ_ForceStopTimer(client);
 	CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Generic");
 	return Plugin_Handled;
 }
@@ -115,7 +115,7 @@ public Action CommandGoto(int client, int args) {
 				if (gB_TimerRunning[client]) {
 					CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Goto");
 				}
-				ForceStopTimer(client);
+				SimpleKZ_ForceStopTimer(client);
 			}
 		}
 	}
@@ -196,6 +196,6 @@ public Action CommandDisableNoclip(int client, int args) {
 }
 
 public Action CommandSplit(int client, int args) {
-	SplitMake(client);
+	SplitsMake(client);
 	return Plugin_Handled;
 } 

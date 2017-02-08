@@ -50,17 +50,19 @@ char[] GetInfoPanelWithKeys(MovementPlayer player) {
 char[] GetInfoPanelTimeString(MovementPlayer player) {
 	char timeString[64];
 	if (gB_TimerRunning[player.id]) {
-		if (GetCurrentRunType(player.id) == 0) {
-			FormatEx(timeString, sizeof(timeString), 
-				" <b>%T</b>: <font color='#6699ff'>%s</font>", 
-				"InfoPanel_Time", player.id, 
-				FormatTimeFloat(gF_CurrentTime[player.id]));
-		}
-		else {
-			FormatEx(timeString, sizeof(timeString), 
-				" <b>%T</b>: <font color='#ffdd99'>%s</font>", 
-				"InfoPanel_Time", player.id, 
-				FormatTimeFloat(gF_CurrentTime[player.id]));
+		switch (GetCurrentRunType(player.id)) {
+			case PRO: {
+				FormatEx(timeString, sizeof(timeString), 
+					" <b>%T</b>: <font color='#6699ff'>%s</font>", 
+					"InfoPanel_Time", player.id, 
+					FormatTimeFloat(gF_CurrentTime[player.id]));
+			}
+			case TP: {
+				FormatEx(timeString, sizeof(timeString), 
+					" <b>%T</b>: <font color='#ffdd99'>%s</font>", 
+					"InfoPanel_Time", player.id, 
+					FormatTimeFloat(gF_CurrentTime[player.id]));
+			}
 		}
 	}
 	else {
