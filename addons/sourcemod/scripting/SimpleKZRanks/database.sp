@@ -141,12 +141,13 @@ public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueri
 	bool newRecordPro = false;
 	
 	SQL_FetchRow(results[1]);
-	if (runTime == SQL_FetchFloat(results[1], 1)) {
+	// Using a tolerance of 0.0001 due to inaccuracy when selecting float from database
+	if (FloatAbs(runTime - SQL_FetchFloat(results[1], 1)) <= 0.0001) {
 		newRecord = true;
 	}
 	if (teleportsUsed == 0) {
 		SQL_FetchRow(results[2]);
-		if (runTime == SQL_FetchFloat(results[2], 1)) {
+		if (FloatAbs(runTime - SQL_FetchFloat(results[2], 1)) <= 0.0001) {
 			newRecordPro = true;
 		}
 	}
@@ -483,7 +484,7 @@ public void DB_Callback_OpenTop20(Handle db, Handle results, const char[] error,
 	
 	RemoveAllMenuItems(gH_MapTopSubmenu[client]);
 	SetMenuTitle(gH_MapTopSubmenu[client], 
-		"Top 20 Times on %s\n             Time            TP      Player", 
+		"Top 20 Times (%s)\n             Time            TP      Player", 
 		map);
 	
 	// Add menu items
@@ -535,7 +536,7 @@ public void DB_Callback_OpenTop20Pro(Handle db, Handle results, const char[] err
 	
 	RemoveAllMenuItems(gH_MapTopSubmenu[client]);
 	SetMenuTitle(gH_MapTopSubmenu[client], 
-		"Top 20 PRO Times on %s\n             Time            Player", 
+		"Top 20 PRO Times (%s)\n             Time            Player", 
 		map);
 	
 	// Add menu items
@@ -587,7 +588,7 @@ public void DB_Callback_OpenTop20Theoretical(Handle db, Handle results, const ch
 	
 	RemoveAllMenuItems(gH_MapTopSubmenu[client]);
 	SetMenuTitle(gH_MapTopSubmenu[client], 
-		"Top 20 Theoretical Times on %s\n             Time            TP      Player", 
+		"Top 20 Theoretical Times (%s)\n             Time            TP      Player", 
 		map);
 	
 	// Add menu items

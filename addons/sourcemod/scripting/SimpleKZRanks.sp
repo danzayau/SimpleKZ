@@ -12,7 +12,7 @@ public Plugin myinfo =
 	name = "Simple KZ Ranks", 
 	author = "DanZay", 
 	description = "Player ranks module for SimpleKZ.", 
-	version = "0.7.0", 
+	version = "0.7.1", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 

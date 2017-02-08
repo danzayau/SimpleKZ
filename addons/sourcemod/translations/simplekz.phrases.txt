@@ -494,7 +494,7 @@
 	}
 	"MapTopMenu_Top20Pro"
 	{
-		"en"		"Top 20 Pro"
+		"en"		"Top 20 PRO"
 	}
 	"MapTopMenu_Top20Theoretical"
 	{
