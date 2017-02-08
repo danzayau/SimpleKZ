@@ -322,22 +322,6 @@
 	}
 	
 	
-	// Map Top Menu ////////////////////////////////////////////////////////////
-	"MapTopMenu_Title"
-	{
-		// Map Top (kz_map)
-		"#format"	"{1:s}"
-		"en"		"Map Top ({1})"
-	}
-	"MapTopMenu_Top20"
-	{
-		"en"		"Top 20"
-	}
-	"MapTopMenu_Top20Pro"
-	{
-		"en"		"Top 20 Pro"
-	}
-	
 	// Options Menu Menu ////////////////////////////////////////////////////////////
 	"OptionsMenu_Title"
 	{
@@ -384,8 +368,11 @@
 		"en"		"Pistol"
 	}
 	
-	
+	////////////////////////////////////////////////////////////
 	// SimpleKZ Ranks ////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
+	
+	// Chat Messages ////////////////////////////////////////////////////////////
 	"BeatMapRecord"
 	{
 		"#format"	"{1:N}"
@@ -422,19 +409,19 @@
 	}
 	"PB_Map"
 	{
-		// MAP PB: 01:23.45 - #4/123 (5 TP | 01:01.23)
+		// MAP PB: 01:23.45 #4/123 (5 TP | 01:01.23)
 		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:s}"
-		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} - #{default}{2}{grey}/{3}  ({yellow}{4} TP{grey} | {grey}{5}{grey})"
+		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} #{default}{2}{grey}/{3}  ({yellow}{4} TP{grey} | {grey}{5}{grey})"
 	}
 	"PB_Map_Pro"
 	{
-		// MAP PB: 01:23.45 - #4/123 (PRO #3/12)
+		// MAP PB: 01:23.45 #4/123 (PRO #3/12)
 		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:d}"
 		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} #{default}{2}{grey}/{3} ({blue}PRO{grey} #{default}{4}{grey}/{5})"
 	}
 	"PB_Pro"
 	{
-		// PRO PB: 01:23.45 - #4/123
+		// PRO PB: 01:23.45 #4/123
 		"#format"	"{1:s},{2:d},{3:d}"
 		"en"		"{blue}PRO PB{grey}: {default}{1}{grey} #{default}{2}{grey}/{3}"
 	}
@@ -491,6 +478,26 @@
 	}
 	"MapPool_UpdateSuccess"
 	{
-		"en"		"The ranked map pool was successfully updated."
+		"en"		"{grey}The ranked map pool was successfully updated."
+	}
+	
+	// Map Top Menu ////////////////////////////////////////////////////////////
+	"MapTopMenu_Title"
+	{
+		// Map Top (kz_map)
+		"#format"	"{1:s}"
+		"en"		"Map Top ({1})"
+	}
+	"MapTopMenu_Top20"
+	{
+		"en"		"Top 20"
+	}
+	"MapTopMenu_Top20Pro"
+	{
+		"en"		"Top 20 Pro"
+	}
+	"MapTopMenu_Top20Theoretical"
+	{
+		"en"		"Top 20 Theoretical"
 	}
 }

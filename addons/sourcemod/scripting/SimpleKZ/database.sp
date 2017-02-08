@@ -42,7 +42,7 @@ void DB_CreateTables() {
 	Transaction txn = SQL_CreateTransaction();
 	txn.AddQuery(sql_players_create);
 	txn.AddQuery(sql_preferences_create);
-	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic);
+	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, DBPrio_High);
 }
 
 // Error check callback for queries don't return any results

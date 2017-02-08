@@ -97,7 +97,6 @@ public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
 
 public void SimpleKZ_OnTimerStarted(int client, bool firstStart) {
 	if (firstStart) {
-		DB_PrintMapRecords(client, gC_CurrentMap);
 		DB_PrintPBs(client, client, gC_CurrentMap);
 	}
 }

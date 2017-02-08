@@ -4,7 +4,8 @@
 */
 
 
-// Players
+/*===============================  Players Table  ===============================*/
+
 char sql_players_create[] = 
 "CREATE TABLE IF NOT EXISTS Players ("
 ..."SteamID VARCHAR(24) NOT NULL, "
@@ -32,7 +33,9 @@ char mysql_players_saveinfo[] =
 ..."SteamID=VALUES(SteamID), Alias=VALUES(Alias), Country=VALUES(Country);";
 
 
-// Preferences
+
+/*===============================  Preferences Table  ===============================*/
+
 char sql_preferences_create[] = 
 "CREATE TABLE IF NOT EXISTS Preferences ("
 ..."SteamID VARCHAR(24) NOT NULL, "

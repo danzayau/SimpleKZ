@@ -35,6 +35,8 @@ void UpdateMapTopMenu(int client) {
 	AddMenuItem(gH_MapTopMenu[client], "", text);
 	FormatEx(text, sizeof(text), "%T", "MapTopMenu_Top20Pro", client);
 	AddMenuItem(gH_MapTopMenu[client], "", text);
+	FormatEx(text, sizeof(text), "%T", "MapTopMenu_Top20Theoretical", client);
+	AddMenuItem(gH_MapTopMenu[client], "", text);
 }
 
 public int MenuHandler_MapTop(Menu menu, MenuAction action, int param1, int param2) {
@@ -42,6 +44,7 @@ public int MenuHandler_MapTop(Menu menu, MenuAction action, int param1, int para
 		switch (param2) {
 			case 0:DB_OpenTop20(param1, gC_MapTopMap[param1]);
 			case 1:DB_OpenTop20Pro(param1, gC_MapTopMap[param1]);
+			case 2:DB_OpenTop20Theoretical(param1, gC_MapTopMap[param1]);
 		}
 	}
 }

@@ -209,6 +209,15 @@ void PrintDisconnectMessage(int client, const char[] reason) {
 	CPrintToChatAll("%T", "Client_Disconnect", client, clientName, reason);
 }
 
+RunType GetCurrentRunType(int client) {
+	if (gI_TeleportsUsed[client] == 0) {
+		return PRO;
+	}
+	else {
+		return TP;
+	}
+}
+
 
 
 /*===============================  Options  ===============================*/

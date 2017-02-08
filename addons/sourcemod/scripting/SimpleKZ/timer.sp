@@ -330,15 +330,6 @@ bool TeleportToStartWasLatestTeleport(int client) {
 
 /*===============================  Other  ===============================*/
 
-RunType GetCurrentRunType(int client) {
-	if (gI_TeleportsUsed[client] == 0) {
-		return PRO;
-	}
-	else {
-		return TP;
-	}
-}
-
 void PrintEndTimeString(int client) {
 	switch (GetCurrentRunType(client)) {
 		case PRO: {
