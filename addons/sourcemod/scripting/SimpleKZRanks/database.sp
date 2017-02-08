@@ -66,7 +66,8 @@ void DB_UpdateMapPool(int client) {
 	char line[33], query[512];
 	txn.AddQuery(sql_maps_reset_mappool);
 	while (ReadFileLine(file, line, sizeof(line))) {
-		if (line[0] == '\0' || line[0] == '/') {
+		TrimString(line);
+		if (line[0] == '\0' || line[0] == ';' || (line[0] == '/' && line[1] == '/')) {
 			continue;
 		}
 		switch (g_DBType) {
