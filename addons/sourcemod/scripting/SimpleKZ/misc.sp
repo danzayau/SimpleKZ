@@ -32,7 +32,7 @@ bool IsValidClient(int client) {
 }
 
 void LoadKZConfig() {
-	char kzConfigPath[] = "sourcemod/simplekz/kz.cfg";
+	char kzConfigPath[] = "sourcemod/SimpleKZ/kz.cfg";
 	char kzConfigPathFull[64];
 	FormatEx(kzConfigPathFull, sizeof(kzConfigPathFull), "cfg/%s", kzConfigPath);
 	
