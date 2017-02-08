@@ -244,9 +244,9 @@ public void OnClientDisconnect(int client) {  // Also calls at end of map
 }
 
 public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) {
-	SetEventBroadcast(event, true);
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (!IsFakeClient(client)) {
+	if (IsValidClient(client) && !IsFakeClient(client)) {
+		SetEventBroadcast(event, true);
 		char reason[64];
 		GetEventString(event, "reason", reason, sizeof(reason));
 		PrintDisconnectMessage(client, reason);
