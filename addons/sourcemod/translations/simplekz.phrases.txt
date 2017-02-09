@@ -396,25 +396,25 @@
 	{
 		// Bill beat the map for the first time! They now have a MAP rank of #5/12.
 		"#format"	"{1:N},{2:d},{3:d}"
-		"en"		"{lime}{1}{grey} just beat the map for the first time! They now have a {yellow}MAP{grey} rank of #{default}{2}{grey}/{default}{3}{grey}."
+		"en"		"{lime}{1}{grey} just beat the map for the first time! They now have a {yellow}MAP{grey} rank of #{default}{2}{grey}/{3}."
 	}
 	"BeatMapFirstTime_Pro"
 	{
 		// Bill PRO'd the map for the first time! They now have a PRO rank of #5/12.
 		"#format"	"{1:N},{2:d},{3:d}"
-		"en"		"{lime}{1} just {blue}PRO{grey}'d the map for the first time! They now have a {blue}PRO{grey} rank of #{default}{2}{grey}/{default}{3}{grey}."
+		"en"		"{lime}{1} just {blue}PRO{grey}'d the map for the first time! They now have a {blue}PRO{grey} rank of #{default}{2}{grey}/{3}."
 	}
 	"ImprovedTime"
 	{
 		// Bill improved their MAP time by -00:12.34! They now have a MAP rank of #5/12.
 		"#format"	"{1:N},{2:s},{3:d},{4:d}"
-		"en"		"{lime}{1}{grey} improved their {yellow}MAP{grey} time by {green}-{2}{grey}! They now have a {yellow}MAP{grey} rank of #{default}{3}{grey}/{default}{4}{grey}."
+		"en"		"{lime}{1}{grey} improved their {yellow}MAP{grey} time by {green}-{2}{grey}! They now have a {yellow}MAP{grey} rank of #{default}{3}{grey}/{4}."
 	}
 	"ImprovedTime_Pro"
 	{
 		// Bill improved their PRO time by -00:12.34! They now have a PRO rank of #5/12.
 		"#format"	"{1:N},{2:s},{3:d},{4:d}"
-		"en"		"{lime}{1}{grey} improved their {blue}PRO{grey} time by {green}-{2}{grey}! They now have a {blue}PRO{grey} rank of #{default}{3}{grey}/{default}{4}{grey}."
+		"en"		"{lime}{1}{grey} improved their {blue}PRO{grey} time by {green}-{2}{grey}! They now have a {blue}PRO{grey} rank of #{default}{3}{grey}/{4}."
 	}
 	"PB_Header"
 	{	
@@ -553,6 +553,14 @@
 
 	
 	// Player Top Menu ////////////////////////////////////////////////////////////
+	"PlayerTop_NoTimes"
+	{
+		"en"		"No one has beaten a ranked map on this server... yet."
+	}
+	"PlayerTop_NoTimesPro"
+	{
+		"en"		"No one has {blue}PRO{grey}'d a ranked map on this server... yet."
+	}
 	"PlayerTopMenu_Title"
 	{
 		"en"		"Top Jumpers"

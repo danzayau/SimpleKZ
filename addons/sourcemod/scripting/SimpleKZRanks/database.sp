@@ -728,18 +728,18 @@ public void DB_Callback_PlayerTop20(Handle db, Handle results, const char[] erro
 	CloseHandle(data);
 	
 	if (SQL_GetRowCount(results) == 0) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "PlayerTop_NoTimes");
+		switch (runType) {
+			case TP:CPrintToChat(client, "%t %t", "KZ_Tag", "PlayerTop_NoTimes");
+			case PRO:CPrintToChat(client, "%t %t", "KZ_Tag", "PlayerTop_NoTimesPro");
+		}
+		
 		DisplayPlayerTopMenu(client);
 		return;
 	}
 	
 	switch (runType) {
-		case TP: {
-			SetMenuTitle(gH_PlayerTopSubMenu[client], "%T", "PlayerTopMenu_ListTitle", client);
-		}
-		case PRO: {
-			SetMenuTitle(gH_PlayerTopSubMenu[client], "%T", "PlayerTopMenu_ListTitlePro", client);
-		}
+		case TP:SetMenuTitle(gH_PlayerTopSubMenu[client], "%T", "PlayerTopMenu_ListTitle", client);
+		case PRO:SetMenuTitle(gH_PlayerTopSubMenu[client], "%T", "PlayerTopMenu_ListTitlePro", client);
 	}
 	
 	RemoveAllMenuItems(gH_PlayerTopSubMenu[client]);
