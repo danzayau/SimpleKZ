@@ -104,13 +104,19 @@ void SetupClient(int client) {
 }
 
 public Action CleanHUD(Handle timer, int client) {
-	// Hide radar
-	int clientEntFlags = GetEntProp(client, Prop_Send, "m_iHideHUD");
-	SetEntProp(client, Prop_Send, "m_iHideHUD", clientEntFlags | (1 << 12));
+	if (IsValidClient(client)) {
+		// Hide radar
+		int clientEntFlags = GetEntProp(client, Prop_Send, "m_iHideHUD");
+		SetEntProp(client, Prop_Send, "m_iHideHUD", clientEntFlags | (1 << 12));
+	}
+	return Plugin_Continue;
 }
 
 public Action SlayPlayer(Handle timer, int client) {
-	ForcePlayerSuicide(client);
+	if (IsValidClient(client)) {
+		ForcePlayerSuicide(client);
+	}
+	return Plugin_Continue;
 }
 
 void SetDrawViewModel(int client, bool drawViewModel) {
@@ -234,8 +240,10 @@ RunType GetCurrentRunType(int client) {
 }
 
 public Action ZeroVelocity(Handle timer, int client) {
-	g_MovementPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, -0.0 } ));
-	g_MovementPlayer[client].SetBaseVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
+	if (IsValidClient(client)) {
+		g_MovementPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, -0.0 } ));
+		g_MovementPlayer[client].SetBaseVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
+	}
 	return Plugin_Continue;
 }
 
@@ -394,8 +402,10 @@ public void OnTrigMultiStartTouch(const char[] name, int caller, int activator, 
 }
 
 public Action TrigMultiStartTouchDelayed(Handle timer, int client) {
-	if (gI_JustTouchedTrigMulti[client] > 0) {
-		gI_JustTouchedTrigMulti[client]--;
+	if (IsValidClient(client)) {
+		if (gI_JustTouchedTrigMulti[client] > 0) {
+			gI_JustTouchedTrigMulti[client]--;
+		}
 	}
 	return Plugin_Continue;
 }

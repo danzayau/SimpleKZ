@@ -322,11 +322,15 @@ void MeasureGetPos(int client, int arg) {
 }
 
 public Action Timer_P2PRed(Handle timer, int client) {
-	P2PXBeam(client, 0);
+	if (IsValidClient(client)) {
+		P2PXBeam(client, 0);
+	}
 }
 
 public Action Timer_P2PGreen(Handle timer, int client) {
-	P2PXBeam(client, 1);
+	if (IsValidClient(client)) {
+		P2PXBeam(client, 1);
+	}
 }
 
 void P2PXBeam(int client, int arg) {
