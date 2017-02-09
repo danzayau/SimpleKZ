@@ -117,7 +117,7 @@ public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
 }
 
 public void SimpleKZ_OnTimerStarted(int client, bool firstStart) {
-	if (firstStart) {
+	if (firstStart && gB_ConnectedToDB) {
 		DB_PrintPBs(client, client, gC_CurrentMap);
 	}
 }

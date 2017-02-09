@@ -56,6 +56,11 @@ void DB_SaveMapInfo() {
 }
 
 void DB_UpdateMapPool(int client) {
+	if (!gB_ConnectedToDB) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
+		return;
+	}
+	
 	Handle file = OpenFile(MAPPOOL_FILE_PATH, "r");
 	if (file == INVALID_HANDLE) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "FileOpen_Fail", MAPPOOL_FILE_PATH);
@@ -101,7 +106,6 @@ public void DB_TxnSuccess_UpdateMapPool(Handle db, int client, int numQueries, H
 
 void DB_ProcessEndTimer(int client, const char[] map, float runTime, int teleportsUsed, float theoreticalTime) {
 	if (!gB_ConnectedToDB) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
 		return;
 	}
 	

@@ -71,10 +71,6 @@ public Action CommandMapTop(int client, int args) {
 	return Plugin_Handled;
 }
 
-public Action CommandUpdateMapPool(int client, int args) {
-	DB_UpdateMapPool(client);
-}
-
 public Action CommandCompletion(int client, int args) {
 	if (args < 1) {
 		DB_GetCompletion(client, client, true);
@@ -94,4 +90,12 @@ public Action CommandCompletion(int client, int args) {
 public Action CommandPlayerTop(int client, int args) {
 	DisplayPlayerTopMenu(client);
 	return Plugin_Handled;
+}
+
+
+
+/*===============================  Command Handlers  ===============================*/
+
+public Action CommandUpdateMapPool(int client, int args) {
+	DB_UpdateMapPool(client);
 } 
