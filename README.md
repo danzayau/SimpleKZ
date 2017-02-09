@@ -11,7 +11,7 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
  * **KZ Map Compatibility** - Automatically detects start and end timers on KZTimer globally approved maps.
  * **Timer** - Simple timer that keeps track and tells you how long you took to complete the map.
  * **Teleport Menu** - Make a checkpoint and teleport back to it. Also tracks time wasted using teleports.
- * **Database** - Store player preferences and times using MySQL or SQLite.
+ * **Database** - Store player preferences, times and more using a MySQL or SQLite database.
  * **Essential Extras** - Noclip, hide players, !spec, !goto, speed panel, pistols, !split, kzpro_ and more!
  * **API** - Forwards and natives for you to use in other plugins (see [includes](scripting/include/SimpleKZ/)).
 
@@ -61,4 +61,4 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
  * ```!maprecord```/```!wr``` - Prints map record times to chat. Usage: ```!maprecord <map>```.
  * ```!maptop``` - Opens a menu showing the top times of a map. Usage ```!maptop <map>```.
  * ```!top``` - [KZ] Opens a menu showing the top record holders on the server.
- * ```!completion/!pc``` - [KZ] Prints map completion to chat. Usage ```!completion <player>```.
+ * ```!completion```/```!pc``` - [KZ] Prints map completion to chat. Usage ```!completion <player>```.
