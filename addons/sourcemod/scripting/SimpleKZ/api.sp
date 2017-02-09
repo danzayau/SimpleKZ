@@ -79,11 +79,15 @@ public int Native_StartTimer(Handle plugin, int numParams) {
 }
 
 public int Native_EndTimer(Handle plugin, int numParams) {
-	Call_SimpleKZ_OnTimerEnded(GetNativeCell(1));
+	if (gB_TimerRunning[GetNativeCell(1)]) {
+		Call_SimpleKZ_OnTimerEnded(GetNativeCell(1));
+	}
 }
 
 public int Native_ForceStopTimer(Handle plugin, int numParams) {
-	Call_SimpleKZ_OnTimerForceStopped(GetNativeCell(1));
+	if (gB_TimerRunning[GetNativeCell(1)]) {
+		Call_SimpleKZ_OnTimerForceStopped(GetNativeCell(1));
+	}
 }
 
 public int Native_GetCurrentTime(Handle plugin, int numParams) {

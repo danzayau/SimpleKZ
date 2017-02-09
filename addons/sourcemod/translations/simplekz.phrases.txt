@@ -25,6 +25,10 @@
 	{
 		"en"		"{darkred}You can't make a checkpoint midair."
 	}
+	"Checkpoint_JustLanded"
+	{
+		"en"		"{darkred}You can't make a checkpoint because you just landed."
+	}
 	"Teleport_NotAlive"
 	{
 		"en"		"{darkred}You must be alive to teleport to your checkpoint."

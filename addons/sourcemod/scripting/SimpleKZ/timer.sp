@@ -30,13 +30,11 @@ public void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, flo
 }
 
 public void SimpleKZ_OnTimerForceStopped(int client) {
-	if (gB_TimerRunning[client]) {
-		EmitSoundToClient(client, "buttons/button18.wav");
-		EmitSoundToClientSpectators(client, "buttons/button18.wav");
-		gB_TimerRunning[client] = false;
-		gB_Paused[client] = false;
-		CloseTeleportMenu(client);
-	}
+	EmitSoundToClient(client, "buttons/button18.wav");
+	EmitSoundToClientSpectators(client, "buttons/button18.wav");
+	gB_TimerRunning[client] = false;
+	gB_Paused[client] = false;
+	CloseTeleportMenu(client);
 }
 
 
@@ -80,6 +78,7 @@ void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
 	g_MovementPlayer[client].GetEyeAngles(oldAngles);
 	
 	TeleportEntity(client, destination, eyeAngles, view_as<float>( { 0.0, 0.0, -50.0 } ));
+	CreateTimer(0.0, ZeroVelocity, client); // Prevent booster exploits
 	gI_TeleportsUsed[client]++;
 	// Store position for undo
 	if (g_MovementPlayer[client].onGround) {
@@ -187,6 +186,9 @@ void MakeCheckpoint(int client) {
 	else if (!g_MovementPlayer[client].onGround) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "Checkpoint_Midair");
 	}
+	else if (JustTouchedBhopBlock(client)) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Checkpoint_JustLanded");
+	}
 	else {
 		gI_CheckpointsSet[client]++;
 		gF_LastCheckpointTime[client] = gF_CurrentTime[client];
@@ -237,7 +239,7 @@ void Pause(int client) {
 	else if (gB_TimerRunning[client] && gB_HasResumedInThisRun[client] && gF_CurrentTime[client] - gF_LastResumeTime[client] < PAUSE_COOLDOWN_AFTER_RESUMING) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "Pause_JustResumed");
 	}
-	else if (!g_MovementPlayer[client].onGround) {
+	else if (gB_TimerRunning[client] && !g_MovementPlayer[client].onGround) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "Pause_Midair");
 	}
 	else {

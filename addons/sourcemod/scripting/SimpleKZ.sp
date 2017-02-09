@@ -29,6 +29,7 @@ public Plugin myinfo =
 #define PAUSE_COOLDOWN_AFTER_RESUMING 1.0
 #define MINIMUM_SPLIT_TIME 1.0
 #define MAX_DISTANCE_FROM_BUTTON_ORIGIN 40.0
+#define BHOP_BLOCK_DETECTION_PERIOD 0.2
 
 
 
@@ -116,6 +117,7 @@ MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
 bool gB_CurrentMapIsKZPro;
 int g_OldButtons[MAXPLAYERS + 1];
 ConVar gCV_FullAlltalk;
+int gI_JustTouchedTrigMulti[MAXPLAYERS + 1];
 
 // Pistol Entity Names (entity class name, alias, team that buys it)
 char gC_Pistols[][][] = 
@@ -182,6 +184,7 @@ public void OnPluginStart() {
 	HookEvent("player_death", OnPlayerDeath, EventHookMode_Pre);
 	HookEvent("round_start", OnRoundStart, EventHookMode_Pre);
 	HookEntityOutput("func_button", "OnPressed", OnButtonPress);
+	HookEntityOutput("trigger_multiple", "OnStartTouch", OnTrigMultiStartTouch);
 	AddCommandListener(OnSay, "say");
 	AddCommandListener(OnSay, "say_team");
 	AddNormalSoundHook(view_as<NormalSHook>(OnNormalSound));
@@ -353,7 +356,7 @@ public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &
 
 // Prevent noclipping during runs
 public void OnStartNoclipping(int client) {
-	if (gB_TimerRunning[client]) {
+	if (!IsFakeClient(client) && gB_TimerRunning[client]) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Noclip");
 		SimpleKZ_ForceStopTimer(client);
 	}

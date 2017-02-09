@@ -100,6 +100,7 @@ void SetupClient(int client) {
 	TimerSetup(client);
 	MeasureResetPos(client);
 	SplitsSetup(client);
+	NoBhopBlockCPSetup(client);
 }
 
 public Action CleanHUD(Handle timer, int client) {
@@ -139,7 +140,7 @@ void JoinTeam(int client, int team) {
 		}
 		else {
 			// The player will be teleported to the spawn point, so force stop their timer
-			SimpleKZ_OnTimerForceStopped(client);
+			SimpleKZ_ForceStopTimer(client);
 		}
 	}
 	CloseTeleportMenu(client);
@@ -230,6 +231,12 @@ RunType GetCurrentRunType(int client) {
 	else {
 		return TP;
 	}
+}
+
+public Action ZeroVelocity(Handle timer, int client) {
+	g_MovementPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, -0.0 } ));
+	g_MovementPlayer[client].SetBaseVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
+	return Plugin_Continue;
 }
 
 
@@ -371,4 +378,33 @@ void SplitsMake(int client) {
 	gF_SplitGameTime[client] = GetGameTime();
 	
 	CloseTeleportMenu(client);
+}
+
+
+
+/*===============================  Block Checkpoints on B-Hop Blocks  ===============================*/
+
+void NoBhopBlockCPSetup(int client) {
+	gI_JustTouchedTrigMulti[client] = 0;
+}
+
+public void OnTrigMultiStartTouch(const char[] name, int caller, int activator, float delay) {
+	gI_JustTouchedTrigMulti[activator]++;
+	CreateTimer(BHOP_BLOCK_DETECTION_PERIOD, TrigMultiStartTouchDelayed, activator);
+}
+
+public Action TrigMultiStartTouchDelayed(Handle timer, int client) {
+	if (gI_JustTouchedTrigMulti[client] > 0) {
+		gI_JustTouchedTrigMulti[client]--;
+	}
+	return Plugin_Continue;
+}
+
+bool JustTouchedBhopBlock(int client) {
+	// If just touched trigger_multiple and landed within 0.2 seconds ago
+	if ((gI_JustTouchedTrigMulti[client] > 0)
+		 && (GetGameTickCount() - g_MovementPlayer[client].landingTick) < (BHOP_BLOCK_DETECTION_PERIOD / GetTickInterval())) {
+		return true;
+	}
+	return false;
 } 
