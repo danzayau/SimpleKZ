@@ -3,6 +3,10 @@
 	Miscellaneous functions.
 */
 
+void SetupClient(int client) {
+	GetClientSteamID(client);
+	AddItemsPlayerTopMenu(client);
+}
 
 void GetClientSteamID(int client) {
 	GetClientAuthId(client, AuthId_Steam2, gC_SteamID[client], 24, true);

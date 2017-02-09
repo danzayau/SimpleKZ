@@ -95,14 +95,14 @@ char sql_getpb[] =
 ..."FROM Times "
 ..."WHERE Map='%s' AND SteamID='%s' "
 ..."ORDER BY RunTime "
-..."LIMIT 1;";
+..."LIMIT %d;";
 
 char sql_getpbpro[] = 
 "SELECT RunTime "
 ..."FROM Times "
 ..."WHERE Map='%s' AND SteamID='%s' AND Teleports=0 "
 ..."ORDER BY RunTime "
-..."LIMIT 1;";
+..."LIMIT %d;";
 
 char sql_getmaptop[] = 
 "SELECT Players.Alias, Times.RunTime, Times.Teleports "
@@ -173,4 +173,55 @@ char sql_getlowestmaprank[] =
 char sql_getlowestmaprankpro[] = 
 "SELECT COUNT(DISTINCT SteamID) "
 ..."FROM Times "
-..."WHERE Map='%s' AND Teleports=0;"; 
+..."WHERE Map='%s' AND Teleports=0;";
+
+char sql_getcounttotalmaps[] = 
+"SELECT COUNT(*) "
+..."FROM Maps "
+..."WHERE InRankedPool='1';";
+
+char sql_getcountmapscompleted[] = 
+"SELECT COUNT(DISTINCT Times.Map) "
+..."FROM Times "
+..."INNER JOIN Maps ON Maps.Map=Times.Map "
+..."WHERE Times.SteamID='%s' AND Maps.InRankedPool=1;";
+
+char sql_getcountmapscompletedpro[] = 
+"SELECT COUNT(DISTINCT Times.Map) "
+..."FROM Times "
+..."INNER JOIN Maps ON Maps.Map=Times.Map "
+..."WHERE Times.SteamID='%s' AND Maps.InRankedPool=1 AND Times.Teleports=0;";
+
+char sql_gettopplayers[] = 
+"SELECT Players.Alias, COUNT(*) AS RecordCount "
+..."FROM "
+..."(SELECT Times.SteamID "
+..."FROM Times "
+..."INNER JOIN "
+..."(SELECT Times.Map, MIN(Times.RunTime) AS RecordTime "
+..."FROM Times "
+..."INNER JOIN Maps ON Maps.Map=Times.Map "
+..."WHERE Maps.InRankedPool=1 "
+..."GROUP BY Map) Records "
+..."ON Times.Map=Records.Map AND Times.RunTime=Records.RecordTime) RecordHolders "
+..."INNER JOIN Players ON Players.SteamID=RecordHolders.SteamID "
+..."GROUP BY Players.Alias "
+..."ORDER BY RecordCount DESC "
+..."LIMIT 20;";
+
+char sql_gettopplayerspro[] = 
+"SELECT Players.Alias, COUNT(*) AS RecordCount "
+..."FROM "
+..."(SELECT Times.SteamID "
+..."FROM Times "
+..."INNER JOIN "
+..."(SELECT Times.Map, MIN(Times.RunTime) AS RecordTime "
+..."FROM Times "
+..."INNER JOIN Maps ON Maps.Map=Times.Map "
+..."WHERE Maps.InRankedPool=1 AND Teleports=0 "
+..."GROUP BY Map) Records "
+..."ON Times.Map=Records.Map AND Times.RunTime=Records.RecordTime) RecordHolders "
+..."INNER JOIN Players ON Players.SteamID=RecordHolders.SteamID "
+..."GROUP BY Players.Alias "
+..."ORDER BY RecordCount DESC "
+..."LIMIT 20;"; 

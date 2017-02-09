@@ -12,8 +12,8 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
  * **Timer** - Simple timer that keeps track and tells you how long you took to complete the map.
  * **Teleport Menu** - Make a checkpoint and teleport back to it. Also tracks time wasted using teleports.
  * **Optional Database** - Store player preferences and times using SQLite or MySQL.
- * **Essential Extras** - Noclip, hide players, !spec, !goto, speed panel, pistols, kzpro_ and more!
- * **API** - Forwards and natives for you to use in other plugins (see [simplekz.inc](scripting/include/simplekz.inc)).
+ * **Essential Extras** - Noclip, hide players, !spec, !goto, speed panel, pistols, !split, kzpro_ and more!
+ * **API** - Forwards and natives for you to use in other plugins (see [includes](scripting/include/SimpleKZ/)).
 
 ============================
 
@@ -27,7 +27,7 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
 
  * Extract ```SimpleKZ.zip``` to ```csgo/``` in your server directory.
  * Check the config file ```csgo/cfg/sourcemod/SimpleKZ/kz.cfg``` is appropriate for your server.
- * Check that ```csgo/cfg/sourcemod/SimpleKZ/mappool.cfg``` contains all maps you want to count towards rankings. You can then use !updatemappool to update the maps database.
+ * Check that ```csgo/cfg/sourcemod/SimpleKZ/mappool.cfg``` contains all maps you want to count towards rankings. You then use !updatemappool to update the maps database with this list.
  * Config files for server ConVars are also generated in that directory after starting the plugin.
  * **Optional:** Add a database called ```simplekz``` to ```csgo/addons/sourcemod/configs/databases.cfg``` for storing player preferences, player times and more. An example of this using SQLite can be found [here](http://pastebin.com/UMNyQzPg).
  * SimpleKZ will work without SimpleKZRanks if you do not wish to record times or use related features.
@@ -60,3 +60,5 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
  * ```!maprank```/```!pb``` - Prints map time and rank to chat. Usage: ```!maprank <player> <map>```.
  * ```!maprecord```/```!wr``` - Prints map record times to chat. Usage: ```!maprecord <map>```.
  * ```!maptop``` - Opens a menu showing the top times of a map. Usage ```!maptop <map>```.
+ * ```!top``` - [KZ] Opens a menu showing the top record holders on the server.
+ * ```!completion/!pc``` - [KZ] Prints map completion to chat. Usage ```!completion <player>```.

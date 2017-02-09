@@ -30,9 +30,13 @@ public void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, flo
 }
 
 public void SimpleKZ_OnTimerForceStopped(int client) {
-	gB_TimerRunning[client] = false;
-	gB_Paused[client] = false;
-	CloseTeleportMenu(client);
+	if (gB_TimerRunning[client]) {
+		EmitSoundToClient(client, "buttons/button18.wav");
+		EmitSoundToClientSpectators(client, "buttons/button18.wav");
+		gB_TimerRunning[client] = false;
+		gB_Paused[client] = false;
+		CloseTeleportMenu(client);
+	}
 }
 
 

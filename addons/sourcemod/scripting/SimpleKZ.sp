@@ -18,7 +18,7 @@ public Plugin myinfo =
 	name = "Simple KZ Core", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer and optional database.", 
-	version = "0.7.1", 
+	version = "0.8.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -111,6 +111,7 @@ float gF_SplitRunTime[MAXPLAYERS + 1];
 float gF_SplitGameTime[MAXPLAYERS + 1];
 
 // Other
+bool gB_LateLoad;
 MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
 bool gB_CurrentMapIsKZPro;
 int g_OldButtons[MAXPLAYERS + 1];
@@ -154,6 +155,13 @@ char gC_RadioCommands[][] =  { "coverme", "takepoint", "holdpos", "regroup", "fo
 
 /*===============================  Plugin Events  ===============================*/
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
+	CreateNatives();
+	RegPluginLibrary("SimpleKZ");
+	gB_LateLoad = late;
+	return APLRes_Success;
+}
+
 public void OnPluginStart() {
 	// Check if game is CS:GO
 	EngineVersion gameEngine = GetEngineVersion();
@@ -186,12 +194,10 @@ public void OnPluginStart() {
 	// Setup
 	SetupMovementMethodmaps();
 	CreateMenus();
-}
-
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
-	CreateNatives();
-	RegPluginLibrary("SimpleKZ");
-	return APLRes_Success;
+	
+	if (gB_LateLoad) {
+		OnLateLoad();
+	}
 }
 
 public void OnLibraryAdded(const char[] name) {
@@ -199,6 +205,17 @@ public void OnLibraryAdded(const char[] name) {
 	if (StrEqual(name, "SimpleKZRanks")) {
 		if (gB_ConnectedToDB) {
 			Call_SimpleKZ_OnDatabaseConnect();
+		}
+	}
+}
+
+void OnLateLoad() {
+	for (int client = 1; client <= MaxClients; client++) {
+		if (IsClientAuthorized(client) && !IsFakeClient(client)) {
+			SetupClient(client);
+		}
+		if (IsClientInGame(client)) {
+			OnClientPutInServer(client);
 		}
 	}
 }
@@ -213,20 +230,10 @@ public void OnMapStart() {
 	OnMapStartVariableUpdates();
 }
 
-public void OnClientAuthorized(int client) {
+public void OnClientAuthorized(int client, const char[] auth) {
 	// Prepare for client arrival
 	if (!IsFakeClient(client)) {
-		GetClientCountry(client);
-		GetClientSteamID(client);
-		DB_SavePlayerInfo(client);
-		DB_LoadPreferences(client);
-		
-		UpdatePistolMenu(client);
-		UpdateMeasureMenu(client);
-		UpdateOptionsMenu(client);
-		TimerSetup(client);
-		MeasureResetPos(client);
-		SplitsSetup(client);
+		SetupClient(client);
 	}
 }
 

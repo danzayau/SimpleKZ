@@ -1,5 +1,6 @@
 #include <sourcemod>
 #include <sdktools>
+#include <cstrike>
 
 #include <colorvariables>
 #include <simplekz>
@@ -12,7 +13,7 @@ public Plugin myinfo =
 	name = "Simple KZ Ranks", 
 	author = "DanZay", 
 	description = "Player ranks module for SimpleKZ.", 
-	version = "0.7.1", 
+	version = "0.8.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -26,6 +27,8 @@ public Plugin myinfo =
 
 /*===============================  Global Variables  ===============================*/
 
+bool gB_LateLoad;
+
 char gC_CurrentMap[64];
 char gC_SteamID[MAXPLAYERS + 1][24];
 
@@ -37,7 +40,9 @@ DatabaseType g_DBType = NONE;
 // Menus
 char gC_MapTopMap[MAXPLAYERS + 1][64];
 Handle gH_MapTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-Handle gH_MapTopSubmenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+Handle gH_MapTopSubMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+Handle gH_PlayerTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+Handle gH_PlayerTopSubMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 
 
 
@@ -56,6 +61,12 @@ Handle gH_MapTopSubmenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 
 /*===============================  Plugin Events  ===============================*/
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
+	RegPluginLibrary("SimpleKZRanks");
+	gB_LateLoad = late;
+	return APLRes_Success;
+}
+
 public void OnPluginStart() {
 	// Check if game is CS:GO
 	EngineVersion gameEngine = GetEngineVersion();
@@ -71,6 +82,10 @@ public void OnPluginStart() {
 	LoadTranslations("simplekz.phrases");
 	
 	CreateMenus();
+	
+	if (gB_LateLoad) {
+		OnLateLoad();
+	}
 }
 
 public void OnAllPluginsLoaded() {
@@ -79,9 +94,15 @@ public void OnAllPluginsLoaded() {
 	}
 }
 
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
-	RegPluginLibrary("SimpleKZRanks");
-	return APLRes_Success;
+void OnLateLoad() {
+	for (int client = 1; client <= MaxClients; client++) {
+		if (IsClientAuthorized(client) && !IsFakeClient(client)) {
+			SetupClient(client);
+		}
+		if (IsClientInGame(client)) {
+			OnClientPutInServer(client);
+		}
+	}
 }
 
 
@@ -105,7 +126,7 @@ public void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, flo
 	DB_ProcessEndTimer(client, gC_CurrentMap, time, teleportsUsed, theoreticalTime);
 }
 
-public void SimpleKZ_OnSetRecord(int client, const char[] map, RecordType recordType, float runTime) {
+public void SimpleKZ_OnBeatMapRecord(int client, const char[] map, RecordType recordType, float runTime) {
 	switch (recordType) {
 		case PRO_RECORD: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "BeatProRecord", client);
@@ -122,14 +143,47 @@ public void SimpleKZ_OnSetRecord(int client, const char[] map, RecordType record
 	}
 }
 
+public void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, RunType runType, float runTime, int rank, int maxRank) {
+	if (rank == 1) {
+		return;
+	}
+	switch (runType) {
+		case TP: {
+			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapFirstTime", client, rank, maxRank);
+		}
+		case PRO: {
+			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapFirstTime_Pro", client, rank, maxRank);
+		}
+	}
+}
+
+public void SimpleKZ_OnImproveTime(int client, const char[] map, RunType runType, float runTime, float improvement, int rank, int maxRank) {
+	if (rank == 1) {
+		return;
+	}
+	switch (runType) {
+		case TP: {
+			CPrintToChatAll("%t %t", "KZ_Tag", "ImprovedTime", client, FormatTimeFloat(improvement), rank, maxRank);
+		}
+		case PRO: {
+			CPrintToChatAll("%t %t", "KZ_Tag", "ImprovedTime_Pro", client, FormatTimeFloat(improvement), rank, maxRank);
+		}
+	}
+}
+
 
 
 /*===============================  Miscellaneous Events  ===============================*/
 
-public void OnClientAuthorized(int client) {
+public void OnClientAuthorized(int client, const char[] auth) {
 	if (!IsFakeClient(client)) {
-		GetClientSteamID(client);
-		UpdateMapTopMenu(client);
+		SetupClient(client);
+	}
+}
+
+public void OnClientPutInServer(int client) {
+	if (!IsFakeClient(client)) {
+		DB_GetCompletion(client, client, false);
 	}
 }
 

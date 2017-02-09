@@ -70,6 +70,7 @@ void DB_UpdateMapPool(int client) {
 		if (line[0] == '\0' || line[0] == ';' || (line[0] == '/' && line[1] == '/')) {
 			continue;
 		}
+		String_ToLower(line, line, sizeof(line));
 		switch (g_DBType) {
 			case SQLITE: {
 				// UPDATE OR IGNORE
@@ -119,9 +120,28 @@ void DB_ProcessEndTimer(int client, const char[] map, float runTime, int telepor
 	// Get MAP record information
 	FormatEx(query, sizeof(query), sql_getmaptop, map, map, 1);
 	txn.AddQuery(query);
-	// Get PRO record information
+	// Get PB
+	FormatEx(query, sizeof(query), sql_getpb, map, gC_SteamID[client], 2);
+	txn.AddQuery(query);
+	// Get Rank
+	FormatEx(query, sizeof(query), sql_getmaprank, map, gC_SteamID[client], map);
+	txn.AddQuery(query);
+	// Get Number of Players with Times
+	FormatEx(query, sizeof(query), sql_getlowestmaprank, map);
+	txn.AddQuery(query);
+	
 	if (teleportsUsed == 0) {
+		// Get PRO record information
 		FormatEx(query, sizeof(query), sql_getmaptoppro, map, map, 1);
+		txn.AddQuery(query);
+		// Get PRO PB
+		FormatEx(query, sizeof(query), sql_getpbpro, map, gC_SteamID[client], 2);
+		txn.AddQuery(query);
+		// Get PRO Rank
+		FormatEx(query, sizeof(query), sql_getmaprankpro, map, gC_SteamID[client], map);
+		txn.AddQuery(query);
+		// Get Number of Players with PRO Times
+		FormatEx(query, sizeof(query), sql_getlowestmaprankpro, map);
 		txn.AddQuery(query);
 	}
 	
@@ -138,33 +158,109 @@ public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueri
 	CloseHandle(data);
 	
 	bool newRecord = false;
-	bool newRecordPro = false;
+	bool newPB = false;
+	bool firstTime = false;
+	float improvement;
+	int rank;
+	int maxRank;
 	
+	// Check for new record
 	SQL_FetchRow(results[1]);
 	// Using a tolerance of 0.0001 due to inaccuracy when selecting float from database
 	if (FloatAbs(runTime - SQL_FetchFloat(results[1], 1)) <= 0.0001) {
 		newRecord = true;
 	}
-	if (teleportsUsed == 0) {
+	// Check for new PB
+	if (SQL_GetRowCount(results[2]) == 2) {
 		SQL_FetchRow(results[2]);
-		if (FloatAbs(runTime - SQL_FetchFloat(results[2], 1)) <= 0.0001) {
+		if (FloatAbs(runTime - SQL_FetchFloat(results[2], 0)) <= 0.0001) {
+			newPB = true;
+			SQL_FetchRow(results[2]);
+			improvement = SQL_FetchFloat(results[2], 0) - runTime;
+		}
+	}
+	else {  // Only 1 row (the time they just got)
+		newPB = true;
+		firstTime = true;
+	}
+	// If new PB, get rank information
+	if (newPB) {
+		SQL_FetchRow(results[3]);
+		rank = SQL_FetchInt(results[3], 0);
+		SQL_FetchRow(results[4]);
+		maxRank = SQL_FetchInt(results[4], 0);
+	}
+	
+	bool newRecordPro = false;
+	bool newPBPro = false;
+	bool firstTimePro = false;
+	float improvementPro;
+	int rankPro;
+	int maxRankPro;
+	
+	// Repeat for PRO runs if necessary
+	if (teleportsUsed == 0) {
+		// Check for new PRO record
+		SQL_FetchRow(results[5]);
+		// Using a tolerance of 0.0001 due to inaccuracy when selecting float from database
+		if (FloatAbs(runTime - SQL_FetchFloat(results[5], 1)) <= 0.0001) {
 			newRecordPro = true;
+		}
+		// Check for new PRO PB
+		if (SQL_GetRowCount(results[6]) == 2) {
+			SQL_FetchRow(results[6]);
+			if (FloatAbs(runTime - SQL_FetchFloat(results[6], 0)) <= 0.0001) {
+				newPBPro = true;
+				SQL_FetchRow(results[6]);
+				improvementPro = SQL_FetchFloat(results[6], 0) - runTime;
+			}
+		}
+		else {  // Only 1 row (the time they just got)
+			newPBPro = true;
+			firstTimePro = true;
+		}
+		// If new PB, get rank information
+		if (newPBPro) {
+			SQL_FetchRow(results[7]);
+			rankPro = SQL_FetchInt(results[7], 0);
+			SQL_FetchRow(results[8]);
+			maxRankPro = SQL_FetchInt(results[8], 0);
 		}
 	}
 	
-	if (newRecord || newRecordPro) {
-		if (newRecord) {
-			if (!newRecordPro) {
-				Call_SimpleKZ_OnSetRecord(client, map, MAP_RECORD, runTime);
-			}
-			else {
-				Call_SimpleKZ_OnSetRecord(client, map, MAP_AND_PRO_RECORD, runTime);
-			}
+	// New record
+	if (newRecord && newRecordPro) {
+		Call_SimpleKZ_OnBeatMapRecord(client, map, MAP_AND_PRO_RECORD, runTime);
+	}
+	else if (newRecord) {
+		Call_SimpleKZ_OnBeatMapRecord(client, map, MAP_RECORD, runTime);
+	}
+	else if (newRecordPro) {
+		Call_SimpleKZ_OnBeatMapRecord(client, map, PRO_RECORD, runTime);
+	}
+	
+	// New PB
+	if (newPB) {
+		if (firstTime) {
+			Call_SimpleKZ_OnBeatMapFirstTime(client, map, TP, runTime, rank, maxRank);
 		}
 		else {
-			Call_SimpleKZ_OnSetRecord(client, map, PRO_RECORD, runTime);
+			Call_SimpleKZ_OnImproveTime(client, map, TP, runTime, improvement, rank, maxRank);
 		}
 	}
+	
+	// New PB Pro
+	if (teleportsUsed == 0 && newPBPro) {
+		if (firstTimePro) {
+			Call_SimpleKZ_OnBeatMapFirstTime(client, map, PRO, runTime, rankPro, maxRankPro);
+		}
+		else {
+			Call_SimpleKZ_OnImproveTime(client, map, PRO, runTime, improvementPro, rankPro, maxRankPro);
+		}
+	}
+	
+	// Update completion percentage in scoreboard
+	DB_GetCompletion(client, client, false);
 }
 
 
@@ -185,10 +281,10 @@ void DB_PrintPBs(int client, int target, const char[] map) {
 	char query[512], mapEscaped[129];
 	SQL_EscapeString(gH_DB, map, mapEscaped, sizeof(mapEscaped));
 	FormatEx(query, sizeof(query), sql_maps_select_like, mapEscaped, mapEscaped);
-	SQL_TQuery(gH_DB, DB_Callback_PrintPBs, query, data, DBPrio_Low);
+	SQL_TQuery(gH_DB, DB_Callback_PrintPBs1, query, data, DBPrio_Low);
 }
 
-public void DB_Callback_PrintPBs(Handle db, Handle results, const char[] error, DataPack data) {
+public void DB_Callback_PrintPBs1(Handle db, Handle results, const char[] error, DataPack data) {
 	data.Reset();
 	int client = data.ReadCell();
 	int target = data.ReadCell();
@@ -214,7 +310,7 @@ public void DB_Callback_PrintPBs(Handle db, Handle results, const char[] error, 
 		char query[512];
 		
 		// Get PB
-		FormatEx(query, sizeof(query), sql_getpb, map, gC_SteamID[target]);
+		FormatEx(query, sizeof(query), sql_getpb, map, gC_SteamID[target], 1);
 		txn.AddQuery(query);
 		// Get Rank
 		FormatEx(query, sizeof(query), sql_getmaprank, map, gC_SteamID[target], map);
@@ -224,7 +320,7 @@ public void DB_Callback_PrintPBs(Handle db, Handle results, const char[] error, 
 		txn.AddQuery(query);
 		
 		// Get PRO PB
-		FormatEx(query, sizeof(query), sql_getpbpro, map, gC_SteamID[target]);
+		FormatEx(query, sizeof(query), sql_getpbpro, map, gC_SteamID[target], 1);
 		txn.AddQuery(query);
 		// Get PRO Rank
 		FormatEx(query, sizeof(query), sql_getmaprankpro, map, gC_SteamID[target], map);
@@ -233,11 +329,11 @@ public void DB_Callback_PrintPBs(Handle db, Handle results, const char[] error, 
 		FormatEx(query, sizeof(query), sql_getlowestmaprankpro, map);
 		txn.AddQuery(query);
 		
-		SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_PrintPBs, DB_TxnFailure_Generic, data, DBPrio_Low);
+		SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_PrintPBs2, DB_TxnFailure_Generic, data, DBPrio_Low);
 	}
 }
 
-public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
+public void DB_TxnSuccess_PrintPBs2(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
 	// Step 3: Print the PB info
 	data.Reset();
 	int client = data.ReadCell();
@@ -333,10 +429,10 @@ void DB_PrintMapRecords(int client, const char[] map) {
 	char query[512], mapEscaped[129];
 	SQL_EscapeString(gH_DB, map, mapEscaped, sizeof(mapEscaped));
 	FormatEx(query, sizeof(query), sql_maps_select_like, mapEscaped, mapEscaped);
-	SQL_TQuery(gH_DB, DB_Callback_PrintMapRecords, query, data, DBPrio_Low);
+	SQL_TQuery(gH_DB, DB_Callback_PrintMapRecords1, query, data, DBPrio_Low);
 }
 
-public void DB_Callback_PrintMapRecords(Handle db, Handle results, const char[] error, DataPack data) {
+public void DB_Callback_PrintMapRecords1(Handle db, Handle results, const char[] error, DataPack data) {
 	// Step 2: Got map name from database - now get WRs
 	data.Reset();
 	int client = data.ReadCell();
@@ -366,11 +462,11 @@ public void DB_Callback_PrintMapRecords(Handle db, Handle results, const char[] 
 		FormatEx(query, sizeof(query), sql_getmaptoppro, map, map, 1);
 		txn.AddQuery(query);
 		
-		SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_PrintMapRecords, DB_TxnFailure_Generic, data, DBPrio_Low);
+		SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_PrintMapRecords2, DB_TxnFailure_Generic, data, DBPrio_Low);
 	}
 }
 
-public void DB_TxnSuccess_PrintMapRecords(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
+public void DB_TxnSuccess_PrintMapRecords2(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
 	// Step 3: Print the map records
 	data.Reset();
 	int client = data.ReadCell();
@@ -454,7 +550,7 @@ public void DB_Callback_OpenMapTop(Handle db, Handle results, const char[] error
 	}
 }
 
-void DB_OpenTop20(int client, const char[] map) {
+void DB_OpenMapTop20(int client, const char[] map, RunType runType) {
 	if (!gB_ConnectedToDB) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
 		return;
@@ -463,29 +559,190 @@ void DB_OpenTop20(int client, const char[] map) {
 	DataPack data = CreateDataPack();
 	data.WriteCell(client);
 	data.WriteString(map);
+	data.WriteCell(runType);
 	
 	char query[512];
-	FormatEx(query, sizeof(query), sql_getmaptop, map, map, 20);
-	SQL_TQuery(gH_DB, DB_Callback_OpenTop20, query, data, DBPrio_Low);
+	switch (runType) {
+		case TP:FormatEx(query, sizeof(query), sql_getmaptop, map, map, 20);
+		case PRO:FormatEx(query, sizeof(query), sql_getmaptoppro, map, map, 20);
+		case THEORETICAL:FormatEx(query, sizeof(query), sql_getmaptoptheoretical, map, map, 20);
+	}
+	SQL_TQuery(gH_DB, DB_Callback_OpenMapTop20, query, data, DBPrio_Low);
 }
 
-public void DB_Callback_OpenTop20(Handle db, Handle results, const char[] error, DataPack data) {
+public void DB_Callback_OpenMapTop20(Handle db, Handle results, const char[] error, DataPack data) {
 	data.Reset();
 	int client = data.ReadCell();
 	char map[33];
 	data.ReadString(map, sizeof(map));
+	RunType runType = data.ReadCell();
 	CloseHandle(data);
 	
 	if (SQL_GetRowCount(results) == 0) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "MapTop_NoTimes", map);
+		switch (runType) {
+			case TP:CPrintToChat(client, "%t %t", "KZ_Tag", "MapTop_NoTimes", map);
+			case PRO:CPrintToChat(client, "%t %t", "KZ_Tag", "MapTop_NoTimes_Pro", map);
+			case THEORETICAL:CPrintToChat(client, "%t %t", "KZ_Tag", "MapTop_NoTimes", map);
+		}
 		DisplayMapTopMenu(client);
 		return;
 	}
 	
-	RemoveAllMenuItems(gH_MapTopSubmenu[client]);
-	SetMenuTitle(gH_MapTopSubmenu[client], 
-		"Top 20 Times (%s)\n             Time            TP      Player", 
-		map);
+	RemoveAllMenuItems(gH_MapTopSubMenu[client]);
+	
+	switch (runType) {
+		case TP:SetMenuTitle(gH_MapTopSubMenu[client], "%T", "MapTopMenu_Top20Title", client, map);
+		case PRO:SetMenuTitle(gH_MapTopSubMenu[client], "%T", "MapTopMenu_Top20ProTitle", client, map);
+		case THEORETICAL:SetMenuTitle(gH_MapTopSubMenu[client], "%T", "MapTopMenu_Top20TheoreticalTitle", client, map);
+	}
+	
+	// Add menu items
+	char newMenuItem[256];
+	int rank = 0;
+	while (SQL_FetchRow(results)) {
+		rank++;
+		char playerString[33];
+		SQL_FetchString(results, 0, playerString, sizeof(playerString));
+		switch (runType) {
+			case TP: {
+				FormatEx(newMenuItem, sizeof(newMenuItem), "[%02d]   %s (%d TP)     %s", 
+					rank, FormatTimeFloat(SQL_FetchFloat(results, 1)), SQL_FetchInt(results, 2), playerString);
+			}
+			case PRO: {
+				FormatEx(newMenuItem, sizeof(newMenuItem), "[%02d]   %s     %s", 
+					rank, FormatTimeFloat(SQL_FetchFloat(results, 1)), playerString);
+			}
+			case THEORETICAL: {
+				FormatEx(newMenuItem, sizeof(newMenuItem), "[%02d]   %s (%d TP)     %s", 
+					rank, FormatTimeFloat(SQL_FetchFloat(results, 1)), SQL_FetchInt(results, 2), playerString);
+			}
+		}
+		AddMenuItem(gH_MapTopSubMenu[client], "", newMenuItem, ITEMDRAW_DISABLED);
+	}
+	
+	DisplayMenu(gH_MapTopSubMenu[client], client, MENU_TIME_FOREVER);
+}
+
+
+
+/*===============================  Percentage Completion  ===============================*/
+
+void DB_GetCompletion(int client, int target, bool print) {
+	if (!gB_ConnectedToDB) {
+		if (print) {
+			CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
+		}
+		return;
+	}
+	
+	DataPack data = CreateDataPack();
+	data.WriteCell(client);
+	data.WriteCell(target);
+	data.WriteCell(view_as<int>(print));
+	
+	Transaction txn = SQL_CreateTransaction();
+	char query[512];
+	
+	// Get total number of ranked maps
+	txn.AddQuery(sql_getcounttotalmaps);
+	// Get number of map completions
+	FormatEx(query, sizeof(query), sql_getcountmapscompleted, gC_SteamID[target]);
+	txn.AddQuery(query);
+	// Get number of map completions (PRO)
+	FormatEx(query, sizeof(query), sql_getcountmapscompletedpro, gC_SteamID[target]);
+	txn.AddQuery(query);
+	
+	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_GetCompletion, DB_TxnFailure_Generic, data, DBPrio_Low);
+}
+
+public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
+	data.Reset();
+	int client = data.ReadCell();
+	int target = data.ReadCell();
+	bool print = view_as<bool>(data.ReadCell());
+	CloseHandle(data);
+	
+	int totalMaps, completions, completionsPro;
+	float percentagePro;
+	
+	if (SQL_FetchRow(results[0])) {
+		totalMaps = SQL_FetchInt(results[0], 0);
+		if (totalMaps == 0) {
+			if (print) {
+				CPrintToChat(client, "%t %t", "KZ_Tag", "NoRankedMaps");
+			}
+			return;
+		}
+	}
+	if (SQL_FetchRow(results[1])) {
+		completions = SQL_FetchInt(results[1], 0);
+	}
+	if (SQL_FetchRow(results[2])) {
+		completionsPro = SQL_FetchInt(results[2], 0);
+	}
+	
+	percentagePro = float(completionsPro) / float(totalMaps) * 100.0;
+	CS_SetMVPCount(target, RoundToFloor(percentagePro));
+	
+	if (print) {
+		if (target == client) {
+			CPrintToChat(client, "%t %t", "KZ_Tag", "MapCompletion_Self", completions, totalMaps, completionsPro, totalMaps);
+		}
+		else {
+			CPrintToChat(client, "%t %t", "KZ_Tag", "MapCompletion", target, completions, totalMaps, completionsPro, totalMaps);
+		}
+	}
+}
+
+
+
+/*===============================  Player Top  ===============================*/
+
+void DB_PlayerTop20(int client, RunType runType) {
+	if (!gB_ConnectedToDB) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
+		return;
+	}
+	
+	DataPack data = CreateDataPack();
+	data.WriteCell(client);
+	data.WriteCell(runType);
+	
+	char query[1024];
+	switch (runType) {
+		case TP: {
+			FormatEx(query, sizeof(query), sql_gettopplayers);
+			SQL_TQuery(gH_DB, DB_Callback_PlayerTop20, query, data, DBPrio_Low);
+		}
+		case PRO: {
+			FormatEx(query, sizeof(query), sql_gettopplayerspro);
+			SQL_TQuery(gH_DB, DB_Callback_PlayerTop20, query, data, DBPrio_Low);
+		}
+	}
+}
+
+public void DB_Callback_PlayerTop20(Handle db, Handle results, const char[] error, DataPack data) {
+	data.Reset();
+	int client = data.ReadCell();
+	RecordType runType = data.ReadCell();
+	CloseHandle(data);
+	
+	if (SQL_GetRowCount(results) == 0) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "PlayerTop_NoTimes");
+		DisplayPlayerTopMenu(client);
+		return;
+	}
+	
+	switch (runType) {
+		case TP: {
+			SetMenuTitle(gH_PlayerTopSubMenu[client], "%T", "PlayerTopMenu_ListTitle", client);
+		}
+		case PRO: {
+			SetMenuTitle(gH_PlayerTopSubMenu[client], "%T", "PlayerTopMenu_ListTitlePro", client);
+		}
+	}
+	
+	RemoveAllMenuItems(gH_PlayerTopSubMenu[client]);
 	
 	// Add menu items
 	char newMenuItem[256];
@@ -496,116 +753,10 @@ public void DB_Callback_OpenTop20(Handle db, Handle results, const char[] error,
 		char playerString[33];
 		SQL_FetchString(results, 0, playerString, sizeof(playerString));
 		
-		FormatEx(newMenuItem, sizeof(newMenuItem), 
-			"[%02d]  %13s %-8d %s", 
-			rank, FormatTimeFloat(SQL_FetchFloat(results, 1)), SQL_FetchInt(results, 2), playerString);
+		FormatEx(newMenuItem, sizeof(newMenuItem), "[%02d]   %s (%d)", rank, playerString, SQL_FetchInt(results, 1));
 		
-		AddMenuItem(gH_MapTopSubmenu[client], "", newMenuItem, ITEMDRAW_DISABLED);
+		AddMenuItem(gH_PlayerTopSubMenu[client], "", newMenuItem, ITEMDRAW_DISABLED);
 	}
 	
-	DisplayMenu(gH_MapTopSubmenu[client], client, MENU_TIME_FOREVER);
-}
-
-void DB_OpenTop20Pro(int client, const char[] map) {
-	if (!gB_ConnectedToDB) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
-		return;
-	}
-	
-	DataPack data = CreateDataPack();
-	data.WriteCell(client);
-	data.WriteString(map);
-	
-	char query[512];
-	FormatEx(query, sizeof(query), sql_getmaptoppro, map, map, 20);
-	SQL_TQuery(gH_DB, DB_Callback_OpenTop20Pro, query, data, DBPrio_Low);
-}
-
-public void DB_Callback_OpenTop20Pro(Handle db, Handle results, const char[] error, DataPack data) {
-	data.Reset();
-	int client = data.ReadCell();
-	char map[33];
-	data.ReadString(map, sizeof(map));
-	CloseHandle(data);
-	
-	if (SQL_GetRowCount(results) == 0) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "MapTop_NoTimes_Pro", map);
-		DisplayMapTopMenu(client);
-		return;
-	}
-	
-	RemoveAllMenuItems(gH_MapTopSubmenu[client]);
-	SetMenuTitle(gH_MapTopSubmenu[client], 
-		"Top 20 PRO Times (%s)\n             Time            Player", 
-		map);
-	
-	// Add menu items
-	char newMenuItem[256];
-	int rank = 0;
-	while (SQL_FetchRow(results)) {
-		rank++;
-		
-		char playerString[33];
-		SQL_FetchString(results, 0, playerString, sizeof(playerString));
-		
-		FormatEx(newMenuItem, sizeof(newMenuItem), 
-			"[%02d]  %13s %s", 
-			rank, FormatTimeFloat(SQL_FetchFloat(results, 1)), playerString);
-		
-		AddMenuItem(gH_MapTopSubmenu[client], "", newMenuItem, ITEMDRAW_DISABLED);
-	}
-	
-	DisplayMenu(gH_MapTopSubmenu[client], client, MENU_TIME_FOREVER);
-}
-
-void DB_OpenTop20Theoretical(int client, const char[] map) {
-	if (!gB_ConnectedToDB) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Database_NotConnected");
-		return;
-	}
-	
-	DataPack data = CreateDataPack();
-	data.WriteCell(client);
-	data.WriteString(map);
-	
-	char query[512];
-	FormatEx(query, sizeof(query), sql_getmaptoptheoretical, map, map, 20);
-	SQL_TQuery(gH_DB, DB_Callback_OpenTop20Theoretical, query, data, DBPrio_Low);
-}
-
-public void DB_Callback_OpenTop20Theoretical(Handle db, Handle results, const char[] error, DataPack data) {
-	data.Reset();
-	int client = data.ReadCell();
-	char map[33];
-	data.ReadString(map, sizeof(map));
-	CloseHandle(data);
-	
-	if (SQL_GetRowCount(results) == 0) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "MapTop_NoTimes", map);
-		DisplayMapTopMenu(client);
-		return;
-	}
-	
-	RemoveAllMenuItems(gH_MapTopSubmenu[client]);
-	SetMenuTitle(gH_MapTopSubmenu[client], 
-		"Top 20 Theoretical Times (%s)\n             Time            TP      Player", 
-		map);
-	
-	// Add menu items
-	char newMenuItem[256];
-	int rank = 0;
-	while (SQL_FetchRow(results)) {
-		rank++;
-		
-		char playerString[33];
-		SQL_FetchString(results, 0, playerString, sizeof(playerString));
-		
-		FormatEx(newMenuItem, sizeof(newMenuItem), 
-			"[%02d]  %13s %-8d %s", 
-			rank, FormatTimeFloat(SQL_FetchFloat(results, 1)), SQL_FetchInt(results, 2), playerString);
-		
-		AddMenuItem(gH_MapTopSubmenu[client], "", newMenuItem, ITEMDRAW_DISABLED);
-	}
-	
-	DisplayMenu(gH_MapTopSubmenu[client], client, MENU_TIME_FOREVER);
+	DisplayMenu(gH_PlayerTopSubMenu[client], client, MENU_TIME_FOREVER);
 } 

@@ -201,9 +201,9 @@
 	}
 	"Client_Disconnect"
 	{
-		// Bill has disconnected (Disconnect).
+		// Bill has left the game (Disconnect).
 		"#format"	"{1:s},{2:s}"
-		"en"		"{lime}{1}{grey} has disconnected ({2})."
+		"en"		"{lime}{1}{grey} has left the game ({2})."
 	}
 	"FileOpen_Fail"
 	{
@@ -388,6 +388,30 @@
 		"#format"	"{1:N}"
 		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD{grey} and the {blue}PRO RECORD{grey}!"
 	}
+	"BeatMapFirstTime"
+	{
+		// Bill beat the map for the first time! They now have a MAP rank of #5/12.
+		"#format"	"{1:N},{2:d},{3:d}"
+		"en"		"{lime}{1}{grey} just beat the map for the first time! They now have a {yellow}MAP{grey} rank of #{default}{2}{grey}/{default}{3}{grey}."
+	}
+	"BeatMapFirstTime_Pro"
+	{
+		// Bill PRO'd the map for the first time! They now have a PRO rank of #5/12.
+		"#format"	"{1:N},{2:d},{3:d}"
+		"en"		"{lime}{1} just {blue}PRO{grey}'d the map for the first time! They now have a {blue}PRO{grey} rank of #{default}{2}{grey}/{default}{3}{grey}."
+	}
+	"ImprovedTime"
+	{
+		// Bill improved their MAP time by -00:12.34! They now have a MAP rank of #5/12.
+		"#format"	"{1:N},{2:s},{3:d},{4:d}"
+		"en"		"{lime}{1}{grey} improved their {yellow}MAP{grey} time by {green}-{2}{grey}! They now have a {yellow}MAP{grey} rank of #{default}{3}{grey}/{default}{4}{grey}."
+	}
+	"ImprovedTime_Pro"
+	{
+		// Bill improved their PRO time by -00:12.34! They now have a PRO rank of #5/12.
+		"#format"	"{1:N},{2:s},{3:d},{4:d}"
+		"en"		"{lime}{1}{grey} improved their {blue}PRO{grey} time by {green}-{2}{grey}! They now have a {blue}PRO{grey} rank of #{default}{3}{grey}/{default}{4}{grey}."
+	}
 	"PB_Header"
 	{	
 		// Best times by Bill on kz_map
@@ -466,6 +490,10 @@
 		"#format"	"{1:s}"
 		"en"		"{grey}Your search for map {lime}{1}{grey} returned with no results."
 	}
+	"NoRankedMaps"
+	{
+		"en"		"{grey}This server hasn't set any maps to be ranked."
+	}
 	"MapTop_NoTimes"
 	{
 		"#format"	"{1:s}"
@@ -492,12 +520,67 @@
 	{
 		"en"		"Top 20"
 	}
+	"MapTopMenu_Top20Title"
+	{
+		// Top 20 Times (kz_map)
+		"#format"	"{1:s}"
+		"en"		"Top 20 Times ({1})"	
+	}
 	"MapTopMenu_Top20Pro"
 	{
 		"en"		"Top 20 PRO"
 	}
+	"MapTopMenu_Top20ProTitle"
+	{
+		// Top 20 PRO Times (kz_map)
+		"#format"	"{1:s}"
+		"en"		"Top 20 PRO Times ({1})"	
+	}
 	"MapTopMenu_Top20Theoretical"
 	{
 		"en"		"Top 20 Theoretical"
+	}
+	"MapTopMenu_Top20TheoreticalTitle"
+	{
+		// Top 20 Theoretical Times (kz_map)
+		"#format"	"{1:s}"
+		"en"		"Top 20 PRO Times ({1})"	
+	}
+
+	
+	// Player Top Menu ////////////////////////////////////////////////////////////
+	"PlayerTopMenu_Title"
+	{
+		"en"		"Top Jumpers"
+	}
+	"PlayerTopMenu_Top20"
+	{
+		"en"		"Top 20"
+	}
+	"PlayerTopMenu_Top20Pro"
+	{
+		"en"		"Top 20 PRO"
+	}
+	"PlayerTopMenu_ListTitle"
+	{
+		"en"		"Top 20 Record Holders"
+	}
+	"PlayerTopMenu_ListTitlePro"
+	{
+		"en"		"Top 20 PRO Record Holders"
+	}
+	
+	// Percentage Completion ////////////////////////////////////////////////////////////
+	"MapCompletion"
+	{
+		// Bill has beaten 12/234 and PRO'd 6/234 maps.
+		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:d}"
+		"en"		"{lime}{1}{grey} has beaten {default}{2}{grey}/{default}{3}{grey} and {blue}PRO{grey}'d {default}{4}{grey}/{default{5}{default} {grey}maps."
+	}
+	"MapCompletion_Self"
+	{
+		// You have beaten 12/234 maps and PRO'd 6/234 maps.
+		"#format"	"{1:d},{2:d},{3:d},{4:d}"
+		"en"		"You have beaten {default}{1}{grey}/{default}{2}{grey} and {blue}PRO{grey}'d {default}{3}{grey}/{default}{4}{default} {grey}maps."
 	}
 }

@@ -88,6 +88,20 @@ char[] FormatTimeFloat(float timeToFormat) {
 
 /*===============================  Client  ===============================*/
 
+void SetupClient(int client) {
+	GetClientCountry(client);
+	GetClientSteamID(client);
+	DB_SavePlayerInfo(client);
+	DB_LoadPreferences(client);
+	
+	UpdatePistolMenu(client);
+	UpdateMeasureMenu(client);
+	UpdateOptionsMenu(client);
+	TimerSetup(client);
+	MeasureResetPos(client);
+	SplitsSetup(client);
+}
+
 public Action CleanHUD(Handle timer, int client) {
 	// Hide radar
 	int clientEntFlags = GetEntProp(client, Prop_Send, "m_iHideHUD");

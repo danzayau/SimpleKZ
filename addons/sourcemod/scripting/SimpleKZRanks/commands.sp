@@ -10,6 +10,9 @@ void RegisterCommands() {
 	RegConsoleCmd("sm_maprecord", CommandMapRecord, "[KZ] Prints map record times to chat. Usage: !maprecord <map>");
 	RegConsoleCmd("sm_wr", CommandMapRecord, "[KZ] Prints map record times to chat. Usage: !maprecord <map>");
 	RegConsoleCmd("sm_maptop", CommandMapTop, "[KZ] Opens a menu showing the top times of a map. Usage !maptop <map>");
+	RegConsoleCmd("sm_completion", CommandCompletion, "[KZ] Prints map completion to chat. Usage !completion <player>");
+	RegConsoleCmd("sm_pc", CommandCompletion, "[KZ] Prints map completion to chat. Usage !completion <player>");
+	RegConsoleCmd("sm_top", CommandPlayerTop, "[KZ] Opens a menu showing the top record holders on the server.");
 	
 	RegAdminCmd("sm_updatemappool", CommandUpdateMapPool, ADMFLAG_ROOT, "[KZ] Updates the ranked map pool with the list of maps in cfg/sourcemod/SimpleKZ/mappool.cfg.");
 }
@@ -70,4 +73,25 @@ public Action CommandMapTop(int client, int args) {
 
 public Action CommandUpdateMapPool(int client, int args) {
 	DB_UpdateMapPool(client);
+}
+
+public Action CommandCompletion(int client, int args) {
+	if (args < 1) {
+		DB_GetCompletion(client, client, true);
+	}
+	else {
+		char specifiedPlayer[MAX_NAME_LENGTH];
+		GetCmdArg(1, specifiedPlayer, sizeof(specifiedPlayer));
+		
+		int target = FindTarget(client, specifiedPlayer, true, false);
+		if (target != -1) {
+			DB_GetCompletion(client, target, true);
+		}
+	}
+	return Plugin_Handled;
+}
+
+public Action CommandPlayerTop(int client, int args) {
+	DisplayPlayerTopMenu(client);
+	return Plugin_Handled;
 } 
