@@ -133,13 +133,13 @@ void DB_ProcessEndTimer(int client, const char[] map, float runTime, int telepor
 	txn.AddQuery(query);
 	
 	if (teleportsUsed == 0) {
-		// Get RunType_Pro PB
+		// Get PRO PB
 		FormatEx(query, sizeof(query), sql_getpbpro, map, gC_SteamID[client], 2);
 		txn.AddQuery(query);
-		// Get RunType_Pro Rank
+		// Get PRO Rank
 		FormatEx(query, sizeof(query), sql_getmaprankpro, map, gC_SteamID[client], map);
 		txn.AddQuery(query);
-		// Get Number of Players with RunType_Pro Times
+		// Get Number of Players with PRO Times
 		FormatEx(query, sizeof(query), sql_getlowestmaprankpro, map);
 		txn.AddQuery(query);
 	}
@@ -189,9 +189,9 @@ public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueri
 	int rankPro;
 	int maxRankPro;
 	
-	// Repeat for RunType_Pro runs if necessary
+	// Repeat for PRO runs if necessary
 	if (teleportsUsed == 0) {
-		// Check for new RunType_Pro PB
+		// Check for new PRO PB
 		if (SQL_GetRowCount(results[4]) == 2) {
 			SQL_FetchRow(results[4]);
 			if (FloatAbs(runTime - SQL_FetchFloat(results[4], 0)) <= 0.0001) {
@@ -234,7 +234,7 @@ public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueri
 		}
 	}
 	
-	// New PB Pro
+	// New PRO PB
 	if (newPBPro) {
 		if (firstTimePro) {
 			Call_SimpleKZ_OnBeatMapFirstTime(client, map, RunType_Pro, runTime, rankPro, maxRankPro);
@@ -304,13 +304,13 @@ public void DB_Callback_PrintPBs1(Handle db, Handle results, const char[] error,
 		FormatEx(query, sizeof(query), sql_getlowestmaprank, map);
 		txn.AddQuery(query);
 		
-		// Get RunType_Pro PB
+		// Get PRO PB
 		FormatEx(query, sizeof(query), sql_getpbpro, map, gC_SteamID[target], 1);
 		txn.AddQuery(query);
-		// Get RunType_Pro Rank
+		// Get PRO Rank
 		FormatEx(query, sizeof(query), sql_getmaprankpro, map, gC_SteamID[target], map);
 		txn.AddQuery(query);
-		// Get Number of Players with RunType_Pro Times
+		// Get Number of Players with PRO Times
 		FormatEx(query, sizeof(query), sql_getlowestmaprankpro, map);
 		txn.AddQuery(query);
 		
@@ -443,7 +443,7 @@ public void DB_Callback_PrintMapRecords1(Handle db, Handle results, const char[]
 		// Get Map WR
 		FormatEx(query, sizeof(query), sql_getmaptop, map, map, 1);
 		txn.AddQuery(query);
-		// Get RunType_Pro WR
+		// Get PRO WR
 		FormatEx(query, sizeof(query), sql_getmaptoppro, map, map, 1);
 		txn.AddQuery(query);
 		
@@ -633,7 +633,7 @@ void DB_GetCompletion(int client, int target, bool print) {
 	// Get number of map completions
 	FormatEx(query, sizeof(query), sql_getcountmapscompleted, gC_SteamID[target]);
 	txn.AddQuery(query);
-	// Get number of map completions (RunType_Pro)
+	// Get number of map completions (PRO)
 	FormatEx(query, sizeof(query), sql_getcountmapscompletedpro, gC_SteamID[target]);
 	txn.AddQuery(query);
 	
