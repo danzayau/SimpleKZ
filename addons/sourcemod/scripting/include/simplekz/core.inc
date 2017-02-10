@@ -73,6 +73,14 @@ forward void SimpleKZ_OnTimerResumed(int client);
 forward void SimpleKZ_OnTimerForceStopped(int client);
 
 /**
+ * Called when the player is teleported due to a SimpleKZ timer command.
+ *
+ * @param client			Client entity index.
+ * @noreturn
+ */
+forward void SimpleKZ_OnTimerTeleport(int client);
+
+/**
  * Called when the server connects to a SimpleKZ database.
  *
  * @param database			Database handle.

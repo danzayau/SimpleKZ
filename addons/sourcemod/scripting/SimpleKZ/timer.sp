@@ -89,6 +89,8 @@ void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
 	else {
 		gB_LastTeleportOnGround[client] = false;
 	}
+	
+	Call_SimpleKZ_OnTimerTeleport(client);
 }
 
 

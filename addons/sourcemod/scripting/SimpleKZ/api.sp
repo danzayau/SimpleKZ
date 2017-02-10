@@ -11,6 +11,7 @@ Handle gH_Forward_SimpleKZ_OnTimerEnded;
 Handle gH_Forward_SimpleKZ_OnTimerPaused;
 Handle gH_Forward_SimpleKZ_OnTimerResumed;
 Handle gH_Forward_SimpleKZ_OnTimerForceStopped;
+Handle gH_Forward_SimpleKZ_OnTimerTeleport;
 Handle gH_Forward_SimpleKZ_OnDatabaseConnect;
 
 void CreateGlobalForwards() {
@@ -19,6 +20,7 @@ void CreateGlobalForwards() {
 	gH_Forward_SimpleKZ_OnTimerPaused = CreateGlobalForward("SimpleKZ_OnTimerPaused", ET_Event, Param_Cell);
 	gH_Forward_SimpleKZ_OnTimerResumed = CreateGlobalForward("SimpleKZ_OnTimerResumed", ET_Event, Param_Cell);
 	gH_Forward_SimpleKZ_OnTimerForceStopped = CreateGlobalForward("SimpleKZ_OnTimerForceStopped", ET_Event, Param_Cell);
+	gH_Forward_SimpleKZ_OnTimerTeleport = CreateGlobalForward("SimpleKZ_OnTimerTeleport", ET_Event, Param_Cell);
 	gH_Forward_SimpleKZ_OnDatabaseConnect = CreateGlobalForward("SimpleKZ_OnDatabaseConnect", ET_Event, Param_Cell, Param_Cell);
 }
 
@@ -52,6 +54,12 @@ void Call_SimpleKZ_OnTimerResumed(int client) {
 
 void Call_SimpleKZ_OnTimerForceStopped(int client) {
 	Call_StartForward(gH_Forward_SimpleKZ_OnTimerForceStopped);
+	Call_PushCell(client);
+	Call_Finish();
+}
+
+void Call_SimpleKZ_OnTimerTeleport(int client) {
+	Call_StartForward(gH_Forward_SimpleKZ_OnTimerTeleport);
 	Call_PushCell(client);
 	Call_Finish();
 }
