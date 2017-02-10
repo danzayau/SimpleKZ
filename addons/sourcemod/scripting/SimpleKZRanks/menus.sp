@@ -44,9 +44,9 @@ void AddItemsMapTopMenu(int client) {
 public int MenuHandler_MapTop(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
 		switch (param2) {
-			case 0:DB_OpenMapTop20(param1, gC_MapTopMap[param1], TP);
-			case 1:DB_OpenMapTop20(param1, gC_MapTopMap[param1], PRO);
-			case 2:DB_OpenMapTop20(param1, gC_MapTopMap[param1], THEORETICAL);
+			case 0:DB_OpenMapTop20(param1, gC_MapTopMap[param1], RunType_Normal);
+			case 1:DB_OpenMapTop20(param1, gC_MapTopMap[param1], RunType_Pro);
+			case 2:DB_OpenMapTop20(param1, gC_MapTopMap[param1], RunType_Theoretical);
 		}
 	}
 }
@@ -80,8 +80,8 @@ void CreatePlayerTopMenu(int client) {
 public int MenuHandler_PlayerTop(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
 		switch (param2) {
-			case 0:DB_PlayerTop20(param1, TP);
-			case 1:DB_PlayerTop20(param1, PRO);
+			case 0:DB_PlayerTop20(param1, RunType_Normal);
+			case 1:DB_PlayerTop20(param1, RunType_Pro);
 		}
 	}
 }

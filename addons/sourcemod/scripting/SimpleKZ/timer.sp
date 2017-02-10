@@ -338,13 +338,13 @@ bool TeleportToStartWasLatestTeleport(int client) {
 
 void PrintEndTimeString(int client) {
 	switch (GetCurrentRunType(client)) {
-		case PRO: {
-			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapPro", 
-				client, FormatTimeFloat(gF_CurrentTime[client]));
-		}
-		case TP: {
+		case RunType_Normal: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMap", 
 				client, FormatTimeFloat(gF_CurrentTime[client]), gI_TeleportsUsed[client], FormatTimeFloat(gF_CurrentTime[client] - gF_WastedTime[client]));
+		}
+		case RunType_Pro: {
+			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapPro", 
+				client, FormatTimeFloat(gF_CurrentTime[client]));
 		}
 	}
 } 

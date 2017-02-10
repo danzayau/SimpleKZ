@@ -77,7 +77,7 @@ float gF_SavedAngles[MAXPLAYERS + 1][3];
 // Database
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
-DatabaseType g_DBType = NONE;
+DatabaseType g_DBType = DatabaseType_None;
 char gC_SteamID[MAXPLAYERS + 1][24];
 char gC_Country[MAXPLAYERS + 1][45];
 

@@ -71,7 +71,8 @@ void CreateNatives() {
 	CreateNative("SimpleKZ_StartTimer", Native_StartTimer);
 	CreateNative("SimpleKZ_EndTimer", Native_EndTimer);
 	CreateNative("SimpleKZ_ForceStopTimer", Native_ForceStopTimer);
-	CreateNative("SimpleKZ_GetCurrentTime", Native_GetCurrentTime);
+	CreateNative("SimpleKZ_TimerRunning", Native_TimerRunning);
+	CreateNative("SimpleKZ_CurrentTime", Native_CurrentTime);
 }
 
 public int Native_StartTimer(Handle plugin, int numParams) {
@@ -90,9 +91,10 @@ public int Native_ForceStopTimer(Handle plugin, int numParams) {
 	}
 }
 
-public int Native_GetCurrentTime(Handle plugin, int numParams) {
-	if (gB_TimerRunning[GetNativeCell(1)]) {
-		return view_as<int>(gF_CurrentTime[GetNativeCell(1)]);
-	}
-	return view_as<int>(-1.0);
+public int Native_TimerRunning(Handle plugin, int numParams) {
+	return view_as<int>(gB_TimerRunning[GetNativeCell(1)]);
+}
+
+public int Native_CurrentTime(Handle plugin, int numParams) {
+	return view_as<int>(gF_CurrentTime[GetNativeCell(1)]);
 } 

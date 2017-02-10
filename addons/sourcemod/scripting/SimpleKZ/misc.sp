@@ -232,10 +232,10 @@ void PrintDisconnectMessage(int client, const char[] reason) {
 
 RunType GetCurrentRunType(int client) {
 	if (gI_TeleportsUsed[client] == 0) {
-		return PRO;
+		return RunType_Pro;
 	}
 	else {
-		return TP;
+		return RunType_Normal;
 	}
 }
 

@@ -35,7 +35,7 @@ char gC_SteamID[MAXPLAYERS + 1][24];
 // Database
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
-DatabaseType g_DBType = NONE;
+DatabaseType g_DBType = DatabaseType_None;
 
 // Menus
 char gC_MapTopMap[MAXPLAYERS + 1][64];
@@ -128,15 +128,15 @@ public void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, flo
 
 public void SimpleKZ_OnBeatMapRecord(int client, const char[] map, RecordType recordType, float runTime) {
 	switch (recordType) {
-		case PRO_RECORD: {
-			CPrintToChatAll("%t %t", "KZ_Tag", "BeatProRecord", client);
-			EmitSoundToAll("*/commander/commander_comment_02.wav");
-		}
-		case MAP_RECORD: {
+		case RecordType_Map: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapRecord", client);
 			EmitSoundToAll("*/commander/commander_comment_01.wav");
 		}
-		case MAP_AND_PRO_RECORD: {
+		case RecordType_Pro: {
+			CPrintToChatAll("%t %t", "KZ_Tag", "BeatProRecord", client);
+			EmitSoundToAll("*/commander/commander_comment_02.wav");
+		}
+		case RecordType_MapAndPro: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapAndProRecord", client);
 			EmitSoundToAll("*/commander/commander_comment_05.wav");
 		}
@@ -148,10 +148,10 @@ public void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, RunType ru
 		return;
 	}
 	switch (runType) {
-		case TP: {
+		case RunType_Normal: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapFirstTime", client, rank, maxRank);
 		}
-		case PRO: {
+		case RunType_Pro: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapFirstTime_Pro", client, rank, maxRank);
 		}
 	}
@@ -162,10 +162,10 @@ public void SimpleKZ_OnImproveTime(int client, const char[] map, RunType runType
 		return;
 	}
 	switch (runType) {
-		case TP: {
+		case RunType_Normal: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "ImprovedTime", client, FormatTimeFloat(improvement), rank, maxRank);
 		}
-		case PRO: {
+		case RunType_Pro: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "ImprovedTime_Pro", client, FormatTimeFloat(improvement), rank, maxRank);
 		}
 	}

@@ -14,15 +14,15 @@
 /*===============================  Enumerations  ===============================*/
 
 enum RunType {
-	PRO = 0, 
-	TP, 
-	THEORETICAL
+	RunType_Normal = 0, 
+	RunType_Pro, 
+	RunType_Theoretical // For convenience
 }
 
 enum DatabaseType {
-	NONE = -1, 
-	MYSQL, 
-	SQLITE
+	DatabaseType_None = -1, 
+	DatabaseType_MySQL, 
+	DatabaseType_SQLite
 }
 
 
@@ -110,9 +110,17 @@ native void SimpleKZ_EndTimer(int client);
 native void SimpleKZ_ForceStopTimer(int client);
 
 /**
- * Gets the player's current run time.
+ * Gets whether or not the player's timer is running (isn't 'stopped').
  *
  * @param client    		Client entity index.
- * @return					The player's current run time. Returns -1.0 if not currently on a run.
+ * @return					The player's current run time.
  */
-native float SimpleKZ_GetCurrentTime(int client); 
+native bool SimpleKZ_TimerRunning(int client);
+
+/**
+ * Gets the player's current run time (doesn't check if their timer is running).
+ *
+ * @param client    		Client entity index.
+ * @return					The player's current run time.
+ */
+native float SimpleKZ_CurrentTime(int client); 

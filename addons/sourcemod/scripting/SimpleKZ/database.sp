@@ -21,10 +21,10 @@ void DB_SetupDatabase() {
 	char databaseType[8];
 	SQL_ReadDriver(gH_DB, databaseType, sizeof(databaseType));
 	if (strcmp(databaseType, "sqlite", false) == 0) {
-		g_DBType = SQLITE;
+		g_DBType = DatabaseType_SQLite;
 	}
 	else if (strcmp(databaseType, "mysql", false) == 0) {
-		g_DBType = MYSQL;
+		g_DBType = DatabaseType_MySQL;
 	}
 	else {
 		PrintToServer("%T", "Database_InvalidDriver", LANG_SERVER);
@@ -71,7 +71,7 @@ void DB_SavePlayerInfo(int client) {
 	SQL_EscapeString(gH_DB, clientName, clientNameEscaped, MAX_NAME_LENGTH * 2 + 1);
 	
 	switch (g_DBType) {
-		case SQLITE: {
+		case DatabaseType_SQLite: {
 			Transaction txn = SQL_CreateTransaction();
 			// UPDATE OR IGNORE
 			FormatEx(query, sizeof(query), sqlite_players_update, clientNameEscaped, gC_Country[client], gC_SteamID[client]);
@@ -81,7 +81,7 @@ void DB_SavePlayerInfo(int client) {
 			txn.AddQuery(query);
 			SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, 0, DBPrio_High);
 		}
-		case MYSQL: {
+		case DatabaseType_MySQL: {
 			FormatEx(query, sizeof(query), mysql_players_saveinfo, gC_SteamID[client], clientNameEscaped, gC_Country[client]);
 			SQL_TQuery(gH_DB, DB_Callback_Generic, query, 0, DBPrio_High);
 		}

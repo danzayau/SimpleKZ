@@ -16,9 +16,9 @@
 /*===============================  Enumerations  ===============================*/
 
 enum RecordType {
-	PRO_RECORD = 0, 
-	MAP_RECORD, 
-	MAP_AND_PRO_RECORD
+	RecordType_Map = 0, 
+	RecordType_Pro, 
+	RecordType_MapAndPro
 }
 
 
