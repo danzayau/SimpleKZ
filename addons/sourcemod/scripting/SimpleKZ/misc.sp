@@ -6,6 +6,10 @@
 
 /*===============================  General  ===============================*/
 
+bool IsValidClient(int client) {
+	return 1 <= client && client <= MaxClients && IsClientInGame(client);
+}
+
 float FloatMax(float a, float b) {
 	if (a > b) {
 		return a;
@@ -25,10 +29,6 @@ void AddCommandListeners() {
 	for (int i = 0; i < sizeof(gC_RadioCommands); i++) {
 		AddCommandListener(CommandBlock, gC_RadioCommands[i]);
 	}
-}
-
-bool IsValidClient(int client) {
-	return 1 <= client && client <= MaxClients && IsClientInGame(client);
 }
 
 void LoadKZConfig() {
@@ -172,16 +172,16 @@ void TeleportToOtherPlayer(int client, int target)
 	CPrintToChat(client, "%t %t", "KZ_Tag", "Goto_Success", target);
 }
 
-int GetSpectatedPlayer(int client) {
-	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-}
-
 void EmitSoundToClientSpectators(int client, const char[] sound) {
 	for (int i = 1; i <= MaxClients; i++) {
 		if (IsValidClient(i) && GetSpectatedPlayer(i) == client) {
 			EmitSoundToClient(i, sound);
 		}
 	}
+}
+
+int GetSpectatedPlayer(int client) {
+	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
 }
 
 void FreezePlayer(int client) {
@@ -397,7 +397,7 @@ void NoBhopBlockCPSetup(int client) {
 }
 
 public void OnTrigMultiStartTouch(const char[] name, int caller, int activator, float delay) {
-	if (IsValidClient(client)) {
+	if (IsValidClient(activator)) {
 		gI_JustTouchedTrigMulti[activator]++;
 		CreateTimer(BHOP_BLOCK_DETECTION_PERIOD, TrigMultiStartTouchDelayed, activator);
 	}

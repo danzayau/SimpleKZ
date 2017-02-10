@@ -23,6 +23,12 @@ public Plugin myinfo =
 
 #define MAPPOOL_FILE_PATH "cfg/sourcemod/SimpleKZ/mappool.cfg"
 
+// TO-DO: Replace with sound config
+#define FULL_SOUNDPATH_BEAT_RECORD "sound/SimpleKZ/beatrecord1.mp3"
+#define REL_SOUNDPATH_BEAT_RECORD "*/SimpleKZ/beatrecord1.mp3"
+#define FULL_SOUNDPATH_BEAT_MAP "sound/SimpleKZ/beatmap1.mp3"
+#define REL_SOUNDPATH_BEAT_MAP "*/SimpleKZ/beatmap1.mp3"
+
 
 
 /*===============================  Global Variables  ===============================*/
@@ -130,17 +136,15 @@ public void SimpleKZ_OnBeatMapRecord(int client, const char[] map, RecordType re
 	switch (recordType) {
 		case RecordType_Map: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapRecord", client);
-			EmitSoundToAll("*/commander/commander_comment_01.wav");
 		}
 		case RecordType_Pro: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "BeatProRecord", client);
-			EmitSoundToAll("*/commander/commander_comment_02.wav");
 		}
 		case RecordType_MapAndPro: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapAndProRecord", client);
-			EmitSoundToAll("*/commander/commander_comment_05.wav");
 		}
 	}
+	EmitSoundToAll(REL_SOUNDPATH_BEAT_RECORD);
 }
 
 public void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, RunType runType, float runTime, int rank, int maxRank) {
@@ -153,6 +157,8 @@ public void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, RunType ru
 		}
 		case RunType_Pro: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapFirstTime_Pro", client, rank, maxRank);
+			EmitSoundToClient(client, REL_SOUNDPATH_BEAT_MAP);
+			EmitSoundToClientSpectators(client, REL_SOUNDPATH_BEAT_MAP);
 		}
 	}
 }
@@ -190,7 +196,9 @@ public void OnClientPutInServer(int client) {
 public void OnMapStart() {
 	UpdateCurrentMap();
 	DB_SaveMapInfo();
-	FakePrecacheSound("*/commander/commander_comment_01.wav");
-	FakePrecacheSound("*/commander/commander_comment_02.wav");
-	FakePrecacheSound("*/commander/commander_comment_05.wav");
+	
+	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_RECORD);
+	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_MAP);
+	FakePrecacheSound(REL_SOUNDPATH_BEAT_RECORD);
+	FakePrecacheSound(REL_SOUNDPATH_BEAT_MAP);
 } 
