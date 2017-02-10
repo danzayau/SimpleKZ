@@ -397,8 +397,10 @@ void NoBhopBlockCPSetup(int client) {
 }
 
 public void OnTrigMultiStartTouch(const char[] name, int caller, int activator, float delay) {
-	gI_JustTouchedTrigMulti[activator]++;
-	CreateTimer(BHOP_BLOCK_DETECTION_PERIOD, TrigMultiStartTouchDelayed, activator);
+	if (IsValidClient(client)) {
+		gI_JustTouchedTrigMulti[activator]++;
+		CreateTimer(BHOP_BLOCK_DETECTION_PERIOD, TrigMultiStartTouchDelayed, activator);
+	}
 }
 
 public Action TrigMultiStartTouchDelayed(Handle timer, int client) {
