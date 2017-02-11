@@ -111,7 +111,7 @@ char[] GetInfoPanelSpeedString(MovementPlayer player) {
 
 char[] GetInfoPanelTakeoffString(MovementPlayer player) {
 	char takeoffString[64];
-	if (!player.onGround && !player.onLadder && !player.noclipping) {
+	if (!gB_Paused[player.id] && !player.onGround && !player.onLadder && !player.noclipping) {
 		if (MT_GetHitPerf(player.id)) {
 			FormatEx(takeoffString, sizeof(takeoffString), 
 				"(<font color='#03cc00'>%.0f</font>)", 
