@@ -4,8 +4,8 @@
 */
 
 
-ConVar gCV_Chat;
+ConVar gCV_Custom_Chat;
 
 void RegisterConVars() {
-	gCV_Chat = CreateConVar("kz_chat", "1", "Whether or not SimpleKZ handles player chat commands (in case you want to use another chat plugin).");
+	gCV_Custom_Chat = CreateConVar("kz_custom_chat", "1", "Whether or not SimpleKZ customises player chat (in case you want to use another chat plugin).");
 } 

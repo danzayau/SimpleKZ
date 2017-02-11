@@ -308,7 +308,7 @@ public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcas
 
 // Adjust player messages, and automatically lower case commands
 public Action OnSay(int client, const char[] command, int argc) {
-	if (!GetConVarBool(gCV_Chat)) {
+	if (!GetConVarBool(gCV_Custom_Chat)) {
 		return Plugin_Continue;
 	}
 	
