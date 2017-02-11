@@ -44,7 +44,6 @@ public int MenuHandler_TeleportMenu(Menu menu, MenuAction action, int param1, in
 				case 2:TogglePause(param1);
 				case 3:TeleportToStart(param1);
 				case 4:UndoTeleport(param1);
-				case 5:SplitsMake(param1);
 			}
 		}
 		else {
@@ -72,7 +71,6 @@ void TeleportAddItems(int client) {
 		TeleportAddItemPause(client);
 		TeleportAddItemStart(client);
 		TeleportAddItemUndo(client);
-		TeleportAddItemSplit(client);
 	}
 	else {
 		TeleportAddItemRejoin(client);
@@ -140,12 +138,6 @@ void TeleportAddItemStart(int client) {
 		FormatEx(text, sizeof(text), "%T", "TPMenu_Respawn", client);
 		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
-}
-
-void TeleportAddItemSplit(int client) {
-	char text[16];
-	FormatEx(text, sizeof(text), "%T", "TPMenu_Split", client);
-	AddMenuItem(gH_TeleportMenu[client], "", text);
 }
 
 void TeleportAddItemRejoin(int client) {
@@ -423,9 +415,7 @@ void CreateOptionsMenuAll() {
 
 void CreateOptionsMenu(int client) {
 	gH_OptionsMenu[client] = CreateMenu(MenuHandler_Options);
-	SetMenuOptionFlags(gH_OptionsMenu[client], MENUFLAG_NO_SOUND);
-	SetMenuExitButton(gH_OptionsMenu[client], true);
-	SetMenuPagination(gH_OptionsMenu[client], 7);
+	SetMenuPagination(gH_OptionsMenu[client], 6);
 }
 
 void DisplayOptionsMenu(int client, int atItem = 0) {
@@ -440,10 +430,10 @@ void UpdateOptionsMenu(int client) {
 	OptionsAddItemInfoPanel(client);
 	OptionsAddItemShowPlayers(client);
 	OptionsAddItemShowWeapon(client);
-	OptionsAddItemShowKeys(client);
-	OptionsAddItemPistol(client);
 	OptionsAddItemAutoRestart(client);
+	OptionsAddItemPistol(client);
 	OptionsAddItemSlayOnEnd(client);
+	OptionsAddItemShowKeys(client);
 }
 
 public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int param2) {
@@ -453,13 +443,13 @@ public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int par
 			case 1:ToggleInfoPanel(param1);
 			case 2:ToggleShowPlayers(param1);
 			case 3:ToggleShowWeapon(param1);
-			case 4:ToggleShowKeys(param1);
+			case 4:ToggleAutoRestart(param1);
 			case 5: {
 				gB_CameFromOptionsMenu[param1] = true;
 				DisplayPistolMenu(param1);
 			}
-			case 6:ToggleAutoRestart(param1);
-			case 7:ToggleSlayOnEnd(param1);
+			case 6:ToggleSlayOnEnd(param1);
+			case 7:ToggleShowKeys(param1);
 		}
 		if (param2 != 5) {
 			DisplayOptionsMenu(param1, param2 / 6 * 6); // Round item number down to multiple of 6

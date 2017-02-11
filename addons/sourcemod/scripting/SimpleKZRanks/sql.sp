@@ -144,26 +144,28 @@ char sql_getmaptoptheoretical[] =
 ..."LIMIT %d;";
 
 char sql_getmaprank[] = 
-"SELECT COUNT(*), MIN(RunTime)"
-..."FROM Times "
-..."WHERE RunTime<= "
-..."(SELECT RunTime "
-..."FROM Times "
-..."WHERE Map='%s' AND SteamID='%s' "
-..."ORDER BY RunTime LIMIT 1) "
-..."AND Map='%s' "
-..."GROUP BY SteamID;";
-
-char sql_getmaprankpro[] = 
-"SELECT COUNT(*), MIN(RunTime)"
+"SELECT COUNT(*) "
+..."FROM "
+..."(SELECT MIN(RunTime) "
 ..."FROM Times "
 ..."WHERE RunTime <= "
-..."(SELECT RunTime "
+..."(SELECT MIN(RunTime) "
 ..."FROM Times "
-..."WHERE Map='%s' AND SteamID='%s' AND Teleports=0 "
-..."ORDER BY RunTime LIMIT 1) "
+..."WHERE Map='%s' AND SteamID='%s') "
+..."AND Map='%s' "
+..."GROUP BY SteamID) AS FasterTimes;";
+
+char sql_getmaprankpro[] = 
+"SELECT COUNT(*) "
+..."FROM "
+..."(SELECT MIN(RunTime) "
+..."FROM Times "
+..."WHERE RunTime <= "
+..."(SELECT MIN(RunTime) "
+..."FROM Times "
+..."WHERE Map='%s' AND SteamID='%s' AND Teleports=0) "
 ..."AND Map='%s' AND Teleports=0 "
-..."GROUP BY SteamID;";
+..."GROUP BY SteamID) AS FasterTimes;";
 
 char sql_getlowestmaprank[] = 
 "SELECT COUNT(DISTINCT SteamID) "

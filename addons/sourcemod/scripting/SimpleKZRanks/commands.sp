@@ -5,8 +5,8 @@
 
 
 void RegisterCommands() {
-	RegConsoleCmd("sm_maprank", CommandMapRank, "[KZ] Prints map time and rank to chat. Usage: !maprank <player> <map>");
-	RegConsoleCmd("sm_pb", CommandMapRank, "[KZ] Prints map time and rank to chat. Usage: !maprank <player> <map>");
+	RegConsoleCmd("sm_maprank", CommandMapRank, "[KZ] Prints map time and rank to chat. Usage: !maprank <map> <player>");
+	RegConsoleCmd("sm_pb", CommandMapRank, "[KZ] Prints map time and rank to chat. Usage: !maprank <map> <player>");
 	RegConsoleCmd("sm_maprecord", CommandMapRecord, "[KZ] Prints map record times to chat. Usage: !maprecord <map>");
 	RegConsoleCmd("sm_wr", CommandMapRecord, "[KZ] Prints map record times to chat. Usage: !maprecord <map>");
 	RegConsoleCmd("sm_maptop", CommandMapTop, "[KZ] Opens a menu showing the top times of a map. Usage !maptop <map>");
@@ -26,19 +26,15 @@ public Action CommandMapRank(int client, int args) {
 		DB_PrintPBs(client, client, gC_CurrentMap);
 	}
 	else if (args == 1) {
-		char specifiedPlayer[MAX_NAME_LENGTH];
-		GetCmdArg(1, specifiedPlayer, sizeof(specifiedPlayer));
-		
-		int target = FindTarget(client, specifiedPlayer, true, false);
-		if (target != -1) {
-			DB_PrintPBs(client, target, gC_CurrentMap);
-		}
+		char specifiedMap[33];
+		GetCmdArg(1, specifiedMap, sizeof(specifiedMap));
+		DB_PrintPBs(client, client, specifiedMap);
 	}
 	else {
-		char specifiedPlayer[MAX_NAME_LENGTH];
-		GetCmdArg(1, specifiedPlayer, sizeof(specifiedPlayer));
 		char specifiedMap[33];
-		GetCmdArg(2, specifiedMap, sizeof(specifiedMap));
+		GetCmdArg(1, specifiedMap, sizeof(specifiedMap));
+		char specifiedPlayer[MAX_NAME_LENGTH];
+		GetCmdArg(2, specifiedPlayer, sizeof(specifiedPlayer));
 		
 		int target = FindTarget(client, specifiedPlayer, true, false);
 		if (target != -1) {

@@ -29,7 +29,7 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
  * Config files for server ConVars are also generated in that directory after starting the plugin.
  * Add a MySQL/SQLite database called ```simplekz``` to ```csgo/addons/sourcemod/configs/databases.cfg``` for storing player preferences, player times and more. This is essential in providing the best player experience this plugin can.
  * Check that ```csgo/cfg/sourcemod/SimpleKZ/mappool.cfg``` contains all maps you want to count towards rankings. You then use !updatemappool to update the maps database with this list.
- * SimpleKZ will work without a database and without SimpleKZRanks if you do not wish to record times or use related features.
+ * SimpleKZ will work without a database or SimpleKZRanks if you do not wish to record times or use related features.
 
 ============================
 
@@ -50,14 +50,15 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
  * ```!hideweapon``` - Toggle visibility of your weapon.
  * ```!measure``` - Open the measurement menu.
  * ```!pistol``` - Open the pistol selection menu.
+ * ```!split``` - Make a time split for timing purposes.
  * ```!nc``` - Toggle noclip.
  * ```+noclip``` - Noclip (bind a key to it in console).
- * ```!split``` - Make a time split for timing purposes.
+
  
 ### SimpleKZ Ranks Commands
  
- * ```!maprank```/```!pb``` - Prints map time and rank to chat. Usage: ```!maprank <player> <map>```.
+ * ```!maprank```/```!pb``` - Prints map time and rank to chat. Usage: ```!maprank <map> <player>```.
  * ```!maprecord```/```!wr``` - Prints map record times to chat. Usage: ```!maprecord <map>```.
  * ```!maptop``` - Opens a menu showing the top times of a map. Usage ```!maptop <map>```.
+  * ```!completion```/```!pc``` - Prints map completion to chat. Usage ```!completion <player>```.
  * ```!top``` - Opens a menu showing the top record holders on the server.
- * ```!completion```/```!pc``` - Prints map completion to chat. Usage ```!completion <player>```.

@@ -53,6 +53,7 @@ public int MenuHandler_MapTop(Menu menu, MenuAction action, int param1, int para
 
 void CreateMapTopSubMenu(int client) {
 	gH_MapTopSubMenu[client] = CreateMenu(MenuHandler_MapTopSubmenu);
+	SetMenuPagination(gH_MapTopSubMenu[client], 5);
 }
 
 public int MenuHandler_MapTopSubmenu(Menu menu, MenuAction action, int param1, int param2) {
@@ -74,7 +75,6 @@ void CreatePlayerTopMenuAll() {
 
 void CreatePlayerTopMenu(int client) {
 	gH_PlayerTopMenu[client] = CreateMenu(MenuHandler_PlayerTop);
-	SetMenuTitle(gH_PlayerTopMenu[client], "%T", "PlayerTopMenu_Title", client);
 }
 
 public int MenuHandler_PlayerTop(Menu menu, MenuAction action, int param1, int param2) {
@@ -96,11 +96,14 @@ void AddItemsPlayerTopMenu(int client) {
 }
 
 void DisplayPlayerTopMenu(int client) {
+	SetMenuTitle(gH_PlayerTopMenu[client], "%T", "PlayerTopMenu_Title", client);
+	AddItemsPlayerTopMenu(client);
 	DisplayMenu(gH_PlayerTopMenu[client], client, MENU_TIME_FOREVER);
 }
 
 void CreatePlayerTopSubMenu(int client) {
 	gH_PlayerTopSubMenu[client] = CreateMenu(MenuHandler_PlayerTopSubmenu);
+	SetMenuPagination(gH_PlayerTopSubMenu[client], 5);
 }
 
 public int MenuHandler_PlayerTopSubmenu(Menu menu, MenuAction action, int param1, int param2) {

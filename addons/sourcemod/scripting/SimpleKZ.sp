@@ -18,7 +18,7 @@ public Plugin myinfo =
 	name = "Simple KZ Core", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer and optional database.", 
-	version = "0.8.0", 
+	version = "0.8.1", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -249,6 +249,7 @@ public void OnClientPutInServer(int client) {
 
 public void OnClientDisconnect(int client) {  // Also calls at end of map
 	if (!IsFakeClient(client)) {
+		DB_SavePlayerInfo(client);
 		DB_SavePreferences(client);
 	}
 }
@@ -307,7 +308,7 @@ public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcas
 
 // Adjust player messages, and automatically lower case commands
 public Action OnSay(int client, const char[] command, int argc) {
-	if (!GetConVarBool(gCV_Chat)) {
+	if (!GetConVarBool(gCV_Custom_Chat)) {
 		return Plugin_Continue;
 	}
 	
