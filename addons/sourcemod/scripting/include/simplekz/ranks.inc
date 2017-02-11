@@ -1,7 +1,7 @@
 /* 	Simple KZ Ranks API
 	Author: DanZay
 	
-	Plugin Version: 0.8.0
+	Plugin Version: 0.8.1
 	Plugin Website: https://github.com/danzayau/SimpleKZ	
 */
 

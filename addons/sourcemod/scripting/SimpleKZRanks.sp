@@ -13,7 +13,7 @@ public Plugin myinfo =
 	name = "Simple KZ Ranks", 
 	author = "DanZay", 
 	description = "Player ranks module for SimpleKZ.", 
-	version = "0.8.0", 
+	version = "0.8.1", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -135,13 +135,13 @@ public void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, flo
 public void SimpleKZ_OnBeatMapRecord(int client, const char[] map, RecordType recordType, float runTime) {
 	switch (recordType) {
 		case RecordType_Map: {
-			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapRecord", client);
+			CPrintToChatAll(" %t", "BeatMapRecord", client);
 		}
 		case RecordType_Pro: {
-			CPrintToChatAll("%t %t", "KZ_Tag", "BeatProRecord", client);
+			CPrintToChatAll(" %t", "BeatProRecord", client);
 		}
 		case RecordType_MapAndPro: {
-			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapAndProRecord", client);
+			CPrintToChatAll(" %t", "BeatMapAndProRecord", client);
 		}
 	}
 	EmitSoundToAll(REL_SOUNDPATH_BEAT_RECORD);
@@ -153,10 +153,10 @@ public void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, RunType ru
 	}
 	switch (runType) {
 		case RunType_Normal: {
-			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapFirstTime", client, rank, maxRank);
+			CPrintToChatAll(" %t", "BeatMapFirstTime", client, rank, maxRank);
 		}
 		case RunType_Pro: {
-			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapFirstTime_Pro", client, rank, maxRank);
+			CPrintToChatAll(" %t", "BeatMapFirstTime_Pro", client, rank, maxRank);
 			EmitSoundToClient(client, REL_SOUNDPATH_BEAT_MAP);
 			EmitSoundToClientSpectators(client, REL_SOUNDPATH_BEAT_MAP);
 		}
@@ -169,10 +169,10 @@ public void SimpleKZ_OnImproveTime(int client, const char[] map, RunType runType
 	}
 	switch (runType) {
 		case RunType_Normal: {
-			CPrintToChatAll("%t %t", "KZ_Tag", "ImprovedTime", client, FormatTimeFloat(improvement), rank, maxRank);
+			CPrintToChatAll(" %t", "ImprovedTime", client, FormatTimeFloat(improvement), rank, maxRank);
 		}
 		case RunType_Pro: {
-			CPrintToChatAll("%t %t", "KZ_Tag", "ImprovedTime_Pro", client, FormatTimeFloat(improvement), rank, maxRank);
+			CPrintToChatAll(" %t", "ImprovedTime_Pro", client, FormatTimeFloat(improvement), rank, maxRank);
 		}
 	}
 }

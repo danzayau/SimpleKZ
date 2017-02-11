@@ -97,6 +97,10 @@ void DB_UpdateMapPool(int client) {
 }
 
 public void DB_TxnSuccess_UpdateMapPool(Handle db, int client, int numQueries, Handle[] results, any[] queryData) {
+	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
+		return;
+	}
+	
 	CPrintToChat(client, "%t %t", "KZ_Tag", "MapPool_UpdateSuccess");
 }
 
@@ -155,6 +159,10 @@ public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueri
 	float runTime = data.ReadFloat();
 	int teleportsUsed = data.ReadCell();
 	CloseHandle(data);
+	
+	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
+		return;
+	}
 	
 	bool newPB = false;
 	bool firstTime = false;
@@ -277,6 +285,10 @@ public void DB_Callback_PrintPBs1(Handle db, Handle results, const char[] error,
 	data.ReadString(map, sizeof(map));
 	CloseHandle(data);
 	
+	if (!IsValidClient(client) || !IsValidClient(target)) {  // Client or target is no longer valid so don't continue
+		return;
+	}
+	
 	if (SQL_GetRowCount(results) == 0) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "MapNotFound", map);
 		return;
@@ -326,6 +338,10 @@ public void DB_TxnSuccess_PrintPBs2(Handle db, DataPack data, int numQueries, Ha
 	char map[33];
 	data.ReadString(map, sizeof(map));
 	CloseHandle(data);
+	
+	if (!IsValidClient(client) || !IsValidClient(target)) {  // Client or target is no longer valid so don't continue
+		return;
+	}
 	
 	bool hasPB = false;
 	bool hasPBPro = false;
@@ -388,7 +404,7 @@ public void DB_TxnSuccess_PrintPBs2(Handle db, DataPack data, int numQueries, Ha
 		CPrintToChat(client, "  %t", "PB_Map", FormatTimeFloat(runTime), rank, maxRank, teleportsUsed, FormatTimeFloat(theoreticalRunTime));
 		CPrintToChat(client, "  %t", "PB_Pro_None");
 	}
-	else if (teleportsUsed == 0) {
+	else if (teleportsUsed == 0) {  // Their MAP PB has 0 teleports, and is therefore also their PRO PB
 		CPrintToChat(client, "  %t", "PB_Map_Pro", FormatTimeFloat(runTime), rank, maxRank, rankPro, maxRankPro);
 	}
 	else {
@@ -425,6 +441,10 @@ public void DB_Callback_PrintMapRecords1(Handle db, Handle results, const char[]
 	data.ReadString(map, sizeof(map));
 	CloseHandle(data);
 	
+	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
+		return;
+	}
+	
 	if (SQL_GetRowCount(results) == 0) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "MapNotFound", map);
 		return;
@@ -458,6 +478,10 @@ public void DB_TxnSuccess_PrintMapRecords2(Handle db, DataPack data, int numQuer
 	char map[33];
 	data.ReadString(map, sizeof(map));
 	CloseHandle(data);
+	
+	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
+		return;
+	}
 	
 	bool hasRecord = false;
 	bool hasRecordPro = false;
@@ -524,6 +548,10 @@ void DB_OpenMapTop(int client, const char[] map) {
 }
 
 public void DB_Callback_OpenMapTop(Handle db, Handle results, const char[] error, int client) {
+	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
+		return;
+	}
+	
 	// Got map name from database - now open maptop menu
 	if (SQL_GetRowCount(results) == 0) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "MapNotFound", gC_MapTopMap[client]);
@@ -563,6 +591,10 @@ public void DB_Callback_OpenMapTop20(Handle db, Handle results, const char[] err
 	RunType runType = data.ReadCell();
 	CloseHandle(data);
 	
+	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
+		return;
+	}
+	
 	if (SQL_GetRowCount(results) == 0) {
 		switch (runType) {
 			case RunType_Normal:CPrintToChat(client, "%t %t", "KZ_Tag", "MapTop_NoTimes", map);
@@ -590,15 +622,15 @@ public void DB_Callback_OpenMapTop20(Handle db, Handle results, const char[] err
 		SQL_FetchString(results, 0, playerString, sizeof(playerString));
 		switch (runType) {
 			case RunType_Normal: {
-				FormatEx(newMenuItem, sizeof(newMenuItem), "[%02d]   %s (%d TP)     %s", 
+				FormatEx(newMenuItem, sizeof(newMenuItem), "  [%02d] %s (%d TP)     %s", 
 					rank, FormatTimeFloat(SQL_FetchFloat(results, 1)), SQL_FetchInt(results, 2), playerString);
 			}
 			case RunType_Pro: {
-				FormatEx(newMenuItem, sizeof(newMenuItem), "[%02d]   %s     %s", 
+				FormatEx(newMenuItem, sizeof(newMenuItem), "  [%02d] %s     %s", 
 					rank, FormatTimeFloat(SQL_FetchFloat(results, 1)), playerString);
 			}
 			case RunType_Theoretical: {
-				FormatEx(newMenuItem, sizeof(newMenuItem), "[%02d]   %s (%d TP)     %s", 
+				FormatEx(newMenuItem, sizeof(newMenuItem), "  [%02d] %s (%d TP)     %s", 
 					rank, FormatTimeFloat(SQL_FetchFloat(results, 1)), SQL_FetchInt(results, 2), playerString);
 			}
 		}
@@ -646,6 +678,10 @@ public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries
 	int target = data.ReadCell();
 	bool print = view_as<bool>(data.ReadCell());
 	CloseHandle(data);
+	
+	if (!IsValidClient(client) || !IsValidClient(target)) {  // Client or target is no longer valid so don't continue
+		return;
+	}
 	
 	int totalMaps, completions, completionsPro;
 	float percentagePro;
@@ -712,6 +748,10 @@ public void DB_Callback_PlayerTop20(Handle db, Handle results, const char[] erro
 	RecordType runType = data.ReadCell();
 	CloseHandle(data);
 	
+	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
+		return;
+	}
+	
 	if (SQL_GetRowCount(results) == 0) {
 		switch (runType) {
 			case RunType_Normal:CPrintToChat(client, "%t %t", "KZ_Tag", "PlayerTop_NoTimes");
@@ -734,12 +774,9 @@ public void DB_Callback_PlayerTop20(Handle db, Handle results, const char[] erro
 	int rank = 0;
 	while (SQL_FetchRow(results)) {
 		rank++;
-		
 		char playerString[33];
 		SQL_FetchString(results, 0, playerString, sizeof(playerString));
-		
-		FormatEx(newMenuItem, sizeof(newMenuItem), "[%02d]   %s (%d)", rank, playerString, SQL_FetchInt(results, 1));
-		
+		FormatEx(newMenuItem, sizeof(newMenuItem), "  [%02d] %s (%d)", rank, playerString, SQL_FetchInt(results, 1));
 		AddMenuItem(gH_PlayerTopSubMenu[client], "", newMenuItem, ITEMDRAW_DISABLED);
 	}
 	

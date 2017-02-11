@@ -291,10 +291,6 @@
 	{
 		"en"		"Respawn"
 	}
-	"TPMenu_Split"
-	{
-		"en"		"Split"
-	}
 	"TPMenu_Rejoin"
 	{
 		"en"		"Rejoin"
@@ -394,27 +390,27 @@
 	}
 	"BeatMapFirstTime"
 	{
-		// Bill beat the map for the first time! They now have a MAP rank of #5/12.
+		// Bill just beat the map for the first time (#5/12)!
 		"#format"	"{1:N},{2:d},{3:d}"
-		"en"		"{lime}{1}{grey} just beat the map for the first time! They now have a {yellow}MAP{grey} rank of #{default}{2}{grey}/{3}."
+		"en"		"{lime}{1}{grey} just beat the map for the first time (#{default}{2}{grey}/{3})!"
 	}
 	"BeatMapFirstTime_Pro"
 	{
-		// Bill PRO'd the map for the first time! They now have a PRO rank of #5/12.
+		// Bill just PRO'd the map for the first time (#5/12)!
 		"#format"	"{1:N},{2:d},{3:d}"
-		"en"		"{lime}{1} just {blue}PRO{grey}'d the map for the first time! They now have a {blue}PRO{grey} rank of #{default}{2}{grey}/{3}."
+		"en"		"{lime}{1} just {blue}PRO{grey}'d the map for the first time (#{default}{2}{grey}/{3})!"
 	}
 	"ImprovedTime"
 	{
-		// Bill improved their MAP time by -00:12.34! They now have a MAP rank of #5/12.
+		// Bill just beat their MAP time by -00:12.34 (#5/12).
 		"#format"	"{1:N},{2:s},{3:d},{4:d}"
-		"en"		"{lime}{1}{grey} improved their {yellow}MAP{grey} time by {green}-{2}{grey}! They now have a {yellow}MAP{grey} rank of #{default}{3}{grey}/{4}."
+		"en"		"{lime}{1}{grey} just beat their {yellow}MAP{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4})!"
 	}
 	"ImprovedTime_Pro"
 	{
-		// Bill improved their PRO time by -00:12.34! They now have a PRO rank of #5/12.
+		// Bill just beat their PRO time by -00:12.34 (#5/12)!
 		"#format"	"{1:N},{2:s},{3:d},{4:d}"
-		"en"		"{lime}{1}{grey} improved their {blue}PRO{grey} time by {green}-{2}{grey}! They now have a {blue}PRO{grey} rank of #{default}{3}{grey}/{4}."
+		"en"		"{lime}{1}{grey} just beat their {blue}PRO{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4})!"
 	}
 	"PB_Header"
 	{	
@@ -563,7 +559,7 @@
 	}
 	"PlayerTopMenu_Title"
 	{
-		"en"		"Top Jumpers"
+		"en"		"Top Players"
 	}
 	"PlayerTopMenu_Top20"
 	{
@@ -575,7 +571,7 @@
 	}
 	"PlayerTopMenu_ListTitle"
 	{
-		"en"		"Top 20 Record Holders"
+		"en"		"Top 20 MAP Record Holders"
 	}
 	"PlayerTopMenu_ListTitlePro"
 	{
