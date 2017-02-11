@@ -60,5 +60,5 @@ SimpleKZ is a timer plugin for KZ maps with all the essentials.
  * ```!maprank```/```!pb``` - Prints map time and rank to chat. Usage: ```!maprank <map> <player>```.
  * ```!maprecord```/```!wr``` - Prints map record times to chat. Usage: ```!maprecord <map>```.
  * ```!maptop``` - Opens a menu showing the top times of a map. Usage ```!maptop <map>```.
-  * ```!completion```/```!pc``` - Prints map completion to chat. Usage ```!completion <player>```.
+ * ```!completion```/```!pc``` - Prints map completion to chat. Usage ```!completion <player>```.
  * ```!top``` - Opens a menu showing the top record holders on the server.
