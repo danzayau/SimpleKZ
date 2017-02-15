@@ -13,7 +13,7 @@ public Plugin myinfo =
 	name = "Simple KZ Ranks", 
 	author = "DanZay", 
 	description = "Player ranks module for SimpleKZ.", 
-	version = "0.8.1", 
+	version = "0.8.2", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -86,6 +86,7 @@ public void OnPluginStart() {
 	// Translations
 	LoadTranslations("common.phrases");
 	LoadTranslations("simplekz.phrases");
+	LoadTranslations("simplekzranks.phrases");
 	
 	CreateMenus();
 	
@@ -153,7 +154,7 @@ public void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, RunType ru
 	}
 	switch (runType) {
 		case RunType_Normal: {
-			CPrintToChatAll(" %t", "BeatMapFirstTime", client, rank, maxRank);
+			CPrintToChat(client, " %t", "BeatMapFirstTime", client, rank, maxRank);
 		}
 		case RunType_Pro: {
 			CPrintToChatAll(" %t", "BeatMapFirstTime_Pro", client, rank, maxRank);
@@ -169,7 +170,7 @@ public void SimpleKZ_OnImproveTime(int client, const char[] map, RunType runType
 	}
 	switch (runType) {
 		case RunType_Normal: {
-			CPrintToChatAll(" %t", "ImprovedTime", client, FormatTimeFloat(improvement), rank, maxRank);
+			CPrintToChat(client, " %t", "ImprovedTime", client, FormatTimeFloat(improvement), rank, maxRank);
 		}
 		case RunType_Pro: {
 			CPrintToChatAll(" %t", "ImprovedTime_Pro", client, FormatTimeFloat(improvement), rank, maxRank);
