@@ -76,28 +76,6 @@ void PrecachePlayerModels() {
 	AddFileToDownloadsTable(gC_PlayerModelCT);
 }
 
-char[] FormatTimeFloat(float timeToFormat) {
-	char formattedTime[12];
-	
-	int roundedTime = RoundFloat(timeToFormat * 100); // Time rounded to number of centiseconds
-	
-	int centiseconds = roundedTime % 100;
-	roundedTime = (roundedTime - centiseconds) / 100;
-	int seconds = roundedTime % 60;
-	roundedTime = (roundedTime - seconds) / 60;
-	int minutes = roundedTime % 60;
-	roundedTime = (roundedTime - minutes) / 60;
-	int hours = roundedTime;
-	
-	if (hours == 0) {
-		FormatEx(formattedTime, sizeof(formattedTime), "%02d:%02d.%02d", minutes, seconds, centiseconds);
-	}
-	else {
-		FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d:%02d.%02d", hours, minutes, seconds, centiseconds);
-	}
-	return formattedTime;
-}
-
 
 
 /*===============================  Client  ===============================*/
@@ -153,10 +131,10 @@ void JoinTeam(int client, int team) {
 		CS_RespawnPlayer(client);
 		if (gB_HasSavedPosition[client]) {
 			TeleportEntity(client, gF_SavedOrigin[client], gF_SavedAngles[client], view_as<float>( { 0.0, 0.0, -50.0 } ));
+			gB_HasSavedPosition[client] = false;
 			if (gB_Paused[client]) {
 				FreezePlayer(client);
 			}
-			gB_HasSavedPosition[client] = false;
 		}
 		else {
 			// The player will be teleported to the spawn point, so force stop their timer
@@ -267,6 +245,31 @@ void UpdatePlayerModel(int client) {
 	}
 	else if (GetClientTeam(client) == CS_TEAM_CT) {
 		SetEntityModel(client, gC_PlayerModelCT);
+	}
+}
+
+void GivePlayerPistol(int client, int pistol) {
+	if (!IsPlayerAlive(client)) {
+		return;
+	}
+	
+	int playerTeam = GetClientTeam(client);
+	// Switch teams to the side that buys that gun so that gun skins load
+	if (strcmp(gC_Pistols[pistol][2], "CT") == 0 && playerTeam != CS_TEAM_CT) {
+		CS_SwitchTeam(client, CS_TEAM_CT);
+	}
+	else if (strcmp(gC_Pistols[pistol][2], "T") == 0 && playerTeam != CS_TEAM_T) {
+		CS_SwitchTeam(client, CS_TEAM_T);
+	}
+	// Give the player this pistol
+	int currentPistol = GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY);
+	if (currentPistol != -1) {
+		RemovePlayerItem(client, currentPistol);
+	}
+	GivePlayerItem(client, gC_Pistols[pistol][0]);
+	// Go back to original team
+	if (1 <= playerTeam && playerTeam <= 3) {
+		CS_SwitchTeam(client, playerTeam);
 	}
 }
 

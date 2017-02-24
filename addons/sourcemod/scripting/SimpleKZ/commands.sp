@@ -82,7 +82,7 @@ public Action CommandTogglePause(int client, int args) {
 }
 
 public Action CommandStopTimer(int client, int args) {
-	SimpleKZ_ForceStopTimer(client);
+	TimerForceStop(client);
 	CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Generic");
 	return Plugin_Handled;
 }

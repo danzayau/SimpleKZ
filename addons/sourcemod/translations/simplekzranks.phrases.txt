@@ -51,9 +51,9 @@
 	}
 	"PB_Header_Self"
 	{
-		// Personal Best Times on kz_map [Style]
+		// Your Best Times on kz_map [Style]
 		"#format"	"{1:s},{2:t}"
-		"en"		"{grey}Personal Best Times on {lime}{1} {2}"
+		"en"		"{grey}Your Best Times on {lime}{1} {2}"
 	}
 	"PB_NoTimes"
 	{

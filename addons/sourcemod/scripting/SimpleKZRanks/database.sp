@@ -282,6 +282,8 @@ void DB_PrintPBs(int client, int target, const char[] map, MovementStyle style) 
 	SQL_EscapeString(gH_DB, map, mapEscaped, sizeof(mapEscaped));
 	FormatEx(query, sizeof(query), sql_maps_select_like, mapEscaped, mapEscaped);
 	SQL_TQuery(gH_DB, DB_Callback_PrintPBs1, query, data, DBPrio_Low);
+	
+	gB_HasSeenPBs[client] = true;
 }
 
 public void DB_Callback_PrintPBs1(Handle db, Handle results, const char[] error, DataPack data) {

@@ -7,19 +7,19 @@
 	}
 	"TimeStopped_Generic"
 	{
-		"en"		"{darkred}Your timer has been stopped."
+		"en"		"{darkred}Your timer has stopped."
 	}
 	"TimeStopped_Noclip"
 	{
-		"en"		"{darkred}Your timer has been stopped because you noclipped."	
+		"en"		"{darkred}Your timer has stopped because you noclipped."	
 	}
 	"TimeStopped_Goto"
 	{
-		"en"		"{darkred}Your timer has been stopped because you used !goto."
+		"en"		"{darkred}Your timer has stopped because you used !goto."
 	}
 	"TimeStopped_ChangeStyle"
 	{
-		"en"		"{darkred}Your timer has been stopped because you changed style."
+		"en"		"{darkred}Your timer has stopped because you switched style."
 	}
 	"Checkpoint_NotAlive"
 	{
@@ -384,7 +384,7 @@
 	// Movement Style Menu ////////////////////////////////////////////////////////////
 	"StyleMenu_Title"
 	{
-		"en"		"Movement Styles"
+		"en"		"Switch Movement Style"
 	}
 	"StyleMenu_Standard"
 	{

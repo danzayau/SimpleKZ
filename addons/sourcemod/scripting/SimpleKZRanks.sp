@@ -12,7 +12,7 @@ public Plugin myinfo =
 {
 	name = "Simple KZ Ranks", 
 	author = "DanZay", 
-	description = "Player ranks module for SimpleKZ.", 
+	description = "Player ranks module for SimpleKZ (local/non-global).", 
 	version = "0.9.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
@@ -51,15 +51,16 @@ Handle gH_PlayerTopSubMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 
 /* Other */
 bool gB_LateLoad;
+bool gB_HasSeenPBs[MAXPLAYERS + 1];
 
 // Styles translation phrases for chat messages (respective to MovementStyle enum)
-char gC_StyleChatPhrases[][] = 
+char gC_StyleChatPhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
 { "Style_Standard", 
 	"Style_Legacy"
 };
 
 // Styles translation phrases for menus (respective to MovementStyle enum)
-char gC_StyleMenuPhrases[][] = 
+char gC_StyleMenuPhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
 { "StyleMenu_Standard", 
 	"StyleMenu_Legacy"
 };
@@ -138,13 +139,17 @@ public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
 }
 
 public void SimpleKZ_OnTimerStarted(int client, bool firstStart) {
-	if (firstStart && gB_ConnectedToDB) {
+	if (!gB_HasSeenPBs[client] && gB_ConnectedToDB) {
 		DB_PrintPBs(client, client, gC_CurrentMap, SimpleKZ_GetMovementStyle(client));
 	}
 }
 
 public void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, float theoreticalTime, MovementStyle style) {
 	DB_ProcessEndTimer(client, gC_CurrentMap, time, teleportsUsed, theoreticalTime, style);
+}
+
+public void SimpleKZ_OnChangeMovementStyle(int client, MovementStyle style) {
+	gB_HasSeenPBs[client] = false;
 }
 
 public void SimpleKZ_OnBeatMapRecord(int client, const char[] map, RecordType recordType, float runTime, MovementStyle style) {

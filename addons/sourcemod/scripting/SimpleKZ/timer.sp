@@ -79,7 +79,6 @@ public void SimpleKZ_OnTimerForceStopped(int client) {
 	EmitSoundToClient(client, "buttons/button18.wav");
 	EmitSoundToClientSpectators(client, "buttons/button18.wav");
 	gB_TimerRunning[client] = false;
-	gB_Paused[client] = false;
 	CloseTeleportMenu(client);
 }
 
