@@ -17,6 +17,10 @@
 	{
 		"en"		"{darkred}Your timer has been stopped because you used !goto."
 	}
+	"TimeStopped_ChangeStyle"
+	{
+		"en"		"{darkred}Your timer has been stopped because you changed style."
+	}
 	"Checkpoint_NotAlive"
 	{
 		"en"		"{darkred}You must be alive to make a checkpoint."
@@ -185,18 +189,6 @@
 	{
 		"en"		"{grey}You have reset your timer and your splits."
 	}
-	"BeatMap"
-	{
-		// Bill finished in 01:23.45 (4 TP | 01.02.34).
-		"#format"	"{1:N},{2:s},{3:d},{4:s}"
-		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({yellow}{3} TP{grey} | {grey}{4}{grey})."
-	}
-	"BeatMapPro"
-	{
-		// Bill finished in 01:23.45 (PRO).
-		"#format"	"{1:N},{2:s}"
-		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey})."
-	}
 	"Client_Connect"
 	{
 		// Bill has connected from Australia.
@@ -214,6 +206,26 @@
 		// There was a problem opening file: cfg/sourcemod/SimpleKZ/mappool.txt.
 		"#format"	"{1:s}"
 		"en"		"{grey}There was a problem opening file: {default}{1}{grey}."
+	}
+	"Style_Standard"
+	{
+		"en"		"{grey}[{purple}Standard{grey}]"
+	}
+	"Style_Legacy"
+	{
+		"en"		"{grey}[{purple}Legacy{grey}]"
+	}
+	"BeatMap"
+	{
+		// Bill finished in 01:23.45 (4 TP | 01.02.34) [Style].
+		"#format"	"{1:N},{2:s},{3:d},{4:s},{5:t}"
+		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({yellow}{3} TP{grey} | {grey}{4}{grey}) {5}."
+	}
+	"BeatMapPro"
+	{
+		// Bill finished in 01:23.45 (PRO) [Style].
+		"#format"	"{1:N},{2:s},{3:t}"
+		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey}) {3}."
 	}
 	
 	
@@ -366,5 +378,20 @@
 	"OptionsMenu_Pistol"
 	{
 		"en"		"Pistol"
+	}
+	
+	
+	// Movement Style Menu ////////////////////////////////////////////////////////////
+	"StyleMenu_Title"
+	{
+		"en"		"Movement Styles"
+	}
+	"StyleMenu_Standard"
+	{
+		"en"		"Standard"
+	}
+	"StyleMenu_Legacy"
+	{
+		"en"		"Legacy"
 	}
 }

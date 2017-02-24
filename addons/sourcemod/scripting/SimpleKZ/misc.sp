@@ -46,7 +46,6 @@ void LoadKZConfig() {
 
 void OnMapStartVariableUpdates() {
 	UpdateCurrentMap();
-	gI_GlowSprite = PrecacheModel("materials/sprites/bluelaser1.vmt", true); // Measure
 }
 
 void UpdateCurrentMap() {
@@ -60,6 +59,21 @@ void UpdateCurrentMap() {
 	char mapPrefix[1][64];
 	ExplodeString(map, "_", mapPrefix, sizeof(mapPrefix), sizeof(mapPrefix[]));
 	gB_CurrentMapIsKZPro = StrEqual(mapPrefix[0], "kzpro", false);
+}
+
+void PrecacheModels() {
+	gI_GlowSprite = PrecacheModel("materials/sprites/bluelaser1.vmt", true); // Measure
+	PrecachePlayerModels();
+}
+
+void PrecachePlayerModels() {
+	GetConVarString(gCV_PlayerModelT, gC_PlayerModelT, sizeof(gC_PlayerModelT));
+	GetConVarString(gCV_PlayerModelCT, gC_PlayerModelCT, sizeof(gC_PlayerModelCT));
+	
+	PrecacheModel(gC_PlayerModelT, true);
+	AddFileToDownloadsTable(gC_PlayerModelT);
+	PrecacheModel(gC_PlayerModelCT, true);
+	AddFileToDownloadsTable(gC_PlayerModelCT);
 }
 
 char[] FormatTimeFloat(float timeToFormat) {
@@ -247,6 +261,15 @@ public Action ZeroVelocity(Handle timer, int client) {
 	return Plugin_Continue;
 }
 
+void UpdatePlayerModel(int client) {
+	if (GetClientTeam(client) == CS_TEAM_T) {
+		SetEntityModel(client, gC_PlayerModelT);
+	}
+	else if (GetClientTeam(client) == CS_TEAM_CT) {
+		SetEntityModel(client, gC_PlayerModelCT);
+	}
+}
+
 
 
 /*===============================  Options  ===============================*/
@@ -260,6 +283,7 @@ void SetDefaultPreferences(int client) {
 	gB_AutoRestart[client] = false;
 	gB_SlayOnEnd[client] = false;
 	gI_Pistol[client] = 0;
+	g_MovementStyle[client] = view_as<MovementStyle>(GetConVarInt(gCV_DefaultMovementStyle));
 }
 
 void ToggleTeleportMenu(int client) {

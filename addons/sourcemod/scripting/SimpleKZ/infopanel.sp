@@ -18,7 +18,7 @@ void UpdateInfoPanel(int client) {
 		else {
 			int spectatedPlayer = GetSpectatedPlayer(player.id);
 			if (IsValidClient(spectatedPlayer)) {
-				PrintHintText(player.id, "%s", GetInfoPanelWithKeys(g_MovementPlayer[spectatedPlayer]));
+				PrintHintText(player.id, "%s", GetInfoPanelSpectating(g_MovementPlayer[spectatedPlayer]));
 			}
 		}
 	}
@@ -41,6 +41,19 @@ char[] GetInfoPanelWithKeys(MovementPlayer player) {
 		"<font color='#4d4d4d'>%s %s\n%s %s\n%s", 
 		GetInfoPanelTimeString(player), 
 		GetInfoPanelPausedString(player), 
+		GetInfoPanelSpeedString(player), 
+		GetInfoPanelTakeoffString(player), 
+		GetInfoPanelKeysString(player));
+	return infoPanelText;
+}
+
+char[] GetInfoPanelSpectating(MovementPlayer player) {
+	char infoPanelText[368];
+	FormatEx(infoPanelText, sizeof(infoPanelText), 
+		"<font color='#4d4d4d'>%s %s %s\n%s %s\n%s", 
+		GetInfoPanelTimeString(player), 
+		GetInfoPanelPausedString(player), 
+		GetInfoPanelStyleString(player), 
 		GetInfoPanelSpeedString(player), 
 		GetInfoPanelTakeoffString(player), 
 		GetInfoPanelKeysString(player));
@@ -87,6 +100,14 @@ char[] GetInfoPanelPausedString(MovementPlayer player) {
 	return pausedString;
 }
 
+char[] GetInfoPanelStyleString(MovementPlayer player) {
+	char styleString[48];
+	FormatEx(styleString, sizeof(styleString), 
+		"[<font color='#B980EF'>%T</font>]", 
+		gC_StyleMenuPhrases[g_MovementStyle[player.id]], player.id);
+	return styleString;
+}
+
 char[] GetInfoPanelSpeedString(MovementPlayer player) {
 	char speedString[64];
 	if (!gB_Paused[player.id]) {
@@ -112,7 +133,7 @@ char[] GetInfoPanelSpeedString(MovementPlayer player) {
 char[] GetInfoPanelTakeoffString(MovementPlayer player) {
 	char takeoffString[64];
 	if (!gB_Paused[player.id] && !player.onGround && !player.onLadder && !player.noclipping) {
-		if (MT_GetHitPerf(player.id)) {
+		if (gB_HitPerf[player.id]) {
 			FormatEx(takeoffString, sizeof(takeoffString), 
 				"(<font color='#03cc00'>%.0f</font>)", 
 				RoundFloat(player.takeoffSpeed * 10) / 10.0);
@@ -144,42 +165,42 @@ char[] GetInfoPanelKeysString(MovementPlayer player) {
 }
 
 int GetInfoPanelWString(MovementPlayer player) {
-	if (GetClientButtons(player.id) & IN_FORWARD) {
+	if (player.buttons & IN_FORWARD) {
 		return 'W';
 	}
 	return '_';
 }
 
 int GetInfoPanelAString(MovementPlayer player) {
-	if (GetClientButtons(player.id) & IN_MOVELEFT) {
+	if (player.buttons & IN_MOVELEFT) {
 		return 'A';
 	}
 	return '_';
 }
 
 int GetInfoPanelSString(MovementPlayer player) {
-	if (GetClientButtons(player.id) & IN_BACK) {
+	if (player.buttons & IN_BACK) {
 		return 'S';
 	}
 	return '_';
 }
 
 int GetInfoPanelDString(MovementPlayer player) {
-	if (GetClientButtons(player.id) & IN_MOVERIGHT) {
+	if (player.buttons & IN_MOVERIGHT) {
 		return 'D';
 	}
 	return '_';
 }
 
 int GetInfoPanelCrouchString(MovementPlayer player) {
-	if (GetClientButtons(player.id) & IN_DUCK) {
+	if (player.buttons & IN_DUCK) {
 		return 'C';
 	}
 	return '_';
 }
 
 int GetInfoPanelJumpString(MovementPlayer player) {
-	if (GetClientButtons(player.id) & IN_JUMP) {
+	if (player.buttons & IN_JUMP) {
 		return 'J';
 	}
 	return '_';

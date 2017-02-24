@@ -23,12 +23,12 @@ void RegisterCommands() {
 
 public Action CommandMapRank(int client, int args) {
 	if (args < 1) {
-		DB_PrintPBs(client, client, gC_CurrentMap);
+		DB_PrintPBs(client, client, gC_CurrentMap, SimpleKZ_GetMovementStyle(client));
 	}
 	else if (args == 1) {
 		char specifiedMap[33];
 		GetCmdArg(1, specifiedMap, sizeof(specifiedMap));
-		DB_PrintPBs(client, client, specifiedMap);
+		DB_PrintPBs(client, client, specifiedMap, SimpleKZ_GetMovementStyle(client));
 	}
 	else {
 		char specifiedMap[33];
@@ -38,7 +38,7 @@ public Action CommandMapRank(int client, int args) {
 		
 		int target = FindTarget(client, specifiedPlayer, true, false);
 		if (target != -1) {
-			DB_PrintPBs(client, target, specifiedMap);
+			DB_PrintPBs(client, target, specifiedMap, SimpleKZ_GetMovementStyle(client));
 		}
 	}
 	return Plugin_Handled;
@@ -46,12 +46,12 @@ public Action CommandMapRank(int client, int args) {
 
 public Action CommandMapRecord(int client, int args) {
 	if (args < 1) {
-		DB_PrintMapRecords(client, gC_CurrentMap);
+		DB_PrintMapRecords(client, gC_CurrentMap, SimpleKZ_GetMovementStyle(client));
 	}
 	else {
 		char specifiedMap[33];
 		GetCmdArg(1, specifiedMap, sizeof(specifiedMap));
-		DB_PrintMapRecords(client, specifiedMap);
+		DB_PrintMapRecords(client, specifiedMap, SimpleKZ_GetMovementStyle(client));
 	}
 	return Plugin_Handled;
 }
@@ -63,13 +63,13 @@ public Action CommandMapTop(int client, int args) {
 	else {
 		GetCmdArg(1, gC_MapTopMap[client], sizeof(gC_MapTopMap[]));
 	}
-	DB_OpenMapTop(client, gC_MapTopMap[client]);
+	DB_OpenMapTop(client, gC_MapTopMap[client], SimpleKZ_GetMovementStyle(client));
 	return Plugin_Handled;
 }
 
 public Action CommandCompletion(int client, int args) {
 	if (args < 1) {
-		DB_GetCompletion(client, client, true);
+		DB_GetCompletion(client, client, SimpleKZ_GetMovementStyle(client), true);
 	}
 	else {
 		char specifiedPlayer[MAX_NAME_LENGTH];
@@ -77,13 +77,14 @@ public Action CommandCompletion(int client, int args) {
 		
 		int target = FindTarget(client, specifiedPlayer, true, false);
 		if (target != -1) {
-			DB_GetCompletion(client, target, true);
+			DB_GetCompletion(client, target, SimpleKZ_GetMovementStyle(client), true);
 		}
 	}
 	return Plugin_Handled;
 }
 
 public Action CommandPlayerTop(int client, int args) {
+	g_PlayerTopStyle[client] = SimpleKZ_GetMovementStyle(client);
 	DisplayPlayerTopMenu(client);
 	return Plugin_Handled;
 }

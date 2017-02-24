@@ -3,53 +3,57 @@
 	// Chat Messages ////////////////////////////////////////////////////////////
 	"BeatMapRecord"
 	{
-		"#format"	"{1:N}"
-		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD{grey}!"
+		// Bill beat the MAP RECORD [Style]!
+		"#format"	"{1:N},{2:t}"
+		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD {2}{grey}!"
 	}
 	"BeatProRecord"
 	{
+		// Bill beat the PRO RECORD [Style]!
 		"#format"	"{1:N}"
 		"en"		"{lime}{1}{grey} beat the {blue}PRO RECORD{grey}!"
 	}
 	"BeatMapAndProRecord"
 	{
-		"#format"	"{1:N}"
-		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD{grey} and the {blue}PRO RECORD{grey}!"
+		// Bill beat the MAP RECORD and the PRO RECORD [Style]!
+		"#format"	"{1:N},{2:t}"
+		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD{grey} and the {blue}PRO RECORD {2}{grey}!"
 	}
 	"BeatMapFirstTime"
 	{
-		// Bill just beat the map for the first time (#5/12)!
-		"#format"	"{1:N},{2:d},{3:d}"
-		"en"		"{lime}{1}{grey} just beat the map for the first time (#{default}{2}{grey}/{3})!"
+		// Bill just beat the map for the first time (#5/12) [Style]!
+		"#format"	"{1:N},{2:d},{3:d},{4:t}"
+		"en"		"{lime}{1}{grey} just beat the map for the first time (#{default}{2}{grey}/{3}) {4}{grey}!"
 	}
 	"BeatMapFirstTime_Pro"
 	{
-		// Bill just PRO'd the map for the first time (#5/12)!
-		"#format"	"{1:N},{2:d},{3:d}"
-		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d the map for the first time (#{default}{2}{grey}/{3})!"
+		// Bill just PRO'd the map for the first time (#5/12) [Style]!
+		"#format"	"{1:N},{2:d},{3:d},{4:t}"
+		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d the map for the first time (#{default}{2}{grey}/{3}) {4}{grey}!"
 	}
 	"ImprovedTime"
 	{
-		// Bill just beat their MAP time by -00:12.34 (#5/12).
-		"#format"	"{1:N},{2:s},{3:d},{4:d}"
-		"en"		"{lime}{1}{grey} just beat their {yellow}MAP{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4})!"
+		// Bill just beat their MAP time by -00:12.34 (#5/12) [Style].
+		"#format"	"{1:N},{2:s},{3:d},{4:d},{5:t}"
+		"en"		"{lime}{1}{grey} just beat their {yellow}MAP{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {5}{grey}!"
 	}
 	"ImprovedTime_Pro"
 	{
-		// Bill just beat their PRO time by -00:12.34 (#5/12)!
-		"#format"	"{1:N},{2:s},{3:d},{4:d}"
-		"en"		"{lime}{1}{grey} just beat their {blue}PRO{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4})!"
+		// Bill just beat their PRO time by -00:12.34 (#5/12) [Style]!
+		"#format"	"{1:N},{2:s},{3:d},{4:d},{5:t}"
+		"en"		"{lime}{1}{grey} just beat their {blue}PRO{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {5}{grey}!"
 	}
 	"PB_Header"
 	{	
-		// Best times by Bill on kz_map
-		"#format"	"{1:s},{2:N}"
-		"en"		"{grey}Best Times by {lime}{2}{grey} on {lime}{1}"
+		// Best times by Bill on kz_map [Style]
+		"#format"	"{1:s},{2:N},{3:t}"
+		"en"		"{grey}Best Times by {lime}{2}{grey} on {lime}{1} {3}"
 	}
 	"PB_Header_Self"
 	{
-		"#format"	"{1:s}"
-		"en"		"{grey}Personal Best Times on {lime}{1}"
+		// Personal Best Times on kz_map [Style]
+		"#format"	"{1:s},{2:t}"
+		"en"		"{grey}Personal Best Times on {lime}{1} {2}"
 	}
 	"PB_NoTimes"
 	{
@@ -83,8 +87,9 @@
 	}
 	"WR_Header"
 	{
-		"#format"	"{1:s}"
-		"en"		"{grey}Server Records on {lime}{1}"
+		// Server Records on kz_map [Style]
+		"#format"	"{1:s},{2:t}"
+		"en"		"{grey}Server Records on {lime}{1} {2}"
 	}
 	"WR_NoTimes"
 	{
@@ -140,9 +145,9 @@
 	// Map Top Menu ////////////////////////////////////////////////////////////
 	"MapTopMenu_Title"
 	{
-		// Map Top (kz_map)
-		"#format"	"{1:s}"
-		"en"		"Map Top ({1})"
+		// Map Top (kz_map) [Style]
+		"#format"	"{1:s},{2:t}"
+		"en"		"Map Top ({1}) [{2}]"
 	}
 	"MapTopMenu_Top20"
 	{
@@ -150,9 +155,9 @@
 	}
 	"MapTopMenu_Top20Title"
 	{
-		// Top 20 Times (kz_map)
-		"#format"	"{1:s}"
-		"en"		"Top 20 Times ({1})"	
+		// Top 20 Times (kz_map) [Style]
+		"#format"	"{1:s},{2:t}"
+		"en"		"Top 20 Times ({1}) [{2}]"	
 	}
 	"MapTopMenu_Top20Pro"
 	{
@@ -160,9 +165,9 @@
 	}
 	"MapTopMenu_Top20ProTitle"
 	{
-		// Top 20 PRO Times (kz_map)
-		"#format"	"{1:s}"
-		"en"		"Top 20 PRO Times ({1})"	
+		// Top 20 PRO Times (kz_map) [Style]
+		"#format"	"{1:s},{2:t}"
+		"en"		"Top 20 PRO Times ({1}) [{2}]"	
 	}
 	"MapTopMenu_Top20Theoretical"
 	{
@@ -170,9 +175,9 @@
 	}
 	"MapTopMenu_Top20TheoreticalTitle"
 	{
-		// Top 20 Theoretical Times (kz_map)
-		"#format"	"{1:s}"
-		"en"		"Top 20 PRO Times ({1})"	
+		// Top 20 Theoretical Times (kz_map) [Style]
+		"#format"	"{1:s},{2:t}"
+		"en"		"Top 20 PRO Times ({1}) [{2}]"	
 	}
 
 	
@@ -187,7 +192,9 @@
 	}
 	"PlayerTopMenu_Title"
 	{
-		"en"		"Top Players"
+		// Top Players [Style]
+		"#format"	"{1:t}"
+		"en"		"Top Players {1}"
 	}
 	"PlayerTopMenu_Top20"
 	{
@@ -199,24 +206,28 @@
 	}
 	"PlayerTopMenu_ListTitle"
 	{
-		"en"		"Top 20 MAP Record Holders"
+		// Top 20 MAP RECORD Holders [Style]
+		"#format"	"{1:t}"
+		"en"		"Top 20 MAP RECORD Holders [{1}]"
 	}
 	"PlayerTopMenu_ListTitlePro"
 	{
-		"en"		"Top 20 PRO Record Holders"
+		// Top 20 PRO RECORD Holders [Style]
+		"#format"	"{1:t}"
+		"en"		"Top 20 PRO Record Holders [{1}]"
 	}
 	
 	// Percentage Completion ////////////////////////////////////////////////////////////
 	"MapCompletion"
 	{
 		// Bill has beaten 12/234 and PRO'd 6/234 maps.
-		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:d}"
-		"en"		"{lime}{1}{grey} has beaten {default}{2}{grey}/{default}{3}{grey} and {blue}PRO{grey}'d {default}{4}{grey}/{default{5}{default} {grey}maps."
+		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:d},{6:t}"
+		"en"		"{lime}{1}{grey} has beaten {default}{2}{grey}/{default}{3}{grey} and {blue}PRO{grey}'d {default}{4}{grey}/{default{5}{default} {grey}maps {6}{grey}."
 	}
 	"MapCompletion_Self"
 	{
 		// You have beaten 12/234 maps and PRO'd 6/234 maps.
-		"#format"	"{1:d},{2:d},{3:d},{4:d}"
-		"en"		"You have beaten {default}{1}{grey}/{default}{2}{grey} and {blue}PRO{grey}'d {default}{3}{grey}/{default}{4}{default} {grey}maps."
+		"#format"	"{1:d},{2:d},{3:d},{4:d},{5:t}"
+		"en"		"You have beaten {default}{1}{grey}/{default}{2}{grey} and {blue}PRO{grey}'d {default}{3}{grey}/{default}{4}{default} {grey}maps {5}{grey}."
 	}
 }

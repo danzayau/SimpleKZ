@@ -13,7 +13,7 @@ public Plugin myinfo =
 	name = "Simple KZ Ranks", 
 	author = "DanZay", 
 	description = "Player ranks module for SimpleKZ.", 
-	version = "0.8.2", 
+	version = "0.9.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -33,22 +33,36 @@ public Plugin myinfo =
 
 /*===============================  Global Variables  ===============================*/
 
-bool gB_LateLoad;
-
-char gC_CurrentMap[64];
-char gC_SteamID[MAXPLAYERS + 1][24];
-
-// Database
+/* Database */
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
 DatabaseType g_DBType = DatabaseType_None;
+char gC_CurrentMap[64];
+char gC_SteamID[MAXPLAYERS + 1][24];
 
-// Menus
+/* Menus */
 char gC_MapTopMap[MAXPLAYERS + 1][64];
+MovementStyle g_MapTopStyle[MAXPLAYERS + 1];
 Handle gH_MapTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 Handle gH_MapTopSubMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 Handle gH_PlayerTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+MovementStyle g_PlayerTopStyle[MAXPLAYERS + 1];
 Handle gH_PlayerTopSubMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+
+/* Other */
+bool gB_LateLoad;
+
+// Styles translation phrases for chat messages (respective to MovementStyle enum)
+char gC_StyleChatPhrases[][] = 
+{ "Style_Standard", 
+	"Style_Legacy"
+};
+
+// Styles translation phrases for menus (respective to MovementStyle enum)
+char gC_StyleMenuPhrases[][] = 
+{ "StyleMenu_Standard", 
+	"StyleMenu_Legacy"
+};
 
 
 
@@ -125,55 +139,55 @@ public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
 
 public void SimpleKZ_OnTimerStarted(int client, bool firstStart) {
 	if (firstStart && gB_ConnectedToDB) {
-		DB_PrintPBs(client, client, gC_CurrentMap);
+		DB_PrintPBs(client, client, gC_CurrentMap, SimpleKZ_GetMovementStyle(client));
 	}
 }
 
-public void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, float theoreticalTime) {
-	DB_ProcessEndTimer(client, gC_CurrentMap, time, teleportsUsed, theoreticalTime);
+public void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, float theoreticalTime, MovementStyle style) {
+	DB_ProcessEndTimer(client, gC_CurrentMap, time, teleportsUsed, theoreticalTime, style);
 }
 
-public void SimpleKZ_OnBeatMapRecord(int client, const char[] map, RecordType recordType, float runTime) {
+public void SimpleKZ_OnBeatMapRecord(int client, const char[] map, RecordType recordType, float runTime, MovementStyle style) {
 	switch (recordType) {
 		case RecordType_Map: {
-			CPrintToChatAll(" %t", "BeatMapRecord", client);
+			CPrintToChatAll(" %t", "BeatMapRecord", client, gC_StyleChatPhrases[style]);
 		}
 		case RecordType_Pro: {
-			CPrintToChatAll(" %t", "BeatProRecord", client);
+			CPrintToChatAll(" %t", "BeatProRecord", client, gC_StyleChatPhrases[style]);
 		}
 		case RecordType_MapAndPro: {
-			CPrintToChatAll(" %t", "BeatMapAndProRecord", client);
+			CPrintToChatAll(" %t", "BeatMapAndProRecord", client, gC_StyleChatPhrases[style]);
 		}
 	}
 	EmitSoundToAll(REL_SOUNDPATH_BEAT_RECORD);
 }
 
-public void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, RunType runType, float runTime, int rank, int maxRank) {
+public void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, RunType runType, float runTime, int rank, int maxRank, MovementStyle style) {
 	if (rank == 1) {
 		return;
 	}
 	switch (runType) {
 		case RunType_Normal: {
-			CPrintToChat(client, " %t", "BeatMapFirstTime", client, rank, maxRank);
+			CPrintToChat(client, " %t", "BeatMapFirstTime", client, rank, maxRank, gC_StyleChatPhrases[style]);
 		}
 		case RunType_Pro: {
-			CPrintToChatAll(" %t", "BeatMapFirstTime_Pro", client, rank, maxRank);
+			CPrintToChat(client, " %t", "BeatMapFirstTime_Pro", client, rank, maxRank, gC_StyleChatPhrases[style]);
 			EmitSoundToClient(client, REL_SOUNDPATH_BEAT_MAP);
 			EmitSoundToClientSpectators(client, REL_SOUNDPATH_BEAT_MAP);
 		}
 	}
 }
 
-public void SimpleKZ_OnImproveTime(int client, const char[] map, RunType runType, float runTime, float improvement, int rank, int maxRank) {
+public void SimpleKZ_OnImproveTime(int client, const char[] map, RunType runType, float runTime, float improvement, int rank, int maxRank, MovementStyle style) {
 	if (rank == 1) {
 		return;
 	}
 	switch (runType) {
 		case RunType_Normal: {
-			CPrintToChat(client, " %t", "ImprovedTime", client, FormatTimeFloat(improvement), rank, maxRank);
+			CPrintToChat(client, " %t", "ImprovedTime", client, FormatTimeFloat(improvement), rank, maxRank, gC_StyleChatPhrases[style]);
 		}
 		case RunType_Pro: {
-			CPrintToChatAll(" %t", "ImprovedTime_Pro", client, FormatTimeFloat(improvement), rank, maxRank);
+			CPrintToChat(client, " %t", "ImprovedTime_Pro", client, FormatTimeFloat(improvement), rank, maxRank, gC_StyleChatPhrases[style]);
 		}
 	}
 }
@@ -190,7 +204,7 @@ public void OnClientAuthorized(int client, const char[] auth) {
 
 public void OnClientPutInServer(int client) {
 	if (!IsFakeClient(client)) {
-		DB_GetCompletion(client, client, false);
+		DB_GetCompletion(client, client, SimpleKZ_GetMovementStyle(client), false);
 	}
 }
 

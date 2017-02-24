@@ -1,7 +1,7 @@
-/* 	Simple KZ Ranks API
+/* 	Simple KZ Ranks Include File
 	Author: DanZay
 	
-	Plugin Version: 0.8.2
+	Plugin Version: 0.9.0
 	Plugin Website: https://github.com/danzayau/SimpleKZ	
 */
 
@@ -32,9 +32,10 @@ enum RecordType {
  * @param map				The name of the map (without prefixes e.g. workshop/).
  * @param recordType		Type of record broken.
  * @param runTime			The run time of the record.
+ * @param style				The movement style of the record.
  * @noreturn
  */
-forward void SimpleKZ_OnBeatMapRecord(int client, const char[] map, RecordType recordType, float runTime);
+forward void SimpleKZ_OnBeatMapRecord(int client, const char[] map, RecordType recordType, float runTime, MovementStyle style);
 
 /**
  * Called when the player beats the map for the first time.
@@ -42,12 +43,13 @@ forward void SimpleKZ_OnBeatMapRecord(int client, const char[] map, RecordType r
  * @param client			Client entity index.
  * @param map				The name of the map (without prefixes e.g. workshop/).
  * @param runType			The type of run.
- * @param runTime			The run time of the record.
+ * @param runTime			The run time.
  * @param rank				The rank of the player's time.
  * @param maxRank			The number of players with times on the map.
+ * @param style				The movement style of their new PB.
  * @noreturn
  */
-forward void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, RunType runType, float runTime, int rank, int maxRank);
+forward void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, RunType runType, float runTime, int rank, int maxRank, MovementStyle style);
 
 /**
  * Called when the player beats their personal best time (not called when beating a map for the first time).
@@ -59,6 +61,7 @@ forward void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, RunType r
  * @param improvement		The improvement over the old time.
  * @param rank				The rank of the player's time.
  * @param maxRank			The number of players with times on the map.
+ * @param style				The movement style of their new PB.
  * @noreturn
  */
-forward void SimpleKZ_OnImproveTime(int client, const char[] map, RunType runType, float runTime, float improvement, int rank, int maxRank); 
+forward void SimpleKZ_OnImproveTime(int client, const char[] map, RunType runType, float runTime, float improvement, int rank, int maxRank, MovementStyle style); 

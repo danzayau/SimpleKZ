@@ -9,8 +9,8 @@ void CreateMenus() {
 	CreateMeasureMenuAll();
 	CreatePistolMenuAll();
 	CreateOptionsMenuAll();
+	CreateMovementStyleMenuAll();
 }
-
 
 
 /*===============================  Teleport Menu  ===============================*/
@@ -91,7 +91,7 @@ void TeleportAddItemCheckpoint(int client) {
 void TeleportAddItemTeleport(int client) {
 	char text[16];
 	FormatEx(text, sizeof(text), "%T", "TPMenu_Teleport", client);
-	if (gI_CheckpointsSet[client] > 0) {
+	if (gI_CheckpointCount[client] > 0) {
 		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
 	else {
@@ -545,4 +545,42 @@ void OptionsAddItemPistol(int client) {
 	char text[32];
 	FormatEx(text, sizeof(text), "%T - %s", "OptionsMenu_Pistol", client, gC_Pistols[gI_Pistol[client]][1]);
 	AddMenuItem(gH_OptionsMenu[client], "", text);
+}
+
+
+
+/*===============================  Movement Style Menu  ===============================*/
+
+void CreateMovementStyleMenuAll() {
+	for (int client = 1; client <= MaxClients; client++) {
+		CreateMovementStyleMenu(client);
+	}
+}
+
+void CreateMovementStyleMenu(int client) {
+	gH_MovementStyleMenu[client] = CreateMenu(MenuHandler_MovementStyle);
+}
+
+void DisplayMovementStyleMenu(int client) {
+	SetMenuTitle(gH_MovementStyleMenu[client], "%T", "StyleMenu_Title", client);
+	AddItemsMovementStyleMenu(client);
+	DisplayMenu(gH_MovementStyleMenu[client], client, MENU_TIME_FOREVER);
+}
+
+void AddItemsMovementStyleMenu(int client) {
+	char text[32];
+	RemoveAllMenuItems(gH_MovementStyleMenu[client]);
+	FormatEx(text, sizeof(text), "%T", "StyleMenu_Standard", client);
+	AddMenuItem(gH_MovementStyleMenu[client], "", text);
+	FormatEx(text, sizeof(text), "%T", "StyleMenu_Legacy", client);
+	AddMenuItem(gH_MovementStyleMenu[client], "", text);
+}
+
+public int MenuHandler_MovementStyle(Menu menu, MenuAction action, int param1, int param2) {
+	if (action == MenuAction_Select) {
+		switch (param2) {
+			case 0:SetMovementStyle(param1, MovementStyle_Standard);
+			case 1:SetMovementStyle(param1, MovementStyle_Legacy);
+		}
+	}
 } 

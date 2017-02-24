@@ -7,7 +7,6 @@
 
 #include <colorvariables>
 #include <movement>
-#include <movementtweaker>
 #include <simplekz>
 
 #pragma newdecls required
@@ -18,7 +17,7 @@ public Plugin myinfo =
 	name = "Simple KZ Core", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer and optional database.", 
-	version = "0.8.2", 
+	version = "0.9.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -31,21 +30,33 @@ public Plugin myinfo =
 #define MAX_DISTANCE_FROM_BUTTON_ORIGIN 40.0
 #define BHOP_BLOCK_DETECTION_PERIOD 0.2
 
+#define NORMAL_JUMP_VERTICAL_VELOCITY 292.54 // Found by testing until binding resulted in similar jump height to normal
+#define MAX_NORMAL_SPEED 250.0 // Desired speed when just holding down W and running
+#define NO_WEAPON_SPEED 260.0 // Max speed with no weapon and just holding down W and running
+#define MAX_PRESTRAFE_MODIFIER 1.104 // Calculated 276/250
+#define PRESTRAFE_INCREASE_RATE 0.0014
+#define PRESTRAFE_DECREASE_RATE 0.0021
+#define DUCK_SPEED_ONLANDING_MINIMUM 7.0
+
+#define SIMPLEKZ_PERF_TICKS 2
+#define KZTIMER_PERF_TICKS 1
+#define KZTIMER_PERF_SPEEDCAP 380.0
+
 
 
 /*===============================  Global Variables  ===============================*/
 
-// Timer
+/* Timer */
 bool gB_TimerRunning[MAXPLAYERS + 1] =  { false, ... };
 float gF_CurrentTime[MAXPLAYERS + 1];
 bool gB_Paused[MAXPLAYERS + 1] =  { false, ... };
 float gF_LastResumeTime[MAXPLAYERS + 1];
 bool gB_HasResumedInThisRun[MAXPLAYERS + 1] =  { false, ... };
 
-// Saved Positions and Angles
+/* Saved Positions and Angles */
 float gF_StartOrigin[MAXPLAYERS + 1][3];
 float gF_StartAngles[MAXPLAYERS + 1][3];
-int gI_CheckpointsSet[MAXPLAYERS + 1];
+int gI_CheckpointCount[MAXPLAYERS + 1];
 int gI_TeleportsUsed[MAXPLAYERS + 1];
 float gF_CheckpointOrigin[MAXPLAYERS + 1][3];
 float gF_CheckpointAngles[MAXPLAYERS + 1][3];
@@ -53,13 +64,13 @@ bool gB_LastTeleportOnGround[MAXPLAYERS + 1];
 float gF_UndoOrigin[MAXPLAYERS + 1][3];
 float gF_UndoAngle[MAXPLAYERS + 1][3];
 
-// Button Press Checking
+/* Button Press Checking */
 bool gB_HasStartedThisMap[MAXPLAYERS + 1] =  { false, ... };
 bool gB_HasEndedThisMap[MAXPLAYERS + 1] =  { false, ... };
 float gF_StartButtonOrigin[MAXPLAYERS + 1][3];
 float gF_EndButtonOrigin[MAXPLAYERS + 1][3];
 
-// Wasted Time
+/* Wasted Time */
 float gF_LastCheckpointTime[MAXPLAYERS + 1];
 float gF_LastGoCheckTime[MAXPLAYERS + 1];
 float gF_LastGoCheckWastedTime[MAXPLAYERS + 1];
@@ -69,19 +80,19 @@ float gF_LastTeleportToStartTime[MAXPLAYERS + 1];
 float gF_LastTeleportToStartWastedTime[MAXPLAYERS + 1];
 float gF_WastedTime[MAXPLAYERS + 1];
 
-// Position Restoration
+/* Position Restoration */
 bool gB_HasSavedPosition[MAXPLAYERS + 1] =  { false, ... };
 float gF_SavedOrigin[MAXPLAYERS + 1][3];
 float gF_SavedAngles[MAXPLAYERS + 1][3];
 
-// Database
+/* Database */
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
 DatabaseType g_DBType = DatabaseType_None;
 char gC_SteamID[MAXPLAYERS + 1][24];
 char gC_Country[MAXPLAYERS + 1][45];
 
-// Preferences
+/* Preferences */
 bool gB_ShowingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
 bool gB_ShowingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
 bool gB_ShowingKeys[MAXPLAYERS + 1] =  { false, ... };
@@ -91,14 +102,15 @@ bool gB_AutoRestart[MAXPLAYERS + 1] =  { false, ... };
 bool gB_SlayOnEnd[MAXPLAYERS + 1] =  { false, ... };
 int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
 
-// Menus
+/* Menus */
 Handle gH_PistolMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 Handle gH_TeleportMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1] =  { false, ... };
 Handle gH_OptionsMenu[MAXPLAYERS + 1];
 bool gB_CameFromOptionsMenu[MAXPLAYERS + 1];
+Handle gH_MovementStyleMenu[MAXPLAYERS + 1];
 
-// Measure
+/* Measure */
 Handle gH_MeasureMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 int gI_GlowSprite;
 bool gB_MeasurePosSet[MAXPLAYERS + 1][2];
@@ -106,18 +118,47 @@ float gF_MeasurePos[MAXPLAYERS + 1][2][3];
 Handle gH_P2PRed[MAXPLAYERS + 1];
 Handle gH_P2PGreen[MAXPLAYERS + 1];
 
-// Splits
+/* Splits */
 int gI_Splits[MAXPLAYERS + 1];
 float gF_SplitRunTime[MAXPLAYERS + 1];
 float gF_SplitGameTime[MAXPLAYERS + 1];
 
-// Other
+/* Movement Tweaker */
+MovementStyle g_MovementStyle[MAXPLAYERS + 1] =  { MovementStyle_Standard };
+float gF_PrestrafeVelocityModifier[MAXPLAYERS + 1];
+bool gB_HitPerf[MAXPLAYERS + 1];
+char gC_PlayerModelT[256];
+char gC_PlayerModelCT[256];
+
+/* Other */
 bool gB_LateLoad;
 MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
 bool gB_CurrentMapIsKZPro;
 int g_OldButtons[MAXPLAYERS + 1];
 ConVar gCV_FullAlltalk;
 int gI_JustTouchedTrigMulti[MAXPLAYERS + 1];
+
+// Weapon entity names
+char gC_WeaponNames[][] = 
+{ "weapon_ak47", "weapon_aug", "weapon_awp", "weapon_bizon", "weapon_deagle", 
+	"weapon_decoy", "weapon_elite", "weapon_famas", "weapon_fiveseven", "weapon_flashbang", 
+	"weapon_g3sg1", "weapon_galilar", "weapon_glock", "weapon_hegrenade", "weapon_hkp2000", 
+	"weapon_incgrenade", "weapon_knife", "weapon_m249", "weapon_m4a1", "weapon_mac10", 
+	"weapon_mag7", "weapon_molotov", "weapon_mp7", "weapon_mp9", "weapon_negev", 
+	"weapon_nova", "weapon_p250", "weapon_p90", "weapon_sawedoff", "weapon_scar20", 
+	"weapon_sg556", "weapon_smokegrenade", "weapon_ssg08", "weapon_taser", "weapon_tec9", 
+	"weapon_ump45", "weapon_xm1014" };
+
+// Max movement speed of weapons (respective to gC_WeaponNames array).
+int gI_WeaponRunSpeeds[] = 
+{ 215, 220, 200, 240, 230, 
+	245, 240, 220, 240, 245, 
+	215, 215, 240, 245, 240, 
+	245, 250, 195, 225, 240, 
+	225, 245, 220, 240, 195, 
+	220, 240, 230, 210, 215, 
+	210, 245, 230, 240, 240, 
+	230, 215 };
 
 // Pistol Entity Names (entity class name, alias, team that buys it)
 char gC_Pistols[][][] = 
@@ -137,6 +178,18 @@ char gC_RadioCommands[][] =  { "coverme", "takepoint", "holdpos", "regroup", "fo
 	"fallback", "sticktog", "getinpos", "stormfront", "report", "roger", "enemyspot", "needbackup", "sectorclear", 
 	"inposition", "reportingin", "getout", "negative", "enemydown", "compliment", "thanks", "cheer" };
 
+// Styles translation phrases for chat messages (respective to MovementStyle enum)
+char gC_StyleChatPhrases[][] = 
+{ "Style_Standard", 
+	"Style_Legacy"
+};
+
+// Styles translation phrases for menus (respective to MovementStyle enum)
+char gC_StyleMenuPhrases[][] = 
+{ "StyleMenu_Standard", 
+	"StyleMenu_Legacy"
+};
+
 
 
 /*===============================  Includes  ===============================*/
@@ -151,6 +204,7 @@ char gC_RadioCommands[][] =  { "coverme", "takepoint", "holdpos", "regroup", "fo
 #include "SimpleKZ/infopanel.sp"
 #include "SimpleKZ/menus.sp"
 #include "SimpleKZ/misc.sp"
+#include "SimpleKZ/movementtweaker.sp"
 #include "SimpleKZ/timer.sp"
 
 
@@ -225,13 +279,7 @@ void OnLateLoad() {
 
 
 
-/*===============================  Map and Client Events  ===============================*/
-
-public void OnMapStart() {
-	LoadKZConfig();
-	DB_SetupDatabase();
-	OnMapStartVariableUpdates();
-}
+/*===============================  Client Events  ===============================*/
 
 public void OnClientAuthorized(int client, const char[] auth) {
 	// Prepare for client arrival
@@ -272,6 +320,7 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 		SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true); // No Block
 		SetDrawViewModel(client, gB_ShowingWeapon[client]); // Hide weapon
 		GivePlayerPistol(client, gI_Pistol[client]); // Give player their preferred pistol
+		UpdatePlayerModel(GetClientOfUserId(GetEventInt(event, "userid"))); // Change player model to one that doesn't have landing animation
 		CloseTeleportMenu(client);
 	}
 }
@@ -280,35 +329,14 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	TimerTick(client);
 	UpdateTeleportMenu(client);
 	UpdateInfoPanel(client);
-	CheckForStartButtonPress(client);
-}
-
-
-
-/*===============================  Miscellaneous Events  ===============================*/
-
-// Stop round from ever ending
-public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
-	return Plugin_Handled;
-}
-
-// Hide other players
-public Action OnSetTransmit(int entity, int client) {
-	if (!gB_ShowingPlayers[client] && entity != client && entity != GetSpectatedPlayer(client)) {
-		return Plugin_Handled;
-	}
-	return Plugin_Continue;
-}
-
-// Block join team messages
-public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) {
-	SetEventBroadcast(event, true);
-	return Plugin_Continue;
+	CheckForTimerButtonPress(client);
+	
+	TweakGeneral(g_MovementPlayer[client]);
 }
 
 // Adjust player messages, and automatically lower case commands
 public Action OnSay(int client, const char[] command, int argc) {
-	if (!GetConVarBool(gCV_Custom_Chat)) {
+	if (!GetConVarBool(gCV_CustomChat)) {
 		return Plugin_Continue;
 	}
 	
@@ -344,6 +372,52 @@ public Action OnSay(int client, const char[] command, int argc) {
 	return Plugin_Handled;
 }
 
+// Force stop timer when they enter noclip
+public void OnStartNoclipping(int client) {
+	if (!IsFakeClient(client) && gB_TimerRunning[client]) {
+		CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Noclip");
+		TimerForceStop(client);
+	}
+}
+
+// Force stop timer when a player dies
+public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	if (!IsFakeClient(client)) {
+		TimerForceStop(client);
+	}
+}
+
+
+
+/*===============================  Miscellaneous Events  ===============================*/
+
+public void OnMapStart() {
+	LoadKZConfig();
+	DB_SetupDatabase();
+	PrecacheModels();
+	OnMapStartVariableUpdates();
+}
+
+// Stop round from ever ending
+public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
+	return Plugin_Handled;
+}
+
+// Hide other players
+public Action OnSetTransmit(int entity, int client) {
+	if (!gB_ShowingPlayers[client] && entity != client && entity != GetSpectatedPlayer(client)) {
+		return Plugin_Handled;
+	}
+	return Plugin_Continue;
+}
+
+// Block join team messages
+public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) {
+	SetEventBroadcast(event, true);
+	return Plugin_Continue;
+}
+
 // Prevent sounds
 public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed) {
 	char className[20];
@@ -353,22 +427,6 @@ public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
-}
-
-// Prevent noclipping during runs
-public void OnStartNoclipping(int client) {
-	if (!IsFakeClient(client) && gB_TimerRunning[client]) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Noclip");
-		SimpleKZ_ForceStopTimer(client);
-	}
-}
-
-// Force stop timer when a player dies
-public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (!IsFakeClient(client)) {
-		SimpleKZ_ForceStopTimer(client);
-	}
 }
 
 // Force full alltalk on round start

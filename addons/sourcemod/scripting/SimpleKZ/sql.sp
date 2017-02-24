@@ -50,18 +50,22 @@ char sql_preferences_create[] =
 ..."CONSTRAINT PK_Preferences PRIMARY KEY (SteamID), "
 ..."CONSTRAINT FK_Preferences_SteamID FOREIGN KEY (SteamID) REFERENCES Players (SteamID) ON UPDATE CASCADE ON DELETE CASCADE);";
 
+char sql_preferences_alter1[] = 
+"ALTER TABLE Preferences "
+..."ADD MovementStyle TINYINT UNSIGNED NOT NULL DEFAULT '0';";
+
 char sql_preferences_insert[] = 
 "INSERT "
 ..."INTO Preferences "
-..."(SteamID) "
-..."VALUES('%s');";
+..."(SteamID, MovementStyle) "
+..."VALUES('%s', %d);";
 
 char sql_preferences_update[] = 
 "UPDATE Preferences "
-..."SET ShowingTeleportMenu=%d, ShowingInfoPanel=%d, ShowingKeys=%d, ShowingPlayers=%d, ShowingWeapon=%d, AutoRestart=%d, SlayOnEnd=%d, Pistol=%d "
+..."SET ShowingTeleportMenu=%d, ShowingInfoPanel=%d, ShowingKeys=%d, ShowingPlayers=%d, ShowingWeapon=%d, AutoRestart=%d, SlayOnEnd=%d, Pistol=%d, MovementStyle=%d "
 ..."WHERE SteamID='%s';";
 
 char sql_preferences_get[] = 
-"SELECT ShowingTeleportMenu, ShowingInfoPanel, ShowingKeys, ShowingPlayers, ShowingWeapon, AutoRestart, SlayOnEnd, Pistol "
+"SELECT ShowingTeleportMenu, ShowingInfoPanel, ShowingKeys, ShowingPlayers, ShowingWeapon, AutoRestart, SlayOnEnd, Pistol, MovementStyle "
 ..."FROM Preferences "
 ..."WHERE SteamID='%s';"; 

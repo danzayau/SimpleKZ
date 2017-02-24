@@ -27,6 +27,7 @@ void RegisterCommands() {
 	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
 	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
 	RegConsoleCmd("sm_split", CommandSplit, "[KZ] Make a time split for timing purposes.");
+	RegConsoleCmd("sm_style", CommandStyle, "[KZ] Open the movement style menu.");
 }
 
 
@@ -197,5 +198,10 @@ public Action CommandDisableNoclip(int client, int args) {
 
 public Action CommandSplit(int client, int args) {
 	SplitsMake(client);
+	return Plugin_Handled;
+}
+
+public Action CommandStyle(int client, int args) {
+	DisplayMovementStyleMenu(client);
 	return Plugin_Handled;
 } 

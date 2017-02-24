@@ -25,7 +25,7 @@ void CreateMapTopMenu(int client) {
 }
 
 void DisplayMapTopMenu(int client) {
-	SetMenuTitle(gH_MapTopMenu[client], "%T", "MapTopMenu_Title", client, gC_MapTopMap[client]);
+	SetMenuTitle(gH_MapTopMenu[client], "%T", "MapTopMenu_Title", client, gC_MapTopMap[client], gC_StyleMenuPhrases[g_MapTopStyle[client]]);
 	AddItemsMapTopMenu(client);
 	DisplayMenu(gH_MapTopMenu[client], client, MENU_TIME_FOREVER);
 }
@@ -44,9 +44,9 @@ void AddItemsMapTopMenu(int client) {
 public int MenuHandler_MapTop(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
 		switch (param2) {
-			case 0:DB_OpenMapTop20(param1, gC_MapTopMap[param1], RunType_Normal);
-			case 1:DB_OpenMapTop20(param1, gC_MapTopMap[param1], RunType_Pro);
-			case 2:DB_OpenMapTop20(param1, gC_MapTopMap[param1], RunType_Theoretical);
+			case 0:DB_OpenMapTop20(param1, gC_MapTopMap[param1], RunType_Normal, g_MapTopStyle[param1]);
+			case 1:DB_OpenMapTop20(param1, gC_MapTopMap[param1], RunType_Pro, g_MapTopStyle[param1]);
+			case 2:DB_OpenMapTop20(param1, gC_MapTopMap[param1], RunType_Theoretical, g_MapTopStyle[param1]);
 		}
 	}
 }
@@ -80,8 +80,8 @@ void CreatePlayerTopMenu(int client) {
 public int MenuHandler_PlayerTop(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
 		switch (param2) {
-			case 0:DB_PlayerTop20(param1, RunType_Normal);
-			case 1:DB_PlayerTop20(param1, RunType_Pro);
+			case 0:DB_PlayerTop20(param1, RunType_Normal, g_PlayerTopStyle[param1]);
+			case 1:DB_PlayerTop20(param1, RunType_Pro, g_PlayerTopStyle[param1]);
 		}
 	}
 }
@@ -96,7 +96,7 @@ void AddItemsPlayerTopMenu(int client) {
 }
 
 void DisplayPlayerTopMenu(int client) {
-	SetMenuTitle(gH_PlayerTopMenu[client], "%T", "PlayerTopMenu_Title", client);
+	SetMenuTitle(gH_PlayerTopMenu[client], "%T", "PlayerTopMenu_Title", client, gC_StyleMenuPhrases[g_PlayerTopStyle[client]]);
 	AddItemsPlayerTopMenu(client);
 	DisplayMenu(gH_PlayerTopMenu[client], client, MENU_TIME_FOREVER);
 }

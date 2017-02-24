@@ -4,41 +4,6 @@
 */
 
 
-/*===============================  Timer Events  ===============================*/
-
-public void SimpleKZ_OnTimerStarted(int client, bool firstStart) {
-	EmitSoundToClient(client, "buttons/button9.wav");
-	EmitSoundToClientSpectators(client, "buttons/button9.wav");
-	TimerReset(client);
-	gB_TimerRunning[client] = true;
-	if (!gB_HasStartedThisMap[client]) {
-		gB_HasStartedThisMap[client] = true;
-	}
-	SplitsReset(client);
-	CloseTeleportMenu(client);
-}
-
-public void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, float theoreticalTime) {
-	EmitSoundToClient(client, "buttons/bell1.wav");
-	EmitSoundToClientSpectators(client, "buttons/bell1.wav");
-	gB_TimerRunning[client] = false;
-	PrintEndTimeString(client);
-	CloseTeleportMenu(client);
-	if (gB_SlayOnEnd[client]) {
-		CreateTimer(3.0, SlayPlayer, client);
-	}
-}
-
-public void SimpleKZ_OnTimerForceStopped(int client) {
-	EmitSoundToClient(client, "buttons/button18.wav");
-	EmitSoundToClientSpectators(client, "buttons/button18.wav");
-	gB_TimerRunning[client] = false;
-	gB_Paused[client] = false;
-	CloseTeleportMenu(client);
-}
-
-
-
 /*===============================  General  ===============================*/
 
 void TimerTick(int client) {
@@ -58,7 +23,7 @@ void TimerReset(int client) {
 	gB_Paused[client] = false;
 	gF_LastResumeTime[client] = 0.0;
 	gB_HasResumedInThisRun[client] = false;
-	gI_CheckpointsSet[client] = 0;
+	gI_CheckpointCount[client] = 0;
 	gI_TeleportsUsed[client] = 0;
 	gF_LastCheckpointTime[client] = 0.0;
 	gF_LastGoCheckTime[client] = 0.0;
@@ -71,26 +36,51 @@ void TimerReset(int client) {
 	gB_HasSavedPosition[client] = false;
 }
 
-void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
-	// Store old variables here to avoid incorrect behaviour when teleporting to undo position
-	float oldOrigin[3], oldAngles[3];
-	g_MovementPlayer[client].GetOrigin(oldOrigin);
-	g_MovementPlayer[client].GetEyeAngles(oldAngles);
-	
-	TeleportEntity(client, destination, eyeAngles, view_as<float>( { 0.0, 0.0, -50.0 } ));
-	CreateTimer(0.0, ZeroVelocity, client); // Prevent booster exploits
-	gI_TeleportsUsed[client]++;
-	// Store position for undo
-	if (g_MovementPlayer[client].onGround) {
-		gB_LastTeleportOnGround[client] = true;
-		gF_UndoOrigin[client] = oldOrigin;
-		gF_UndoAngle[client] = oldAngles;
+void TimerStart(int client) {
+	Call_SimpleKZ_OnTimerStarted(client);
+}
+
+public void SimpleKZ_OnTimerStarted(int client, bool firstStart) {
+	EmitSoundToClient(client, "buttons/button9.wav");
+	EmitSoundToClientSpectators(client, "buttons/button9.wav");
+	TimerReset(client);
+	gB_TimerRunning[client] = true;
+	if (!gB_HasStartedThisMap[client]) {
+		gB_HasStartedThisMap[client] = true;
 	}
-	else {
-		gB_LastTeleportOnGround[client] = false;
+	SplitsReset(client);
+	CloseTeleportMenu(client);
+}
+
+void TimerEnd(int client) {
+	if (gB_TimerRunning[client]) {
+		Call_SimpleKZ_OnTimerEnded(client);
 	}
-	
-	Call_SimpleKZ_OnTimerTeleport(client);
+}
+
+public void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, float theoreticalTime) {
+	EmitSoundToClient(client, "buttons/bell1.wav");
+	EmitSoundToClientSpectators(client, "buttons/bell1.wav");
+	gB_TimerRunning[client] = false;
+	PrintEndTimeString(client);
+	CloseTeleportMenu(client);
+	if (gB_SlayOnEnd[client]) {
+		CreateTimer(3.0, SlayPlayer, client);
+	}
+}
+
+void TimerForceStop(int client) {
+	if (gB_TimerRunning[client]) {
+		Call_SimpleKZ_OnTimerForceStopped(client);
+	}
+}
+
+public void SimpleKZ_OnTimerForceStopped(int client) {
+	EmitSoundToClient(client, "buttons/button18.wav");
+	EmitSoundToClientSpectators(client, "buttons/button18.wav");
+	gB_TimerRunning[client] = false;
+	gB_Paused[client] = false;
+	CloseTeleportMenu(client);
 }
 
 
@@ -124,17 +114,17 @@ void StartButtonPress(int client) {
 		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
 		g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
 		g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
-		SimpleKZ_StartTimer(client);
+		TimerStart(client);
 	}
 }
 
 void EndButtonPress(int client) {
 	if (gB_TimerRunning[client]) {
-		SimpleKZ_EndTimer(client);
+		TimerEnd(client);
 	}
 }
 
-void CheckForStartButtonPress(int client) {
+void CheckForTimerButtonPress(int client) {
 	// If just pressed +use button
 	if (!(g_OldButtons[client] & IN_USE) && GetClientButtons(client) & IN_USE) {
 		float origin[3];
@@ -172,7 +162,7 @@ void TeleportToStart(int client) {
 		AddWastedTimeTeleportToStart(client);
 		TimerDoTeleport(client, gF_StartOrigin[client], gF_StartAngles[client]);
 		if (gB_AutoRestart[client]) {
-			SimpleKZ_StartTimer(client);
+			TimerStart(client);
 		}
 	}
 	else {
@@ -192,7 +182,7 @@ void MakeCheckpoint(int client) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "Checkpoint_JustLanded");
 	}
 	else {
-		gI_CheckpointsSet[client]++;
+		gI_CheckpointCount[client]++;
 		gF_LastCheckpointTime[client] = gF_CurrentTime[client];
 		g_MovementPlayer[client].GetOrigin(gF_CheckpointOrigin[client]);
 		g_MovementPlayer[client].GetEyeAngles(gF_CheckpointAngles[client]);
@@ -204,7 +194,7 @@ void TeleportToCheckpoint(int client) {
 	if (!IsPlayerAlive(client)) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "Teleport_NotAlive");
 	}
-	else if (gI_CheckpointsSet[client] == 0) {
+	else if (gI_CheckpointCount[client] == 0) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "Teleport_NoCheckpoint");
 	}
 	else if (gB_CurrentMapIsKZPro && gB_TimerRunning[client]) {
@@ -338,15 +328,40 @@ bool TeleportToStartWasLatestTeleport(int client) {
 
 /*===============================  Other  ===============================*/
 
+void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
+	// Store old variables here to avoid incorrect behaviour when teleporting to undo position
+	float oldOrigin[3], oldAngles[3];
+	g_MovementPlayer[client].GetOrigin(oldOrigin);
+	g_MovementPlayer[client].GetEyeAngles(oldAngles);
+	
+	TeleportEntity(client, destination, eyeAngles, view_as<float>( { 0.0, 0.0, -50.0 } ));
+	CreateTimer(0.0, ZeroVelocity, client); // Prevent booster exploits
+	gI_TeleportsUsed[client]++;
+	// Store position for undo
+	if (g_MovementPlayer[client].onGround) {
+		gB_LastTeleportOnGround[client] = true;
+		gF_UndoOrigin[client] = oldOrigin;
+		gF_UndoAngle[client] = oldAngles;
+	}
+	else {
+		gB_LastTeleportOnGround[client] = false;
+	}
+	
+	Call_SimpleKZ_OnTimerTeleport(client);
+}
+
 void PrintEndTimeString(int client) {
 	switch (GetCurrentRunType(client)) {
 		case RunType_Normal: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMap", 
-				client, FormatTimeFloat(gF_CurrentTime[client]), gI_TeleportsUsed[client], FormatTimeFloat(gF_CurrentTime[client] - gF_WastedTime[client]));
+				client, FormatTimeFloat(gF_CurrentTime[client]), 
+				gI_TeleportsUsed[client], FormatTimeFloat(gF_CurrentTime[client] - gF_WastedTime[client]), 
+				gC_StyleChatPhrases[g_MovementStyle[client]]);
 		}
 		case RunType_Pro: {
 			CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapPro", 
-				client, FormatTimeFloat(gF_CurrentTime[client]));
+				client, FormatTimeFloat(gF_CurrentTime[client]), 
+				gC_StyleChatPhrases[g_MovementStyle[client]]);
 		}
 	}
 } 

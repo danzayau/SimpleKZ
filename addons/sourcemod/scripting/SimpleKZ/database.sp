@@ -39,10 +39,12 @@ void DB_SetupDatabase() {
 }
 
 void DB_CreateTables() {
-	Transaction txn = SQL_CreateTransaction();
-	txn.AddQuery(sql_players_create);
-	txn.AddQuery(sql_preferences_create);
-	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, DBPrio_High);
+	// Not using transactions because alter queries will return an error e.g. if column already exists
+	SQL_LockDatabase(gH_DB);
+	SQL_FastQuery(gH_DB, sql_players_create);
+	SQL_FastQuery(gH_DB, sql_preferences_create);
+	SQL_FastQuery(gH_DB, sql_preferences_alter1); // 0.9.0: Added movement styles
+	SQL_UnlockDatabase(gH_DB);
 }
 
 // Error check callback for queries don't return any results
@@ -108,7 +110,7 @@ public void DB_Callback_LoadPreferences(Handle db, Handle results, const char[] 
 		SetDefaultPreferences(client);
 		
 		char query[512];
-		FormatEx(query, sizeof(query), sql_preferences_insert, gC_SteamID[client]);
+		FormatEx(query, sizeof(query), sql_preferences_insert, gC_SteamID[client], GetConVarInt(gCV_DefaultMovementStyle));
 		SQL_TQuery(gH_DB, DB_Callback_Generic, query, client, DBPrio_High);
 	}
 	else if (SQL_FetchRow(results)) {
@@ -124,6 +126,7 @@ public void DB_Callback_LoadPreferences(Handle db, Handle results, const char[] 
 			pistolNumber = 0;
 		}
 		gI_Pistol[client] = pistolNumber;
+		g_MovementStyle[client] = view_as<MovementStyle>(SQL_FetchInt(results, 8));
 	}
 }
 
@@ -143,6 +146,7 @@ void DB_SavePreferences(int client) {
 		view_as<int>(gB_AutoRestart[client]), 
 		view_as<int>(gB_SlayOnEnd[client]), 
 		gI_Pistol[client], 
-		gC_SteamID[client]);
+		gC_SteamID[client], 
+		g_MovementStyle[client]);
 	SQL_TQuery(gH_DB, DB_Callback_Generic, query, client, DBPrio_High);
 } 
