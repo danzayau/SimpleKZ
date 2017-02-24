@@ -225,7 +225,10 @@ void UndoTeleport(int client) {
 }
 
 void Pause(int client) {
-	if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
+	if (gB_Paused[client]) {
+		return;
+	}
+	else if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
 		JoinTeam(client, CS_TEAM_CT);
 	}
 	else if (gB_TimerRunning[client] && gB_HasResumedInThisRun[client] && gF_CurrentTime[client] - gF_LastResumeTime[client] < PAUSE_COOLDOWN_AFTER_RESUMING) {
@@ -236,6 +239,7 @@ void Pause(int client) {
 	}
 	else {
 		gB_Paused[client] = true;
+		g_MovementPlayer[client].GetEyeAngles(gF_PauseAngles[client]);
 		FreezePlayer(client);
 		if (gB_TimerRunning[client]) {
 			Call_SimpleKZ_OnTimerPaused(client);
@@ -245,13 +249,17 @@ void Pause(int client) {
 }
 
 void Resume(int client) {
-	if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
+	if (!gB_Paused[client]) {
+		return;
+	}
+	else if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
 		JoinTeam(client, CS_TEAM_CT);
 	}
 	else {
 		if (gB_TimerRunning[client]) {
 			gB_HasResumedInThisRun[client] = true;
 			gF_LastResumeTime[client] = gF_CurrentTime[client];
+			g_MovementPlayer[client].SetEyeAngles(gF_PauseAngles[client]);
 			Call_SimpleKZ_OnTimerResumed(client);
 		}
 		gB_Paused[client] = false;

@@ -63,6 +63,7 @@ float gF_CheckpointAngles[MAXPLAYERS + 1][3];
 bool gB_LastTeleportOnGround[MAXPLAYERS + 1];
 float gF_UndoOrigin[MAXPLAYERS + 1][3];
 float gF_UndoAngle[MAXPLAYERS + 1][3];
+float gF_PauseAngles[MAXPLAYERS + 1][3];
 
 /* Button Press Checking */
 bool gB_HasStartedThisMap[MAXPLAYERS + 1] =  { false, ... };
