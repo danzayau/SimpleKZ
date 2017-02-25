@@ -27,22 +27,22 @@ public Plugin myinfo =
 
 /*===============================  Definitions  ===============================*/
 
-#define PAUSE_COOLDOWN_AFTER_RESUMING 1.0
-#define MINIMUM_SPLIT_TIME 1.0
-#define MAX_DISTANCE_FROM_BUTTON_ORIGIN 40.0
-#define BHOP_BLOCK_DETECTION_PERIOD 0.2
+#define TIME_PAUSE_COOLDOWN 1.0
+#define TIME_SPLIT_COOLDOWN 1.0
+#define TIME_BHOP_TRIGGER_DETECTION 0.2
+#define DISTANCE_BUTTON_PRESS_CHECK 40.0
 
-#define NORMAL_JUMP_VERTICAL_VELOCITY 292.54 // Found by testing until binding resulted in similar jump height to normal
-#define MAX_NORMAL_SPEED 250.0 // Desired speed when just holding down W and running
-#define NO_WEAPON_SPEED 260.0 // Max speed with no weapon and just holding down W and running
-#define MAX_PRESTRAFE_MODIFIER 1.104 // Calculated 276/250
-#define PRESTRAFE_INCREASE_RATE 0.0014
-#define PRESTRAFE_DECREASE_RATE 0.0021
-#define DUCK_SPEED_ONLANDING_MINIMUM 7.0
+#define SPEED_NORMAL 250.0 // Desired speed when just holding down W and running
+#define SPEED_NO_WEAPON 260.0 // Max speed with no weapon and just holding down W and running
+#define PRESTRAFE_VELMOD_MAX 1.104 // Calculated 276/250
+#define PRESTRAFE_VELMOD_INCREMENT 0.0014
+#define PRESTRAFE_VELMOD_DECREMENT 0.0021
+#define VELOCITY_VERTICAL_NORMAL_JUMP 292.54 // Found by testing until binding resulted in similar jump height to normal
+#define DUCK_SPEED_MINIMUM 7.0
 
-#define SIMPLEKZ_PERF_TICKS 2
-#define KZTIMER_PERF_TICKS 1
-#define KZTIMER_PERF_SPEEDCAP 380.0
+#define STYLE_DEFAULT_PERF_TICKS 2
+#define STYLE_LEGACY_PERF_TICKS 1
+#define STYLE_LEGACY_PERF_SPEED_CAP 380.0
 
 
 
@@ -337,7 +337,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	TimerTick(client);
 	UpdateTeleportMenu(client); // Can be moved to a slower timer
 	UpdateInfoPanel(client); // Can be moved to a slower timer
-	CheckForTimerButtonPress(client);	
+	CheckForTimerButtonPress(client);
 	MovementTweakGeneral(g_MovementPlayer[client]);
 }
 
@@ -383,6 +383,7 @@ public Action OnSay(int client, const char[] command, int argc) {
 public void OnStartNoclipping(int client) {
 	if (!IsFakeClient(client) && gB_TimerRunning[client]) {
 		TimerForceStop(client);
+		gB_Paused[client] = false;
 		CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Noclip");
 	}
 }

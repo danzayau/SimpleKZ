@@ -67,9 +67,9 @@ void DB_UpdateMapPool(int client) {
 		return;
 	}
 	
-	Handle file = OpenFile(MAPPOOL_FILE_PATH, "r");
+	Handle file = OpenFile(FILE_PATH_MAPPOOL, "r");
 	if (file == INVALID_HANDLE) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "FileOpen_Fail", MAPPOOL_FILE_PATH);
+		CPrintToChat(client, "%t %t", "KZ_Tag", "FileOpen_Fail", FILE_PATH_MAPPOOL);
 		return;
 	}
 	
@@ -114,7 +114,7 @@ public void DB_TxnSuccess_UpdateMapPool(Handle db, int client, int numQueries, H
 
 /*===============================  End Time Processing  ===============================*/
 
-void DB_ProcessEndTimer(int client, const char[] map, float runTime, int teleportsUsed, float theoreticalTime, MovementStyle style) {
+void DB_ProcessEndTimer(int client, const char[] map, MovementStyle style, float runTime, int teleportsUsed, float theoreticalTime) {
 	if (!gB_ConnectedToDB) {
 		return;
 	}
@@ -122,16 +122,16 @@ void DB_ProcessEndTimer(int client, const char[] map, float runTime, int telepor
 	DataPack data = CreateDataPack();
 	data.WriteCell(client);
 	data.WriteString(map);
+	data.WriteCell(style);
 	data.WriteFloat(runTime);
 	data.WriteCell(teleportsUsed);
-	data.WriteCell(style);
 	
 	Transaction txn = SQL_CreateTransaction();
 	char query[512], steamID[24];
 	SimpleKZ_GetSteamID(client, steamID, sizeof(steamID));
 	// Save runTime to DB
 	FormatEx(query, sizeof(query), sql_times_insert, 
-		steamID, map, runTime, teleportsUsed, theoreticalTime, style);
+		steamID, map, style, runTime, teleportsUsed, theoreticalTime);
 	txn.AddQuery(query);
 	
 	// Get PB
@@ -164,9 +164,9 @@ public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueri
 	int client = data.ReadCell();
 	char map[33];
 	data.ReadString(map, sizeof(map));
+	MovementStyle style = data.ReadCell();
 	float runTime = data.ReadFloat();
 	int teleportsUsed = data.ReadCell();
-	MovementStyle style = data.ReadCell();
 	CloseHandle(data);
 	
 	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
@@ -416,15 +416,15 @@ public void DB_TxnSuccess_PrintPBs2(Handle db, DataPack data, int numQueries, Ha
 		}
 	}
 	else if (!hasPBPro) {
-		CPrintToChat(client, "  %t", "PB_Map", FormatTimeFloat(runTime), rank, maxRank, teleportsUsed, FormatTimeFloat(theoreticalRunTime));
+		CPrintToChat(client, "  %t", "PB_Map", SimpleKZ_FormatTime(runTime), rank, maxRank, teleportsUsed, SimpleKZ_FormatTime(theoreticalRunTime));
 		CPrintToChat(client, "  %t", "PB_Pro_None");
 	}
 	else if (teleportsUsed == 0) {  // Their MAP PB has 0 teleports, and is therefore also their PRO PB
-		CPrintToChat(client, "  %t", "PB_Map_Pro", FormatTimeFloat(runTime), rank, maxRank, rankPro, maxRankPro);
+		CPrintToChat(client, "  %t", "PB_Map_Pro", SimpleKZ_FormatTime(runTime), rank, maxRank, rankPro, maxRankPro);
 	}
 	else {
-		CPrintToChat(client, "  %t", "PB_Map", FormatTimeFloat(runTime), rank, maxRank, teleportsUsed, FormatTimeFloat(theoreticalRunTime));
-		CPrintToChat(client, "  %t", "PB_Pro", FormatTimeFloat(runTimePro), rankPro, maxRankPro);
+		CPrintToChat(client, "  %t", "PB_Map", SimpleKZ_FormatTime(runTime), rank, maxRank, teleportsUsed, SimpleKZ_FormatTime(theoreticalRunTime));
+		CPrintToChat(client, "  %t", "PB_Pro", SimpleKZ_FormatTime(runTimePro), rankPro, maxRankPro);
 	}
 }
 
@@ -537,15 +537,15 @@ public void DB_TxnSuccess_PrintMapRecords2(Handle db, DataPack data, int numQuer
 		CPrintToChat(client, "  %t", "WR_NoTimes");
 	}
 	else if (!hasRecordPro) {
-		CPrintToChat(client, "  %t", "WR_Map", FormatTimeFloat(runTime), teleportsUsed, recordHolder);
+		CPrintToChat(client, "  %t", "WR_Map", SimpleKZ_FormatTime(runTime), teleportsUsed, recordHolder);
 		CPrintToChat(client, "  %t", "WR_Pro_None");
 	}
 	else if (teleportsUsed == 0) {
-		CPrintToChat(client, "  %t", "WR_Map_Pro", FormatTimeFloat(runTimePro), recordHolderPro);
+		CPrintToChat(client, "  %t", "WR_Map_Pro", SimpleKZ_FormatTime(runTimePro), recordHolderPro);
 	}
 	else {
-		CPrintToChat(client, "  %t", "WR_Map", FormatTimeFloat(runTime), teleportsUsed, recordHolder);
-		CPrintToChat(client, "  %t", "WR_Pro", FormatTimeFloat(runTimePro), recordHolderPro);
+		CPrintToChat(client, "  %t", "WR_Map", SimpleKZ_FormatTime(runTime), teleportsUsed, recordHolder);
+		CPrintToChat(client, "  %t", "WR_Pro", SimpleKZ_FormatTime(runTimePro), recordHolderPro);
 	}
 }
 
@@ -654,15 +654,15 @@ public void DB_Callback_OpenMapTop20(Handle db, Handle results, const char[] err
 		switch (runType) {
 			case RunType_Normal: {
 				FormatEx(newMenuItem, sizeof(newMenuItem), "  [%02d] %s (%d TP)     %s", 
-					rank, FormatTimeFloat(SQL_FetchFloat(results, 1)), SQL_FetchInt(results, 2), playerString);
+					rank, SimpleKZ_FormatTime(SQL_FetchFloat(results, 1)), SQL_FetchInt(results, 2), playerString);
 			}
 			case RunType_Pro: {
 				FormatEx(newMenuItem, sizeof(newMenuItem), "  [%02d] %s     %s", 
-					rank, FormatTimeFloat(SQL_FetchFloat(results, 1)), playerString);
+					rank, SimpleKZ_FormatTime(SQL_FetchFloat(results, 1)), playerString);
 			}
 			case RunType_Theoretical: {
 				FormatEx(newMenuItem, sizeof(newMenuItem), "  [%02d] %s (%d TP)     %s", 
-					rank, FormatTimeFloat(SQL_FetchFloat(results, 1)), SQL_FetchInt(results, 2), playerString);
+					rank, SimpleKZ_FormatTime(SQL_FetchFloat(results, 1)), SQL_FetchInt(results, 2), playerString);
 			}
 		}
 		AddMenuItem(gH_MapTopSubMenu[client], "", newMenuItem, ITEMDRAW_DISABLED);

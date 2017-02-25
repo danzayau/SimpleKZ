@@ -404,7 +404,7 @@ void SplitsReset(int client) {
 }
 
 void SplitsMake(int client) {
-	if ((GetGameTime() - gF_SplitGameTime[client]) < MINIMUM_SPLIT_TIME) {  // Ignore split spam
+	if ((GetGameTime() - gF_SplitGameTime[client]) < TIME_SPLIT_COOLDOWN) {  // Ignore split spam
 		CloseTeleportMenu(client);
 		return;
 	}
@@ -413,8 +413,8 @@ void SplitsMake(int client) {
 	if (gB_TimerRunning[client]) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "Split_Make", 
 			gI_Splits[client], 
-			FormatTimeFloat(gF_CurrentTime[client] - gF_SplitRunTime[client]), 
-			FormatTimeFloat(gF_CurrentTime[client]));
+			SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_SplitRunTime[client]), 
+			SimpleKZ_FormatTime(gF_CurrentTime[client]));
 	}
 	else {
 		if (gI_Splits[client] == 1) {
@@ -422,7 +422,7 @@ void SplitsMake(int client) {
 		}
 		else {
 			CPrintToChat(client, "%t %t", "KZ_Tag", "Split_Make_TimerStopped", 
-				FormatTimeFloat(GetGameTime() - gF_SplitGameTime[client]));
+				SimpleKZ_FormatTime(GetGameTime() - gF_SplitGameTime[client]));
 		}
 	}
 	gF_SplitRunTime[client] = gF_CurrentTime[client];
@@ -442,7 +442,7 @@ void NoBhopBlockCPSetup(int client) {
 public void OnTrigMultiStartTouch(const char[] name, int caller, int activator, float delay) {
 	if (IsValidClient(activator)) {
 		gI_JustTouchedTrigMulti[activator]++;
-		CreateTimer(BHOP_BLOCK_DETECTION_PERIOD, TrigMultiStartTouchDelayed, activator);
+		CreateTimer(TIME_BHOP_TRIGGER_DETECTION, TrigMultiStartTouchDelayed, activator);
 	}
 }
 
@@ -458,7 +458,7 @@ public Action TrigMultiStartTouchDelayed(Handle timer, int client) {
 bool JustTouchedBhopBlock(int client) {
 	// If just touched trigger_multiple and landed within 0.2 seconds ago
 	if ((gI_JustTouchedTrigMulti[client] > 0)
-		 && (GetGameTickCount() - g_MovementPlayer[client].landingTick) < (BHOP_BLOCK_DETECTION_PERIOD / GetTickInterval())) {
+		 && (GetGameTickCount() - g_MovementPlayer[client].landingTick) < (TIME_BHOP_TRIGGER_DETECTION / GetTickInterval())) {
 		return true;
 	}
 	return false;

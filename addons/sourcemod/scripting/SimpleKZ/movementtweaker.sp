@@ -47,25 +47,25 @@ void MovementTweakGeneral(MovementPlayer player) {
 }
 
 float PrestrafeVelocityModifier(MovementPlayer player) {
-	// In Legacy, only enable prestrafe at speeds above 249.0
+	// Note: Still trying to get Legacy prestrafe to feel like it does in KZTimer
 	if (g_MovementStyle[player.id] == MovementStyle_Legacy && player.speed < 200.0) {
 		gF_PrestrafeVelocityModifier[player.id] = 1.0;
 	}
 	// If correct prestrafe technique is detected, increase prestrafe modifier
 	else if (player.turning && CheckIfValidPrestrafeKeys(player)) {
-		gF_PrestrafeVelocityModifier[player.id] += PRESTRAFE_INCREASE_RATE;
+		gF_PrestrafeVelocityModifier[player.id] += PRESTRAFE_VELMOD_INCREMENT;
 	}
 	// Else not prestrafing, so decrease prestrafe modifier
 	else {
-		gF_PrestrafeVelocityModifier[player.id] -= PRESTRAFE_DECREASE_RATE;
+		gF_PrestrafeVelocityModifier[player.id] -= PRESTRAFE_VELMOD_DECREMENT;
 	}
 	
 	// Ensure prestrafe modifier is in range
 	if (gF_PrestrafeVelocityModifier[player.id] < 1.0) {
 		gF_PrestrafeVelocityModifier[player.id] = 1.0;
 	}
-	else if (gF_PrestrafeVelocityModifier[player.id] > MAX_PRESTRAFE_MODIFIER) {
-		gF_PrestrafeVelocityModifier[player.id] = MAX_PRESTRAFE_MODIFIER;
+	else if (gF_PrestrafeVelocityModifier[player.id] > PRESTRAFE_VELMOD_MAX) {
+		gF_PrestrafeVelocityModifier[player.id] = PRESTRAFE_VELMOD_MAX;
 	}
 	
 	return gF_PrestrafeVelocityModifier[player.id];
@@ -96,11 +96,11 @@ float WeaponVelocityModifier(MovementPlayer player) {
 		// Get weapon speed and work out how much to scale the modifier.
 		for (int weaponID = 0; weaponID < sizeof(gC_WeaponNames); weaponID++) {
 			if (StrEqual(weaponName, gC_WeaponNames[weaponID])) {
-				return MAX_NORMAL_SPEED / gI_WeaponRunSpeeds[weaponID];
+				return SPEED_NORMAL / gI_WeaponRunSpeeds[weaponID];
 			}
 		}
 	}
-	return MAX_NORMAL_SPEED / NO_WEAPON_SPEED; // Weapon entity not found so must have no weapon (260 u/s).
+	return SPEED_NORMAL / SPEED_NO_WEAPON; // Weapon entity not found so must have no weapon (260 u/s).
 }
 
 
@@ -120,10 +120,10 @@ void MovementTweakTakeoffSpeed(MovementPlayer player) {
 
 bool HitPerf(MovementPlayer player) {
 	if (g_MovementStyle[player.id] == MovementStyle_Standard) {
-		return player.jumpTick - player.landingTick <= SIMPLEKZ_PERF_TICKS;
+		return player.jumpTick - player.landingTick <= STYLE_DEFAULT_PERF_TICKS;
 	}
 	else if (g_MovementStyle[player.id] == MovementStyle_Legacy) {
-		return player.jumpTick - player.landingTick <= KZTIMER_PERF_TICKS;
+		return player.jumpTick - player.landingTick <= STYLE_LEGACY_PERF_TICKS;
 	}
 	return player.jumpTick - player.landingTick <= 1;
 }
@@ -147,11 +147,11 @@ float ApplyTakeoffSpeed(MovementPlayer player, float speed) {
 }
 
 float CalculateTweakedTakeoffSpeed(MovementPlayer player) {
-	if (g_MovementStyle[player.id] == MovementStyle_Standard && player.landingSpeed > MAX_NORMAL_SPEED) {
+	if (g_MovementStyle[player.id] == MovementStyle_Standard && player.landingSpeed > SPEED_NORMAL) {
 		return 0.2 * player.landingSpeed + 200;
 	}
-	else if (g_MovementStyle[player.id] == MovementStyle_Legacy && player.speed > KZTIMER_PERF_SPEEDCAP) {
-		return KZTIMER_PERF_SPEEDCAP;
+	else if (g_MovementStyle[player.id] == MovementStyle_Legacy && player.speed > STYLE_LEGACY_PERF_SPEED_CAP) {
+		return STYLE_LEGACY_PERF_SPEED_CAP;
 	}
 	return player.landingSpeed;
 }
@@ -159,7 +159,7 @@ float CalculateTweakedTakeoffSpeed(MovementPlayer player) {
 void MovementTweakPerfectCrouchJump(MovementPlayer player) {
 	float newVelocity[3];
 	player.GetVelocity(newVelocity);
-	newVelocity[2] = NORMAL_JUMP_VERTICAL_VELOCITY;
+	newVelocity[2] = VELOCITY_VERTICAL_NORMAL_JUMP;
 	player.SetVelocity(newVelocity);
 }
 
@@ -169,8 +169,8 @@ void MovementTweakPerfectCrouchJump(MovementPlayer player) {
 
 void MovementTweakDuckSlowdown(MovementPlayer player) {
 	if (g_MovementStyle[player.id] == MovementStyle_Standard || g_MovementStyle[player.id] == MovementStyle_Legacy) {
-		if (player.duckSpeed < DUCK_SPEED_ONLANDING_MINIMUM) {
-			player.duckSpeed = DUCK_SPEED_ONLANDING_MINIMUM;
+		if (player.duckSpeed < DUCK_SPEED_MINIMUM) {
+			player.duckSpeed = DUCK_SPEED_MINIMUM;
 		}
 	}
 } 

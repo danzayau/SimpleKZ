@@ -11,7 +11,7 @@ Handle gH_Forward_SimpleKZ_OnBeatMapFirstTime;
 Handle gH_Forward_SimpleKZ_OnImproveTime;
 
 void CreateGlobalForwards() {
-	gH_Forward_SimpleKZ_OnBeatMapRecord = CreateGlobalForward("SimpleKZ_OnBeatMapRecord", ET_Event, Param_Cell, Param_Cell, Param_String, Param_Cell, Param_Float);
+	gH_Forward_SimpleKZ_OnBeatMapRecord = CreateGlobalForward("SimpleKZ_OnBeatMapRecord", ET_Event, Param_Cell, Param_String, Param_Cell, Param_Cell, Param_Float);
 	gH_Forward_SimpleKZ_OnBeatMapFirstTime = CreateGlobalForward("SimpleKZ_OnBeatMapFirstTime", ET_Event, Param_Cell, Param_String, Param_Cell, Param_Cell, Param_Float, Param_Cell, Param_Cell);
 	gH_Forward_SimpleKZ_OnImproveTime = CreateGlobalForward("SimpleKZ_OnImproveTime", ET_Event, Param_Cell, Param_String, Param_Cell, Param_Cell, Param_Float, Param_Float, Param_Cell, Param_Cell);
 }

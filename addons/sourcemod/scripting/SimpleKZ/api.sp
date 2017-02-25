@@ -9,23 +9,23 @@
 Handle gH_Forward_SimpleKZ_OnDatabaseConnect;
 Handle gH_Forward_SimpleKZ_OnChangeMovementStyle;
 Handle gH_Forward_SimpleKZ_OnPerfectBunnyhop;
-Handle gH_Forward_SimpleKZ_OnTimerStarted;
-Handle gH_Forward_SimpleKZ_OnTimerEnded;
-Handle gH_Forward_SimpleKZ_OnTimerPaused;
-Handle gH_Forward_SimpleKZ_OnTimerResumed;
-Handle gH_Forward_SimpleKZ_OnTimerForceStopped;
-Handle gH_Forward_SimpleKZ_OnTimerTeleport;
+Handle gH_Forward_SimpleKZ_OnTimerStart;
+Handle gH_Forward_SimpleKZ_OnTimerEnd;
+Handle gH_Forward_SimpleKZ_OnTimerForceStop;
+Handle gH_Forward_SimpleKZ_OnPlayerPause;
+Handle gH_Forward_SimpleKZ_OnPlayerResume;
+Handle gH_Forward_SimpleKZ_OnPlayerTeleport;
 
 void CreateGlobalForwards() {
 	gH_Forward_SimpleKZ_OnDatabaseConnect = CreateGlobalForward("SimpleKZ_OnDatabaseConnect", ET_Event, Param_Cell, Param_Cell);
 	gH_Forward_SimpleKZ_OnChangeMovementStyle = CreateGlobalForward("SimpleKZ_OnChangeMovementStyle", ET_Event, Param_Cell, Param_Cell);
 	gH_Forward_SimpleKZ_OnPerfectBunnyhop = CreateGlobalForward("SimpleKZ_OnPerfectBunnyhop", ET_Event, Param_Cell);
-	gH_Forward_SimpleKZ_OnTimerStarted = CreateGlobalForward("SimpleKZ_OnTimerStarted", ET_Event, Param_Cell, Param_String, Param_Cell, Param_Cell);
-	gH_Forward_SimpleKZ_OnTimerEnded = CreateGlobalForward("SimpleKZ_OnTimerEnded", ET_Event, Param_Cell, Param_String, Param_Cell, Param_Cell, Param_Float, Param_Cell, Param_Float);
-	gH_Forward_SimpleKZ_OnTimerPaused = CreateGlobalForward("SimpleKZ_OnTimerPaused", ET_Event, Param_Cell);
-	gH_Forward_SimpleKZ_OnTimerResumed = CreateGlobalForward("SimpleKZ_OnTimerResumed", ET_Event, Param_Cell);
-	gH_Forward_SimpleKZ_OnTimerForceStopped = CreateGlobalForward("SimpleKZ_OnTimerForceStopped", ET_Event, Param_Cell);
-	gH_Forward_SimpleKZ_OnTimerTeleport = CreateGlobalForward("SimpleKZ_OnTimerTeleport", ET_Event, Param_Cell);
+	gH_Forward_SimpleKZ_OnTimerStart = CreateGlobalForward("SimpleKZ_OnTimerStart", ET_Event, Param_Cell, Param_String, Param_Cell, Param_Cell);
+	gH_Forward_SimpleKZ_OnTimerEnd = CreateGlobalForward("SimpleKZ_OnTimerEnd", ET_Event, Param_Cell, Param_String, Param_Cell, Param_Cell, Param_Float, Param_Cell, Param_Float);
+	gH_Forward_SimpleKZ_OnTimerForceStop = CreateGlobalForward("SimpleKZ_OnTimerForceStop", ET_Event, Param_Cell);
+	gH_Forward_SimpleKZ_OnPlayerPause = CreateGlobalForward("SimpleKZ_OnTimerPause", ET_Event, Param_Cell);
+	gH_Forward_SimpleKZ_OnPlayerResume = CreateGlobalForward("SimpleKZ_OnTimerResume", ET_Event, Param_Cell);
+	gH_Forward_SimpleKZ_OnPlayerTeleport = CreateGlobalForward("SimpleKZ_OnTimerTeleport", ET_Event, Param_Cell);
 }
 
 void Call_SimpleKZ_OnDatabaseConnect() {
@@ -48,17 +48,17 @@ void Call_SimpleKZ_OnPerfectBunnyhop(int client) {
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnTimerStarted(int client, int course) {
-	Call_StartForward(gH_Forward_SimpleKZ_OnTimerStarted);
+void Call_SimpleKZ_OnTimerStart(int client) {
+	Call_StartForward(gH_Forward_SimpleKZ_OnTimerStart);
 	Call_PushCell(client);
 	Call_PushString(gC_CurrentMap);
-	Call_PushCell(course);
+	Call_PushCell(gI_CurrentCourse[client]);
 	Call_PushCell(g_MovementStyle[client]);
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnTimerEnded(int client) {
-	Call_StartForward(gH_Forward_SimpleKZ_OnTimerEnded);
+void Call_SimpleKZ_OnTimerEnd(int client) {
+	Call_StartForward(gH_Forward_SimpleKZ_OnTimerEnd);
 	Call_PushCell(client);
 	Call_PushString(gC_CurrentMap);
 	Call_PushCell(gI_CurrentCourse[client]);
@@ -69,26 +69,26 @@ void Call_SimpleKZ_OnTimerEnded(int client) {
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnTimerPaused(int client) {
-	Call_StartForward(gH_Forward_SimpleKZ_OnTimerPaused);
+void Call_SimpleKZ_OnTimerForceStop(int client) {
+	Call_StartForward(gH_Forward_SimpleKZ_OnTimerForceStop);
 	Call_PushCell(client);
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnTimerResumed(int client) {
-	Call_StartForward(gH_Forward_SimpleKZ_OnTimerResumed);
+void Call_SimpleKZ_OnPlayerPause(int client) {
+	Call_StartForward(gH_Forward_SimpleKZ_OnPlayerPause);
 	Call_PushCell(client);
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnTimerForceStopped(int client) {
-	Call_StartForward(gH_Forward_SimpleKZ_OnTimerForceStopped);
+void Call_SimpleKZ_OnPlayerResume(int client) {
+	Call_StartForward(gH_Forward_SimpleKZ_OnPlayerResume);
 	Call_PushCell(client);
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnTimerTeleport(int client) {
-	Call_StartForward(gH_Forward_SimpleKZ_OnTimerTeleport);
+void Call_SimpleKZ_OnPlayerTeleport(int client) {
+	Call_StartForward(gH_Forward_SimpleKZ_OnPlayerTeleport);
 	Call_PushCell(client);
 	Call_Finish();
 }

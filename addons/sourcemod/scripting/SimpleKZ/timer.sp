@@ -44,14 +44,15 @@ void TimerStart(int client, int course) {
 	
 	TimerReset(client);
 	g_MovementPlayer[client].moveType = MOVETYPE_WALK;
-	g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
-	g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
 	gB_TimerRunning[client] = true;
 	gI_CurrentCourse[client] = course;
+	gB_HasStartedThisMap[client] = true;
+	g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
+	g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
 	SplitsReset(client);
 	EmitSoundToClient(client, "buttons/button9.wav");
 	EmitSoundToClientSpectators(client, "buttons/button9.wav");
-	Call_SimpleKZ_OnTimerStarted(client, course);
+	Call_SimpleKZ_OnTimerStart(client);
 	CloseTeleportMenu(client);
 }
 
@@ -64,7 +65,7 @@ void TimerEnd(int client, int course) {
 		}
 		EmitSoundToClient(client, "buttons/bell1.wav");
 		EmitSoundToClientSpectators(client, "buttons/bell1.wav");
-		Call_SimpleKZ_OnTimerEnded(client);
+		Call_SimpleKZ_OnTimerEnd(client);
 		CloseTeleportMenu(client);
 	}
 }
@@ -74,7 +75,7 @@ void TimerForceStop(int client) {
 		EmitSoundToClient(client, "buttons/button18.wav");
 		EmitSoundToClientSpectators(client, "buttons/button18.wav");
 		gB_TimerRunning[client] = false;
-		Call_SimpleKZ_OnTimerForceStopped(client);
+		Call_SimpleKZ_OnTimerForceStop(client);
 		CloseTeleportMenu(client);
 	}
 }
@@ -135,10 +136,10 @@ void CheckForTimerButtonPress(int client) {
 		g_MovementPlayer[client].GetOrigin(origin);
 		// If didnt just start time
 		if (!(gB_TimerRunning[client] && gF_CurrentTime[client] < 0.1)
-			 && gB_HasStartedThisMap[client] && GetVectorDistance(origin, gF_StartButtonOrigin[client]) <= MAX_DISTANCE_FROM_BUTTON_ORIGIN) {
+			 && gB_HasStartedThisMap[client] && GetVectorDistance(origin, gF_StartButtonOrigin[client]) <= DISTANCE_BUTTON_PRESS_CHECK) {
 			TimerStart(client, gI_LastCourseStarted[client]);
 		}
-		else if (gB_HasEndedThisMap[client] && GetVectorDistance(origin, gF_EndButtonOrigin[client]) <= MAX_DISTANCE_FROM_BUTTON_ORIGIN) {
+		else if (gB_HasEndedThisMap[client] && GetVectorDistance(origin, gF_EndButtonOrigin[client]) <= DISTANCE_BUTTON_PRESS_CHECK) {
 			TimerEnd(client, gI_LastCourseEnded[client]);
 		}
 	}
@@ -235,7 +236,7 @@ void Pause(int client) {
 	else if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
 		JoinTeam(client, CS_TEAM_CT);
 	}
-	else if (gB_TimerRunning[client] && gB_HasResumedInThisRun[client] && gF_CurrentTime[client] - gF_LastResumeTime[client] < PAUSE_COOLDOWN_AFTER_RESUMING) {
+	else if (gB_TimerRunning[client] && gB_HasResumedInThisRun[client] && gF_CurrentTime[client] - gF_LastResumeTime[client] < TIME_PAUSE_COOLDOWN) {
 		CPrintToChat(client, "%t %t", "KZ_Tag", "Pause_JustResumed");
 	}
 	else if (gB_TimerRunning[client] && !g_MovementPlayer[client].onGround) {
@@ -243,11 +244,11 @@ void Pause(int client) {
 	}
 	else {
 		gB_Paused[client] = true;
-		g_MovementPlayer[client].GetEyeAngles(gF_PauseAngles[client]);
-		FreezePlayer(client);
 		if (gB_TimerRunning[client]) {
-			Call_SimpleKZ_OnTimerPaused(client);
+			g_MovementPlayer[client].GetEyeAngles(gF_PauseAngles[client]);
 		}
+		FreezePlayer(client);
+		Call_SimpleKZ_OnPlayerPause(client);
 	}
 	CloseTeleportMenu(client);
 }
@@ -260,14 +261,14 @@ void Resume(int client) {
 		JoinTeam(client, CS_TEAM_CT);
 	}
 	else {
+		gB_Paused[client] = false;
 		if (gB_TimerRunning[client]) {
 			gB_HasResumedInThisRun[client] = true;
 			gF_LastResumeTime[client] = gF_CurrentTime[client];
 			g_MovementPlayer[client].SetEyeAngles(gF_PauseAngles[client]);
-			Call_SimpleKZ_OnTimerResumed(client);
 		}
-		gB_Paused[client] = false;
 		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
+		Call_SimpleKZ_OnPlayerResume(client);
 	}
 	CloseTeleportMenu(client);
 }
@@ -359,7 +360,7 @@ void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
 		gB_LastTeleportOnGround[client] = false;
 	}
 	
-	Call_SimpleKZ_OnTimerTeleport(client);
+	Call_SimpleKZ_OnPlayerTeleport(client);
 }
 
 void PrintEndTimeString(int client) {
@@ -367,13 +368,13 @@ void PrintEndTimeString(int client) {
 		switch (GetCurrentRunType(client)) {
 			case RunType_Normal: {
 				CPrintToChatAll("%t %t", "KZ_Tag", "BeatMap", 
-					client, FormatTimeFloat(gF_CurrentTime[client]), 
-					gI_TeleportsUsed[client], FormatTimeFloat(gF_CurrentTime[client] - gF_WastedTime[client]), 
+					client, SimpleKZ_FormatTime(gF_CurrentTime[client]), 
+					gI_TeleportsUsed[client], SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
 					gC_StyleChatPhrases[g_MovementStyle[client]]);
 			}
 			case RunType_Pro: {
 				CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapPro", 
-					client, FormatTimeFloat(gF_CurrentTime[client]), 
+					client, SimpleKZ_FormatTime(gF_CurrentTime[client]), 
 					gC_StyleChatPhrases[g_MovementStyle[client]]);
 			}
 		}
@@ -382,13 +383,13 @@ void PrintEndTimeString(int client) {
 		switch (GetCurrentRunType(client)) {
 			case RunType_Normal: {
 				CPrintToChatAll("%t %t", "KZ_Tag", "BeatBonus", 
-					client, gI_CurrentCourse[client], FormatTimeFloat(gF_CurrentTime[client]), 
-					gI_TeleportsUsed[client], FormatTimeFloat(gF_CurrentTime[client] - gF_WastedTime[client]), 
+					client, gI_CurrentCourse[client], SimpleKZ_FormatTime(gF_CurrentTime[client]), 
+					gI_TeleportsUsed[client], SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
 					gC_StyleChatPhrases[g_MovementStyle[client]]);
 			}
 			case RunType_Pro: {
 				CPrintToChatAll("%t %t", "KZ_Tag", "BeatBonusPro", 
-					client, gI_CurrentCourse[client], FormatTimeFloat(gF_CurrentTime[client]), 
+					client, gI_CurrentCourse[client], SimpleKZ_FormatTime(gF_CurrentTime[client]), 
 					gC_StyleChatPhrases[g_MovementStyle[client]]);
 			}
 		}

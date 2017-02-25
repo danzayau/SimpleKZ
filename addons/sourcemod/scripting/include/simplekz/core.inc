@@ -76,7 +76,7 @@ forward void SimpleKZ_OnPlayerPerfectBunnyhop(int client);
  * @param style				The movement style of the player.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerStarted(int client, const char[] map, int course, MovementStyle style);
+forward void SimpleKZ_OnTimerStart(int client, const char[] map, int course, MovementStyle style);
 
 /**
  * Called when the player ends their timer.
@@ -90,23 +90,7 @@ forward void SimpleKZ_OnTimerStarted(int client, const char[] map, int course, M
  * @param theoreticalTime	Theoretical end time without using teleports.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerEnded(int client, const char[] map, int course, MovementStyle style, float time, int teleportsUsed, float theoreticalTime);
-
-/**
- * Called when the player pauses their timer.
- *
- * @param client			Client entity index.
- * @noreturn
- */
-forward void SimpleKZ_OnTimerPaused(int client);
-
-/**
- * Called when the player resumes their timer.
- *
- * @param client			Client entity index.
- * @noreturn
- */
-forward void SimpleKZ_OnTimerResumed(int client);
+forward void SimpleKZ_OnTimerEnd(int client, const char[] map, int course, MovementStyle style, float time, int teleportsUsed, float theoreticalTime);
 
 /**
  * Called when the player's timer has been force stopped (without finishing the map).
@@ -114,7 +98,23 @@ forward void SimpleKZ_OnTimerResumed(int client);
  * @param client			Client entity index.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerForceStopped(int client);
+forward void SimpleKZ_OnTimerForceStop(int client);
+
+/**
+ * Called when the player pauses.
+ *
+ * @param client			Client entity index.
+ * @noreturn
+ */
+forward void SimpleKZ_OnPlayerPause(int client);
+
+/**
+ * Called when the player resumes.
+ *
+ * @param client			Client entity index.
+ * @noreturn
+ */
+forward void SimpleKZ_OnPlayerResume(int client);
 
 /**
  * Called when the player is teleported due to a SimpleKZ timer command.
@@ -122,7 +122,7 @@ forward void SimpleKZ_OnTimerForceStopped(int client);
  * @param client			Client entity index.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerTeleport(int client);
+forward void SimpleKZ_OnPlayerTeleport(int client);
 
 
 
@@ -288,7 +288,7 @@ native void SimpleKZ_TogglePause(int client);
 
 /*===============================  Stocks  ===============================*/
 
-stock char[] FormatTimeFloat(float time) {
+stock char[] SimpleKZ_FormatTime(float time) {
 	char formattedTime[12];
 	
 	int roundedTime = RoundFloat(time * 100); // Time rounded to number of centiseconds

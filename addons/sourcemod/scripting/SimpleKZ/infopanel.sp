@@ -68,13 +68,13 @@ char[] GetInfoPanelTimeString(MovementPlayer player) {
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#ffdd99'>%s</font>", 
 					"InfoPanel_Time", player.id, 
-					FormatTimeFloat(gF_CurrentTime[player.id]));
+					SimpleKZ_FormatTime(gF_CurrentTime[player.id]));
 			}
 			case RunType_Pro: {
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#6699ff'>%s</font>", 
 					"InfoPanel_Time", player.id, 
-					FormatTimeFloat(gF_CurrentTime[player.id]));
+					SimpleKZ_FormatTime(gF_CurrentTime[player.id]));
 			}
 		}
 	}

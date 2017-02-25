@@ -17,7 +17,7 @@
 	{
 		// Bill beat the MAP RECORD and the PRO RECORD [Style]!
 		"#format"	"{1:N},{2:t}"
-		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD{grey} and the {blue}PRO RECORD {2}{grey}!"
+		"en"		"{lime}{1}{grey} beat the {yellow}MAP{grey} and {blue}PRO RECORD {2}{grey}!"
 	}
 	"BeatMapFirstTime"
 	{

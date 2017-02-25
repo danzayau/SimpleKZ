@@ -21,7 +21,7 @@ public Plugin myinfo =
 
 /*===============================  Definitions  ===============================*/
 
-#define MAPPOOL_FILE_PATH "cfg/sourcemod/SimpleKZ/mappool.cfg"
+#define FILE_PATH_MAPPOOL "cfg/sourcemod/SimpleKZ/mappool.cfg"
 
 // TO-DO: Replace with sound config
 #define FULL_SOUNDPATH_BEAT_RECORD "sound/SimpleKZ/beatrecord1.mp3"
@@ -136,15 +136,15 @@ public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
 	DB_CreateTables();
 }
 
-public void SimpleKZ_OnTimerStarted(int client, const char[] map, int course, MovementStyle style) {
+public void SimpleKZ_OnTimerStart(int client, const char[] map, int course, MovementStyle style) {
 	if (gB_ConnectedToDB && !gB_HasSeenPBs[client] && course == 0) {
 		DB_PrintPBs(client, client, map, style);
 	}
 }
 
-public void SimpleKZ_OnTimerEnded(int client, const char[] map, int course, MovementStyle style, float time, int teleportsUsed, float theoreticalTime) {
+public void SimpleKZ_OnTimerEnd(int client, const char[] map, int course, MovementStyle style, float time, int teleportsUsed, float theoreticalTime) {
 	if (course == 0) {
-		DB_ProcessEndTimer(client, map, time, teleportsUsed, theoreticalTime, style);
+		DB_ProcessEndTimer(client, map, style, time, teleportsUsed, theoreticalTime);
 	}
 }
 
@@ -173,10 +173,11 @@ public void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, MovementSt
 	}
 	switch (runType) {
 		case RunType_Normal: {
+			// Only printing MAP time improvement to the achieving player due to spam complaints
 			CPrintToChat(client, " %t", "BeatMapFirstTime", client, rank, maxRank, gC_StyleChatPhrases[style]);
 		}
 		case RunType_Pro: {
-			CPrintToChat(client, " %t", "BeatMapFirstTime_Pro", client, rank, maxRank, gC_StyleChatPhrases[style]);
+			CPrintToChatAll(" %t", "BeatMapFirstTime_Pro", client, rank, maxRank, gC_StyleChatPhrases[style]);
 			EmitSoundToClient(client, REL_SOUNDPATH_BEAT_MAP);
 			EmitSoundToClientSpectators(client, REL_SOUNDPATH_BEAT_MAP);
 		}
@@ -189,10 +190,11 @@ public void SimpleKZ_OnImproveTime(int client, const char[] map, MovementStyle s
 	}
 	switch (runType) {
 		case RunType_Normal: {
-			CPrintToChat(client, " %t", "ImprovedTime", client, FormatTimeFloat(improvement), rank, maxRank, gC_StyleChatPhrases[style]);
+			// Only printing MAP time improvement to the achieving player due to spam complaints
+			CPrintToChat(client, " %t", "ImprovedTime", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StyleChatPhrases[style]);
 		}
 		case RunType_Pro: {
-			CPrintToChat(client, " %t", "ImprovedTime_Pro", client, FormatTimeFloat(improvement), rank, maxRank, gC_StyleChatPhrases[style]);
+			CPrintToChatAll(" %t", "ImprovedTime_Pro", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StyleChatPhrases[style]);
 		}
 	}
 }
