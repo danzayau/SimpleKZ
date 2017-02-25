@@ -46,14 +46,16 @@ void DB_SaveMapInfo() {
 		return;
 	}
 	
-	char query[512];
+	char query[512], currentMap[64];
+	SimpleKZ_GetCurrentMap(currentMap, sizeof(currentMap));
+	
 	switch (g_DBType) {
 		case DatabaseType_SQLite: {
-			FormatEx(query, sizeof(query), sqlite_maps_insert, 0, gC_CurrentMap);
+			FormatEx(query, sizeof(query), sqlite_maps_insert, 0, currentMap);
 			SQL_TQuery(gH_DB, DB_Callback_Generic, query, DBPrio_High);
 		}
 		case DatabaseType_MySQL: {
-			FormatEx(query, sizeof(query), mysql_maps_insert, 0, gC_CurrentMap);
+			FormatEx(query, sizeof(query), mysql_maps_insert, 0, currentMap);
 			SQL_TQuery(gH_DB, DB_Callback_Generic, query, DBPrio_High);
 		}
 	}
@@ -125,17 +127,18 @@ void DB_ProcessEndTimer(int client, const char[] map, float runTime, int telepor
 	data.WriteCell(style);
 	
 	Transaction txn = SQL_CreateTransaction();
-	char query[512];
+	char query[512], steamID[24];
+	SimpleKZ_GetSteamID(client, steamID, sizeof(steamID));
 	// Save runTime to DB
 	FormatEx(query, sizeof(query), sql_times_insert, 
-		gC_SteamID[client], map, runTime, teleportsUsed, theoreticalTime, style);
+		steamID, map, runTime, teleportsUsed, theoreticalTime, style);
 	txn.AddQuery(query);
 	
 	// Get PB
-	FormatEx(query, sizeof(query), sql_getpb, map, gC_SteamID[client], style, 2);
+	FormatEx(query, sizeof(query), sql_getpb, map, steamID, style, 2);
 	txn.AddQuery(query);
 	// Get Rank
-	FormatEx(query, sizeof(query), sql_getmaprank, map, gC_SteamID[client], style, map, style);
+	FormatEx(query, sizeof(query), sql_getmaprank, map, steamID, style, map, style);
 	txn.AddQuery(query);
 	// Get Number of Players with Times
 	FormatEx(query, sizeof(query), sql_getlowestmaprank, map, style);
@@ -143,10 +146,10 @@ void DB_ProcessEndTimer(int client, const char[] map, float runTime, int telepor
 	
 	if (teleportsUsed == 0) {
 		// Get PRO PB
-		FormatEx(query, sizeof(query), sql_getpbpro, map, gC_SteamID[client], style, 2);
+		FormatEx(query, sizeof(query), sql_getpbpro, map, steamID, style, 2);
 		txn.AddQuery(query);
 		// Get PRO Rank
-		FormatEx(query, sizeof(query), sql_getmaprankpro, map, gC_SteamID[client], style, map, style);
+		FormatEx(query, sizeof(query), sql_getmaprankpro, map, steamID, style, map, style);
 		txn.AddQuery(query);
 		// Get Number of Players with PRO Times
 		FormatEx(query, sizeof(query), sql_getlowestmaprankpro, map, style);
@@ -229,32 +232,32 @@ public void DB_TxnSuccess_ProcessEndTimer(Handle db, DataPack data, int numQueri
 	
 	// New record
 	if ((newPB && rank == 1) && !(newPBPro && rankPro == 1)) {
-		Call_SimpleKZ_OnBeatMapRecord(client, map, RecordType_Map, runTime, style);
+		Call_SimpleKZ_OnBeatMapRecord(client, map, style, RecordType_Map, runTime);
 	}
 	else if (!(newPB && rank == 1) && (newPBPro && rankPro == 1)) {
-		Call_SimpleKZ_OnBeatMapRecord(client, map, RecordType_Pro, runTime, style);
+		Call_SimpleKZ_OnBeatMapRecord(client, map, style, RecordType_Pro, runTime);
 	}
 	else if ((newPB && rank == 1) && (newPBPro && rankPro == 1)) {
-		Call_SimpleKZ_OnBeatMapRecord(client, map, RecordType_MapAndPro, runTime, style);
+		Call_SimpleKZ_OnBeatMapRecord(client, map, style, RecordType_MapAndPro, runTime);
 	}
 	
 	// New PB
 	if (newPB) {
 		if (firstTime) {
-			Call_SimpleKZ_OnBeatMapFirstTime(client, map, RunType_Normal, runTime, rank, maxRank, style);
+			Call_SimpleKZ_OnBeatMapFirstTime(client, map, style, RunType_Normal, runTime, rank, maxRank);
 		}
 		else {
-			Call_SimpleKZ_OnImproveTime(client, map, RunType_Normal, runTime, improvement, rank, maxRank, style);
+			Call_SimpleKZ_OnImproveTime(client, map, style, RunType_Normal, runTime, improvement, rank, maxRank);
 		}
 	}
 	
 	// New PRO PB
 	if (newPBPro) {
 		if (firstTimePro) {
-			Call_SimpleKZ_OnBeatMapFirstTime(client, map, RunType_Pro, runTime, rankPro, maxRankPro, style);
+			Call_SimpleKZ_OnBeatMapFirstTime(client, map, style, RunType_Pro, runTime, rankPro, maxRankPro);
 		}
 		else {
-			Call_SimpleKZ_OnImproveTime(client, map, RunType_Pro, runTime, improvementPro, rankPro, maxRankPro, style);
+			Call_SimpleKZ_OnImproveTime(client, map, style, RunType_Pro, runTime, improvementPro, rankPro, maxRankPro);
 		}
 	}
 	
@@ -315,23 +318,23 @@ public void DB_Callback_PrintPBs1(Handle db, Handle results, const char[] error,
 		data.WriteCell(style);
 		
 		Transaction txn = SQL_CreateTransaction();
-		char query[512];
-		
+		char query[512], steamID[24];
+		SimpleKZ_GetSteamID(target, steamID, sizeof(steamID));
 		// Get PB
-		FormatEx(query, sizeof(query), sql_getpb, map, gC_SteamID[target], style, 1);
+		FormatEx(query, sizeof(query), sql_getpb, map, steamID, style, 1);
 		txn.AddQuery(query);
 		// Get Rank
-		FormatEx(query, sizeof(query), sql_getmaprank, map, gC_SteamID[target], style, map, style);
+		FormatEx(query, sizeof(query), sql_getmaprank, map, steamID, style, map, style);
 		txn.AddQuery(query);
 		// Get Number of Players with Times
 		FormatEx(query, sizeof(query), sql_getlowestmaprank, map, style);
 		txn.AddQuery(query);
 		
 		// Get PRO PB
-		FormatEx(query, sizeof(query), sql_getpbpro, map, gC_SteamID[target], style, 1);
+		FormatEx(query, sizeof(query), sql_getpbpro, map, steamID, style, 1);
 		txn.AddQuery(query);
 		// Get PRO Rank
-		FormatEx(query, sizeof(query), sql_getmaprankpro, map, gC_SteamID[target], style, map, style);
+		FormatEx(query, sizeof(query), sql_getmaprankpro, map, steamID, style, map, style);
 		txn.AddQuery(query);
 		// Get Number of Players with PRO Times
 		FormatEx(query, sizeof(query), sql_getlowestmaprankpro, map, style);
@@ -687,15 +690,16 @@ void DB_GetCompletion(int client, int target, MovementStyle style, bool print) {
 	data.WriteCell(view_as<int>(print));
 	
 	Transaction txn = SQL_CreateTransaction();
-	char query[512];
+	char query[512], steamID[24];
+	SimpleKZ_GetSteamID(target, steamID, sizeof(steamID));
 	
 	// Get total number of ranked maps
 	txn.AddQuery(sql_getcounttotalmaps);
 	// Get number of map completions
-	FormatEx(query, sizeof(query), sql_getcountmapscompleted, gC_SteamID[target], style);
+	FormatEx(query, sizeof(query), sql_getcountmapscompleted, steamID, style);
 	txn.AddQuery(query);
 	// Get number of map completions (PRO)
-	FormatEx(query, sizeof(query), sql_getcountmapscompletedpro, gC_SteamID[target], style);
+	FormatEx(query, sizeof(query), sql_getcountmapscompletedpro, steamID, style);
 	txn.AddQuery(query);
 	
 	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_GetCompletion, DB_TxnFailure_Generic, data, DBPrio_Low);

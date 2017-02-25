@@ -1,9 +1,11 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
+#include <regex>
+#include <cstrike>
+
 #include <basecomm>
 #include <geoip>
-#include <cstrike>
 
 #include <colorvariables>
 #include <movement>
@@ -52,6 +54,7 @@ float gF_CurrentTime[MAXPLAYERS + 1];
 bool gB_Paused[MAXPLAYERS + 1] =  { false, ... };
 float gF_LastResumeTime[MAXPLAYERS + 1];
 bool gB_HasResumedInThisRun[MAXPLAYERS + 1] =  { false, ... };
+int gI_CurrentCourse[MAXPLAYERS + 1];
 
 /* Saved Positions and Angles */
 float gF_StartOrigin[MAXPLAYERS + 1][3];
@@ -70,6 +73,8 @@ bool gB_HasStartedThisMap[MAXPLAYERS + 1] =  { false, ... };
 bool gB_HasEndedThisMap[MAXPLAYERS + 1] =  { false, ... };
 float gF_StartButtonOrigin[MAXPLAYERS + 1][3];
 float gF_EndButtonOrigin[MAXPLAYERS + 1][3];
+int gI_LastCourseStarted[MAXPLAYERS + 1];
+int gI_LastCourseEnded[MAXPLAYERS + 1];
 
 /* Wasted Time */
 float gF_LastCheckpointTime[MAXPLAYERS + 1];
@@ -125,7 +130,7 @@ float gF_SplitRunTime[MAXPLAYERS + 1];
 float gF_SplitGameTime[MAXPLAYERS + 1];
 
 /* Movement Tweaker */
-MovementStyle g_MovementStyle[MAXPLAYERS + 1] =  { MovementStyle_Standard };
+MovementStyle g_MovementStyle[MAXPLAYERS + 1];
 float gF_PrestrafeVelocityModifier[MAXPLAYERS + 1];
 bool gB_HitPerf[MAXPLAYERS + 1];
 char gC_PlayerModelT[256];
@@ -135,9 +140,11 @@ char gC_PlayerModelCT[256];
 bool gB_LateLoad;
 MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
 bool gB_CurrentMapIsKZPro;
+char gC_CurrentMap[64];
 int g_OldButtons[MAXPLAYERS + 1];
-ConVar gCV_FullAlltalk;
 int gI_JustTouchedTrigMulti[MAXPLAYERS + 1];
+Regex gRegex_BonusStartButton;
+Regex gRegex_BonusEndButton;
 
 // Weapon entity names
 char gC_WeaponNames[][] = 
@@ -243,7 +250,6 @@ public void OnPluginStart() {
 	AddCommandListener(OnSay, "say");
 	AddCommandListener(OnSay, "say_team");
 	AddNormalSoundHook(view_as<NormalSHook>(OnNormalSound));
-	gCV_FullAlltalk = FindConVar("sv_full_alltalk");
 	
 	// Translations
 	LoadTranslations("common.phrases");
@@ -252,6 +258,7 @@ public void OnPluginStart() {
 	// Setup
 	SetupMovementMethodmaps();
 	CreateMenus();
+	CompileRegexes();
 	
 	if (gB_LateLoad) {
 		OnLateLoad();
@@ -328,11 +335,10 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2]) {
 	TimerTick(client);
-	UpdateTeleportMenu(client);
-	UpdateInfoPanel(client);
-	CheckForTimerButtonPress(client);
-	
-	TweakGeneral(g_MovementPlayer[client]);
+	UpdateTeleportMenu(client); // Can be moved to a slower timer
+	UpdateInfoPanel(client); // Can be moved to a slower timer
+	CheckForTimerButtonPress(client);	
+	MovementTweakGeneral(g_MovementPlayer[client]);
 }
 
 // Adjust player messages, and automatically lower case commands
@@ -376,15 +382,15 @@ public Action OnSay(int client, const char[] command, int argc) {
 // Force stop timer when they enter noclip
 public void OnStartNoclipping(int client) {
 	if (!IsFakeClient(client) && gB_TimerRunning[client]) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Noclip");
 		TimerForceStop(client);
+		CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Noclip");
 	}
 }
 
 // Force stop timer when a player dies
 public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (!IsFakeClient(client)) {
+	if (!IsFakeClient(client) && gB_TimerRunning[client]) {
 		TimerForceStop(client);
 	}
 }
@@ -433,4 +439,5 @@ public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &
 // Force full alltalk on round start
 public void OnRoundStart(Event event, const char[] name, bool dontBroadcast) {
 	SetConVarInt(gCV_FullAlltalk, 1);
+	TimerForceStopAll();
 } 

@@ -20,8 +20,8 @@ void CreateGlobalForwards() {
 	gH_Forward_SimpleKZ_OnDatabaseConnect = CreateGlobalForward("SimpleKZ_OnDatabaseConnect", ET_Event, Param_Cell, Param_Cell);
 	gH_Forward_SimpleKZ_OnChangeMovementStyle = CreateGlobalForward("SimpleKZ_OnChangeMovementStyle", ET_Event, Param_Cell, Param_Cell);
 	gH_Forward_SimpleKZ_OnPerfectBunnyhop = CreateGlobalForward("SimpleKZ_OnPerfectBunnyhop", ET_Event, Param_Cell);
-	gH_Forward_SimpleKZ_OnTimerStarted = CreateGlobalForward("SimpleKZ_OnTimerStarted", ET_Event, Param_Cell, Param_Cell);
-	gH_Forward_SimpleKZ_OnTimerEnded = CreateGlobalForward("SimpleKZ_OnTimerEnded", ET_Event, Param_Cell, Param_Float, Param_Cell, Param_Float, Param_Cell);
+	gH_Forward_SimpleKZ_OnTimerStarted = CreateGlobalForward("SimpleKZ_OnTimerStarted", ET_Event, Param_Cell, Param_String, Param_Cell, Param_Cell);
+	gH_Forward_SimpleKZ_OnTimerEnded = CreateGlobalForward("SimpleKZ_OnTimerEnded", ET_Event, Param_Cell, Param_String, Param_Cell, Param_Cell, Param_Float, Param_Cell, Param_Float);
 	gH_Forward_SimpleKZ_OnTimerPaused = CreateGlobalForward("SimpleKZ_OnTimerPaused", ET_Event, Param_Cell);
 	gH_Forward_SimpleKZ_OnTimerResumed = CreateGlobalForward("SimpleKZ_OnTimerResumed", ET_Event, Param_Cell);
 	gH_Forward_SimpleKZ_OnTimerForceStopped = CreateGlobalForward("SimpleKZ_OnTimerForceStopped", ET_Event, Param_Cell);
@@ -48,20 +48,24 @@ void Call_SimpleKZ_OnPerfectBunnyhop(int client) {
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnTimerStarted(int client) {
+void Call_SimpleKZ_OnTimerStarted(int client, int course) {
 	Call_StartForward(gH_Forward_SimpleKZ_OnTimerStarted);
 	Call_PushCell(client);
-	Call_PushCell(!gB_HasStartedThisMap[client]);
+	Call_PushString(gC_CurrentMap);
+	Call_PushCell(course);
+	Call_PushCell(g_MovementStyle[client]);
 	Call_Finish();
 }
 
 void Call_SimpleKZ_OnTimerEnded(int client) {
 	Call_StartForward(gH_Forward_SimpleKZ_OnTimerEnded);
 	Call_PushCell(client);
+	Call_PushString(gC_CurrentMap);
+	Call_PushCell(gI_CurrentCourse[client]);
+	Call_PushCell(g_MovementStyle[client]);
 	Call_PushFloat(gF_CurrentTime[client]);
 	Call_PushCell(gI_TeleportsUsed[client]);
 	Call_PushFloat(gF_CurrentTime[client] - gF_WastedTime[client]);
-	Call_PushCell(g_MovementStyle[client]);
 	Call_Finish();
 }
 
@@ -94,14 +98,17 @@ void Call_SimpleKZ_OnTimerTeleport(int client) {
 /*===============================  Natives  ===============================*/
 
 void CreateNatives() {
+	CreateNative("SimpleKZ_GetSteamID", Native_GetSteamID);
+	CreateNative("SimpleKZ_GetCurrentMap", Native_GetCurrentMap);
+	
 	CreateNative("SimpleKZ_GetMovementStyle", Native_GetMovementStyle);
 	CreateNative("SimpleKZ_SetMovementStyle", Native_SetMovementStyle);
 	CreateNative("SimpleKZ_GetHitPerf", Native_GetHitPerf);
 	
-	CreateNative("SimpleKZ_StartTimer", Native_StartTimer);
-	CreateNative("SimpleKZ_EndTimer", Native_EndTimer);
 	CreateNative("SimpleKZ_ForceStopTimer", Native_ForceStopTimer);
+	CreateNative("SimpleKZ_ForceStopTimerAll", Native_ForceStopTimerAll);
 	CreateNative("SimpleKZ_GetTimerRunning", Native_GetTimerRunning);
+	CreateNative("SimpleKZ_GetCurrentCourse", Native_GetCurrentCourse);
 	CreateNative("SimpleKZ_GetPaused", Native_GetPaused);
 	CreateNative("SimpleKZ_GetCurrentTime", Native_GetCurrentTime);
 	CreateNative("SimpleKZ_GetCheckpointCount", Native_GetCheckpointCount);
@@ -113,6 +120,14 @@ void CreateNatives() {
 	CreateNative("SimpleKZ_Pause", Native_Pause);
 	CreateNative("SimpleKZ_Resume", Native_Resume);
 	CreateNative("SimpleKZ_TogglePause", Native_TogglePause);
+}
+
+public int Native_GetSteamID(Handle plugin, int numParams) {
+	SetNativeString(2, gC_SteamID[GetNativeCell(1)], GetNativeCell(3));
+}
+
+public int Native_GetCurrentMap(Handle plugin, int numParams) {
+	SetNativeString(1, gC_CurrentMap, GetNativeCell(2));
 }
 
 public int Native_GetMovementStyle(Handle plugin, int numParams) {
@@ -127,20 +142,20 @@ public int Native_GetHitPerf(Handle plugin, int numParams) {
 	return view_as<int>(gB_HitPerf[GetNativeCell(1)]);
 }
 
-public int Native_StartTimer(Handle plugin, int numParams) {
-	TimerStart(GetNativeCell(1));
-}
-
-public int Native_EndTimer(Handle plugin, int numParams) {
-	TimerEnd(GetNativeCell(1));
-}
-
 public int Native_ForceStopTimer(Handle plugin, int numParams) {
 	TimerForceStop(GetNativeCell(1));
 }
 
+public int Native_ForceStopTimerAll(Handle plugin, int numParams) {
+	TimerForceStopAll();
+}
+
 public int Native_GetTimerRunning(Handle plugin, int numParams) {
 	return view_as<int>(gB_TimerRunning[GetNativeCell(1)]);
+}
+
+public int Native_GetCurrentCourse(Handle plugin, int numParams) {
+	return gI_CurrentCourse[GetNativeCell(1)];
 }
 
 public int Native_GetPaused(Handle plugin, int numParams) {

@@ -7,15 +7,11 @@
 void SetMovementStyle(int client, MovementStyle style) {
 	if (g_MovementStyle[client] != style) {
 		g_MovementStyle[client] = style;
+		if (gB_TimerRunning[client]) {
+			TimerForceStop(client);
+			CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_ChangeStyle");
+		}
 		Call_SimpleKZ_OnChangeMovementStyle(client);
-	}
-}
-
-// Force stop timer when they change movement style
-public void SimpleKZ_OnChangeMovementStyle(int client, MovementStyle style) {
-	if (gB_TimerRunning[client]) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_ChangeStyle");
-		TimerForceStop(client);
 	}
 }
 
@@ -24,14 +20,14 @@ public void SimpleKZ_OnChangeMovementStyle(int client, MovementStyle style) {
 /*===============================  Movement API Events  ===============================*/
 
 public void OnStartTouchGround(int client) {
-	TweakDuckSlowdown(g_MovementPlayer[client]);
+	MovementTweakDuckSlowdown(g_MovementPlayer[client]);
 }
 
 public void OnStopTouchGround(int client, bool jumped, bool ducked, bool landed) {
 	if (jumped) {
-		TweakTakeoffSpeed(g_MovementPlayer[client]);
+		MovementTweakTakeoffSpeed(g_MovementPlayer[client]);
 		if (g_MovementStyle[client] == MovementStyle_Standard && ducked) {
-			NerfPerfectCrouchJump(g_MovementPlayer[client]);
+			MovementTweakPerfectCrouchJump(g_MovementPlayer[client]);
 		}
 	}
 	// Reset prestrafe modifier if Standard (this is what enables 'pre b-hopping' in Legacy)
@@ -44,7 +40,7 @@ public void OnStopTouchGround(int client, bool jumped, bool ducked, bool landed)
 
 /*===============================  General Tweak (Called OnPlayerRunCmd)  ===============================*/
 
-void TweakGeneral(MovementPlayer player) {
+void MovementTweakGeneral(MovementPlayer player) {
 	if (player.onGround) {
 		player.velocityModifier = PrestrafeVelocityModifier(player) * WeaponVelocityModifier(player);
 	}
@@ -52,7 +48,7 @@ void TweakGeneral(MovementPlayer player) {
 
 float PrestrafeVelocityModifier(MovementPlayer player) {
 	// In Legacy, only enable prestrafe at speeds above 249.0
-	if (g_MovementStyle[player.id] == MovementStyle_Legacy && player.speed < 249.0) {
+	if (g_MovementStyle[player.id] == MovementStyle_Legacy && player.speed < 200.0) {
 		gF_PrestrafeVelocityModifier[player.id] = 1.0;
 	}
 	// If correct prestrafe technique is detected, increase prestrafe modifier
@@ -111,7 +107,7 @@ float WeaponVelocityModifier(MovementPlayer player) {
 
 /*===============================  Jump Tweaks  ===============================*/
 
-void TweakTakeoffSpeed(MovementPlayer player) {
+void MovementTweakTakeoffSpeed(MovementPlayer player) {
 	if (HitPerf(player)) {
 		gB_HitPerf[player.id] = true;
 		ApplyTakeoffSpeed(player, CalculateTweakedTakeoffSpeed(player));
@@ -160,7 +156,7 @@ float CalculateTweakedTakeoffSpeed(MovementPlayer player) {
 	return player.landingSpeed;
 }
 
-void NerfPerfectCrouchJump(MovementPlayer player) {
+void MovementTweakPerfectCrouchJump(MovementPlayer player) {
 	float newVelocity[3];
 	player.GetVelocity(newVelocity);
 	newVelocity[2] = NORMAL_JUMP_VERTICAL_VELOCITY;
@@ -171,7 +167,7 @@ void NerfPerfectCrouchJump(MovementPlayer player) {
 
 /*===============================  Other Tweaks  ===============================*/
 
-void TweakDuckSlowdown(MovementPlayer player) {
+void MovementTweakDuckSlowdown(MovementPlayer player) {
 	if (g_MovementStyle[player.id] == MovementStyle_Standard || g_MovementStyle[player.id] == MovementStyle_Legacy) {
 		if (player.duckSpeed < DUCK_SPEED_ONLANDING_MINIMUM) {
 			player.duckSpeed = DUCK_SPEED_ONLANDING_MINIMUM;

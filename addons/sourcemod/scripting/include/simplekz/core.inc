@@ -54,10 +54,10 @@ forward void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType);
  * Called when the player changes their movement style.
  *
  * @param client			Client entity index.
- * @param style				Movement style they changed to.
+ * @param newStyle			Movement style they changed to.
  * @noreturn
  */
-forward void SimpleKZ_OnChangeMovementStyle(int client, MovementStyle style);
+forward void SimpleKZ_OnChangeMovementStyle(int client, MovementStyle newStyle);
 
 /**
  * Called when the player hits a plugin-based perfect b-hop.
@@ -71,21 +71,26 @@ forward void SimpleKZ_OnPlayerPerfectBunnyhop(int client);
  * Called when the player starts their timer.
  *
  * @param client			Client entity index.
- * @param firstStart		True if it is the player's first time starting since last map change.
+ * @param map				The name of the map (without prefixes e.g. workshop/).
+ * @param course			Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
+ * @param style				The movement style of the player.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerStarted(int client, bool firstStart);
+forward void SimpleKZ_OnTimerStarted(int client, const char[] map, int course, MovementStyle style);
 
 /**
  * Called when the player ends their timer.
  *
  * @param client			Client entity index.
+ * @param map				The name of the map (without prefixes e.g. workshop/).
+ * @param course			Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
+ * @param style				The movement style of the player.
  * @param time				Player's end time.
  * @param teleportsUsed		Number of teleports the player used.
  * @param theoreticalTime	Theoretical end time without using teleports.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, float theoreticalTime, MovementStyle style);
+forward void SimpleKZ_OnTimerEnded(int client, const char[] map, int course, MovementStyle style, float time, int teleportsUsed, float theoreticalTime);
 
 /**
  * Called when the player pauses their timer.
@@ -124,6 +129,25 @@ forward void SimpleKZ_OnTimerTeleport(int client);
 /*===============================  Natives  ===============================*/
 
 /**
+ * Retrieves a client's SteamID as determined by SimpleKZ core.
+ *
+ * @param client			Client entity index.
+ * @param buffer			String destination buffer.
+ * @param maxlength			Max length of the buffer.
+ * @noreturn
+ */
+native MovementStyle SimpleKZ_GetSteamID(int client, char[] buffer, int maxlength);
+
+/**
+ * Retrieves the current map as determined by SimpleKZ core.
+ *
+ * @param buffer			String destination buffer.
+ * @param maxlength			Max length of the buffer.
+ * @noreturn
+ */
+native MovementStyle SimpleKZ_GetCurrentMap(char[] buffer, int maxlength);
+
+/**
  * Gets the player's chosen movement style.
  *
  * @param client			Client entity index.
@@ -149,28 +173,20 @@ native void SimpleKZ_SetMovementStyle(int client, MovementStyle style);
 native bool SimpleKZ_GetHitPerf(int client);
 
 /**
- * Starts the players timer.
- *
- * @param client    		Client entity index.
- * @noreturn
- */
-native void SimpleKZ_StartTimer(int client);
-
-/**
- * Ends the players timer.
- *
- * @param client    		Client entity index.
- * @noreturn
- */
-native void SimpleKZ_EndTimer(int client);
-
-/**
- * Forces the players timer to stop without calling SimpleKZ_OnTimerEnded. Intended for run invalidation.
+ * Forces the player's timer to stop. Intended for run invalidation.
  *
  * @param client    		Client entity index.
  * @noreturn
  */
 native void SimpleKZ_ForceStopTimer(int client);
+
+/**
+ * Forces all players' timers to stop. Intended for run invalidation.
+ *
+ * @param client    		Client entity index.
+ * @noreturn
+ */
+native void SimpleKZ_ForceStopTimerAll(int client);
 
 /**
  * Gets whether or not the player's timer is running i.e. isn't 'stopped' (regardless of paused state).
@@ -179,6 +195,14 @@ native void SimpleKZ_ForceStopTimer(int client);
  * @return					Whether or not the player's timer is running.
  */
 native bool SimpleKZ_GetTimerRunning(int client);
+
+/**
+ * Gets what course the player is currently running.
+ *
+ * @param client    		Client entity index.
+ * @return					Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
+ */
+native bool SimpleKZ_GetCurrentCourse(int client);
 
 /**
  * Gets whether or not the player is paused.

@@ -23,7 +23,9 @@ void RegisterCommands() {
 
 public Action CommandMapRank(int client, int args) {
 	if (args < 1) {
-		DB_PrintPBs(client, client, gC_CurrentMap, SimpleKZ_GetMovementStyle(client));
+		char currentMap[64];
+		SimpleKZ_GetCurrentMap(currentMap, sizeof(currentMap));
+		DB_PrintPBs(client, client, currentMap, SimpleKZ_GetMovementStyle(client));
 	}
 	else if (args == 1) {
 		char specifiedMap[33];
@@ -46,7 +48,9 @@ public Action CommandMapRank(int client, int args) {
 
 public Action CommandMapRecord(int client, int args) {
 	if (args < 1) {
-		DB_PrintMapRecords(client, gC_CurrentMap, SimpleKZ_GetMovementStyle(client));
+		char currentMap[64];
+		SimpleKZ_GetCurrentMap(currentMap, sizeof(currentMap));
+		DB_PrintMapRecords(client, currentMap, SimpleKZ_GetMovementStyle(client));
 	}
 	else {
 		char specifiedMap[33];
@@ -58,7 +62,9 @@ public Action CommandMapRecord(int client, int args) {
 
 public Action CommandMapTop(int client, int args) {
 	if (args < 1) {
-		gC_MapTopMap[client] = gC_CurrentMap;
+		char currentMap[64];
+		SimpleKZ_GetCurrentMap(currentMap, sizeof(currentMap));
+		gC_MapTopMap[client] = currentMap;
 	}
 	else {
 		GetCmdArg(1, gC_MapTopMap[client], sizeof(gC_MapTopMap[]));

@@ -23,6 +23,21 @@ void SetupMovementMethodmaps() {
 	}
 }
 
+void CompileRegexes() {
+	gRegex_BonusStartButton = CompileRegex("^climb_bonus(\\d+)_startbutton$");
+	gRegex_BonusEndButton = CompileRegex("^climb_bonus(\\d+)_endbutton$");
+}
+
+void String_ToLower(const char[] input, char[] output, int size) {
+	size--;
+	int i = 0;
+	while (input[i] != '\0' && i < size) {
+		output[i] = CharToLower(input[i]);
+		i++;
+	}
+	output[i] = '\0';
+}
+
 void AddCommandListeners() {
 	AddCommandListener(CommandJoinTeam, "jointeam");
 	// Block radio commands
@@ -54,10 +69,11 @@ void UpdateCurrentMap() {
 	// Get just the map name (e.g. remove workshop/id/ prefix)
 	char mapPieces[5][64];
 	int lastPiece = ExplodeString(map, "/", mapPieces, sizeof(mapPieces), sizeof(mapPieces[]));
-	FormatEx(map, sizeof(map), "%s", mapPieces[lastPiece - 1]);
+	FormatEx(gC_CurrentMap, sizeof(gC_CurrentMap), "%s", mapPieces[lastPiece - 1]);
+	String_ToLower(gC_CurrentMap, gC_CurrentMap, sizeof(gC_CurrentMap));
 	// Check for kzpro_ tag
 	char mapPrefix[1][64];
-	ExplodeString(map, "_", mapPrefix, sizeof(mapPrefix), sizeof(mapPrefix[]));
+	ExplodeString(gC_CurrentMap, "_", mapPrefix, sizeof(mapPrefix), sizeof(mapPrefix[]));
 	gB_CurrentMapIsKZPro = StrEqual(mapPrefix[0], "kzpro", false);
 }
 

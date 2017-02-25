@@ -37,8 +37,6 @@ public Plugin myinfo =
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
 DatabaseType g_DBType = DatabaseType_None;
-char gC_CurrentMap[64];
-char gC_SteamID[MAXPLAYERS + 1][24];
 
 /* Menus */
 char gC_MapTopMap[MAXPLAYERS + 1][64];
@@ -138,21 +136,23 @@ public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
 	DB_CreateTables();
 }
 
-public void SimpleKZ_OnTimerStarted(int client, bool firstStart) {
-	if (!gB_HasSeenPBs[client] && gB_ConnectedToDB) {
-		DB_PrintPBs(client, client, gC_CurrentMap, SimpleKZ_GetMovementStyle(client));
+public void SimpleKZ_OnTimerStarted(int client, const char[] map, int course, MovementStyle style) {
+	if (gB_ConnectedToDB && !gB_HasSeenPBs[client] && course == 0) {
+		DB_PrintPBs(client, client, map, style);
 	}
 }
 
-public void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, float theoreticalTime, MovementStyle style) {
-	DB_ProcessEndTimer(client, gC_CurrentMap, time, teleportsUsed, theoreticalTime, style);
+public void SimpleKZ_OnTimerEnded(int client, const char[] map, int course, MovementStyle style, float time, int teleportsUsed, float theoreticalTime) {
+	if (course == 0) {
+		DB_ProcessEndTimer(client, map, time, teleportsUsed, theoreticalTime, style);
+	}
 }
 
-public void SimpleKZ_OnChangeMovementStyle(int client, MovementStyle style) {
+public void SimpleKZ_OnChangeMovementStyle(int client, MovementStyle newStyle) {
 	gB_HasSeenPBs[client] = false;
 }
 
-public void SimpleKZ_OnBeatMapRecord(int client, const char[] map, RecordType recordType, float runTime, MovementStyle style) {
+public void SimpleKZ_OnBeatMapRecord(int client, const char[] map, MovementStyle style, RecordType recordType, float runTime) {
 	switch (recordType) {
 		case RecordType_Map: {
 			CPrintToChatAll(" %t", "BeatMapRecord", client, gC_StyleChatPhrases[style]);
@@ -167,7 +167,7 @@ public void SimpleKZ_OnBeatMapRecord(int client, const char[] map, RecordType re
 	EmitSoundToAll(REL_SOUNDPATH_BEAT_RECORD);
 }
 
-public void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, RunType runType, float runTime, int rank, int maxRank, MovementStyle style) {
+public void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, MovementStyle style, RunType runType, float runTime, int rank, int maxRank) {
 	if (rank == 1) {
 		return;
 	}
@@ -183,7 +183,7 @@ public void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, RunType ru
 	}
 }
 
-public void SimpleKZ_OnImproveTime(int client, const char[] map, RunType runType, float runTime, float improvement, int rank, int maxRank, MovementStyle style) {
+public void SimpleKZ_OnImproveTime(int client, const char[] map, MovementStyle style, RunType runType, float runTime, float improvement, int rank, int maxRank) {
 	if (rank == 1) {
 		return;
 	}
@@ -214,7 +214,6 @@ public void OnClientPutInServer(int client) {
 }
 
 public void OnMapStart() {
-	UpdateCurrentMap();
 	DB_SaveMapInfo();
 	
 	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_RECORD);
