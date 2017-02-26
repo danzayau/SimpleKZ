@@ -5,13 +5,10 @@
 
 
 void RegisterCommands() {
-	RegConsoleCmd("sm_maprank", CommandMapRank, "[KZ] Prints map time and rank to chat. Usage: !maprank <map> <player>");
-	RegConsoleCmd("sm_pb", CommandMapRank, "[KZ] Prints map time and rank to chat. Usage: !maprank <map> <player>");
-	RegConsoleCmd("sm_maprecord", CommandMapRecord, "[KZ] Prints map record times to chat. Usage: !maprecord <map>");
-	RegConsoleCmd("sm_wr", CommandMapRecord, "[KZ] Prints map record times to chat. Usage: !maprecord <map>");
+	RegConsoleCmd("sm_pb", CommandPB, "[KZ] Prints map time and rank to chat. Usage: !pb <map> <player>");
+	RegConsoleCmd("sm_wr", CommandWR, "[KZ] Prints map record times to chat. Usage: !wr <map>");
 	RegConsoleCmd("sm_maptop", CommandMapTop, "[KZ] Opens a menu showing the top times of a map. Usage !maptop <map>");
-	RegConsoleCmd("sm_completion", CommandCompletion, "[KZ] Prints map completion to chat. Usage !completion <player>");
-	RegConsoleCmd("sm_pc", CommandCompletion, "[KZ] Prints map completion to chat. Usage !completion <player>");
+	RegConsoleCmd("sm_pc", CommandPC, "[KZ] Prints map completion to chat. Usage !pc <player>");
 	RegConsoleCmd("sm_top", CommandPlayerTop, "[KZ] Opens a menu showing the top record holders on the server.");
 	
 	RegAdminCmd("sm_updatemappool", CommandUpdateMapPool, ADMFLAG_ROOT, "[KZ] Updates the ranked map pool with the list of maps in cfg/sourcemod/SimpleKZ/mappool.cfg.");
@@ -21,61 +18,57 @@ void RegisterCommands() {
 
 /*===============================  Command Handlers  ===============================*/
 
-public Action CommandMapRank(int client, int args) {
+public Action CommandPB(int client, int args) {
 	if (args < 1) {
-		char currentMap[64];
-		SimpleKZ_GetCurrentMap(currentMap, sizeof(currentMap));
-		DB_PrintPBs(client, client, currentMap, SimpleKZ_GetMovementStyle(client));
+		DB_PrintPBs(client, client, gI_CurrentMapID, 0, SimpleKZ_GetOptionStyle(client));
 	}
 	else if (args == 1) {
 		char specifiedMap[33];
 		GetCmdArg(1, specifiedMap, sizeof(specifiedMap));
-		DB_PrintPBs(client, client, specifiedMap, SimpleKZ_GetMovementStyle(client));
+		DB_PrintPBs_SearchMap(client, client, specifiedMap, 0, SimpleKZ_GetOptionStyle(client));
 	}
 	else {
 		char specifiedMap[33];
 		GetCmdArg(1, specifiedMap, sizeof(specifiedMap));
 		char specifiedPlayer[MAX_NAME_LENGTH];
 		GetCmdArg(2, specifiedPlayer, sizeof(specifiedPlayer));
-		
 		int target = FindTarget(client, specifiedPlayer, true, false);
+		
 		if (target != -1) {
-			DB_PrintPBs(client, target, specifiedMap, SimpleKZ_GetMovementStyle(client));
+			DB_PrintPBs_SearchMap(client, target, specifiedMap, 0, SimpleKZ_GetOptionStyle(client));
 		}
 	}
 	return Plugin_Handled;
 }
 
-public Action CommandMapRecord(int client, int args) {
+public Action CommandWR(int client, int args) {
 	if (args < 1) {
-		char currentMap[64];
-		SimpleKZ_GetCurrentMap(currentMap, sizeof(currentMap));
-		DB_PrintMapRecords(client, currentMap, SimpleKZ_GetMovementStyle(client));
+		DB_PrintRecords(client, gI_CurrentMapID, 0, SimpleKZ_GetOptionStyle(client));
 	}
 	else {
 		char specifiedMap[33];
 		GetCmdArg(1, specifiedMap, sizeof(specifiedMap));
-		DB_PrintMapRecords(client, specifiedMap, SimpleKZ_GetMovementStyle(client));
+		DB_PrintRecords_SearchMap(client, specifiedMap, 0, SimpleKZ_GetOptionStyle(client));
 	}
 	return Plugin_Handled;
 }
 
 public Action CommandMapTop(int client, int args) {
 	if (args < 1) {
-		char currentMap[64];
-		SimpleKZ_GetCurrentMap(currentMap, sizeof(currentMap));
-		gC_MapTopMap[client] = currentMap;
+		DB_OpenMapTop(client, gI_CurrentMapID, 0, SimpleKZ_GetOptionStyle(client));
 	}
 	else {
-		GetCmdArg(1, gC_MapTopMap[client], sizeof(gC_MapTopMap[]));
+		char specifiedMap[33];
+		GetCmdArg(1, specifiedMap, sizeof(specifiedMap));
+		DB_OpenMapTop_SearchMap(client, specifiedMap, 0, SimpleKZ_GetOptionStyle(client));
 	}
-	DB_OpenMapTop(client, gC_MapTopMap[client], SimpleKZ_GetMovementStyle(client));
+	
 	return Plugin_Handled;
 }
 
-public Action CommandCompletion(int client, int args) {
+public Action CommandPC(int client, int args) {
 	if (args < 1) {
-		DB_GetCompletion(client, client, SimpleKZ_GetMovementStyle(client), true);
+		DB_GetCompletion(client, client, SimpleKZ_GetOptionStyle(client), true);
 	}
 	else {
 		char specifiedPlayer[MAX_NAME_LENGTH];
@@ -83,14 +76,14 @@ public Action CommandCompletion(int client, int args) {
 		
 		int target = FindTarget(client, specifiedPlayer, true, false);
 		if (target != -1) {
-			DB_GetCompletion(client, target, SimpleKZ_GetMovementStyle(client), true);
+			DB_GetCompletion(client, target, SimpleKZ_GetOptionStyle(client), true);
 		}
 	}
 	return Plugin_Handled;
 }
 
 public Action CommandPlayerTop(int client, int args) {
-	g_PlayerTopStyle[client] = SimpleKZ_GetMovementStyle(client);
+	g_PlayerTopStyle[client] = SimpleKZ_GetOptionStyle(client);
 	DisplayPlayerTopMenu(client);
 	return Plugin_Handled;
 }
@@ -100,5 +93,5 @@ public Action CommandPlayerTop(int client, int args) {
 /*===============================  Command Handlers  ===============================*/
 
 public Action CommandUpdateMapPool(int client, int args) {
-	DB_UpdateMapPool(client);
+	DB_UpdateRankedMapPool(client);
 } 

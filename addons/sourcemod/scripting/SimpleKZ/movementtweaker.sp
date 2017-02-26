@@ -5,11 +5,11 @@
 
 
 void SetMovementStyle(int client, MovementStyle style) {
-	if (g_MovementStyle[client] != style) {
-		g_MovementStyle[client] = style;
+	if (g_Style[client] != style) {
+		g_Style[client] = style;
 		if (gB_TimerRunning[client]) {
 			TimerForceStop(client);
-			CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_ChangeStyle");
+			CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Changed Style)");
 		}
 		Call_SimpleKZ_OnChangeMovementStyle(client);
 	}
@@ -26,12 +26,12 @@ public void OnStartTouchGround(int client) {
 public void OnStopTouchGround(int client, bool jumped, bool ducked, bool landed) {
 	if (jumped) {
 		MovementTweakTakeoffSpeed(g_MovementPlayer[client]);
-		if (g_MovementStyle[client] == MovementStyle_Standard && ducked) {
+		if (g_Style[client] == MovementStyle_Standard && ducked) {
 			MovementTweakPerfectCrouchJump(g_MovementPlayer[client]);
 		}
 	}
 	// Reset prestrafe modifier if Standard (this is what enables 'pre b-hopping' in Legacy)
-	if (g_MovementStyle[client] == MovementStyle_Standard) {
+	if (g_Style[client] == MovementStyle_Standard) {
 		gF_PrestrafeVelocityModifier[client] = 1.0;
 	}
 }
@@ -48,7 +48,7 @@ void MovementTweakGeneral(MovementPlayer player) {
 
 float PrestrafeVelocityModifier(MovementPlayer player) {
 	// Note: Still trying to get Legacy prestrafe to feel like it does in KZTimer
-	if (g_MovementStyle[player.id] == MovementStyle_Legacy && player.speed < 200.0) {
+	if (g_Style[player.id] == MovementStyle_Legacy && player.speed < 200.0) {
 		gF_PrestrafeVelocityModifier[player.id] = 1.0;
 	}
 	// If correct prestrafe technique is detected, increase prestrafe modifier
@@ -72,14 +72,14 @@ float PrestrafeVelocityModifier(MovementPlayer player) {
 }
 
 bool CheckIfValidPrestrafeKeys(MovementPlayer player) {
-	if (g_MovementStyle[player.id] == MovementStyle_Standard) {
+	if (g_Style[player.id] == MovementStyle_Standard) {
 		// If _only_ WA or WD or SA or SD are pressed, then return true.
 		if (((player.buttons & IN_FORWARD && !(player.buttons & IN_BACK)) || (!(player.buttons & IN_FORWARD) && player.buttons & IN_BACK))
 			 && ((player.buttons & IN_MOVELEFT && !(player.buttons & IN_MOVERIGHT)) || (!(player.buttons & IN_MOVELEFT) && player.buttons & IN_MOVERIGHT))) {
 			return true;
 		}
 	}
-	else if (g_MovementStyle[player.id] == MovementStyle_Legacy) {
+	else if (g_Style[player.id] == MovementStyle_Legacy) {
 		if (player.buttons & IN_MOVELEFT || player.buttons & IN_MOVERIGHT) {
 			return true;
 		}
@@ -119,10 +119,10 @@ void MovementTweakTakeoffSpeed(MovementPlayer player) {
 }
 
 bool HitPerf(MovementPlayer player) {
-	if (g_MovementStyle[player.id] == MovementStyle_Standard) {
+	if (g_Style[player.id] == MovementStyle_Standard) {
 		return player.jumpTick - player.landingTick <= STYLE_DEFAULT_PERF_TICKS;
 	}
-	else if (g_MovementStyle[player.id] == MovementStyle_Legacy) {
+	else if (g_Style[player.id] == MovementStyle_Legacy) {
 		return player.jumpTick - player.landingTick <= STYLE_LEGACY_PERF_TICKS;
 	}
 	return player.jumpTick - player.landingTick <= 1;
@@ -147,10 +147,10 @@ float ApplyTakeoffSpeed(MovementPlayer player, float speed) {
 }
 
 float CalculateTweakedTakeoffSpeed(MovementPlayer player) {
-	if (g_MovementStyle[player.id] == MovementStyle_Standard && player.landingSpeed > SPEED_NORMAL) {
+	if (g_Style[player.id] == MovementStyle_Standard && player.landingSpeed > SPEED_NORMAL) {
 		return 0.2 * player.landingSpeed + 200;
 	}
-	else if (g_MovementStyle[player.id] == MovementStyle_Legacy && player.speed > STYLE_LEGACY_PERF_SPEED_CAP) {
+	else if (g_Style[player.id] == MovementStyle_Legacy && player.speed > STYLE_LEGACY_PERF_SPEED_CAP) {
 		return STYLE_LEGACY_PERF_SPEED_CAP;
 	}
 	return player.landingSpeed;
@@ -168,7 +168,7 @@ void MovementTweakPerfectCrouchJump(MovementPlayer player) {
 /*===============================  Other Tweaks  ===============================*/
 
 void MovementTweakDuckSlowdown(MovementPlayer player) {
-	if (g_MovementStyle[player.id] == MovementStyle_Standard || g_MovementStyle[player.id] == MovementStyle_Legacy) {
+	if (g_Style[player.id] == MovementStyle_Standard || g_Style[player.id] == MovementStyle_Legacy) {
 		if (player.duckSpeed < DUCK_SPEED_MINIMUM) {
 			player.duckSpeed = DUCK_SPEED_MINIMUM;
 		}

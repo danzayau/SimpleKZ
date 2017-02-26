@@ -28,7 +28,7 @@ void CreateTeleportMenu(int client) {
 }
 
 void UpdateTeleportMenu(int client) {
-	if (GetClientMenu(client) == MenuSource_None && gB_ShowingTeleportMenu[client] && !gB_TeleportMenuIsShowing[client]) {
+	if (GetClientMenu(client) == MenuSource_None && gB_ShowingTeleportMenu[client] && !gB_TeleportMenuIsShowing[client] && IsPlayerAlive(client)) {
 		UpdateTeleportMenuItems(client);
 		DisplayMenu(gH_TeleportMenu[client], client, MENU_TIME_FOREVER);
 		gB_TeleportMenuIsShowing[client] = true;
@@ -37,19 +37,12 @@ void UpdateTeleportMenu(int client) {
 
 public int MenuHandler_TeleportMenu(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
-		if (IsPlayerAlive(param1)) {
-			switch (param2) {
-				case 0:MakeCheckpoint(param1);
-				case 1:TeleportToCheckpoint(param1);
-				case 2:TogglePause(param1);
-				case 3:TeleportToStart(param1);
-				case 4:UndoTeleport(param1);
-			}
-		}
-		else {
-			switch (param2) {
-				case 0:JoinTeam(param1, CS_TEAM_CT);
-			}
+		switch (param2) {
+			case 0:MakeCheckpoint(param1);
+			case 1:TeleportToCheckpoint(param1);
+			case 2:TogglePause(param1);
+			case 3:TeleportToStart(param1);
+			case 4:UndoTeleport(param1);
 		}
 	}
 	else if (action == MenuAction_Cancel) {
@@ -66,16 +59,11 @@ void CloseTeleportMenu(int client) {
 }
 
 void TeleportAddItems(int client) {
-	if (IsPlayerAlive(client)) {
-		TeleportAddItemCheckpoint(client);
-		TeleportAddItemTeleport(client);
-		TeleportAddItemPause(client);
-		TeleportAddItemStart(client);
-		TeleportAddItemUndo(client);
-	}
-	else {
-		TeleportAddItemRejoin(client);
-	}
+	TeleportAddItemCheckpoint(client);
+	TeleportAddItemTeleport(client);
+	TeleportAddItemPause(client);
+	TeleportAddItemStart(client);
+	TeleportAddItemUndo(client);
 }
 
 void UpdateTeleportMenuItems(int client) {
@@ -85,13 +73,13 @@ void UpdateTeleportMenuItems(int client) {
 
 void TeleportAddItemCheckpoint(int client) {
 	char text[16];
-	FormatEx(text, sizeof(text), "%T", "TPMenu_Checkpoint", client);
+	FormatEx(text, sizeof(text), "%T", "TP Menu - Checkpoint", client);
 	AddMenuItem(gH_TeleportMenu[client], "", text);
 }
 
 void TeleportAddItemTeleport(int client) {
 	char text[16];
-	FormatEx(text, sizeof(text), "%T", "TPMenu_Teleport", client);
+	FormatEx(text, sizeof(text), "%T", "TP Menu - Teleport", client);
 	if (gI_CheckpointCount[client] > 0) {
 		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
@@ -102,7 +90,7 @@ void TeleportAddItemTeleport(int client) {
 
 void TeleportAddItemUndo(int client) {
 	char text[16];
-	FormatEx(text, sizeof(text), "%T", "TPMenu_Undo", client);
+	FormatEx(text, sizeof(text), "%T", "TP Menu - Undo TP", client);
 	if (gI_TeleportsUsed[client] > 0 && gB_LastTeleportOnGround[client]) {
 		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
@@ -114,11 +102,11 @@ void TeleportAddItemUndo(int client) {
 void TeleportAddItemPause(int client) {
 	char text[16];
 	if (!gB_Paused[client]) {
-		FormatEx(text, sizeof(text), "%T", "TPMenu_Pause", client);
+		FormatEx(text, sizeof(text), "%T", "TP Menu - Pause", client);
 		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
 	else {
-		FormatEx(text, sizeof(text), "%T", "TPMenu_Resume", client);
+		FormatEx(text, sizeof(text), "%T", "TP Menu - Resume", client);
 		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
 }
@@ -126,19 +114,13 @@ void TeleportAddItemPause(int client) {
 void TeleportAddItemStart(int client) {
 	char text[16];
 	if (gB_HasStartedThisMap[client]) {
-		FormatEx(text, sizeof(text), "%T", "TPMenu_Restart", client);
+		FormatEx(text, sizeof(text), "%T", "TP Menu - Restart", client);
 		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
 	else {
-		FormatEx(text, sizeof(text), "%T", "TPMenu_Respawn", client);
+		FormatEx(text, sizeof(text), "%T", "TP Menu - Respawn", client);
 		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
-}
-
-void TeleportAddItemRejoin(int client) {
-	char text[16];
-	FormatEx(text, sizeof(text), "%T", "TPMenu_Rejoin", client);
-	AddMenuItem(gH_TeleportMenu[client], "", text);
 }
 
 
@@ -160,7 +142,7 @@ void DisplayPistolMenu(int client) {
 }
 
 void UpdatePistolMenu(int client) {
-	SetMenuTitle(gH_PistolMenu[client], "%T", "PistolMenu_Title", client);
+	SetMenuTitle(gH_PistolMenu[client], "%T", "Pistol Menu - Title", client);
 	RemoveAllMenuItems(gH_PistolMenu[client]);
 	for (int pistol = 0; pistol < sizeof(gC_Pistols); pistol++) {
 		AddMenuItem(gH_PistolMenu[client], "", gC_Pistols[pistol][1]);
@@ -199,15 +181,15 @@ void DisplayMeasureMenu(int client) {
 }
 
 void UpdateMeasureMenu(int client) {
-	SetMenuTitle(gH_MeasureMenu[client], "%T", "MeasureMenu_Title", client);
+	SetMenuTitle(gH_MeasureMenu[client], "%T", "Measure Menu - Title", client);
 	
 	char text[32];
 	RemoveAllMenuItems(gH_MeasureMenu[client]);
-	FormatEx(text, sizeof(text), "%T", "MeasureMenu_PointA", client);
+	FormatEx(text, sizeof(text), "%T", "Measure Menu - Point A", client);
 	AddMenuItem(gH_MeasureMenu[client], "", text);
-	FormatEx(text, sizeof(text), "%T", "MeasureMenu_PointB", client);
+	FormatEx(text, sizeof(text), "%T", "Measure Menu - Point B", client);
 	AddMenuItem(gH_MeasureMenu[client], "", text);
-	FormatEx(text, sizeof(text), "%T", "MeasureMenu_GetDistance", client);
+	FormatEx(text, sizeof(text), "%T", "Measure Menu - Get Distance", client);
 	AddMenuItem(gH_MeasureMenu[client], "", text);
 }
 
@@ -224,11 +206,11 @@ public int MenuHandler_Measure(Handle menu, MenuAction action, int param1, int p
 				if (gB_MeasurePosSet[param1][0] && gB_MeasurePosSet[param1][1]) {
 					float vDist = GetVectorDistance(gF_MeasurePos[param1][0], gF_MeasurePos[param1][1]);
 					float vHightDist = (gF_MeasurePos[param1][1][2] - gF_MeasurePos[param1][0][2]);
-					CPrintToChat(param1, "%t %t", "KZ_Tag", "Measure_Result", vDist, vHightDist);
+					CPrintToChat(param1, "%t %t", "KZ Prefix", "Measure Result", vDist, vHightDist);
 					MeasureBeam(param1, gF_MeasurePos[param1][0], gF_MeasurePos[param1][1], 5.0, 2.0, 200, 200, 200);
 				}
 				else {
-					CPrintToChat(param1, "%t %t", "KZ_Tag", "Measure_PointsNotSet");
+					CPrintToChat(param1, "%t %t", "KZ Prefix", "Measure Failure (Points Not Set)");
 				}
 			}
 		}
@@ -250,7 +232,7 @@ void MeasureGetPos(int client, int arg) {
 	
 	if (!TR_DidHit(trace)) {
 		CloseHandle(trace);
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Measure_NotAimingAtSolid");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Measure Failure (Not Aiming at Solid)");
 		return;
 	}
 	
@@ -392,33 +374,33 @@ void DisplayOptionsMenu(int client, int atItem = 0) {
 }
 
 void UpdateOptionsMenu(int client) {
-	SetMenuTitle(gH_OptionsMenu[client], "%T", "OptionsMenu_Title", client);
+	SetMenuTitle(gH_OptionsMenu[client], "%T", "Options Menu - Title", client);
 	RemoveAllMenuItems(gH_OptionsMenu[client]);
-	OptionsAddBool(client, gB_ShowingTeleportMenu[client], "OptionsMenu_TeleportMenu");
-	OptionsAddBool(client, gB_ShowingInfoPanel[client], "OptionsMenu_InfoPanel");
-	OptionsAddBool(client, gB_ShowingPlayers[client], "OptionsMenu_ShowPlayers");
-	OptionsAddBool(client, gB_ShowingWeapon[client], "OptionsMenu_ShowWeapon");
-	OptionsAddBool(client, gB_AutoRestart[client], "OptionsMenu_AutoRestart");
+	OptionsAddBool(client, gB_ShowingTeleportMenu[client], "Options Menu - Teleport Menu");
+	OptionsAddBool(client, gB_ShowingInfoPanel[client], "Options Menu - Info Panel");
+	OptionsAddBool(client, gB_ShowingPlayers[client], "Options Menu - Show Players");
+	OptionsAddBool(client, gB_ShowingWeapon[client], "Options Menu - Show Weapon");
+	OptionsAddBool(client, gB_AutoRestart[client], "Options Menu - Auto Restart");
 	OptionsAddPistol(client);
-	OptionsAddBool(client, gB_SlayOnEnd[client], "OptionsMenu_SlayOnEnd");
-	OptionsAddBool(client, gB_ShowingKeys[client], "OptionsMenu_ShowKeys");
+	OptionsAddBool(client, gB_SlayOnEnd[client], "Options Menu - Slay On End");
+	OptionsAddBool(client, gB_ShowingKeys[client], "Options Menu - Show Keys");
 }
 
 void OptionsAddBool(int client, bool option, const char[] optionPhrase) {
 	char text[32];
 	if (option) {
-		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "OptionsMenu_Enabled", client);
+		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Enabled", client);
 		AddMenuItem(gH_OptionsMenu[client], "", text);
 	}
 	else {
-		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "OptionsMenu_Disabled", client);
+		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Disabled", client);
 		AddMenuItem(gH_OptionsMenu[client], "", text);
 	}
 }
 
 void OptionsAddPistol(int client) {
 	char text[32];
-	FormatEx(text, sizeof(text), "%T - %s", "OptionsMenu_Pistol", client, gC_Pistols[gI_Pistol[client]][1]);
+	FormatEx(text, sizeof(text), "%T - %s", "Options Menu - Pistol", client, gC_Pistols[gI_Pistol[client]][1]);
 	AddMenuItem(gH_OptionsMenu[client], "", text);
 }
 
@@ -458,7 +440,7 @@ void CreateMovementStyleMenu(int client) {
 }
 
 void DisplayMovementStyleMenu(int client) {
-	SetMenuTitle(gH_MovementStyleMenu[client], "%T", "StyleMenu_Title", client);
+	SetMenuTitle(gH_MovementStyleMenu[client], "%T", "Style Menu - Title", client);
 	AddItemsMovementStyleMenu(client);
 	DisplayMenu(gH_MovementStyleMenu[client], client, MENU_TIME_FOREVER);
 }
@@ -468,7 +450,7 @@ void AddItemsMovementStyleMenu(int client) {
 	RemoveAllMenuItems(gH_MovementStyleMenu[client]);
 	for (int style = 0; style < SIMPLEKZ_NUMBER_OF_STYLES; style++) {
 		FormatEx(text, sizeof(text), "%T", gC_StyleMenuPhrases[style], client);
-		if (style == view_as<int>(g_MovementStyle[client])) {
+		if (style == view_as<int>(g_Style[client])) {
 			AddMenuItem(gH_MovementStyleMenu[client], "", text, ITEMDRAW_DISABLED);
 		}
 		else {

@@ -1,233 +1,296 @@
 "Phrases"
 {	
 	// Chat Messages ////////////////////////////////////////////////////////////
-	"BeatMapRecord"
-	{
-		// Bill beat the MAP RECORD [Style]!
-		"#format"	"{1:N},{2:t}"
-		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD {2}{grey}!"
-	}
-	"BeatProRecord"
-	{
-		// Bill beat the PRO RECORD [Style]!
-		"#format"	"{1:N}"
-		"en"		"{lime}{1}{grey} beat the {blue}PRO RECORD{grey}!"
-	}
-	"BeatMapAndProRecord"
-	{
-		// Bill beat the MAP RECORD and the PRO RECORD [Style]!
-		"#format"	"{1:N},{2:t}"
-		"en"		"{lime}{1}{grey} beat the {yellow}MAP{grey} and {blue}PRO RECORD {2}{grey}!"
-	}
-	"BeatMapFirstTime"
-	{
-		// Bill just beat the map for the first time (#5/12) [Style]!
-		"#format"	"{1:N},{2:d},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} just beat the map for the first time (#{default}{2}{grey}/{3}) {4}{grey}!"
-	}
-	"BeatMapFirstTime_Pro"
-	{
-		// Bill just PRO'd the map for the first time (#5/12) [Style]!
-		"#format"	"{1:N},{2:d},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d the map for the first time (#{default}{2}{grey}/{3}) {4}{grey}!"
-	}
-	"ImprovedTime"
-	{
-		// Bill just beat their MAP time by -00:12.34 (#5/12) [Style].
-		"#format"	"{1:N},{2:s},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just beat their {yellow}MAP{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {5}{grey}!"
-	}
-	"ImprovedTime_Pro"
-	{
-		// Bill just beat their PRO time by -00:12.34 (#5/12) [Style]!
-		"#format"	"{1:N},{2:s},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just beat their {blue}PRO{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {5}{grey}!"
-	}
-	"PB_Header"
-	{	
-		// Best times by Bill on kz_map [Style]
-		"#format"	"{1:s},{2:N},{3:t}"
-		"en"		"{grey}Best Times by {lime}{2}{grey} on {lime}{1} {3}"
-	}
-	"PB_Header_Self"
-	{
-		// Your Best Times on kz_map [Style]
-		"#format"	"{1:s},{2:t}"
-		"en"		"{grey}Your Best Times on {lime}{1} {2}"
-	}
-	"PB_NoTimes"
-	{
-		"en"		"{grey}They don't have a time... yet."
-	}
-	"PB_NoTimes_Self"
-	{
-		"en"		"{grey}You don't have a time... yet."
-	}
-	"PB_Map"
-	{
-		// MAP PB: 01:23.45 #4/123 (5 TP | 01:01.23)
-		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:s}"
-		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} #{default}{2}{grey}/{3}  ({yellow}{4} TP{grey} | {grey}{5}{grey})"
-	}
-	"PB_Map_Pro"
-	{
-		// MAP PB: 01:23.45 #4/123 (PRO #3/12)
-		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:d}"
-		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} #{default}{2}{grey}/{3} ({blue}PRO{grey} #{default}{4}{grey}/{5})"
-	}
-	"PB_Pro"
-	{
-		// PRO PB: 01:23.45 #4/123
-		"#format"	"{1:s},{2:d},{3:d}"
-		"en"		"{blue}PRO PB{grey}: {default}{1}{grey} #{default}{2}{grey}/{3}"
-	}
-	"PB_Pro_None"
-	{
-		"en"		"{blue}PRO PB{grey}: None!"
-	}
-	"WR_Header"
-	{
-		// Server Records on kz_map [Style]
-		"#format"	"{1:s},{2:t}"
-		"en"		"{grey}Server Records on {lime}{1} {2}"
-	}
-	"WR_NoTimes"
-	{
-		"en"		"{grey}No times found!"
-	}
-	"WR_Map"
-	{
-		// MAP RECORD: 01:23.45 (4 TP) by Bill
-		"#format"	"{1:s},{2:d},{3:s}"
-		"en"		"{yellow}MAP RECORD{grey}: {default}{1}{grey} ({yellow}{2} TP{grey}) by {lime}{3}"
-	}
-	"WR_Map_Pro"
-	{
-		// MAP RECORD: 01:23.45 (PRO) by Bill
-		"#format"	"{1:s},{2:s}"
-		"en"		"{yellow}MAP RECORD{grey}: {default}{1}{grey} ({blue}PRO{grey}) by {lime}{2}"
-	}
-	"WR_Pro"
-	{
-		// PRO RECORD: 01:23.45 by Bill
-		"#format"	"{1:s},{2:s}"
-		"en"		"{blue}PRO RECORD{grey}: {default}{1}{grey} by {lime}{2}"
-	}
-	"WR_Pro_None"
-	{
-		"en"		"{blue}PRO RECORD{grey}: None!"
-	}
-	"MapNotFound"
+	"Map Not Found"
 	{
 		// Your search for map kz_fakemap returned with no results.
 		"#format"	"{1:s}"
 		"en"		"{grey}Your search for map {lime}{1}{grey} returned with no results."
 	}
-	"NoRankedMaps"
+	"No Ranked Maps"
 	{
 		"en"		"{grey}This server hasn't set any maps to be ranked."
 	}
-	"MapTop_NoTimes"
-	{
-		"#format"	"{1:s}"
-		"en"		"{grey}No times were found on {lime}{1}{grey}."
-	}
-	"MapTop_NoTimes_Pro"
-	{
-		"#format"	"{1:s}"
-		"en"		"{grey}No {blue}PRO{grey} times were found on {lime}{1}{grey}."
-	}
-	"MapPool_UpdateSuccess"
+	"Map Pool Update Successful"
 	{
 		"en"		"{grey}The ranked map pool was successfully updated."
 	}
-	
-	// Map Top Menu ////////////////////////////////////////////////////////////
-	"MapTopMenu_Title"
+	"New Record - Map"
 	{
-		// Map Top (kz_map) [Style]
+		// Bill beat the MAP RECORD [Style]!
+		"#format"	"{1:N},{2:t}"
+		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD {2}{grey}!"
+	}
+	"New Record - Pro"
+	{
+		// Bill beat the PRO RECORD [Style]!
+		"#format"	"{1:N},{2:t}"
+		"en"		"{lime}{1}{grey} beat the {blue}PRO RECORD {2}{grey}!"
+	}
+	"New Record - Map and Pro"
+	{
+		// Bill beat the MAP RECORD and the PRO RECORD [Style]!
+		"#format"	"{1:N},{2:t}"
+		"en"		"{lime}{1}{grey} beat the {yellow}MAP{grey} and {blue}PRO RECORD {2}{grey}!"
+	}
+	"New Bonus Record - Map"
+	{
+		// Bill beat the Bonus 1 MAP RECORD [Style]!
+		"#format"	"{1:N},{2:d},{3:t}"
+		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {yellow}MAP RECORD {3}{grey}!"
+	}
+	"New Bonus Record - Pro"
+	{
+		// Bill beat the PRO RECORD [Style]!
+		"#format"	"{1:N},{2:d},{3:t}"
+		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {blue}PRO RECORD {3}{grey}!"
+	}
+	"New Bonus Record - Map and Pro"
+	{
+		// Bill beat the Bonus 1 MAP RECORD and the PRO RECORD [Style]!
+		"#format"	"{1:N},{2:d},{3:t}"
+		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {yellow}MAP{grey} and {blue}PRO RECORD {3}{grey}!"
+	}
+	"New PB - First Time"
+	{
+		// Bill just beat the map for the first time (#5/12) [Style]!
+		"#format"	"{1:N},{2:d},{3:d},{4:t}"
+		"en"		"{lime}{1}{grey} just beat the map for the first time (#{default}{2}{grey}/{3}) {4}{grey}!"
+	}
+	"New PB - First Time (Pro)"
+	{
+		// Bill just PRO'd the map for the first time (#5/12) [Style]!
+		"#format"	"{1:N},{2:d},{3:d},{4:t}"
+		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d the map for the first time (#{default}{2}{grey}/{3}) {4}{grey}!"
+	}
+	"New PB - Improve"
+	{
+		// Bill just beat their MAP time by -00:12.34 (#5/12) [Style].
+		"#format"	"{1:N},{2:s},{3:d},{4:d},{5:t}"
+		"en"		"{lime}{1}{grey} just beat their {yellow}MAP{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {5}{grey}!"
+	}
+	"New PB - Improve (Pro)"
+	{
+		// Bill just beat their PRO time by -00:12.34 (#5/12) [Style]!
+		"#format"	"{1:N},{2:s},{3:d},{4:d},{5:t}"
+		"en"		"{lime}{1}{grey} just beat their {blue}PRO{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {5}{grey}!"
+	}
+	"New Bonus PB - First Time"
+	{
+		// Bill just beat Bonus 1 for the first time (#5/12) [Style]!
+		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:t}"
+		"en"		"{lime}{1}{grey} just beat {gold}Bonus {2} {grey}for the first time (#{default}{3}{grey}/{4}) {5}{grey}!"
+	}
+	"New Bonus PB - First Time (Pro)"
+	{
+		// Bill just PRO'd Bonus 1 for the first time (#5/12) [Style]!
+		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:t}"
+		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d {gold}Bonus {2} {grey}for the first time (#{default}{3}{grey}/{4}) {5}{grey}!"
+	}
+	"New Bonus PB - Improve"
+	{
+		// Bill just beat their Bonus 1 MAP time by -00:12.34 (#5/12) [Style].
+		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:d},{6:t}"
+		"en"		"{lime}{1}{grey} just beat their {gold}Bonus {2} {yellow}MAP{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {5}{grey}!"
+	}
+	"New Bonus PB - Improve (Pro)"
+	{
+		// Bill just beat their Bonus 1 PRO time by -00:12.34 (#5/12) [Style]!
+		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:d},{6:t}"
+		"en"		"{lime}{1}{grey} just beat their {gold}Bonus {2} {blue}PRO{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {5}{grey}!"
+	}
+	"PB Header"
+	{	
+		// Best times by Bill on kz_map [Style]
+		"#format"	"{1:N},{2:s},{3:t}"
+		"en"		"{grey}Best Times by {lime}{2}{grey} on {lime}{1} {3}"
+	}
+	"PB Header (Bonus)"
+	{
+		// Best times by Bill on kz_map Bonus 1 [Style]
+		"#format"	"{1:n},{2:s},{3:d},{4:t}"
+		"en"		"{grey}Best Times by {lime}{1}{grey} on {lime}{2} {gold}Bonus {3} {4}"
+	}
+	"PB No Times"
+	{
+		"en"		"{grey}They don't have a time... yet."
+	}
+	"PB No Times (Self)"
+	{
+		"en"		"{grey}You don't have a time... yet."
+	}
+	"PB Time - Map"
+	{
+		// MAP PB: 01:23.45 #4/123 (5 TP | 01:01.23)
+		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:s}"
+		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} #{default}{2}{grey}/{3}  ({yellow}{4} TP{grey} | {grey}{5}{grey})"
+	}
+	"PB Time - Map (Pro)"
+	{
+		// MAP PB: 01:23.45 #4/123 (PRO #3/12)
+		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:d}"
+		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} #{default}{2}{grey}/{3} ({blue}PRO{grey} #{default}{4}{grey}/{5})"
+	}
+	"PB Time - Pro"
+	{
+		// PRO PB: 01:23.45 #4/123
+		"#format"	"{1:s},{2:d},{3:d}"
+		"en"		"{blue}PRO PB{grey}: {default}{1}{grey} #{default}{2}{grey}/{3}"
+	}
+	"PB Time - No Pro Time"
+	{
+		"en"		"{blue}PRO PB{grey}: None!"
+	}
+	"WR Header"
+	{
+		// Server Records on kz_map [Style]
 		"#format"	"{1:s},{2:t}"
-		"en"		"Map Top ({1}) [{2}]"
+		"en"		"{grey}Server Records on {lime}{1} {2}"
 	}
-	"MapTopMenu_Top20"
+	"WR Header (Bonus)"
 	{
-		"en"		"Top 20"
+		// Server Records on kz_map Bonus 1 [Style]
+		"#format"	"{1:s},{2:d},{3:t}"
+		"en"		"{grey}Server Records on {lime}{1} {gold}Bonus {2} {3}"
 	}
-	"MapTopMenu_Top20Title"
+	"WR No Times"
 	{
-		// Top 20 Times (kz_map) [Style]
-		"#format"	"{1:s},{2:t}"
-		"en"		"Top 20 Times ({1}) [{2}]"	
+		"en"		"{grey}No times found!"
 	}
-	"MapTopMenu_Top20Pro"
+	"WR Time - Map"
 	{
-		"en"		"Top 20 PRO"
+		// MAP RECORD: 01:23.45 (4 TP) by Bill
+		"#format"	"{1:s},{2:d},{3:s}"
+		"en"		"{yellow}MAP RECORD{grey}: {default}{1}{grey} ({yellow}{2} TP{grey}) by {lime}{3}"
 	}
-	"MapTopMenu_Top20ProTitle"
+	"WR Time - Map (Pro)"
 	{
-		// Top 20 PRO Times (kz_map) [Style]
-		"#format"	"{1:s},{2:t}"
-		"en"		"Top 20 PRO Times ({1}) [{2}]"	
+		// MAP RECORD: 01:23.45 (PRO) by Bill
+		"#format"	"{1:s},{2:s}"
+		"en"		"{yellow}MAP RECORD{grey}: {default}{1}{grey} ({blue}PRO{grey}) by {lime}{2}"
 	}
-	"MapTopMenu_Top20Theoretical"
+	"WR Time - Pro"
 	{
-		"en"		"Top 20 Theoretical"
+		// PRO RECORD: 01:23.45 by Bill
+		"#format"	"{1:s},{2:s}"
+		"en"		"{blue}PRO RECORD{grey}: {default}{1}{grey} by {lime}{2}"
 	}
-	"MapTopMenu_Top20TheoreticalTitle"
+	"WR Time - No Pro Time"
 	{
-		// Top 20 Theoretical Times (kz_map) [Style]
-		"#format"	"{1:s},{2:t}"
-		"en"		"Top 20 PRO Times ({1}) [{2}]"	
+		"en"		"{blue}PRO RECORD{grey}: None!"
 	}
-
-	
-	// Player Top Menu ////////////////////////////////////////////////////////////
-	"PlayerTop_NoTimes"
+	"Map Top - No Times"
+	{
+		"en"		"{grey}No times were found."
+	}
+	"Map Top - No Times (Pro)"
+	{
+		"en"		"{grey}No {blue}PRO{grey} times were found."
+	}
+	"Player Top - No Times"
 	{
 		"en"		"No one has beaten a ranked map on this server... yet."
 	}
-	"PlayerTop_NoTimesPro"
+	"Player Top - No Times (Pro)"
 	{
 		"en"		"No one has {blue}PRO{grey}'d a ranked map on this server... yet."
 	}
-	"PlayerTopMenu_Title"
-	{
-		// Top Players [Style]
-		"#format"	"{1:t}"
-		"en"		"Top Players {1}"
-	}
-	"PlayerTopMenu_Top20"
-	{
-		"en"		"Top 20"
-	}
-	"PlayerTopMenu_Top20Pro"
-	{
-		"en"		"Top 20 PRO"
-	}
-	"PlayerTopMenu_ListTitle"
-	{
-		// Top 20 MAP RECORD Holders [Style]
-		"#format"	"{1:t}"
-		"en"		"Top 20 MAP RECORD Holders [{1}]"
-	}
-	"PlayerTopMenu_ListTitlePro"
-	{
-		// Top 20 PRO RECORD Holders [Style]
-		"#format"	"{1:t}"
-		"en"		"Top 20 PRO Record Holders [{1}]"
-	}
-	
-	// Percentage Completion ////////////////////////////////////////////////////////////
-	"MapCompletion"
+	"Map Completion"
 	{
 		// Bill has beaten 12/234 and PRO'd 6/234 maps.
 		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:d},{6:t}"
 		"en"		"{lime}{1}{grey} has beaten {default}{2}{grey}/{default}{3}{grey} and {blue}PRO{grey}'d {default}{4}{grey}/{default{5}{default} {grey}maps {6}{grey}."
 	}
-	"MapCompletion_Self"
+
+	
+	// Map Top Menu ////////////////////////////////////////////////////////////
+	"Map Top Menu - Title"
 	{
-		// You have beaten 12/234 maps and PRO'd 6/234 maps.
-		"#format"	"{1:d},{2:d},{3:d},{4:d},{5:t}"
-		"en"		"You have beaten {default}{1}{grey}/{default}{2}{grey} and {blue}PRO{grey}'d {default}{3}{grey}/{default}{4}{default} {grey}maps {5}{grey}."
+		// Map Top (kz_map) [Style]
+		"#format"	"{1:s},{2:t}"
+		"en"		"Map Top ({1}) [{2}]"
+	}
+	"Map Top Menu - Title (Bonus)"
+	{
+		// Map Top (kz_map Bonus 1) [Style]
+		"#format"	"{1:s},{2:d},{3:t}"
+		"en"		"Map Top ({1} Bonus {2}) [{3}]"
+	}
+	"Map Top Menu - Top 20"
+	{
+		"en"		"Top 20"
+	}
+	"Map Top Menu - Top 20 Pro"
+	{
+		"en"		"Top 20 PRO"
+	}
+	"Map Top Menu - Top 20 Theoretical"
+	{
+		"en"		"Top 20 Theoretical"
+	}
+	"Map Top Submenu - Title (Top 20)"
+	{
+		// Top 20 Times (kz_map) [Style]
+		"#format"	"{1:s},{2:t}"
+		"en"		"Top 20 Times ({1}) [{2}]"	
+	}
+	"Map Top Submenu - Title (Top 20 Pro)"
+	{
+		// Top 20 PRO Times (kz_map) [Style]
+		"#format"	"{1:s},{2:t}"
+		"en"		"Top 20 PRO Times ({1}) [{2}]"	
+	}
+	"Map Top Submenu - Title (Top 20 Theoretical)"
+	{
+		// Top 20 Theoretical Times (kz_map) [Style]
+		"#format"	"{1:s},{2:t}"
+		"en"		"Top 20 Theoretical Times ({1}) [{2}]"	
+	}
+	"Map Top Submenu - Title (Bonus Top 20)"
+	{
+		// Top 20 Times (kz_map Bonus 1) [Style]
+		"#format"	"{1:s},{2:d},{3:t}"
+		"en"		"Top 20 Times ({1} Bonus {2}) [{3}]"	
+	}
+	"Map Top Submenu - Title (Bonus Top 20 Pro)"
+	{
+		// Top 20 PRO Times (kz_map Bonus 1) [Style]
+		"#format"	"{1:s},{2:d},{3:t}"
+		"en"		"Top 20 PRO Times ({1} Bonus {2}) [{3}]"	
+	}
+	"Map Top Submenu - Title (Bonus Top 20 Theoretical)"
+	{
+		// Top 20 Theoretical Times (kz_map Bonus 1) [Style]
+		"#format"	"{1:s},{2:d},{3:t}"
+		"en"		"Top 20 Theoretical Times ({1} Bonus {2}) [{3}]"	
+	}
+
+	
+	// Player Top Menu ////////////////////////////////////////////////////////////
+	"Player Top Menu - Title"
+	{
+		// Top Players [Style]
+		"#format"	"{1:t}"
+		"en"		"Top Players {1}"
+	}
+	"Player Top Menu - Top 20"
+	{
+		"en"		"Top 20"
+	}
+	"Player Top Menu - Top 20 (Pro)"
+	{
+		"en"		"Top 20 PRO"
+	}
+	"Player Top Submenu - Title (Top 20)"
+	{
+		// Top 20 MAP RECORD Holders [Style]
+		"#format"	"{1:t}"
+		"en"		"Top 20 MAP RECORD Holders [{1}]"
+	}
+	"Player Top Submenu - Title (Top 20 Pro)"
+	{
+		// Top 20 PRO RECORD Holders [Style]
+		"#format"	"{1:t}"
+		"en"		"Top 20 PRO Record Holders [{1}]"
 	}
 }

@@ -67,13 +67,13 @@ char[] GetInfoPanelTimeString(MovementPlayer player) {
 			case RunType_Normal: {
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#ffdd99'>%s</font>", 
-					"InfoPanel_Time", player.id, 
+					"Info Panel Text - Time", player.id, 
 					SimpleKZ_FormatTime(gF_CurrentTime[player.id]));
 			}
 			case RunType_Pro: {
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#6699ff'>%s</font>", 
-					"InfoPanel_Time", player.id, 
+					"Info Panel Text - Time", player.id, 
 					SimpleKZ_FormatTime(gF_CurrentTime[player.id]));
 			}
 		}
@@ -81,8 +81,8 @@ char[] GetInfoPanelTimeString(MovementPlayer player) {
 	else {
 		FormatEx(timeString, sizeof(timeString), 
 			" <b>%T</b>: %T", 
-			"InfoPanel_Time", player.id, 
-			"InfoPanel_Stopped", player.id);
+			"Info Panel Text - Time", player.id, 
+			"Info Panel Text - Stopped", player.id);
 	}
 	return timeString;
 }
@@ -92,7 +92,7 @@ char[] GetInfoPanelPausedString(MovementPlayer player) {
 	if (gB_Paused[player.id]) {
 		FormatEx(pausedString, sizeof(pausedString), 
 			"(<font color='#999999'>%T</font>)", 
-			"InfoPanel_Paused", player.id);
+			"Info Panel Text - PAUSED", player.id);
 	}
 	else {
 		pausedString = "";
@@ -104,7 +104,7 @@ char[] GetInfoPanelStyleString(MovementPlayer player) {
 	char styleString[48];
 	FormatEx(styleString, sizeof(styleString), 
 		"[<font color='#B980EF'>%T</font>]", 
-		gC_StyleMenuPhrases[g_MovementStyle[player.id]], player.id);
+		gC_StyleMenuPhrases[g_Style[player.id]], player.id);
 	return styleString;
 }
 
@@ -114,13 +114,13 @@ char[] GetInfoPanelSpeedString(MovementPlayer player) {
 		if (player.onGround || player.onLadder || player.noclipping) {
 			FormatEx(speedString, sizeof(speedString), 
 				" <b>%T</b>: <font color='#999999'>%.0f</font> u/s", 
-				"InfoPanel_Speed", player.id, 
+				"Info Panel Text - Speed", player.id, 
 				RoundFloat(player.speed * 10) / 10.0);
 		}
 		else {
 			FormatEx(speedString, sizeof(speedString), 
 				" <b>%T</b>: <font color='#999999'>%.0f</font>", 
-				"InfoPanel_Speed", player.id, 
+				"Info Panel Text - Speed", player.id, 
 				RoundFloat(player.speed * 10) / 10.0);
 		}
 	}
@@ -154,7 +154,7 @@ char[] GetInfoPanelKeysString(MovementPlayer player) {
 	char keysString[64];
 	FormatEx(keysString, sizeof(keysString), 
 		" <b>%T</b>: <font color='#999999'>%c %c %c %c   %c %c</font>", 
-		"InfoPanel_Keys", player.id, 
+		"Info Panel Text - Keys", player.id, 
 		GetInfoPanelAString(player), 
 		GetInfoPanelWString(player), 
 		GetInfoPanelSString(player), 

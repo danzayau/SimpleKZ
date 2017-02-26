@@ -24,8 +24,8 @@ void SetupMovementMethodmaps() {
 }
 
 void CompileRegexes() {
-	gRegex_BonusStartButton = CompileRegex("^climb_bonus(\\d+)_startbutton$");
-	gRegex_BonusEndButton = CompileRegex("^climb_bonus(\\d+)_endbutton$");
+	gRE_BonusStartButton = CompileRegex("^climb_bonus(\\d+)_startbutton$");
+	gRE_BonusEndButton = CompileRegex("^climb_bonus(\\d+)_endbutton$");
 }
 
 void String_ToLower(const char[] input, char[] output, int size) {
@@ -59,11 +59,7 @@ void LoadKZConfig() {
 	}
 }
 
-void OnMapStartVariableUpdates() {
-	UpdateCurrentMap();
-}
-
-void UpdateCurrentMap() {
+void SetupMap() {
 	char map[64];
 	GetCurrentMap(map, sizeof(map));
 	// Get just the map name (e.g. remove workshop/id/ prefix)
@@ -74,7 +70,7 @@ void UpdateCurrentMap() {
 	// Check for kzpro_ tag
 	char mapPrefix[1][64];
 	ExplodeString(gC_CurrentMap, "_", mapPrefix, sizeof(mapPrefix), sizeof(mapPrefix[]));
-	gB_CurrentMapIsKZPro = StrEqual(mapPrefix[0], "kzpro", false);
+	gB_CurrentMapIsKZPro = StrEqual(mapPrefix[0], "kzpro");
 }
 
 void PrecacheModels() {
@@ -97,16 +93,12 @@ void PrecachePlayerModels() {
 /*===============================  Client  ===============================*/
 
 void SetupClient(int client) {
-	GetClientCountry(client);
-	GetClientSteamID(client);
-	DB_SavePlayerInfo(client);
-	DB_LoadPreferences(client);
-	
+	DB_SetupClient(client);
+	TimerSetup(client);
 	UpdatePistolMenu(client);
 	UpdateMeasureMenu(client);
-	UpdateOptionsMenu(client);
-	TimerSetup(client);
 	MeasureResetPos(client);
+	UpdateOptionsMenu(client);
 	SplitsSetup(client);
 	NoBhopBlockCPSetup(client);
 }
@@ -177,7 +169,7 @@ void TeleportToOtherPlayer(int client, int target)
 		CS_RespawnPlayer(client);
 	}
 	TeleportEntity(client, targetOrigin, targetAngles, view_as<float>( { 0.0, 0.0, -100.0 } ));
-	CPrintToChat(client, "%t %t", "KZ_Tag", "Goto_Success", target);
+	CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Success", target);
 }
 
 void EmitSoundToClientSpectators(int client, const char[] sound) {
@@ -206,36 +198,20 @@ void ToggleNoclip(int client) {
 	}
 }
 
-void GetClientCountry(int client) {
-	char clientIP[32];
-	GetClientIP(client, clientIP, sizeof(clientIP));
-	if (!GeoipCountry(clientIP, gC_Country[client], sizeof(gC_Country[]))) {
-		gC_Country[client] = "Unknown";
-	}
-}
-
-void GetClientSteamID(int client) {
-	GetClientAuthId(client, AuthId_Steam2, gC_SteamID[client], 24, true);
-}
-
-void GetClientSteamIDAll() {
-	for (int client = 1; client <= MaxClients; client++) {
-		if (IsClientAuthorized(client)) {
-			GetClientSteamID(client);
-		}
-	}
-}
-
 void PrintConnectMessage(int client) {
-	char clientName[MAX_NAME_LENGTH];
-	GetClientName(client, clientName, MAX_NAME_LENGTH);
-	CPrintToChatAll("%T", "Client_Connect", client, clientName, gC_Country[client]);
+	char name[MAX_NAME_LENGTH], clientIP[32], country[45];
+	GetClientName(client, name, MAX_NAME_LENGTH);
+	GetClientIP(client, clientIP, sizeof(clientIP));
+	if (!GeoipCountry(clientIP, country, sizeof(country))) {
+		country = "Unknown";
+	}
+	CPrintToChatAll("%T", "Client Connection Message", client, name, country);
 }
 
 void PrintDisconnectMessage(int client, const char[] reason) {
-	char clientName[MAX_NAME_LENGTH];
-	GetClientName(client, clientName, MAX_NAME_LENGTH);
-	CPrintToChatAll("%T", "Client_Disconnect", client, clientName, reason);
+	char name[MAX_NAME_LENGTH];
+	GetClientName(client, name, MAX_NAME_LENGTH);
+	CPrintToChatAll("%T", "Client Disconnection Message", client, name, reason);
 }
 
 RunType GetCurrentRunType(int client) {
@@ -293,7 +269,8 @@ void GivePlayerPistol(int client, int pistol) {
 
 /*===============================  Options  ===============================*/
 
-void SetDefaultPreferences(int client) {
+void SetDefaultOptions(int client) {
+	g_Style[client] = view_as<MovementStyle>(GetConVarInt(gCV_DefaultStyle));
 	gB_ShowingTeleportMenu[client] = true;
 	gB_ShowingInfoPanel[client] = true;
 	gB_ShowingKeys[client] = false;
@@ -302,51 +279,50 @@ void SetDefaultPreferences(int client) {
 	gB_AutoRestart[client] = false;
 	gB_SlayOnEnd[client] = false;
 	gI_Pistol[client] = 0;
-	g_MovementStyle[client] = view_as<MovementStyle>(GetConVarInt(gCV_DefaultMovementStyle));
 }
 
 void ToggleTeleportMenu(int client) {
 	if (gB_ShowingTeleportMenu[client]) {
 		gB_ShowingTeleportMenu[client] = false;
 		CloseTeleportMenu(client);
-		CPrintToChat(client, "%t %t", "KZ_Tag", "TeleportMenu_Disable");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Menu - Disable");
 	}
 	else {
 		gB_ShowingTeleportMenu[client] = true;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "TeleportMenu_Enable");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Menu - Enable");
 	}
 }
 
 void ToggleShowPlayers(int client) {
 	if (gB_ShowingPlayers[client]) {
 		gB_ShowingPlayers[client] = false;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowPlayers_Disable");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Players - Disable");
 	}
 	else {
 		gB_ShowingPlayers[client] = true;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowPlayers_Enable");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Players - Enable");
 	}
 }
 
 void ToggleInfoPanel(int client) {
 	if (gB_ShowingInfoPanel[client]) {
 		gB_ShowingInfoPanel[client] = false;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "InfoPanel_Disable");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Info Panel - Disable");
 	}
 	else {
 		gB_ShowingInfoPanel[client] = true;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "InfoPanel_Enable");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Info Panel - Enable");
 	}
 }
 
 void ToggleShowWeapon(int client) {
 	if (gB_ShowingWeapon[client]) {
 		gB_ShowingWeapon[client] = false;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowWeapon_Disable");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Weapon - Disable");
 	}
 	else {
 		gB_ShowingWeapon[client] = true;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowWeapon_Enable");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Weapon - Enable");
 	}
 	SetDrawViewModel(client, gB_ShowingWeapon[client]);
 }
@@ -354,33 +330,33 @@ void ToggleShowWeapon(int client) {
 void ToggleShowKeys(int client) {
 	if (gB_ShowingKeys[client]) {
 		gB_ShowingKeys[client] = false;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowKeys_Disable");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Keys - Disable");
 	}
 	else {
 		gB_ShowingKeys[client] = true;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "ShowKeys_Enable");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Keys - Enable");
 	}
 }
 
 void ToggleAutoRestart(int client) {
 	if (gB_AutoRestart[client]) {
 		gB_AutoRestart[client] = false;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "AutoRestart_Disable");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Auto Restart - Disable");
 	}
 	else {
 		gB_AutoRestart[client] = true;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "AutoRestart_Enable");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Auto Restart - Enable");
 	}
 }
 
 void ToggleSlayOnEnd(int client) {
 	if (gB_SlayOnEnd[client]) {
 		gB_SlayOnEnd[client] = false;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "SlayOnEnd_Disable");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Slay On End - Disable");
 	}
 	else {
 		gB_SlayOnEnd[client] = true;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "SlayOnEnd_Enable");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Slay On End - Enable");
 	}
 }
 
@@ -396,7 +372,7 @@ void SplitsSetup(int client) {
 
 void SplitsReset(int client) {
 	if (IsClientInGame(client) && gB_HasStartedThisMap[client] && gI_Splits[client] != 0) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Split_Reset");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Split Reset");
 	}
 	gI_Splits[client] = 0;
 	gF_SplitRunTime[client] = 0.0;
@@ -411,17 +387,17 @@ void SplitsMake(int client) {
 	
 	gI_Splits[client]++;
 	if (gB_TimerRunning[client]) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Split_Make", 
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Split Create", 
 			gI_Splits[client], 
 			SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_SplitRunTime[client]), 
 			SimpleKZ_FormatTime(gF_CurrentTime[client]));
 	}
 	else {
 		if (gI_Splits[client] == 1) {
-			CPrintToChat(client, "%t %t", "KZ_Tag", "Split_MakeFirst");
+			CPrintToChat(client, "%t %t", "KZ Prefix", "Split Create (First)");
 		}
 		else {
-			CPrintToChat(client, "%t %t", "KZ_Tag", "Split_Make_TimerStopped", 
+			CPrintToChat(client, "%t %t", "KZ Prefix", "Split Create (Timer Stopped)", 
 				SimpleKZ_FormatTime(GetGameTime() - gF_SplitGameTime[client]));
 		}
 	}

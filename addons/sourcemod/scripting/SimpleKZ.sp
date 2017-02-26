@@ -48,6 +48,21 @@ public Plugin myinfo =
 
 /*===============================  Global Variables  ===============================*/
 
+/* ConVars */
+ConVar gCV_FullAlltalk;
+ConVar gCV_DefaultStyle;
+ConVar gCV_CustomChat;
+ConVar gCV_PlayerModelT;
+ConVar gCV_PlayerModelCT;
+
+/* Movement Tweaker */
+MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
+MovementStyle g_Style[MAXPLAYERS + 1];
+float gF_PrestrafeVelocityModifier[MAXPLAYERS + 1];
+bool gB_HitPerf[MAXPLAYERS + 1];
+char gC_PlayerModelT[256];
+char gC_PlayerModelCT[256];
+
 /* Timer */
 bool gB_TimerRunning[MAXPLAYERS + 1] =  { false, ... };
 float gF_CurrentTime[MAXPLAYERS + 1];
@@ -56,19 +71,10 @@ float gF_LastResumeTime[MAXPLAYERS + 1];
 bool gB_HasResumedInThisRun[MAXPLAYERS + 1] =  { false, ... };
 int gI_CurrentCourse[MAXPLAYERS + 1];
 
-/* Saved Positions and Angles */
-float gF_StartOrigin[MAXPLAYERS + 1][3];
-float gF_StartAngles[MAXPLAYERS + 1][3];
-int gI_CheckpointCount[MAXPLAYERS + 1];
-int gI_TeleportsUsed[MAXPLAYERS + 1];
-float gF_CheckpointOrigin[MAXPLAYERS + 1][3];
-float gF_CheckpointAngles[MAXPLAYERS + 1][3];
-bool gB_LastTeleportOnGround[MAXPLAYERS + 1];
-float gF_UndoOrigin[MAXPLAYERS + 1][3];
-float gF_UndoAngle[MAXPLAYERS + 1][3];
-float gF_PauseAngles[MAXPLAYERS + 1][3];
-
 /* Button Press Checking */
+int gI_OldButtons[MAXPLAYERS + 1];
+Regex gRE_BonusStartButton;
+Regex gRE_BonusEndButton;
 bool gB_HasStartedThisMap[MAXPLAYERS + 1] =  { false, ... };
 bool gB_HasEndedThisMap[MAXPLAYERS + 1] =  { false, ... };
 float gF_StartButtonOrigin[MAXPLAYERS + 1][3];
@@ -86,6 +92,18 @@ float gF_LastTeleportToStartTime[MAXPLAYERS + 1];
 float gF_LastTeleportToStartWastedTime[MAXPLAYERS + 1];
 float gF_WastedTime[MAXPLAYERS + 1];
 
+/* Saved Positions and Angles */
+float gF_StartOrigin[MAXPLAYERS + 1][3];
+float gF_StartAngles[MAXPLAYERS + 1][3];
+int gI_CheckpointCount[MAXPLAYERS + 1];
+int gI_TeleportsUsed[MAXPLAYERS + 1];
+float gF_CheckpointOrigin[MAXPLAYERS + 1][3];
+float gF_CheckpointAngles[MAXPLAYERS + 1][3];
+bool gB_LastTeleportOnGround[MAXPLAYERS + 1];
+float gF_UndoOrigin[MAXPLAYERS + 1][3];
+float gF_UndoAngle[MAXPLAYERS + 1][3];
+float gF_PauseAngles[MAXPLAYERS + 1][3];
+
 /* Position Restoration */
 bool gB_HasSavedPosition[MAXPLAYERS + 1] =  { false, ... };
 float gF_SavedOrigin[MAXPLAYERS + 1][3];
@@ -95,8 +113,15 @@ float gF_SavedAngles[MAXPLAYERS + 1][3];
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
 DatabaseType g_DBType = DatabaseType_None;
-char gC_SteamID[MAXPLAYERS + 1][24];
-char gC_Country[MAXPLAYERS + 1][45];
+int gI_PlayerID[MAXPLAYERS + 1];
+
+/* Menus */
+Handle gH_PistolMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+Handle gH_TeleportMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1] =  { false, ... };
+Handle gH_OptionsMenu[MAXPLAYERS + 1];
+bool gB_CameFromOptionsMenu[MAXPLAYERS + 1];
+Handle gH_MovementStyleMenu[MAXPLAYERS + 1];
 
 /* Preferences */
 bool gB_ShowingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
@@ -107,14 +132,6 @@ bool gB_ShowingWeapon[MAXPLAYERS + 1] =  { true, ... };
 bool gB_AutoRestart[MAXPLAYERS + 1] =  { false, ... };
 bool gB_SlayOnEnd[MAXPLAYERS + 1] =  { false, ... };
 int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
-
-/* Menus */
-Handle gH_PistolMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-Handle gH_TeleportMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1] =  { false, ... };
-Handle gH_OptionsMenu[MAXPLAYERS + 1];
-bool gB_CameFromOptionsMenu[MAXPLAYERS + 1];
-Handle gH_MovementStyleMenu[MAXPLAYERS + 1];
 
 /* Measure */
 Handle gH_MeasureMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
@@ -129,24 +146,13 @@ int gI_Splits[MAXPLAYERS + 1];
 float gF_SplitRunTime[MAXPLAYERS + 1];
 float gF_SplitGameTime[MAXPLAYERS + 1];
 
-/* Movement Tweaker */
-MovementStyle g_MovementStyle[MAXPLAYERS + 1];
-float gF_PrestrafeVelocityModifier[MAXPLAYERS + 1];
-bool gB_HitPerf[MAXPLAYERS + 1];
-char gC_PlayerModelT[256];
-char gC_PlayerModelCT[256];
-
 /* Other */
 bool gB_LateLoad;
-MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
-bool gB_CurrentMapIsKZPro;
 char gC_CurrentMap[64];
-int g_OldButtons[MAXPLAYERS + 1];
+bool gB_CurrentMapIsKZPro;
 int gI_JustTouchedTrigMulti[MAXPLAYERS + 1];
-Regex gRegex_BonusStartButton;
-Regex gRegex_BonusEndButton;
 
-// Weapon entity names
+/* Weapon entity names */
 char gC_WeaponNames[][] = 
 { "weapon_ak47", "weapon_aug", "weapon_awp", "weapon_bizon", "weapon_deagle", 
 	"weapon_decoy", "weapon_elite", "weapon_famas", "weapon_fiveseven", "weapon_flashbang", 
@@ -157,7 +163,7 @@ char gC_WeaponNames[][] =
 	"weapon_sg556", "weapon_smokegrenade", "weapon_ssg08", "weapon_taser", "weapon_tec9", 
 	"weapon_ump45", "weapon_xm1014" };
 
-// Max movement speed of weapons (respective to gC_WeaponNames array).
+/* Max movement speed of weapons (respective to gC_WeaponNames). */
 int gI_WeaponRunSpeeds[] = 
 { 215, 220, 200, 240, 230, 
 	245, 240, 220, 240, 245, 
@@ -168,7 +174,7 @@ int gI_WeaponRunSpeeds[] =
 	210, 245, 230, 240, 240, 
 	230, 215 };
 
-// Pistol Entity Names (entity class name, alias, team that buys it)
+/* Pistol Entity Names (entity name | alias | team that buys it) */
 char gC_Pistols[][][] = 
 {
 	{ "weapon_hkp2000", "P2000 / USP-S", "CT" }, 
@@ -181,33 +187,33 @@ char gC_Pistols[][][] =
 	{ "weapon_tec9", "Tec-9", "T" }
 };
 
-// Radio commands
+/* Radio commands */
 char gC_RadioCommands[][] =  { "coverme", "takepoint", "holdpos", "regroup", "followme", "takingfire", "go", 
 	"fallback", "sticktog", "getinpos", "stormfront", "report", "roger", "enemyspot", "needbackup", "sectorclear", 
 	"inposition", "reportingin", "getout", "negative", "enemydown", "compliment", "thanks", "cheer" };
 
-// Styles translation phrases for chat messages (respective to MovementStyle enum)
+/* Styles translation phrases for chat messages (respective to MovementStyle enum) */
 char gC_StyleChatPhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
-{ "Style_Standard", 
-	"Style_Legacy"
+{ "Style - Standard", 
+	"Style - Legacy"
 };
 
-// Styles translation phrases for menus (respective to MovementStyle enum)
+/* Styles translation phrases for menus i.e. no formatting (respective to MovementStyle enum) */
 char gC_StyleMenuPhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
-{ "StyleMenu_Standard", 
-	"StyleMenu_Legacy"
+{ "Style Menu - Standard", 
+	"Style Menu - Legacy"
 };
 
 
 
 /*===============================  Includes  ===============================*/
 
-// Global Variable Includes
+/* Global variable includes */
 #include "SimpleKZ/sql.sp"
 
 #include "SimpleKZ/api.sp"
-#include "SimpleKZ/commands.sp"
 #include "SimpleKZ/convars.sp"
+#include "SimpleKZ/commands.sp"
 #include "SimpleKZ/database.sp"
 #include "SimpleKZ/infopanel.sp"
 #include "SimpleKZ/menus.sp"
@@ -259,6 +265,7 @@ public void OnPluginStart() {
 	SetupMovementMethodmaps();
 	CreateMenus();
 	CompileRegexes();
+	DB_SetupDatabase();
 	
 	if (gB_LateLoad) {
 		OnLateLoad();
@@ -305,8 +312,7 @@ public void OnClientPutInServer(int client) {
 
 public void OnClientDisconnect(int client) {  // Also calls at end of map
 	if (!IsFakeClient(client)) {
-		DB_SavePlayerInfo(client);
-		DB_SavePreferences(client);
+		DB_SaveOptions(client);
 	}
 }
 
@@ -384,7 +390,7 @@ public void OnStartNoclipping(int client) {
 	if (!IsFakeClient(client) && gB_TimerRunning[client]) {
 		TimerForceStop(client);
 		gB_Paused[client] = false;
-		CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Noclip");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Noclipped)");
 	}
 }
 
@@ -402,9 +408,8 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 
 public void OnMapStart() {
 	LoadKZConfig();
-	DB_SetupDatabase();
 	PrecacheModels();
-	OnMapStartVariableUpdates();
+	SetupMap();
 }
 
 // Stop round from ever ending

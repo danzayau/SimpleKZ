@@ -112,15 +112,15 @@ public void OnButtonPress(const char[] name, int caller, int activator, float de
 			g_MovementPlayer[activator].GetOrigin(gF_EndButtonOrigin[activator]);
 			TimerEnd(activator, 0);
 		}
-		else if (MatchRegex(gRegex_BonusStartButton, tempString) > 0) {
-			GetRegexSubString(gRegex_BonusStartButton, 1, tempString, sizeof(tempString));
+		else if (MatchRegex(gRE_BonusStartButton, tempString) > 0) {
+			GetRegexSubString(gRE_BonusStartButton, 1, tempString, sizeof(tempString));
 			int bonus = StringToInt(tempString);
 			if (bonus > 0) {
 				TimerStart(activator, bonus);
 			}
 		}
-		else if (MatchRegex(gRegex_BonusEndButton, tempString) > 0) {
-			GetRegexSubString(gRegex_BonusEndButton, 1, tempString, sizeof(tempString));
+		else if (MatchRegex(gRE_BonusEndButton, tempString) > 0) {
+			GetRegexSubString(gRE_BonusEndButton, 1, tempString, sizeof(tempString));
 			int bonus = StringToInt(tempString);
 			if (bonus > 0) {
 				TimerEnd(activator, bonus);
@@ -131,7 +131,7 @@ public void OnButtonPress(const char[] name, int caller, int activator, float de
 
 void CheckForTimerButtonPress(int client) {
 	// If just pressed +use button
-	if (!(g_OldButtons[client] & IN_USE) && GetClientButtons(client) & IN_USE) {
+	if (!(gI_OldButtons[client] & IN_USE) && GetClientButtons(client) & IN_USE) {
 		float origin[3];
 		g_MovementPlayer[client].GetOrigin(origin);
 		// If didnt just start time
@@ -143,7 +143,7 @@ void CheckForTimerButtonPress(int client) {
 			TimerEnd(client, gI_LastCourseEnded[client]);
 		}
 	}
-	g_OldButtons[client] = GetClientButtons(client);
+	gI_OldButtons[client] = GetClientButtons(client);
 }
 
 
@@ -178,13 +178,13 @@ void TeleportToStart(int client) {
 
 void MakeCheckpoint(int client) {
 	if (!IsPlayerAlive(client)) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Checkpoint_NotAlive");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Dead)");
 	}
 	else if (!g_MovementPlayer[client].onGround) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Checkpoint_Midair");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Midair)");
 	}
 	else if (JustTouchedBhopBlock(client)) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Checkpoint_JustLanded");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Just Landed)");
 	}
 	else {
 		gI_CheckpointCount[client]++;
@@ -196,14 +196,11 @@ void MakeCheckpoint(int client) {
 }
 
 void TeleportToCheckpoint(int client) {
-	if (!IsPlayerAlive(client)) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Teleport_NotAlive");
-	}
-	else if (gI_CheckpointCount[client] == 0) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Teleport_NoCheckpoint");
+	if (!IsPlayerAlive(client) || gI_CheckpointCount[client] == 0) {
+		return;
 	}
 	else if (gB_CurrentMapIsKZPro && gB_TimerRunning[client]) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Teleport_KZPro");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Teleport (kzpro_)");
 	}
 	else {
 		AddWastedTimeTeleportToCheckpoint(client);
@@ -213,14 +210,11 @@ void TeleportToCheckpoint(int client) {
 }
 
 void UndoTeleport(int client) {
-	if (!IsPlayerAlive(client)) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Undo_NotAlive");
-	}
-	else if (gI_TeleportsUsed[client] < 1) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Undo_NoTeleport");
+	if (!IsPlayerAlive(client) || gI_TeleportsUsed[client] < 1) {
+		return;
 	}
 	else if (!gB_LastTeleportOnGround[client]) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Undo_Midair");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Undo (TP Was Midair)");
 	}
 	else {
 		AddWastedTimeUndoTeleport(client);
@@ -237,10 +231,10 @@ void Pause(int client) {
 		JoinTeam(client, CS_TEAM_CT);
 	}
 	else if (gB_TimerRunning[client] && gB_HasResumedInThisRun[client] && gF_CurrentTime[client] - gF_LastResumeTime[client] < TIME_PAUSE_COOLDOWN) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Pause_JustResumed");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Just Resumed)");
 	}
 	else if (gB_TimerRunning[client] && !g_MovementPlayer[client].onGround) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Pause_Midair");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Midair)");
 	}
 	else {
 		gB_Paused[client] = true;
@@ -367,30 +361,30 @@ void PrintEndTimeString(int client) {
 	if (gI_CurrentCourse[client] == 0) {
 		switch (GetCurrentRunType(client)) {
 			case RunType_Normal: {
-				CPrintToChatAll("%t %t", "KZ_Tag", "BeatMap", 
+				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map", 
 					client, SimpleKZ_FormatTime(gF_CurrentTime[client]), 
 					gI_TeleportsUsed[client], SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
-					gC_StyleChatPhrases[g_MovementStyle[client]]);
+					gC_StyleChatPhrases[g_Style[client]]);
 			}
 			case RunType_Pro: {
-				CPrintToChatAll("%t %t", "KZ_Tag", "BeatMapPro", 
+				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map (Pro)", 
 					client, SimpleKZ_FormatTime(gF_CurrentTime[client]), 
-					gC_StyleChatPhrases[g_MovementStyle[client]]);
+					gC_StyleChatPhrases[g_Style[client]]);
 			}
 		}
 	}
 	else {
 		switch (GetCurrentRunType(client)) {
 			case RunType_Normal: {
-				CPrintToChatAll("%t %t", "KZ_Tag", "BeatBonus", 
+				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus", 
 					client, gI_CurrentCourse[client], SimpleKZ_FormatTime(gF_CurrentTime[client]), 
 					gI_TeleportsUsed[client], SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
-					gC_StyleChatPhrases[g_MovementStyle[client]]);
+					gC_StyleChatPhrases[g_Style[client]]);
 			}
 			case RunType_Pro: {
-				CPrintToChatAll("%t %t", "KZ_Tag", "BeatBonusPro", 
+				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus (Pro)", 
 					client, gI_CurrentCourse[client], SimpleKZ_FormatTime(gF_CurrentTime[client]), 
-					gC_StyleChatPhrases[g_MovementStyle[client]]);
+					gC_StyleChatPhrases[g_Style[client]]);
 			}
 		}
 	}

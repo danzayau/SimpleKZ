@@ -6,30 +6,52 @@
 
 /*===============================  Maps Table  ===============================*/
 
-char sql_maps_create[] = 
+char sqlite_maps_create[] = 
 "CREATE TABLE IF NOT EXISTS Maps ("
-..."Map VARCHAR(32) NOT NULL, "
+..."MapID INTEGER, "
+..."Name VARCHAR(32) NOT NULL UNIQUE, "
 ..."InRankedPool TINYINT(1) NOT NULL DEFAULT '0', "
-..."CONSTRAINT PK_Maps PRIMARY KEY (Map));";
+..."LastPlayed TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."CONSTRAINT PK_Maps PRIMARY KEY (MapID));";
+
+char mysql_maps_create[] = 
+"CREATE TABLE IF NOT EXISTS Maps ("
+..."MapID INTEGER UNSIGNED NOT NULL AUTO_INCREMENT, "
+..."Name VARCHAR(32) NOT NULL UNIQUE, "
+..."InRankedPool TINYINT(1) NOT NULL DEFAULT '0', "
+..."LastPlayed TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."CONSTRAINT PK_Maps PRIMARY KEY (MapID));";
 
 char sqlite_maps_insert[] = 
 "INSERT OR IGNORE INTO Maps "
-..."(InRankedPool, Map) "
-..."VALUES(%d, '%s');";
+..."(Name) "
+..."VALUES('%s');";
 
 char sqlite_maps_update[] = 
 "UPDATE OR IGNORE Maps "
-..."SET InRankedPool=%d "
-..."WHERE Map='%s';";
-
-char mysql_maps_insert[] = 
-"INSERT IGNORE INTO Maps "
-..."(InRankedPool, Map) "
-..."VALUES(%d, '%s');";
+..."SET LastPlayed=CURRENT_TIMESTAMP "
+..."WHERE Name='%s';";
 
 char mysql_maps_upsert[] = 
 "INSERT INTO Maps "
-..."(InRankedPool, Map) "
+..."(Name) "
+..."VALUES('%s') "
+..."ON DUPLICATE KEY UPDATE "
+..."LastPlayed=CURRENT_TIMESTAMP;";
+
+char sqlite_maps_insertranked[] = 
+"INSERT OR IGNORE INTO Maps "
+..."(InRankedPool, Name) "
+..."VALUES(%d, '%s');";
+
+char sqlite_maps_updateranked[] = 
+"UPDATE OR IGNORE Maps "
+..."SET InRankedPool=%d "
+..."WHERE Name='%s';";
+
+char mysql_maps_upsertranked[] = 
+"INSERT INTO Maps "
+..."(InRankedPool, Name) "
 ..."VALUES(%d, '%s') "
 ..."ON DUPLICATE KEY UPDATE "
 ..."InRankedPool=VALUES(InRankedPool);";
@@ -38,12 +60,17 @@ char sql_maps_reset_mappool[] =
 "UPDATE Maps "
 ..."SET InRankedPool=0;";
 
-char sql_maps_select_like[] = 
-"SELECT Map "
+char sql_maps_getmapid[] = 
+"SELECT MapID "
 ..."FROM Maps "
-..."WHERE Map LIKE '%%%s%%' "
-..."ORDER BY (Map='%s') DESC, LENGTH(Map) "
+..."WHERE Name LIKE '%%%s%%' "
+..."ORDER BY (Name='%s') DESC, LENGTH(Name) "
 ..."LIMIT 1;";
+
+char sql_maps_getmapname[] = 
+"SELECT Name "
+..."FROM Maps "
+..."WHERE MapID=%d;";
 
 
 
@@ -52,45 +79,39 @@ char sql_maps_select_like[] =
 char sqlite_times_create[] = 
 "CREATE TABLE IF NOT EXISTS Times ("
 ..."TimeID INTEGER, "
-..."SteamID VARCHAR(24) NOT NULL, "
-..."Map VARCHAR(32) NOT NULL, "
+..."PlayerID INTEGER, "
+..."MapID INTEGER, "
+..."Course INTEGER UNSIGNED NOT NULL, "
+..."Style INTEGER UNSIGNED NOT NULL, "
 ..."RunTime FLOAT UNSIGNED NOT NULL, "
 ..."Teleports SMALLINT UNSIGNED NOT NULL, "
 ..."TheoreticalRunTime FLOAT UNSIGNED NOT NULL, "
-..."Style TINYINT UNSIGNED NOT NULL DEFAULT '0', "
 ..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
 ..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
-..."CONSTRAINT FK_Times_SteamID FOREIGN KEY (SteamID) REFERENCES Players (SteamID) ON UPDATE CASCADE ON DELETE CASCADE, "
-..."CONSTRAINT FK_Times_Map FOREIGN KEY (Map) REFERENCES Maps (Map) ON UPDATE CASCADE ON DELETE CASCADE);";
+..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
+..."CONSTRAINT FK_Times_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
 
 char mysql_times_create[] = 
 "CREATE TABLE IF NOT EXISTS Times ("
 ..."TimeID INTEGER UNSIGNED NOT NULL AUTO_INCREMENT, "
-..."SteamID VARCHAR(24) NOT NULL, "
-..."Map VARCHAR(32) NOT NULL, "
-..."Style TINYINT UNSIGNED NOT NULL DEFAULT '0', "
+..."PlayerID INTEGER UNSIGNED NOT NULL, "
+..."MapID INTEGER UNSIGNED NOT NULL, "
+..."Course TINYINT UNSIGNED NOT NULL, "
+..."Style TINYINT UNSIGNED NOT NULL, "
 ..."RunTime FLOAT UNSIGNED NOT NULL, "
 ..."Teleports SMALLINT UNSIGNED NOT NULL, "
 ..."TheoreticalRunTime FLOAT UNSIGNED NOT NULL, "
 ..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-..."INDEX IX_MapSteamID (Map, SteamID), "
+..."INDEX IX_MapPlayerID (Map, PlayerID), "
 ..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
-..."CONSTRAINT FK_Times_SteamID FOREIGN KEY (SteamID) REFERENCES Players (SteamID) ON UPDATE CASCADE ON DELETE CASCADE, "
-..."CONSTRAINT FK_Times_Map FOREIGN KEY (Map) REFERENCES Maps (Map) ON UPDATE CASCADE ON DELETE CASCADE);";
-
-char sql_times_alter1[] =  // 0.9.0: Added movement styles
-"ALTER TABLE Times "
-..."ADD Style TINYINT UNSIGNED NOT NULL DEFAULT '0';";
-
-char sqlite_times_createindex_mapsteamid[] = 
-"CREATE INDEX IF NOT EXISTS IX_MapSteamID "
-..."ON Times (Map, SteamID);";
+..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
+..."CONSTRAINT FK_Times_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
 
 char sql_times_insert[] = 
 "INSERT "
 ..."INTO Times "
-..."(SteamID, Map, Style, RunTime, Teleports, TheoreticalRunTime) "
-..."VALUES('%s', '%s', %d, %f, %d, %f);";
+..."(PlayerID, MapID, Course, Style, RunTime, Teleports, TheoreticalRunTime) "
+..."VALUES(%d, %d, %d, %d, %f, %d, %f);";
 
 
 
@@ -99,26 +120,26 @@ char sql_times_insert[] =
 char sql_getpb[] = 
 "SELECT RunTime, Teleports, TheoreticalRunTime "
 ..."FROM Times "
-..."WHERE Map='%s' AND SteamID='%s' AND Style=%d "
+..."WHERE PlayerID=%d AND MapID=%d AND Course=%d AND Style=%d "
 ..."ORDER BY RunTime "
 ..."LIMIT %d;";
 
 char sql_getpbpro[] = 
 "SELECT RunTime "
 ..."FROM Times "
-..."WHERE Map='%s' AND SteamID='%s' AND Teleports=0 AND Style=%d "
+..."WHERE PlayerID=%d AND MapID=%d AND Course=%d AND Style=%d AND Teleports=0 "
 ..."ORDER BY RunTime "
 ..."LIMIT %d;";
 
 char sql_getmaptop[] = 
 "SELECT Players.Alias, Times.RunTime, Times.Teleports "
 ..."FROM Times "
-..."INNER JOIN Players ON Players.SteamID=Times.SteamID "
+..."INNER JOIN Players ON Players.PlayerID=Times.PlayerID "
 ..."INNER JOIN "
 ..."(SELECT TimeID, MIN(RunTime) "
 ..."FROM Times "
-..."WHERE Map='%s' AND Style=%d "
-..."GROUP BY SteamID) TopTimes "
+..."WHERE MapID=%d AND Course=%d AND Style=%d "
+..."GROUP BY PlayerID) TopTimes "
 ..."ON TopTimes.TimeID=Times.TimeID "
 ..."ORDER BY Times.RunTime "
 ..."LIMIT %d;";
@@ -126,12 +147,12 @@ char sql_getmaptop[] =
 char sql_getmaptoppro[] = 
 "SELECT Players.Alias, Times.RunTime "
 ..."FROM Times "
-..."INNER JOIN Players ON Players.SteamID=Times.SteamID "
+..."INNER JOIN Players ON Players.PlayerID=Times.PlayerID "
 ..."INNER JOIN "
 ..."(SELECT TimeID, MIN(RunTime) "
 ..."FROM Times "
-..."WHERE Map='%s' AND Teleports=0 AND Style=%d "
-..."GROUP BY SteamID) TopTimes "
+..."WHERE MapID=%d AND Course=%d AND Style=%d AND Teleports=0 "
+..."GROUP BY PlayerID) TopTimes "
 ..."ON TopTimes.TimeID=Times.TimeID "
 ..."ORDER BY Times.RunTime "
 ..."LIMIT %d;";
@@ -139,12 +160,12 @@ char sql_getmaptoppro[] =
 char sql_getmaptoptheoretical[] = 
 "SELECT Players.Alias, Times.TheoreticalRunTime, Times.Teleports "
 ..."FROM Times "
-..."INNER JOIN Players ON Players.SteamID=Times.SteamID "
+..."INNER JOIN Players ON Players.PlayerID=Times.PlayerID "
 ..."INNER JOIN "
 ..."(SELECT TimeID, MIN(TheoreticalRunTime) "
 ..."FROM Times "
-..."WHERE Map='%s' AND Style=%d "
-..."GROUP BY SteamID) TopTimes "
+..."WHERE MapID=%d AND Course=%d AND Style=%d "
+..."GROUP BY PlayerID) TopTimes "
 ..."ON TopTimes.TimeID=Times.TimeID "
 ..."ORDER BY Times.TheoreticalRunTime "
 ..."LIMIT %d;";
@@ -157,9 +178,9 @@ char sql_getmaprank[] =
 ..."WHERE RunTime <= "
 ..."(SELECT MIN(RunTime) "
 ..."FROM Times "
-..."WHERE Map='%s' AND SteamID='%s' AND Style=%d) "
-..."AND Map='%s' AND Style=%d "
-..."GROUP BY SteamID) AS FasterTimes;";
+..."WHERE PlayerID=%d AND MapID=%d AND Course=%d AND Style=%d) "
+..."AND MapID=%d AND Course=%d AND Style=%d "
+..."GROUP BY PlayerID) AS FasterTimes;";
 
 char sql_getmaprankpro[] = 
 "SELECT COUNT(*) "
@@ -169,50 +190,50 @@ char sql_getmaprankpro[] =
 ..."WHERE RunTime <= "
 ..."(SELECT MIN(RunTime) "
 ..."FROM Times "
-..."WHERE Map='%s' AND SteamID='%s' AND Teleports=0 AND Style=%d) "
-..."AND Map='%s' AND Teleports=0 AND Style=%d "
-..."GROUP BY SteamID) AS FasterTimes;";
+..."WHERE PlayerID=%d AND MapID=%d AND Course=%d AND Style=%d AND Teleports=0) "
+..."AND MapID=%d AND Course=%d AND Style=%d AND Teleports=0 "
+..."GROUP BY PlayerID) AS FasterTimes;";
 
 char sql_getlowestmaprank[] = 
-"SELECT COUNT(DISTINCT SteamID) "
+"SELECT COUNT(DISTINCT PlayerID) "
 ..."FROM Times "
-..."WHERE Map='%s' AND Style=%d;";
+..."WHERE MapID=%d AND Course=%d AND Style=%d;";
 
 char sql_getlowestmaprankpro[] = 
-"SELECT COUNT(DISTINCT SteamID) "
+"SELECT COUNT(DISTINCT PlayerID) "
 ..."FROM Times "
-..."WHERE Map='%s' AND Teleports=0 AND Style=%d;";
+..."WHERE MapID=%d AND Course=%d AND Style=%d AND Teleports=0;";
 
 char sql_getcounttotalmaps[] = 
 "SELECT COUNT(*) "
 ..."FROM Maps "
-..."WHERE InRankedPool='1';";
+..."WHERE InRankedPool=1;";
 
 char sql_getcountmapscompleted[] = 
-"SELECT COUNT(DISTINCT Times.Map) "
+"SELECT COUNT(DISTINCT Times.MapID) "
 ..."FROM Times "
-..."INNER JOIN Maps ON Maps.Map=Times.Map "
-..."WHERE Times.SteamID='%s' AND Maps.InRankedPool=1 AND Times.Style=%d;";
+..."INNER JOIN Maps ON Maps.MapID=Times.MapID "
+..."WHERE Maps.InRankedPool=1 AND Times.PlayerID=%d AND Times.Style=%d AND Times.Course=0;";
 
 char sql_getcountmapscompletedpro[] = 
-"SELECT COUNT(DISTINCT Times.Map) "
+"SELECT COUNT(DISTINCT Times.MapID) "
 ..."FROM Times "
-..."INNER JOIN Maps ON Maps.Map=Times.Map "
-..."WHERE Times.SteamID='%s' AND Maps.InRankedPool=1 AND Times.Teleports=0 AND Times.Style=%d;";
+..."INNER JOIN Maps ON Maps.MapID=Times.MapID "
+..."WHERE Maps.InRankedPool=1 AND Times.PlayerID=%d AND Times.Style=%d AND Times.Course=0 AND Times.Teleports=0;";
 
 char sql_gettopplayers[] = 
 "SELECT Players.Alias, COUNT(*) AS RecordCount "
 ..."FROM "
-..."(SELECT Times.SteamID "
+..."(SELECT Times.PlayerID "
 ..."FROM Times "
 ..."INNER JOIN "
-..."(SELECT Times.Map, MIN(Times.RunTime) AS RecordTime "
+..."(SELECT Times.MapID, MIN(Times.RunTime) AS RecordTime "
 ..."FROM Times "
-..."INNER JOIN Maps ON Maps.Map=Times.Map "
-..."WHERE Maps.InRankedPool=1 AND Times.Style=%d "
-..."GROUP BY Times.Map) Records "
-..."ON Times.Map=Records.Map AND Times.RunTime=Records.RecordTime) RecordHolders "
-..."INNER JOIN Players ON Players.SteamID=RecordHolders.SteamID "
+..."INNER JOIN Maps ON Maps.MapID=Times.MapID "
+..."WHERE Maps.InRankedPool=1 AND Times.Style=%d AND Times.Course=0 "
+..."GROUP BY Times.MapID) Records "
+..."ON Times.MapID=Records.MapID AND Times.RunTime=Records.RecordTime) RecordHolders "
+..."INNER JOIN Players ON Players.PlayerID=RecordHolders.PlayerID "
 ..."GROUP BY Players.Alias "
 ..."ORDER BY RecordCount DESC "
 ..."LIMIT 20;";
@@ -220,16 +241,16 @@ char sql_gettopplayers[] =
 char sql_gettopplayerspro[] = 
 "SELECT Players.Alias, COUNT(*) AS RecordCount "
 ..."FROM "
-..."(SELECT Times.SteamID "
+..."(SELECT Times.PlayerID "
 ..."FROM Times "
 ..."INNER JOIN "
-..."(SELECT Times.Map, MIN(Times.RunTime) AS RecordTime "
+..."(SELECT Times.MapID, MIN(Times.RunTime) AS RecordTime "
 ..."FROM Times "
-..."INNER JOIN Maps ON Maps.Map=Times.Map "
-..."WHERE Maps.InRankedPool=1 AND Times.Teleports=0 AND Times.Style=%d "
-..."GROUP BY Times.Map) Records "
-..."ON Times.Map=Records.Map AND Times.RunTime=Records.RecordTime) RecordHolders "
-..."INNER JOIN Players ON Players.SteamID=RecordHolders.SteamID "
+..."INNER JOIN Maps ON Maps.MapID=Times.MapID "
+..."WHERE Maps.InRankedPool=1 AND Times.Style=%d AND Times.Course=0 AND Times.Teleports=0 "
+..."GROUP BY Times.MapID) Records "
+..."ON Times.MapID=Records.MapID AND Times.RunTime=Records.RecordTime) RecordHolders "
+..."INNER JOIN Players ON Players.PlayerID=RecordHolders.PlayerID "
 ..."GROUP BY Players.Alias "
 ..."ORDER BY RecordCount DESC "
 ..."LIMIT 20;"; 
