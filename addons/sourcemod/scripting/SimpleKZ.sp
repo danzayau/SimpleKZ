@@ -371,10 +371,10 @@ public Action OnSay(int client, const char[] command, int argc) {
 	
 	// Print the message to chat
 	if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
-		CPrintToChatAll("{bluegrey}%N{default}: %s", client, message);
+		CPrintToChatAll("{bluegrey}%N{default} : %s", client, message);
 	}
 	else {
-		CPrintToChatAll("{lime}%N{default}: %s", client, message);
+		CPrintToChatAll("{lime}%N{default} : %s", client, message);
 	}
 	return Plugin_Handled;
 }

@@ -1,6 +1,10 @@
 "Phrases"
 {
 	// General
+	"Style Menu - Title"
+	{
+		"en"		"Switch Styles"
+	}
 	"Style - Standard"
 	{
 		"en"		"Standard"
@@ -81,7 +85,7 @@
 	}
 	"Database Not Connected"
 	{
-		"en"		"{grey}This server isn't connected to a {lime}SimpleKZ{grey} database."
+		"en"		"{grey}This server isn't connected to a {default}SimpleKZ{grey} database."
 	}
 	
 	
@@ -100,7 +104,7 @@
 	}
 	"Can't Teleport (kzpro_)"
 	{
-		"en"		"{darkred}You can't teleport to your checkpoint on a {lime}kzpro_{darkred} map."
+		"en"		"{darkred}You can't teleport to your checkpoint on a kzpro_ map."
 	}
 	"Can't Undo (TP Was Midair)"
 	{
@@ -365,7 +369,7 @@
 	}
 	
 	
-	// Server/Error Messages ////////////////////////////////////////////////////////////
+	// Server/Admin Messages ////////////////////////////////////////////////////////////
 	"Failed to Open File"
 	{
 		// There was a problem opening file: cfg/sourcemod/SimpleKZ/mappool.txt.

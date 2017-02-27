@@ -3,23 +3,25 @@
 	// Chat Messages ////////////////////////////////////////////////////////////
 	"Player Not Found"
 	{
-		// Your search for player Bill returned with no results.
+		// Your search for player 'Bill' returned with no results.
 		"#format"	"{1:s}"
-		"en"		"{grey}Your search for player {lime}{1}{grey} returned with no results."
+		"en"		"{grey}Your search for player '{default}{1}{grey}' returned with no results."
 	}
 	"Map Not Found"
 	{
-		// Your search for map kz_fakemap returned with no results.
+		// Your search for map 'kz_fakemap' returned with no results.
 		"#format"	"{1:s}"
-		"en"		"{grey}Your search for map {lime}{1}{grey} returned with no results."
+		"en"		"{grey}Your search for map '{default}{1}{grey}' returned with no results."
+	}
+	"Invalid Bonus Number"
+	{
+		// 'asdf' is not a valid bonus number.
+		"#format"	"{1:s}"
+		"en"		"{grey}'{default}{1}{grey}' is not a valid bonus number."
 	}
 	"No Ranked Maps"
 	{
 		"en"		"{grey}This server hasn't set any maps to be ranked."
-	}
-	"Map Pool Update Successful"
-	{
-		"en"		"{grey}The ranked map pool was successfully updated."
 	}
 	"New Record - Map"
 	{
@@ -37,7 +39,7 @@
 	{
 		// Bill beat the MAP RECORD and the PRO RECORD [Style]!
 		"#format"	"{1:N},{2:t}"
-		"en"		"{lime}{1}{grey} beat the {yellow}MAP{grey} and {blue}PRO RECORD {grey}[{purple}{2}{grey}]!"
+		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD{grey} and the {blue}PRO RECORD {grey}[{purple}{2}{grey}]!"
 	}
 	"New Bonus Record - Map"
 	{
@@ -55,7 +57,7 @@
 	{
 		// Bill beat the Bonus 1 MAP RECORD and the PRO RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:t}"
-		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {yellow}MAP{grey} and {blue}PRO RECORD {grey}[{purple}{3}{grey}]!"
+		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {yellow}MAP RECORD{grey} and the {gold}Bonus {2} {blue}PRO RECORD {grey}[{purple}{3}{grey}]!"
 	}
 	"New PB - First Time"
 	{
@@ -107,35 +109,31 @@
 	}
 	"PB Header"
 	{	
-		// Best times by Bill on kz_map [Style]
-		"#format"	"{1:N},{2:s},{3:t}"
-		"en"		"{grey}Best Times by {lime}{2}{grey} on {lime}{1} {grey}[{purple}{3}{grey}]"
+		// Bill on kz_map [Style]
+		"#format"	"{1:s},{2:s},{3:t}"
+		"en"		"{lime}{1}{grey} on {default}{2} {grey}[{purple}{3}{grey}]"
 	}
 	"PB Header (Bonus)"
 	{
-		// Best times by Bill on kz_map Bonus 1 [Style]
-		"#format"	"{1:n},{2:s},{3:d},{4:t}"
-		"en"		"{grey}Best Times by {lime}{1}{grey} on {lime}{2} {gold}Bonus {3} {grey}[{purple}{4}{grey}]"
+		// Bill on kz_map Bonus 1 [Style]
+		"#format"	"{1:s},{2:s},{3:d},{4:t}"
+		"en"		"{lime}{1}{grey} on {default}{2} {gold}Bonus {3} {grey}[{purple}{4}{grey}]"
 	}
-	"PB No Times"
+	"PB Time - No Times"
 	{
-		"en"		"{grey}They don't have a time... yet."
-	}
-	"PB No Times (Self)"
-	{
-		"en"		"{grey}You don't have a time... yet."
+		"en"		"{yellow}MAP PB{grey}: None... yet."
 	}
 	"PB Time - Map"
 	{
 		// MAP PB: 01:23.45 #4/123 (5 TP | 01:01.23)
 		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:s}"
-		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} #{default}{2}{grey}/{3}  ({yellow}{4} TP{grey} | {grey}{5}{grey})"
+		"en"		"{yellow}MAP PB{grey}: {default}{1}{grey} #{default}{2}{grey}/{3}  ({yellow}{4} TP{grey} | {grey}{5}{grey})"
 	}
 	"PB Time - Map (Pro)"
 	{
 		// MAP PB: 01:23.45 #4/123 (PRO #3/12)
 		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:d}"
-		"en"		"{yellow}MAP PB:{grey} {default}{1}{grey} #{default}{2}{grey}/{3} ({blue}PRO{grey} #{default}{4}{grey}/{5})"
+		"en"		"{yellow}MAP PB{grey}: {default}{1}{grey} #{default}{2}{grey}/{3} ({blue}PRO{grey} #{default}{4}{grey}/{5})"
 	}
 	"PB Time - Pro"
 	{
@@ -145,19 +143,19 @@
 	}
 	"PB Time - No Pro Time"
 	{
-		"en"		"{blue}PRO PB{grey}: None!"
+		"en"		"{blue}PRO PB{grey}: None... yet."
 	}
 	"WR Header"
 	{
-		// Server Records on kz_map [Style]
+		// Server WRs on kz_map [Style]
 		"#format"	"{1:s},{2:t}"
-		"en"		"{grey}Server Records on {lime}{1} {grey}[{purple}{2}{grey}]"
+		"en"		"{grey}Records on {default}{1} {grey}[{purple}{2}{grey}]"
 	}
 	"WR Header (Bonus)"
 	{
-		// Server Records on kz_map Bonus 1 [Style]
+		// Server WRs on kz_map Bonus 1 [Style]
 		"#format"	"{1:s},{2:d},{3:t}"
-		"en"		"{grey}Server Records on {lime}{1} {gold}Bonus {2} {grey}[{purple}{3}{grey}]"
+		"en"		"{grey}Records on {default}{1} {gold}Bonus {2} {grey}[{purple}{3}{grey}]"
 	}
 	"WR No Times"
 	{
@@ -183,7 +181,7 @@
 	}
 	"WR Time - No Pro Time"
 	{
-		"en"		"{blue}PRO RECORD{grey}: None!"
+		"en"		"{blue}PRO RECORD{grey}: None... yet."
 	}
 	"Map Top - No Times"
 	{
@@ -203,28 +201,28 @@
 	}
 	"Map Completion"
 	{
-		// Bill has beaten 12/234 and PRO'd 6/234 maps.
-		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:d},{6:t}"
-		"en"		"{lime}{1}{grey} has beaten {default}{2}{grey}/{default}{3}{grey} and {blue}PRO{grey}'d {default}{4}{grey}/{default{5}{default} {grey}maps {6}{grey}."
+		// Bill has beaten 12/234 and PRO'd 6/234 ranked maps [Standard].
+		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:d},{6:t}"
+		"en"		"{lime}{1}{grey} has beaten {default}{2}{grey}/{default}{3}{grey} and {blue}PRO{grey}'d {default}{4}{grey}/{default}{5}{default} {grey}ranked maps {grey}[{purple}{6}{grey}]."
 	}
 
 	
 	// Map Top Menu ////////////////////////////////////////////////////////////
 	"Map Top Menu - Title"
 	{
-		// Map: kz_map
-		// Style: Standard
+		// Map - kz_map
+		// Style - Standard
 		//
 		"#format"	"{1:s},{2:t}"
-		"en"		"Map: {1}\nStyle: {2}\n "
+		"en"		"Map - {1}\nStyle - {2}\n "
 	}
 	"Map Top Menu - Title (Bonus)"
 	{
-		// Map: kz_map (Bonus 1)
-		// Style: Standard
+		// Map - kz_map (Bonus 1)
+		// Style - Standard
 		//
 		"#format"	"{1:s},{2:d},{3:t}"
-		"en"		"Map: {1} (Bonus {2})\nStyle: {3}\n "
+		"en"		"Map - {1} (Bonus {2})\nStyle - {3}\n "
 	}
 	"Map Top Menu - Top 20"
 	{
@@ -236,21 +234,21 @@
 	{
 		// Top 20 Pro Times
 		//
-		// Map: kz_map
-		// Style: Style
+		// Map - kz_map
+		// Style - Standard
 		//
 		"#format"	"{1:t},{2:s},{3:t}"
-		"en"		"Top 20 {1} Times\n \nMap: {2}\nStyle: {3}\n "	
+		"en"		"Top 20 {1} Times\n \nMap - {2}\nStyle - {3}\n "	
 	}
 	"Map Top Submenu - Title (Bonus)"
 	{
 		// Top 20 Pro Times
 		//
-		// Map: kz_map (Bonus 1)
-		// Style: Style
+		// Map - kz_map (Bonus 1)
+		// Style - Standard
 		//
 		"#format"	"{1:t},{2:s},{3:d},{4:t}"
-		"en"		"Top 20 {1} Times\n \nMap: {2} (Bonus {3})\nStyle: {4}\n "	
+		"en"		"Top 20 {1} Times\n \nMap - {2} (Bonus {3})\nStyle - {4}\n "	
 	}
 
 	
@@ -259,10 +257,10 @@
 	{
 		// Top Players
 		//
-		// Style: Style
+		// Style - Standard
 		//
 		"#format"	"{1:t}"
-		"en"		"Top Players\n \nStyle: {1}\n "
+		"en"		"Top Players\n \nStyle - {1}\n "
 	}
 	"Player Top Menu - Top 20"
 	{
@@ -274,9 +272,16 @@
 	{
 		// Top 20 Pro Record Holders
 		//
-		// Style: Style
+		// Style - Standard
 		//
 		"#format"	"{1:t},{2:t}"
-		"en"		"Top 20 {1:t} Record Holders\n \nStyle: {2}\n "
+		"en"		"Top 20 {1:t} Record Holders\n \nStyle - {2}\n "
+	}
+	
+	
+	// Server/Admin Messages ////////////////////////////////////////////////////////////
+	"Map Pool Update Successful"
+	{
+		"en"		"[SimpleKZ] The ranked map pool was successfully updated."
 	}
 }

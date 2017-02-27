@@ -169,92 +169,13 @@ public void SimpleKZ_OnTimerEnd(int client, int course, MovementStyle style, flo
 }
 
 public void SimpleKZ_OnNewRecord(int client, int mapID, int course, MovementStyle style, RecordType recordType, float runTime) {
-	if (mapID != gI_CurrentMapID) {
-		return;
+	if (mapID == gI_CurrentMapID) {
+		AnnounceNewRecord(client, course, style, recordType);
 	}
-	
-	// Print new record message to chat and play new record sound
-	if (course == 0) {
-		switch (recordType) {
-			case RecordType_Map: {
-				CPrintToChatAll(" %t", "New Record - Map", client, gC_StylePhrases[style]);
-			}
-			case RecordType_Pro: {
-				CPrintToChatAll(" %t", "New Record - Pro", client, gC_StylePhrases[style]);
-			}
-			case RecordType_MapAndPro: {
-				CPrintToChatAll(" %t", "New Record - Map and Pro", client, gC_StylePhrases[style]);
-			}
-		}
-	}
-	else {
-		switch (recordType) {
-			case RecordType_Map: {
-				CPrintToChatAll(" %t", "New Bonus Record - Map", client, course, gC_StylePhrases[style]);
-			}
-			case RecordType_Pro: {
-				CPrintToChatAll(" %t", "New Bonus Record - Pro", client, course, gC_StylePhrases[style]);
-			}
-			case RecordType_MapAndPro: {
-				CPrintToChatAll(" %t", "New Bonus Record - Map and Pro", client, course, gC_StylePhrases[style]);
-			}
-		}
-	}
-	
-	EmitSoundToAll(REL_SOUNDPATH_BEAT_RECORD);
 }
 
 public void SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, MovementStyle style, TimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
-	if (mapID != gI_CurrentMapID) {
-		return;
-	}
-	
-	// Print new PB message to chat and play sound if first time beating the map PRO
-	if (course == 0) {
-		switch (timeType) {
-			case TimeType_Normal: {
-				// Only printing MAP time improvement to the achieving player due to spam complaints
-				if (firstTime) {
-					CPrintToChat(client, " %t", "New PB - First Time", client, rank, maxRank, gC_StylePhrases[style]);
-				}
-				else {
-					CPrintToChat(client, " %t", "New PB - Improve", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
-				}
-			}
-			case TimeType_Pro: {
-				if (firstTime) {
-					CPrintToChatAll(" %t", "New PB - First Time (Pro)", client, rank, maxRank, gC_StylePhrases[style]);
-					UpdateCompletionMVPStars(client);
-					EmitSoundToClient(client, REL_SOUNDPATH_BEAT_MAP);
-					EmitSoundToClientSpectators(client, REL_SOUNDPATH_BEAT_MAP);
-				}
-				else {
-					CPrintToChatAll(" %t", "New PB - Improve (Pro)", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
-				}
-			}
-		}
-	}
-	else {
-		switch (timeType) {
-			case TimeType_Normal: {
-				// Only printing MAP time improvement to the achieving player due to spam complaints
-				if (firstTime) {
-					CPrintToChat(client, " %t", "New PB - First Time", client, rank, maxRank, gC_StylePhrases[style]);
-				}
-				else {
-					CPrintToChat(client, " %t", "New PB - Improve", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
-				}
-			}
-			case TimeType_Pro: {
-				if (firstTime) {
-					CPrintToChatAll(" %t", "New PB - First Time (Pro)", client, rank, maxRank, gC_StylePhrases[style]);
-					EmitSoundToClient(client, REL_SOUNDPATH_BEAT_MAP);
-					EmitSoundToClientSpectators(client, REL_SOUNDPATH_BEAT_MAP);
-				}
-				else {
-					CPrintToChatAll(" %t", "New PB - Improve (Pro)", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
-				}
-			}
-		}
+	if (mapID == gI_CurrentMapID && rank != 1) {
+		AnnounceNewPersonalBest(client, course, style, timeType, firstTime, improvement, rank, maxRank);
 	}
 } 
