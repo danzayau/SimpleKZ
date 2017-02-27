@@ -14,16 +14,17 @@
 
 /*===============================  Definitions  ===============================*/
 
+#define SIMPLEKZ_NUMBER_OF_TIME_TYPES 3
 #define SIMPLEKZ_NUMBER_OF_STYLES 2
 
 
 
 /*===============================  Enumerations  ===============================*/
 
-enum RunType {
-	RunType_Normal = 0, 
-	RunType_Pro, 
-	RunType_Theoretical // For convenience
+enum TimeType {
+	TimeType_Normal = 0, 
+	TimeType_Pro, 
+	TimeType_Theoretical
 }
 
 enum MovementStyle {

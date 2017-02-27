@@ -214,12 +214,12 @@ void PrintDisconnectMessage(int client, const char[] reason) {
 	CPrintToChatAll("%T", "Client Disconnection Message", client, name, reason);
 }
 
-RunType GetCurrentRunType(int client) {
+TimeType GetCurrentTimeType(int client) {
 	if (gI_TeleportsUsed[client] == 0) {
-		return RunType_Pro;
+		return TimeType_Pro;
 	}
 	else {
-		return RunType_Normal;
+		return TimeType_Normal;
 	}
 }
 

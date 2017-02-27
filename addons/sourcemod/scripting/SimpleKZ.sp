@@ -193,15 +193,9 @@ char gC_RadioCommands[][] =  { "coverme", "takepoint", "holdpos", "regroup", "fo
 	"inposition", "reportingin", "getout", "negative", "enemydown", "compliment", "thanks", "cheer" };
 
 /* Styles translation phrases for chat messages (respective to MovementStyle enum) */
-char gC_StyleChatPhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
+char gC_StylePhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
 { "Style - Standard", 
 	"Style - Legacy"
-};
-
-/* Styles translation phrases for menus i.e. no formatting (respective to MovementStyle enum) */
-char gC_StyleMenuPhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
-{ "Style Menu - Standard", 
-	"Style Menu - Legacy"
 };
 
 

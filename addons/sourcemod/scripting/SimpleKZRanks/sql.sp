@@ -56,22 +56,6 @@ char mysql_maps_upsertranked[] =
 ..."ON DUPLICATE KEY UPDATE "
 ..."InRankedPool=VALUES(InRankedPool);";
 
-char sql_maps_reset_mappool[] = 
-"UPDATE Maps "
-..."SET InRankedPool=0;";
-
-char sql_maps_getmapid[] = 
-"SELECT MapID "
-..."FROM Maps "
-..."WHERE Name LIKE '%%%s%%' "
-..."ORDER BY (Name='%s') DESC, LENGTH(Name) "
-..."LIMIT 1;";
-
-char sql_maps_getmapname[] = 
-"SELECT Name "
-..."FROM Maps "
-..."WHERE MapID=%d;";
-
 
 
 /*===============================  Times Table  ===============================*/
@@ -116,6 +100,29 @@ char sql_times_insert[] =
 
 
 /*===============================  General  ===============================*/
+
+char sql_maps_reset_mappool[] = 
+"UPDATE Maps "
+..."SET InRankedPool=0;";
+
+char sql_maps_getmapname[] = 
+"SELECT Name "
+..."FROM Maps "
+..."WHERE MapID=%d;";
+
+char sql_maps_getmapid[] = 
+"SELECT MapID "
+..."FROM Maps "
+..."WHERE Name LIKE '%%%s%%' "
+..."ORDER BY (Name='%s') DESC, LENGTH(Name) "
+..."LIMIT 1;";
+
+char sql_maps_getplayerid[] = 
+"SELECT PlayerID "
+..."FROM Players "
+..."WHERE Alias LIKE '%%%s%%' "
+..."ORDER BY (Alias='%s') DESC, LastSeen DESC "
+..."LIMIT 1;";
 
 char sql_getpb[] = 
 "SELECT RunTime, Teleports, TheoreticalRunTime "
@@ -221,7 +228,7 @@ char sql_getcountmapscompletedpro[] =
 ..."INNER JOIN Maps ON Maps.MapID=Times.MapID "
 ..."WHERE Maps.InRankedPool=1 AND Times.PlayerID=%d AND Times.Style=%d AND Times.Course=0 AND Times.Teleports=0;";
 
-char sql_gettopplayers[] = 
+char sql_gettopplayers_map[] = 
 "SELECT Players.Alias, COUNT(*) AS RecordCount "
 ..."FROM "
 ..."(SELECT Times.PlayerID "
@@ -238,7 +245,7 @@ char sql_gettopplayers[] =
 ..."ORDER BY RecordCount DESC "
 ..."LIMIT 20;";
 
-char sql_gettopplayerspro[] = 
+char sql_gettopplayers_pro[] = 
 "SELECT Players.Alias, COUNT(*) AS RecordCount "
 ..."FROM "
 ..."(SELECT Times.PlayerID "
@@ -250,6 +257,23 @@ char sql_gettopplayerspro[] =
 ..."WHERE Maps.InRankedPool=1 AND Times.Style=%d AND Times.Course=0 AND Times.Teleports=0 "
 ..."GROUP BY Times.MapID) Records "
 ..."ON Times.MapID=Records.MapID AND Times.RunTime=Records.RecordTime) RecordHolders "
+..."INNER JOIN Players ON Players.PlayerID=RecordHolders.PlayerID "
+..."GROUP BY Players.Alias "
+..."ORDER BY RecordCount DESC "
+..."LIMIT 20;";
+
+char sql_gettopplayers_theoretical[] = 
+"SELECT Players.Alias, COUNT(*) AS RecordCount "
+..."FROM "
+..."(SELECT Times.PlayerID "
+..."FROM Times "
+..."INNER JOIN "
+..."(SELECT Times.MapID, MIN(Times.TheoreticalRunTime) AS RecordTime "
+..."FROM Times "
+..."INNER JOIN Maps ON Maps.MapID=Times.MapID "
+..."WHERE Maps.InRankedPool=1 AND Times.Style=%d AND Times.Course=0 "
+..."GROUP BY Times.MapID) Records "
+..."ON Times.MapID=Records.MapID AND Times.TheoreticalRunTime=Records.RecordTime) RecordHolders "
 ..."INNER JOIN Players ON Players.PlayerID=RecordHolders.PlayerID "
 ..."GROUP BY Players.Alias "
 ..."ORDER BY RecordCount DESC "

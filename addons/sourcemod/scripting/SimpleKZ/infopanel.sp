@@ -63,14 +63,14 @@ char[] GetInfoPanelSpectating(MovementPlayer player) {
 char[] GetInfoPanelTimeString(MovementPlayer player) {
 	char timeString[64];
 	if (gB_TimerRunning[player.id]) {
-		switch (GetCurrentRunType(player.id)) {
-			case RunType_Normal: {
+		switch (GetCurrentTimeType(player.id)) {
+			case TimeType_Normal: {
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#ffdd99'>%s</font>", 
 					"Info Panel Text - Time", player.id, 
 					SimpleKZ_FormatTime(gF_CurrentTime[player.id]));
 			}
-			case RunType_Pro: {
+			case TimeType_Pro: {
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#6699ff'>%s</font>", 
 					"Info Panel Text - Time", player.id, 
@@ -104,7 +104,7 @@ char[] GetInfoPanelStyleString(MovementPlayer player) {
 	char styleString[48];
 	FormatEx(styleString, sizeof(styleString), 
 		"[<font color='#B980EF'>%T</font>]", 
-		gC_StyleMenuPhrases[g_Style[player.id]], player.id);
+		gC_StylePhrases[g_Style[player.id]], player.id);
 	return styleString;
 }
 

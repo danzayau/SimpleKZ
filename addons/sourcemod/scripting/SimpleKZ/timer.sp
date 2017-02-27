@@ -359,32 +359,32 @@ void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
 
 void PrintEndTimeString(int client) {
 	if (gI_CurrentCourse[client] == 0) {
-		switch (GetCurrentRunType(client)) {
-			case RunType_Normal: {
+		switch (GetCurrentTimeType(client)) {
+			case TimeType_Normal: {
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map", 
 					client, SimpleKZ_FormatTime(gF_CurrentTime[client]), 
 					gI_TeleportsUsed[client], SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
-					gC_StyleChatPhrases[g_Style[client]]);
+					gC_StylePhrases[g_Style[client]]);
 			}
-			case RunType_Pro: {
+			case TimeType_Pro: {
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map (Pro)", 
 					client, SimpleKZ_FormatTime(gF_CurrentTime[client]), 
-					gC_StyleChatPhrases[g_Style[client]]);
+					gC_StylePhrases[g_Style[client]]);
 			}
 		}
 	}
 	else {
-		switch (GetCurrentRunType(client)) {
-			case RunType_Normal: {
+		switch (GetCurrentTimeType(client)) {
+			case TimeType_Normal: {
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus", 
 					client, gI_CurrentCourse[client], SimpleKZ_FormatTime(gF_CurrentTime[client]), 
 					gI_TeleportsUsed[client], SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
-					gC_StyleChatPhrases[g_Style[client]]);
+					gC_StylePhrases[g_Style[client]]);
 			}
-			case RunType_Pro: {
+			case TimeType_Pro: {
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus (Pro)", 
 					client, gI_CurrentCourse[client], SimpleKZ_FormatTime(gF_CurrentTime[client]), 
-					gC_StyleChatPhrases[g_Style[client]]);
+					gC_StylePhrases[g_Style[client]]);
 			}
 		}
 	}

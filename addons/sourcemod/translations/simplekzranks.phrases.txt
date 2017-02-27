@@ -1,6 +1,12 @@
 "Phrases"
 {	
 	// Chat Messages ////////////////////////////////////////////////////////////
+	"Player Not Found"
+	{
+		// Your search for player Bill returned with no results.
+		"#format"	"{1:s}"
+		"en"		"{grey}Your search for player {lime}{1}{grey} returned with no results."
+	}
 	"Map Not Found"
 	{
 		// Your search for map kz_fakemap returned with no results.
@@ -31,85 +37,85 @@
 	{
 		// Bill beat the MAP RECORD and the PRO RECORD [Style]!
 		"#format"	"{1:N},{2:t}"
-		"en"		"{lime}{1}{grey} beat the {yellow}MAP{grey} and {blue}PRO RECORD {2}{grey}!"
+		"en"		"{lime}{1}{grey} beat the {yellow}MAP{grey} and {blue}PRO RECORD {grey}[{purple}{2}{grey}]!"
 	}
 	"New Bonus Record - Map"
 	{
 		// Bill beat the Bonus 1 MAP RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:t}"
-		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {yellow}MAP RECORD {3}{grey}!"
+		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {yellow}MAP RECORD {grey}[{purple}{3}{grey}]!"
 	}
 	"New Bonus Record - Pro"
 	{
 		// Bill beat the PRO RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:t}"
-		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {blue}PRO RECORD {3}{grey}!"
+		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {blue}PRO RECORD {grey}[{purple}{3}{grey}]!"
 	}
 	"New Bonus Record - Map and Pro"
 	{
 		// Bill beat the Bonus 1 MAP RECORD and the PRO RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:t}"
-		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {yellow}MAP{grey} and {blue}PRO RECORD {3}{grey}!"
+		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {yellow}MAP{grey} and {blue}PRO RECORD {grey}[{purple}{3}{grey}]!"
 	}
 	"New PB - First Time"
 	{
 		// Bill just beat the map for the first time (#5/12) [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} just beat the map for the first time (#{default}{2}{grey}/{3}) {4}{grey}!"
+		"en"		"{lime}{1}{grey} just beat the map for the first time (#{default}{2}{grey}/{3}) {grey}[{purple}{4}{grey}]!"
 	}
 	"New PB - First Time (Pro)"
 	{
 		// Bill just PRO'd the map for the first time (#5/12) [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d the map for the first time (#{default}{2}{grey}/{3}) {4}{grey}!"
+		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d the map for the first time (#{default}{2}{grey}/{3}) {grey}[{purple}{4}{grey}]!"
 	}
 	"New PB - Improve"
 	{
 		// Bill just beat their MAP time by -00:12.34 (#5/12) [Style].
 		"#format"	"{1:N},{2:s},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just beat their {yellow}MAP{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {5}{grey}!"
+		"en"		"{lime}{1}{grey} just beat their {yellow}MAP{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
 	}
 	"New PB - Improve (Pro)"
 	{
 		// Bill just beat their PRO time by -00:12.34 (#5/12) [Style]!
 		"#format"	"{1:N},{2:s},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just beat their {blue}PRO{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {5}{grey}!"
+		"en"		"{lime}{1}{grey} just beat their {blue}PRO{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
 	}
 	"New Bonus PB - First Time"
 	{
 		// Bill just beat Bonus 1 for the first time (#5/12) [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just beat {gold}Bonus {2} {grey}for the first time (#{default}{3}{grey}/{4}) {5}{grey}!"
+		"en"		"{lime}{1}{grey} just beat {gold}Bonus {2} {grey}for the first time (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
 	}
 	"New Bonus PB - First Time (Pro)"
 	{
 		// Bill just PRO'd Bonus 1 for the first time (#5/12) [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d {gold}Bonus {2} {grey}for the first time (#{default}{3}{grey}/{4}) {5}{grey}!"
+		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d {gold}Bonus {2} {grey}for the first time (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
 	}
 	"New Bonus PB - Improve"
 	{
 		// Bill just beat their Bonus 1 MAP time by -00:12.34 (#5/12) [Style].
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:d},{6:t}"
-		"en"		"{lime}{1}{grey} just beat their {gold}Bonus {2} {yellow}MAP{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {5}{grey}!"
+		"en"		"{lime}{1}{grey} just beat their {gold}Bonus {2} {yellow}MAP{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
 	}
 	"New Bonus PB - Improve (Pro)"
 	{
 		// Bill just beat their Bonus 1 PRO time by -00:12.34 (#5/12) [Style]!
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:d},{6:t}"
-		"en"		"{lime}{1}{grey} just beat their {gold}Bonus {2} {blue}PRO{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {5}{grey}!"
+		"en"		"{lime}{1}{grey} just beat their {gold}Bonus {2} {blue}PRO{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
 	}
 	"PB Header"
 	{	
 		// Best times by Bill on kz_map [Style]
 		"#format"	"{1:N},{2:s},{3:t}"
-		"en"		"{grey}Best Times by {lime}{2}{grey} on {lime}{1} {3}"
+		"en"		"{grey}Best Times by {lime}{2}{grey} on {lime}{1} {grey}[{purple}{3}{grey}]"
 	}
 	"PB Header (Bonus)"
 	{
 		// Best times by Bill on kz_map Bonus 1 [Style]
 		"#format"	"{1:n},{2:s},{3:d},{4:t}"
-		"en"		"{grey}Best Times by {lime}{1}{grey} on {lime}{2} {gold}Bonus {3} {4}"
+		"en"		"{grey}Best Times by {lime}{1}{grey} on {lime}{2} {gold}Bonus {3} {grey}[{purple}{4}{grey}]"
 	}
 	"PB No Times"
 	{
@@ -145,13 +151,13 @@
 	{
 		// Server Records on kz_map [Style]
 		"#format"	"{1:s},{2:t}"
-		"en"		"{grey}Server Records on {lime}{1} {2}"
+		"en"		"{grey}Server Records on {lime}{1} {grey}[{purple}{2}{grey}]"
 	}
 	"WR Header (Bonus)"
 	{
 		// Server Records on kz_map Bonus 1 [Style]
 		"#format"	"{1:s},{2:d},{3:t}"
-		"en"		"{grey}Server Records on {lime}{1} {gold}Bonus {2} {3}"
+		"en"		"{grey}Server Records on {lime}{1} {gold}Bonus {2} {grey}[{purple}{3}{grey}]"
 	}
 	"WR No Times"
 	{
@@ -206,91 +212,71 @@
 	// Map Top Menu ////////////////////////////////////////////////////////////
 	"Map Top Menu - Title"
 	{
-		// Map Top (kz_map) [Style]
+		// Map: kz_map
+		// Style: Standard
+		//
 		"#format"	"{1:s},{2:t}"
-		"en"		"Map Top ({1}) [{2}]"
+		"en"		"Map: {1}\nStyle: {2}\n "
 	}
 	"Map Top Menu - Title (Bonus)"
 	{
-		// Map Top (kz_map Bonus 1) [Style]
+		// Map: kz_map (Bonus 1)
+		// Style: Standard
+		//
 		"#format"	"{1:s},{2:d},{3:t}"
-		"en"		"Map Top ({1} Bonus {2}) [{3}]"
+		"en"		"Map: {1} (Bonus {2})\nStyle: {3}\n "
 	}
 	"Map Top Menu - Top 20"
 	{
-		"en"		"Top 20"
+		// Top 20 Pro
+		"#format"	"{1:t}"
+		"en"		"Top 20 {1}"
 	}
-	"Map Top Menu - Top 20 Pro"
+	"Map Top Submenu - Title"
 	{
-		"en"		"Top 20 PRO"
+		// Top 20 Pro Times
+		//
+		// Map: kz_map
+		// Style: Style
+		//
+		"#format"	"{1:t},{2:s},{3:t}"
+		"en"		"Top 20 {1} Times\n \nMap: {2}\nStyle: {3}\n "	
 	}
-	"Map Top Menu - Top 20 Theoretical"
+	"Map Top Submenu - Title (Bonus)"
 	{
-		"en"		"Top 20 Theoretical"
-	}
-	"Map Top Submenu - Title (Top 20)"
-	{
-		// Top 20 Times (kz_map) [Style]
-		"#format"	"{1:s},{2:t}"
-		"en"		"Top 20 Times ({1}) [{2}]"	
-	}
-	"Map Top Submenu - Title (Top 20 Pro)"
-	{
-		// Top 20 PRO Times (kz_map) [Style]
-		"#format"	"{1:s},{2:t}"
-		"en"		"Top 20 PRO Times ({1}) [{2}]"	
-	}
-	"Map Top Submenu - Title (Top 20 Theoretical)"
-	{
-		// Top 20 Theoretical Times (kz_map) [Style]
-		"#format"	"{1:s},{2:t}"
-		"en"		"Top 20 Theoretical Times ({1}) [{2}]"	
-	}
-	"Map Top Submenu - Title (Bonus Top 20)"
-	{
-		// Top 20 Times (kz_map Bonus 1) [Style]
-		"#format"	"{1:s},{2:d},{3:t}"
-		"en"		"Top 20 Times ({1} Bonus {2}) [{3}]"	
-	}
-	"Map Top Submenu - Title (Bonus Top 20 Pro)"
-	{
-		// Top 20 PRO Times (kz_map Bonus 1) [Style]
-		"#format"	"{1:s},{2:d},{3:t}"
-		"en"		"Top 20 PRO Times ({1} Bonus {2}) [{3}]"	
-	}
-	"Map Top Submenu - Title (Bonus Top 20 Theoretical)"
-	{
-		// Top 20 Theoretical Times (kz_map Bonus 1) [Style]
-		"#format"	"{1:s},{2:d},{3:t}"
-		"en"		"Top 20 Theoretical Times ({1} Bonus {2}) [{3}]"	
+		// Top 20 Pro Times
+		//
+		// Map: kz_map (Bonus 1)
+		// Style: Style
+		//
+		"#format"	"{1:t},{2:s},{3:d},{4:t}"
+		"en"		"Top 20 {1} Times\n \nMap: {2} (Bonus {3})\nStyle: {4}\n "	
 	}
 
 	
 	// Player Top Menu ////////////////////////////////////////////////////////////
 	"Player Top Menu - Title"
 	{
-		// Top Players [Style]
+		// Top Players
+		//
+		// Style: Style
+		//
 		"#format"	"{1:t}"
-		"en"		"Top Players {1}"
+		"en"		"Top Players\n \nStyle: {1}\n "
 	}
 	"Player Top Menu - Top 20"
 	{
-		"en"		"Top 20"
-	}
-	"Player Top Menu - Top 20 (Pro)"
-	{
-		"en"		"Top 20 PRO"
-	}
-	"Player Top Submenu - Title (Top 20)"
-	{
-		// Top 20 MAP RECORD Holders [Style]
+		// Top 20 PRO
 		"#format"	"{1:t}"
-		"en"		"Top 20 MAP RECORD Holders [{1}]"
+		"en"		"Top 20 {1}"
 	}
-	"Player Top Submenu - Title (Top 20 Pro)"
+	"Player Top Submenu - Title"
 	{
-		// Top 20 PRO RECORD Holders [Style]
-		"#format"	"{1:t}"
-		"en"		"Top 20 PRO Record Holders [{1}]"
+		// Top 20 Pro Record Holders
+		//
+		// Style: Style
+		//
+		"#format"	"{1:t},{2:t}"
+		"en"		"Top 20 {1:t} Record Holders\n \nStyle: {2}\n "
 	}
 }

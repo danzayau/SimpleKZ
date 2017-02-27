@@ -27,13 +27,13 @@ void Call_SimpleKZ_OnNewRecord(int client, int mapID, int course, MovementStyle 
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, MovementStyle style, RunType runType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
+void Call_SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, MovementStyle style, TimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
 	Call_StartForward(gH_Forward_SimpleKZ_OnNewPersonalBest);
 	Call_PushCell(client);
 	Call_PushCell(mapID);
 	Call_PushCell(course);
 	Call_PushCell(style);
-	Call_PushCell(runType);
+	Call_PushCell(timeType);
 	Call_PushCell(firstTime);
 	Call_PushFloat(runTime);
 	Call_PushFloat(improvement);

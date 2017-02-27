@@ -55,15 +55,16 @@ bool gB_LateLoad;
 char gC_CurrentMap[64];
 
 /* Styles translation phrases for chat messages (respective to MovementStyle enum) */
-char gC_StyleChatPhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
+char gC_StylePhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
 { "Style - Standard", 
 	"Style - Legacy"
 };
 
-/* Styles translation phrases for menus i.e. no formatting (respective to MovementStyle enum) */
-char gC_StyleMenuPhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
-{ "Style Menu - Standard", 
-	"Style Menu - Legacy"
+/* Time type translation phrases for chat messages (respective to TimeType enum) */
+char gC_TimeTypePhrases[SIMPLEKZ_NUMBER_OF_TIME_TYPES][] = 
+{ "Time Type - Normal", 
+	"Time Type - Pro", 
+	"Time Type - Theoretical"
 };
 
 
@@ -101,7 +102,6 @@ public void OnPluginStart() {
 	RegisterCommands();
 	
 	// Translations
-	LoadTranslations("common.phrases");
 	LoadTranslations("simplekz.phrases");
 	LoadTranslations("simplekzranks.phrases");
 	
@@ -177,26 +177,26 @@ public void SimpleKZ_OnNewRecord(int client, int mapID, int course, MovementStyl
 	if (course == 0) {
 		switch (recordType) {
 			case RecordType_Map: {
-				CPrintToChatAll(" %t", "New Record - Map", client, gC_StyleChatPhrases[style]);
+				CPrintToChatAll(" %t", "New Record - Map", client, gC_StylePhrases[style]);
 			}
 			case RecordType_Pro: {
-				CPrintToChatAll(" %t", "New Record - Pro", client, gC_StyleChatPhrases[style]);
+				CPrintToChatAll(" %t", "New Record - Pro", client, gC_StylePhrases[style]);
 			}
 			case RecordType_MapAndPro: {
-				CPrintToChatAll(" %t", "New Record - Map and Pro", client, gC_StyleChatPhrases[style]);
+				CPrintToChatAll(" %t", "New Record - Map and Pro", client, gC_StylePhrases[style]);
 			}
 		}
 	}
 	else {
 		switch (recordType) {
 			case RecordType_Map: {
-				CPrintToChatAll(" %t", "New Bonus Record - Map", client, course, gC_StyleChatPhrases[style]);
+				CPrintToChatAll(" %t", "New Bonus Record - Map", client, course, gC_StylePhrases[style]);
 			}
 			case RecordType_Pro: {
-				CPrintToChatAll(" %t", "New Bonus Record - Pro", client, course, gC_StyleChatPhrases[style]);
+				CPrintToChatAll(" %t", "New Bonus Record - Pro", client, course, gC_StylePhrases[style]);
 			}
 			case RecordType_MapAndPro: {
-				CPrintToChatAll(" %t", "New Bonus Record - Map and Pro", client, course, gC_StyleChatPhrases[style]);
+				CPrintToChatAll(" %t", "New Bonus Record - Map and Pro", client, course, gC_StylePhrases[style]);
 			}
 		}
 	}
@@ -204,55 +204,55 @@ public void SimpleKZ_OnNewRecord(int client, int mapID, int course, MovementStyl
 	EmitSoundToAll(REL_SOUNDPATH_BEAT_RECORD);
 }
 
-public void SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, MovementStyle style, RunType runType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
+public void SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, MovementStyle style, TimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
 	if (mapID != gI_CurrentMapID) {
 		return;
 	}
 	
 	// Print new PB message to chat and play sound if first time beating the map PRO
 	if (course == 0) {
-		switch (runType) {
-			case RunType_Normal: {
+		switch (timeType) {
+			case TimeType_Normal: {
 				// Only printing MAP time improvement to the achieving player due to spam complaints
 				if (firstTime) {
-					CPrintToChat(client, " %t", "New PB - First Time", client, rank, maxRank, gC_StyleChatPhrases[style]);
+					CPrintToChat(client, " %t", "New PB - First Time", client, rank, maxRank, gC_StylePhrases[style]);
 				}
 				else {
-					CPrintToChat(client, " %t", "New PB - Improve", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StyleChatPhrases[style]);
+					CPrintToChat(client, " %t", "New PB - Improve", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
 				}
 			}
-			case RunType_Pro: {
+			case TimeType_Pro: {
 				if (firstTime) {
-					CPrintToChatAll(" %t", "New PB - First Time (Pro)", client, rank, maxRank, gC_StyleChatPhrases[style]);
+					CPrintToChatAll(" %t", "New PB - First Time (Pro)", client, rank, maxRank, gC_StylePhrases[style]);
 					UpdateCompletionMVPStars(client);
 					EmitSoundToClient(client, REL_SOUNDPATH_BEAT_MAP);
 					EmitSoundToClientSpectators(client, REL_SOUNDPATH_BEAT_MAP);
 				}
 				else {
-					CPrintToChatAll(" %t", "New PB - Improve (Pro)", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StyleChatPhrases[style]);
+					CPrintToChatAll(" %t", "New PB - Improve (Pro)", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
 				}
 			}
 		}
 	}
 	else {
-		switch (runType) {
-			case RunType_Normal: {
+		switch (timeType) {
+			case TimeType_Normal: {
 				// Only printing MAP time improvement to the achieving player due to spam complaints
 				if (firstTime) {
-					CPrintToChat(client, " %t", "New PB - First Time", client, rank, maxRank, gC_StyleChatPhrases[style]);
+					CPrintToChat(client, " %t", "New PB - First Time", client, rank, maxRank, gC_StylePhrases[style]);
 				}
 				else {
-					CPrintToChat(client, " %t", "New PB - Improve", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StyleChatPhrases[style]);
+					CPrintToChat(client, " %t", "New PB - Improve", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
 				}
 			}
-			case RunType_Pro: {
+			case TimeType_Pro: {
 				if (firstTime) {
-					CPrintToChatAll(" %t", "New PB - First Time (Pro)", client, rank, maxRank, gC_StyleChatPhrases[style]);
+					CPrintToChatAll(" %t", "New PB - First Time (Pro)", client, rank, maxRank, gC_StylePhrases[style]);
 					EmitSoundToClient(client, REL_SOUNDPATH_BEAT_MAP);
 					EmitSoundToClientSpectators(client, REL_SOUNDPATH_BEAT_MAP);
 				}
 				else {
-					CPrintToChatAll(" %t", "New PB - Improve (Pro)", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StyleChatPhrases[style]);
+					CPrintToChatAll(" %t", "New PB - Improve (Pro)", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
 				}
 			}
 		}

@@ -30,10 +30,18 @@ public void OnStopTouchGround(int client, bool jumped, bool ducked, bool landed)
 			MovementTweakPerfectCrouchJump(g_MovementPlayer[client]);
 		}
 	}
+	// Not a jump -> not a perf
+	else {
+		gB_HitPerf[client] = false;
+	}
 	// Reset prestrafe modifier if Standard (this is what enables 'pre b-hopping' in Legacy)
 	if (g_Style[client] == MovementStyle_Standard) {
 		gF_PrestrafeVelocityModifier[client] = 1.0;
 	}
+}
+
+public void OnStopTouchLadder(int client) {
+	gB_HitPerf[client] = false;
 }
 
 

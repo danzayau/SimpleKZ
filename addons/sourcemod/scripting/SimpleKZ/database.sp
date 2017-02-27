@@ -51,7 +51,7 @@ void DB_CreateTables() {
 	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, 0, DBPrio_High);
 }
 
-// Error report callback for failed txns
+/* Error report callback for failed transactions */
 public void DB_TxnFailure_Generic(Handle db, any data, int numQueries, const char[] error, int failIndex, any[] queryData) {
 	SetFailState("%T", "Database Transaction Error", LANG_SERVER, error);
 }

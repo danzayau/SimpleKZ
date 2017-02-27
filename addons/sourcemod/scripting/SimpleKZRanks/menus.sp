@@ -27,11 +27,11 @@ void CreateMapTopMenu(int client) {
 void DisplayMapTopMenu(int client) {
 	if (gI_MapTopCourse[client] == 0) {
 		SetMenuTitle(gH_MapTopMenu[client], "%T", "Map Top Menu - Title", client, 
-			gC_MapTopMapName[client], gC_StyleMenuPhrases[g_MapTopStyle[client]]);
+			gC_MapTopMapName[client], gC_StylePhrases[g_MapTopStyle[client]]);
 	}
 	else {
 		SetMenuTitle(gH_MapTopMenu[client], "%T", "Map Top Menu - Title (Bonus)", client, 
-			gC_MapTopMapName[client], gI_MapTopCourse[client], gC_StyleMenuPhrases[g_MapTopStyle[client]]);
+			gC_MapTopMapName[client], gI_MapTopCourse[client], gC_StylePhrases[g_MapTopStyle[client]]);
 	}
 	AddItemsMapTopMenu(client);
 	DisplayMenu(gH_MapTopMenu[client], client, MENU_TIME_FOREVER);
@@ -40,21 +40,15 @@ void DisplayMapTopMenu(int client) {
 void AddItemsMapTopMenu(int client) {
 	char text[32];
 	RemoveAllMenuItems(gH_MapTopMenu[client]);
-	FormatEx(text, sizeof(text), "%T", "Map Top Menu - Top 20", client);
-	AddMenuItem(gH_MapTopMenu[client], "", text);
-	FormatEx(text, sizeof(text), "%T", "Map Top Menu - Top 20 Pro", client);
-	AddMenuItem(gH_MapTopMenu[client], "", text);
-	FormatEx(text, sizeof(text), "%T", "Map Top Menu - Top 20 Theoretical", client);
-	AddMenuItem(gH_MapTopMenu[client], "", text);
+	for (int timeType = 0; timeType < SIMPLEKZ_NUMBER_OF_TIME_TYPES; timeType++) {
+		FormatEx(text, sizeof(text), "%T", "Map Top Menu - Top 20", client, gC_TimeTypePhrases[timeType]);
+		AddMenuItem(gH_MapTopMenu[client], "", text);
+	}
 }
 
 public int MenuHandler_MapTop(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
-		switch (param2) {
-			case 0:DB_OpenMapTop20(param1, gI_MapTopMapID[param1], gI_MapTopCourse[param1], g_MapTopStyle[param1], RunType_Normal);
-			case 1:DB_OpenMapTop20(param1, gI_MapTopMapID[param1], gI_MapTopCourse[param1], g_MapTopStyle[param1], RunType_Pro);
-			case 2:DB_OpenMapTop20(param1, gI_MapTopMapID[param1], gI_MapTopCourse[param1], g_MapTopStyle[param1], RunType_Theoretical);
-		}
+		DB_OpenMapTop20(param1, gI_MapTopMapID[param1], gI_MapTopCourse[param1], g_MapTopStyle[param1], view_as<TimeType>(param2));
 	}
 }
 
@@ -86,24 +80,21 @@ void CreatePlayerTopMenu(int client) {
 
 public int MenuHandler_PlayerTop(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
-		switch (param2) {
-			case 0:DB_OpenPlayerTop20(param1, RunType_Normal, g_PlayerTopStyle[param1]);
-			case 1:DB_OpenPlayerTop20(param1, RunType_Pro, g_PlayerTopStyle[param1]);
-		}
+		DB_OpenPlayerTop20(param1, view_as<TimeType>(param2), g_PlayerTopStyle[param1]);
 	}
 }
 
 void AddItemsPlayerTopMenu(int client) {
 	char text[32];
 	RemoveAllMenuItems(gH_PlayerTopMenu[client]);
-	FormatEx(text, sizeof(text), "%T", "Player Top Menu - Top 20", client);
-	AddMenuItem(gH_PlayerTopMenu[client], "", text);
-	FormatEx(text, sizeof(text), "%T", "Player Top Menu - Top 20 (Pro)", client);
-	AddMenuItem(gH_PlayerTopMenu[client], "", text);
+	for (int timeType = 0; timeType < SIMPLEKZ_NUMBER_OF_TIME_TYPES; timeType++) {
+		FormatEx(text, sizeof(text), "%T", "Player Top Menu - Top 20", client, gC_TimeTypePhrases[timeType]);
+		AddMenuItem(gH_PlayerTopMenu[client], "", text);
+	}
 }
 
 void DisplayPlayerTopMenu(int client) {
-	SetMenuTitle(gH_PlayerTopMenu[client], "%T", "Player Top Menu - Title", client, gC_StyleMenuPhrases[g_PlayerTopStyle[client]]);
+	SetMenuTitle(gH_PlayerTopMenu[client], "%T", "Player Top Menu - Title", client, gC_StylePhrases[g_PlayerTopStyle[client]]);
 	AddItemsPlayerTopMenu(client);
 	DisplayMenu(gH_PlayerTopMenu[client], client, MENU_TIME_FOREVER);
 }
