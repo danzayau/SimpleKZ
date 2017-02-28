@@ -112,7 +112,7 @@ public Action CommandGoto(int client, int args) {
 				CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Failure (Dead)");
 			}
 			else {
-				TeleportToOtherPlayer(client, target);
+				GotoPlayer(client, target);
 				if (gB_TimerRunning[client]) {
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Goto)");
 				}

@@ -6,10 +6,10 @@
 
 void CreateMenus() {
 	CreateTeleportMenuAll();
-	CreateMeasureMenuAll();
-	CreatePistolMenuAll();
 	CreateOptionsMenuAll();
 	CreateMovementStyleMenuAll();
+	CreatePistolMenuAll();
+	CreateMeasureMenuAll();
 }
 
 
@@ -120,6 +120,121 @@ void TeleportAddItemStart(int client) {
 	else {
 		FormatEx(text, sizeof(text), "%T", "TP Menu - Respawn", client);
 		AddMenuItem(gH_TeleportMenu[client], "", text);
+	}
+}
+
+
+
+/*===============================  Options Menu ===============================*/
+
+void CreateOptionsMenuAll() {
+	for (int client = 1; client <= MaxClients; client++) {
+		CreateOptionsMenu(client);
+	}
+}
+
+void CreateOptionsMenu(int client) {
+	gH_OptionsMenu[client] = CreateMenu(MenuHandler_Options);
+	SetMenuPagination(gH_OptionsMenu[client], 6);
+}
+
+void DisplayOptionsMenu(int client, int atItem = 0) {
+	UpdateOptionsMenu(client);
+	DisplayMenuAtItem(gH_OptionsMenu[client], client, atItem, MENU_TIME_FOREVER);
+}
+
+void UpdateOptionsMenu(int client) {
+	SetMenuTitle(gH_OptionsMenu[client], "%T", "Options Menu - Title", client);
+	RemoveAllMenuItems(gH_OptionsMenu[client]);
+	OptionsAddBool(client, gB_ShowingTeleportMenu[client], "Options Menu - Teleport Menu");
+	OptionsAddBool(client, gB_ShowingInfoPanel[client], "Options Menu - Info Panel");
+	OptionsAddBool(client, gB_ShowingPlayers[client], "Options Menu - Show Players");
+	OptionsAddBool(client, gB_ShowingWeapon[client], "Options Menu - Show Weapon");
+	OptionsAddBool(client, gB_AutoRestart[client], "Options Menu - Auto Restart");
+	OptionsAddPistol(client);
+	OptionsAddBool(client, gB_SlayOnEnd[client], "Options Menu - Slay On End");
+	OptionsAddBool(client, gB_ShowingKeys[client], "Options Menu - Show Keys");
+}
+
+void OptionsAddBool(int client, bool option, const char[] optionPhrase) {
+	char text[32];
+	if (option) {
+		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Enabled", client);
+		AddMenuItem(gH_OptionsMenu[client], "", text);
+	}
+	else {
+		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Disabled", client);
+		AddMenuItem(gH_OptionsMenu[client], "", text);
+	}
+}
+
+void OptionsAddPistol(int client) {
+	char text[32];
+	FormatEx(text, sizeof(text), "%T - %s", "Options Menu - Pistol", client, gC_Pistols[gI_Pistol[client]][1]);
+	AddMenuItem(gH_OptionsMenu[client], "", text);
+}
+
+public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int param2) {
+	if (action == MenuAction_Select) {
+		switch (param2) {
+			case 0:ToggleTeleportMenu(param1);
+			case 1:ToggleInfoPanel(param1);
+			case 2:ToggleShowPlayers(param1);
+			case 3:ToggleShowWeapon(param1);
+			case 4:ToggleAutoRestart(param1);
+			case 5: {
+				gB_CameFromOptionsMenu[param1] = true;
+				DisplayPistolMenu(param1);
+			}
+			case 6:ToggleSlayOnEnd(param1);
+			case 7:ToggleShowKeys(param1);
+		}
+		if (param2 != 5) {
+			DisplayOptionsMenu(param1, param2 / 6 * 6); // Round item number down to multiple of 6
+		}
+	}
+}
+
+
+
+/*===============================  Movement Style Menu  ===============================*/
+
+void CreateMovementStyleMenuAll() {
+	for (int client = 1; client <= MaxClients; client++) {
+		CreateMovementStyleMenu(client);
+	}
+}
+
+void CreateMovementStyleMenu(int client) {
+	gH_MovementStyleMenu[client] = CreateMenu(MenuHandler_MovementStyle);
+}
+
+void DisplayMovementStyleMenu(int client) {
+	SetMenuTitle(gH_MovementStyleMenu[client], "%T", "Style Menu - Title", client);
+	AddItemsMovementStyleMenu(client);
+	DisplayMenu(gH_MovementStyleMenu[client], client, MENU_TIME_FOREVER);
+}
+
+void AddItemsMovementStyleMenu(int client) {
+	char text[32];
+	RemoveAllMenuItems(gH_MovementStyleMenu[client]);
+	for (int style = 0; style < SIMPLEKZ_NUMBER_OF_STYLES; style++) {
+		FormatEx(text, sizeof(text), "%T", gC_StylePhrases[style], client);
+		if (style == view_as<int>(g_Style[client])) {
+			AddMenuItem(gH_MovementStyleMenu[client], "", text, ITEMDRAW_DISABLED);
+		}
+		else {
+			AddMenuItem(gH_MovementStyleMenu[client], "", text, ITEMDRAW_DEFAULT);
+		}
+	}
+}
+
+public int MenuHandler_MovementStyle(Menu menu, MenuAction action, int param1, int param2) {
+	if (action == MenuAction_Select) {
+		switch (param2) {
+			case 0:SetMovementStyle(param1, MovementStyle_Standard);
+			case 1:SetMovementStyle(param1, MovementStyle_Legacy);
+		}
 	}
 }
 
@@ -351,119 +466,4 @@ void MeasureResetPos(int client) {
 
 public bool TraceFilterPlayers(int entity, int contentsMask) {
 	return (entity > MaxClients);
-}
-
-
-
-/*===============================  Options Menu ===============================*/
-
-void CreateOptionsMenuAll() {
-	for (int client = 1; client <= MaxClients; client++) {
-		CreateOptionsMenu(client);
-	}
-}
-
-void CreateOptionsMenu(int client) {
-	gH_OptionsMenu[client] = CreateMenu(MenuHandler_Options);
-	SetMenuPagination(gH_OptionsMenu[client], 6);
-}
-
-void DisplayOptionsMenu(int client, int atItem = 0) {
-	UpdateOptionsMenu(client);
-	DisplayMenuAtItem(gH_OptionsMenu[client], client, atItem, MENU_TIME_FOREVER);
-}
-
-void UpdateOptionsMenu(int client) {
-	SetMenuTitle(gH_OptionsMenu[client], "%T", "Options Menu - Title", client);
-	RemoveAllMenuItems(gH_OptionsMenu[client]);
-	OptionsAddBool(client, gB_ShowingTeleportMenu[client], "Options Menu - Teleport Menu");
-	OptionsAddBool(client, gB_ShowingInfoPanel[client], "Options Menu - Info Panel");
-	OptionsAddBool(client, gB_ShowingPlayers[client], "Options Menu - Show Players");
-	OptionsAddBool(client, gB_ShowingWeapon[client], "Options Menu - Show Weapon");
-	OptionsAddBool(client, gB_AutoRestart[client], "Options Menu - Auto Restart");
-	OptionsAddPistol(client);
-	OptionsAddBool(client, gB_SlayOnEnd[client], "Options Menu - Slay On End");
-	OptionsAddBool(client, gB_ShowingKeys[client], "Options Menu - Show Keys");
-}
-
-void OptionsAddBool(int client, bool option, const char[] optionPhrase) {
-	char text[32];
-	if (option) {
-		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Enabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-	else {
-		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Disabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-}
-
-void OptionsAddPistol(int client) {
-	char text[32];
-	FormatEx(text, sizeof(text), "%T - %s", "Options Menu - Pistol", client, gC_Pistols[gI_Pistol[client]][1]);
-	AddMenuItem(gH_OptionsMenu[client], "", text);
-}
-
-public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int param2) {
-	if (action == MenuAction_Select) {
-		switch (param2) {
-			case 0:ToggleTeleportMenu(param1);
-			case 1:ToggleInfoPanel(param1);
-			case 2:ToggleShowPlayers(param1);
-			case 3:ToggleShowWeapon(param1);
-			case 4:ToggleAutoRestart(param1);
-			case 5: {
-				gB_CameFromOptionsMenu[param1] = true;
-				DisplayPistolMenu(param1);
-			}
-			case 6:ToggleSlayOnEnd(param1);
-			case 7:ToggleShowKeys(param1);
-		}
-		if (param2 != 5) {
-			DisplayOptionsMenu(param1, param2 / 6 * 6); // Round item number down to multiple of 6
-		}
-	}
-}
-
-
-
-/*===============================  Movement Style Menu  ===============================*/
-
-void CreateMovementStyleMenuAll() {
-	for (int client = 1; client <= MaxClients; client++) {
-		CreateMovementStyleMenu(client);
-	}
-}
-
-void CreateMovementStyleMenu(int client) {
-	gH_MovementStyleMenu[client] = CreateMenu(MenuHandler_MovementStyle);
-}
-
-void DisplayMovementStyleMenu(int client) {
-	SetMenuTitle(gH_MovementStyleMenu[client], "%T", "Style Menu - Title", client);
-	AddItemsMovementStyleMenu(client);
-	DisplayMenu(gH_MovementStyleMenu[client], client, MENU_TIME_FOREVER);
-}
-
-void AddItemsMovementStyleMenu(int client) {
-	char text[32];
-	RemoveAllMenuItems(gH_MovementStyleMenu[client]);
-	for (int style = 0; style < SIMPLEKZ_NUMBER_OF_STYLES; style++) {
-		FormatEx(text, sizeof(text), "%T", gC_StylePhrases[style], client);
-		if (style == view_as<int>(g_Style[client])) {
-			AddMenuItem(gH_MovementStyleMenu[client], "", text, ITEMDRAW_DISABLED);
-		}
-		else {
-			AddMenuItem(gH_MovementStyleMenu[client], "", text, ITEMDRAW_DEFAULT);
-		}
-	}
-}
-
-public int MenuHandler_MovementStyle(Menu menu, MenuAction action, int param1, int param2) {
-	if (action == MenuAction_Select) {
-		switch (param2) {
-			case 0:SetMovementStyle(param1, MovementStyle_Standard);
-			case 1:SetMovementStyle(param1, MovementStyle_Legacy);
-		}
-	}
 } 

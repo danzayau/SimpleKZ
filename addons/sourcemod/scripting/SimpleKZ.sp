@@ -14,6 +14,8 @@
 #pragma newdecls required
 #pragma semicolon 1
 
+/* Formatted using SPEdit Syntax Reformatter - https://github.com/JulienKluge/Spedit */
+
 public Plugin myinfo = 
 {
 	name = "Simple KZ Core", 
@@ -40,9 +42,17 @@ public Plugin myinfo =
 #define VELOCITY_VERTICAL_NORMAL_JUMP 292.54 // Found by testing until binding resulted in similar jump height to normal
 #define DUCK_SPEED_MINIMUM 7.0
 
+#define STYLE_DEFAULT_SOUND_START "buttons/button9.wav" // Not precached
+#define STYLE_DEFAULT_SOUND_END "buttons/bell1.wav" // Not precached
 #define STYLE_DEFAULT_PERF_TICKS 2
+#define STYLE_DEFAULT_PERF_SPEED_CAP 300.0 // Meme
+
+#define STYLE_LEGACY_SOUND_START "buttons/button3.wav" // Not precached
+#define STYLE_LEGACY_SOUND_END "buttons/button3.wav" // Not precached
 #define STYLE_LEGACY_PERF_TICKS 1
 #define STYLE_LEGACY_PERF_SPEED_CAP 380.0
+
+#define SOUND_TIMER_FORCE_STOP "buttons/button18.wav" // Not precached
 
 
 
@@ -50,14 +60,27 @@ public Plugin myinfo =
 
 /* ConVars */
 ConVar gCV_FullAlltalk;
+ConVar gCV_ChatProcessing;
 ConVar gCV_DefaultStyle;
-ConVar gCV_CustomChat;
 ConVar gCV_PlayerModelT;
 ConVar gCV_PlayerModelCT;
 
+/* Database */
+Database gH_DB = null;
+bool gB_ConnectedToDB = false;
+DatabaseType g_DBType = DatabaseType_None;
+int gI_PlayerID[MAXPLAYERS + 1];
+
+/* Menus */
+Handle gH_PistolMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+Handle gH_TeleportMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1] =  { false, ... };
+Handle gH_OptionsMenu[MAXPLAYERS + 1];
+bool gB_CameFromOptionsMenu[MAXPLAYERS + 1];
+Handle gH_MovementStyleMenu[MAXPLAYERS + 1];
+
 /* Movement Tweaker */
 MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
-MovementStyle g_Style[MAXPLAYERS + 1];
 float gF_PrestrafeVelocityModifier[MAXPLAYERS + 1];
 bool gB_HitPerf[MAXPLAYERS + 1];
 char gC_PlayerModelT[256];
@@ -70,6 +93,17 @@ bool gB_Paused[MAXPLAYERS + 1] =  { false, ... };
 float gF_LastResumeTime[MAXPLAYERS + 1];
 bool gB_HasResumedInThisRun[MAXPLAYERS + 1] =  { false, ... };
 int gI_CurrentCourse[MAXPLAYERS + 1];
+
+/* Preferences */
+MovementStyle g_Style[MAXPLAYERS + 1] =  { MovementStyle_Standard, ... };
+bool gB_ShowingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
+bool gB_ShowingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
+bool gB_ShowingKeys[MAXPLAYERS + 1] =  { false, ... };
+bool gB_ShowingPlayers[MAXPLAYERS + 1] =  { true, ... };
+bool gB_ShowingWeapon[MAXPLAYERS + 1] =  { true, ... };
+bool gB_AutoRestart[MAXPLAYERS + 1] =  { false, ... };
+bool gB_SlayOnEnd[MAXPLAYERS + 1] =  { false, ... };
+int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
 
 /* Button Press Checking */
 int gI_OldButtons[MAXPLAYERS + 1];
@@ -109,30 +143,6 @@ bool gB_HasSavedPosition[MAXPLAYERS + 1] =  { false, ... };
 float gF_SavedOrigin[MAXPLAYERS + 1][3];
 float gF_SavedAngles[MAXPLAYERS + 1][3];
 
-/* Database */
-Database gH_DB = null;
-bool gB_ConnectedToDB = false;
-DatabaseType g_DBType = DatabaseType_None;
-int gI_PlayerID[MAXPLAYERS + 1];
-
-/* Menus */
-Handle gH_PistolMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-Handle gH_TeleportMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1] =  { false, ... };
-Handle gH_OptionsMenu[MAXPLAYERS + 1];
-bool gB_CameFromOptionsMenu[MAXPLAYERS + 1];
-Handle gH_MovementStyleMenu[MAXPLAYERS + 1];
-
-/* Preferences */
-bool gB_ShowingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
-bool gB_ShowingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
-bool gB_ShowingKeys[MAXPLAYERS + 1] =  { false, ... };
-bool gB_ShowingPlayers[MAXPLAYERS + 1] =  { true, ... };
-bool gB_ShowingWeapon[MAXPLAYERS + 1] =  { true, ... };
-bool gB_AutoRestart[MAXPLAYERS + 1] =  { false, ... };
-bool gB_SlayOnEnd[MAXPLAYERS + 1] =  { false, ... };
-int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
-
 /* Measure */
 Handle gH_MeasureMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 int gI_GlowSprite;
@@ -147,7 +157,7 @@ float gF_SplitRunTime[MAXPLAYERS + 1];
 float gF_SplitGameTime[MAXPLAYERS + 1];
 
 /* Other */
-bool gB_LateLoad;
+bool gB_LateLoad = false;
 char gC_CurrentMap[64];
 bool gB_CurrentMapIsKZPro;
 int gI_JustTouchedTrigMulti[MAXPLAYERS + 1];
@@ -213,6 +223,7 @@ char gC_StylePhrases[SIMPLEKZ_NUMBER_OF_STYLES][] =
 #include "SimpleKZ/menus.sp"
 #include "SimpleKZ/misc.sp"
 #include "SimpleKZ/movementtweaker.sp"
+#include "SimpleKZ/options.sp"
 #include "SimpleKZ/timer.sp"
 
 
@@ -275,6 +286,7 @@ public void OnLibraryAdded(const char[] name) {
 	}
 }
 
+// Handles late loading
 void OnLateLoad() {
 	for (int client = 1; client <= MaxClients; client++) {
 		if (IsClientAuthorized(client) && !IsFakeClient(client)) {
@@ -299,17 +311,18 @@ public void OnClientAuthorized(int client, const char[] auth) {
 
 public void OnClientPutInServer(int client) {
 	if (!IsFakeClient(client)) {
-		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
+		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit); // Must be done here, not OnClientAuthorized
 		PrintConnectMessage(client);
 	}
 }
 
-public void OnClientDisconnect(int client) {  // Also calls at end of map
+public void OnClientDisconnect(int client) {
 	if (!IsFakeClient(client)) {
 		DB_SaveOptions(client);
 	}
 }
 
+// Print custom disconnection message
 public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (IsValidClient(client) && !IsFakeClient(client)) {
@@ -341,9 +354,9 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	MovementTweakGeneral(g_MovementPlayer[client]);
 }
 
-// Adjust player messages, and automatically lower case commands
+// Process player messages including lower casing commands
 public Action OnSay(int client, const char[] command, int argc) {
-	if (!GetConVarBool(gCV_CustomChat)) {
+	if (!GetConVarBool(gCV_ChatProcessing)) {
 		return Plugin_Continue;
 	}
 	
@@ -401,9 +414,8 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 /*===============================  Miscellaneous Events  ===============================*/
 
 public void OnMapStart() {
-	LoadKZConfig();
-	PrecacheModels();
 	SetupMap();
+	LoadKZConfig();
 }
 
 // Stop round from ever ending

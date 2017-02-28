@@ -8,6 +8,8 @@
 #pragma newdecls required
 #pragma semicolon 1
 
+/* Formatted using SPEdit Syntax Reformatter - https://github.com/JulienKluge/Spedit */
+
 public Plugin myinfo = 
 {
 	name = "Simple KZ Ranks", 
@@ -118,6 +120,7 @@ public void OnAllPluginsLoaded() {
 	}
 }
 
+// Handles late loading
 void OnLateLoad() {
 	for (int client = 1; client <= MaxClients; client++) {
 		if (IsClientAuthorized(client) && !IsFakeClient(client)) {
@@ -134,6 +137,7 @@ void OnLateLoad() {
 /*===============================  Client and Map Events  ===============================*/
 
 public void OnClientAuthorized(int client, const char[] auth) {
+	// Prepare for client arrival
 	if (!IsFakeClient(client)) {
 		SetupClient(client);
 	}
@@ -146,10 +150,6 @@ public void OnClientPutInServer(int client) {
 }
 
 public void OnMapStart() {
-	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_RECORD);
-	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_MAP);
-	FakePrecacheSound(REL_SOUNDPATH_BEAT_RECORD);
-	FakePrecacheSound(REL_SOUNDPATH_BEAT_MAP);
 	SetupMap();
 }
 

@@ -33,11 +33,13 @@ void DB_SetupDatabase() {
 	
 	gB_ConnectedToDB = true;
 	DB_CreateTables();
+	
 	Call_SimpleKZ_OnDatabaseConnect();
 }
 
 void DB_CreateTables() {
 	Transaction txn = SQL_CreateTransaction();
+	
 	switch (g_DBType) {
 		case DatabaseType_SQLite: {
 			txn.AddQuery(sqlite_players_create);
@@ -48,6 +50,7 @@ void DB_CreateTables() {
 			txn.AddQuery(mysql_options_create);
 		}
 	}
+	
 	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, 0, DBPrio_High);
 }
 
@@ -89,6 +92,7 @@ void DB_SetupClient(int client) {
 			txn.AddQuery(query);
 		}
 		case DatabaseType_MySQL: {
+			// INSERT ... ON DUPLICATE KEY ...
 			FormatEx(query, sizeof(query), mysql_players_upsert, nameEscaped, country, steamID);
 			txn.AddQuery(query);
 		}

@@ -17,6 +17,16 @@ float FloatMax(float a, float b) {
 	return b;
 }
 
+void String_ToLower(const char[] input, char[] output, int size) {
+	size--;
+	int i = 0;
+	while (input[i] != '\0' && i < size) {
+		output[i] = CharToLower(input[i]);
+		i++;
+	}
+	output[i] = '\0';
+}
+
 void SetupMovementMethodmaps() {
 	for (int client = 1; client <= MaxClients; client++) {
 		g_MovementPlayer[client] = new MovementPlayer(client);
@@ -26,16 +36,6 @@ void SetupMovementMethodmaps() {
 void CompileRegexes() {
 	gRE_BonusStartButton = CompileRegex("^climb_bonus(\\d+)_startbutton$");
 	gRE_BonusEndButton = CompileRegex("^climb_bonus(\\d+)_endbutton$");
-}
-
-void String_ToLower(const char[] input, char[] output, int size) {
-	size--;
-	int i = 0;
-	while (input[i] != '\0' && i < size) {
-		output[i] = CharToLower(input[i]);
-		i++;
-	}
-	output[i] = '\0';
 }
 
 void AddCommandListeners() {
@@ -59,6 +59,10 @@ void LoadKZConfig() {
 	}
 }
 
+
+
+/*===============================  Map  ===============================*/
+
 void SetupMap() {
 	char map[64];
 	GetCurrentMap(map, sizeof(map));
@@ -71,6 +75,9 @@ void SetupMap() {
 	char mapPrefix[1][64];
 	ExplodeString(gC_CurrentMap, "_", mapPrefix, sizeof(mapPrefix), sizeof(mapPrefix[]));
 	gB_CurrentMapIsKZPro = StrEqual(mapPrefix[0], "kzpro");
+	
+	// Precache stuff
+	PrecacheModels();
 }
 
 void PrecacheModels() {
@@ -103,24 +110,20 @@ void SetupClient(int client) {
 	NoBhopBlockCPSetup(client);
 }
 
-public Action CleanHUD(Handle timer, int client) {
-	if (IsValidClient(client)) {
-		// Hide radar
-		int clientEntFlags = GetEntProp(client, Prop_Send, "m_iHideHUD");
-		SetEntProp(client, Prop_Send, "m_iHideHUD", clientEntFlags | (1 << 12));
+void PrintConnectMessage(int client) {
+	char name[MAX_NAME_LENGTH], clientIP[32], country[45];
+	GetClientName(client, name, MAX_NAME_LENGTH);
+	GetClientIP(client, clientIP, sizeof(clientIP));
+	if (!GeoipCountry(clientIP, country, sizeof(country))) {
+		country = "Unknown";
 	}
-	return Plugin_Continue;
+	CPrintToChatAll("%T", "Client Connection Message", client, name, country);
 }
 
-public Action SlayPlayer(Handle timer, int client) {
-	if (IsValidClient(client)) {
-		ForcePlayerSuicide(client);
-	}
-	return Plugin_Continue;
-}
-
-void SetDrawViewModel(int client, bool drawViewModel) {
-	SetEntProp(client, Prop_Send, "m_bDrawViewmodel", drawViewModel);
+void PrintDisconnectMessage(int client, const char[] reason) {
+	char name[MAX_NAME_LENGTH];
+	GetClientName(client, name, MAX_NAME_LENGTH);
+	CPrintToChatAll("%T", "Client Disconnection Message", client, name, reason);
 }
 
 void JoinTeam(int client, int team) {
@@ -152,7 +155,11 @@ void JoinTeam(int client, int team) {
 	CloseTeleportMenu(client);
 }
 
-void TeleportToOtherPlayer(int client, int target)
+void SetDrawViewModel(int client, bool drawViewModel) {
+	SetEntProp(client, Prop_Send, "m_bDrawViewmodel", drawViewModel);
+}
+
+void GotoPlayer(int client, int target)
 {
 	float targetOrigin[3];
 	float targetAngles[3];
@@ -172,18 +179,6 @@ void TeleportToOtherPlayer(int client, int target)
 	CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Success", target);
 }
 
-void EmitSoundToClientSpectators(int client, const char[] sound) {
-	for (int i = 1; i <= MaxClients; i++) {
-		if (IsValidClient(i) && GetSpectatedPlayer(i) == client) {
-			EmitSoundToClient(i, sound);
-		}
-	}
-}
-
-int GetSpectatedPlayer(int client) {
-	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-}
-
 void FreezePlayer(int client) {
 	g_MovementPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
 	g_MovementPlayer[client].moveType = MOVETYPE_NONE;
@@ -198,22 +193,6 @@ void ToggleNoclip(int client) {
 	}
 }
 
-void PrintConnectMessage(int client) {
-	char name[MAX_NAME_LENGTH], clientIP[32], country[45];
-	GetClientName(client, name, MAX_NAME_LENGTH);
-	GetClientIP(client, clientIP, sizeof(clientIP));
-	if (!GeoipCountry(clientIP, country, sizeof(country))) {
-		country = "Unknown";
-	}
-	CPrintToChatAll("%T", "Client Connection Message", client, name, country);
-}
-
-void PrintDisconnectMessage(int client, const char[] reason) {
-	char name[MAX_NAME_LENGTH];
-	GetClientName(client, name, MAX_NAME_LENGTH);
-	CPrintToChatAll("%T", "Client Disconnection Message", client, name, reason);
-}
-
 TimeType GetCurrentTimeType(int client) {
 	if (gI_TeleportsUsed[client] == 0) {
 		return TimeType_Pro;
@@ -221,14 +200,6 @@ TimeType GetCurrentTimeType(int client) {
 	else {
 		return TimeType_Normal;
 	}
-}
-
-public Action ZeroVelocity(Handle timer, int client) {
-	if (IsValidClient(client)) {
-		g_MovementPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, -0.0 } ));
-		g_MovementPlayer[client].SetBaseVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
-	}
-	return Plugin_Continue;
 }
 
 void UpdatePlayerModel(int client) {
@@ -265,99 +236,40 @@ void GivePlayerPistol(int client, int pistol) {
 	}
 }
 
-
-
-/*===============================  Options  ===============================*/
-
-void SetDefaultOptions(int client) {
-	g_Style[client] = view_as<MovementStyle>(GetConVarInt(gCV_DefaultStyle));
-	gB_ShowingTeleportMenu[client] = true;
-	gB_ShowingInfoPanel[client] = true;
-	gB_ShowingKeys[client] = false;
-	gB_ShowingPlayers[client] = true;
-	gB_ShowingWeapon[client] = true;
-	gB_AutoRestart[client] = false;
-	gB_SlayOnEnd[client] = false;
-	gI_Pistol[client] = 0;
+int GetSpectatedPlayer(int client) {
+	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
 }
 
-void ToggleTeleportMenu(int client) {
-	if (gB_ShowingTeleportMenu[client]) {
-		gB_ShowingTeleportMenu[client] = false;
-		CloseTeleportMenu(client);
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Menu - Disable");
-	}
-	else {
-		gB_ShowingTeleportMenu[client] = true;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Menu - Enable");
+void EmitSoundToClientSpectators(int client, const char[] sound) {
+	for (int i = 1; i <= MaxClients; i++) {
+		if (IsValidClient(i) && GetSpectatedPlayer(i) == client) {
+			EmitSoundToClient(i, sound);
+		}
 	}
 }
 
-void ToggleShowPlayers(int client) {
-	if (gB_ShowingPlayers[client]) {
-		gB_ShowingPlayers[client] = false;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Players - Disable");
+public Action CleanHUD(Handle timer, int client) {
+	if (IsValidClient(client)) {
+		// Hide radar
+		int clientEntFlags = GetEntProp(client, Prop_Send, "m_iHideHUD");
+		SetEntProp(client, Prop_Send, "m_iHideHUD", clientEntFlags | (1 << 12));
 	}
-	else {
-		gB_ShowingPlayers[client] = true;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Players - Enable");
-	}
+	return Plugin_Continue;
 }
 
-void ToggleInfoPanel(int client) {
-	if (gB_ShowingInfoPanel[client]) {
-		gB_ShowingInfoPanel[client] = false;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Info Panel - Disable");
+public Action SlayPlayer(Handle timer, int client) {
+	if (IsValidClient(client)) {
+		ForcePlayerSuicide(client);
 	}
-	else {
-		gB_ShowingInfoPanel[client] = true;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Info Panel - Enable");
-	}
+	return Plugin_Continue;
 }
 
-void ToggleShowWeapon(int client) {
-	if (gB_ShowingWeapon[client]) {
-		gB_ShowingWeapon[client] = false;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Weapon - Disable");
+public Action ZeroVelocity(Handle timer, int client) {
+	if (IsValidClient(client)) {
+		g_MovementPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, -0.0 } ));
+		g_MovementPlayer[client].SetBaseVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
 	}
-	else {
-		gB_ShowingWeapon[client] = true;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Weapon - Enable");
-	}
-	SetDrawViewModel(client, gB_ShowingWeapon[client]);
-}
-
-void ToggleShowKeys(int client) {
-	if (gB_ShowingKeys[client]) {
-		gB_ShowingKeys[client] = false;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Keys - Disable");
-	}
-	else {
-		gB_ShowingKeys[client] = true;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Keys - Enable");
-	}
-}
-
-void ToggleAutoRestart(int client) {
-	if (gB_AutoRestart[client]) {
-		gB_AutoRestart[client] = false;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Auto Restart - Disable");
-	}
-	else {
-		gB_AutoRestart[client] = true;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Auto Restart - Enable");
-	}
-}
-
-void ToggleSlayOnEnd(int client) {
-	if (gB_SlayOnEnd[client]) {
-		gB_SlayOnEnd[client] = false;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Slay On End - Disable");
-	}
-	else {
-		gB_SlayOnEnd[client] = true;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Slay On End - Enable");
-	}
+	return Plugin_Continue;
 }
 
 

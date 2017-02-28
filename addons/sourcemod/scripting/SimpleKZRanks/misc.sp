@@ -3,6 +3,9 @@
 	Miscellaneous functions.
 */
 
+
+/*===============================  General  ===============================*/
+
 bool IsValidClient(int client) {
 	return 1 <= client && client <= MaxClients && IsClientInGame(client);
 }
@@ -17,17 +20,9 @@ void String_ToLower(const char[] input, char[] output, int size) {
 	output[i] = '\0';
 }
 
-void SetupClient(int client) {
-	AddItemsPlayerTopMenu(client);
-}
 
-void UpdateCompletionMVPStars(int client) {
-	DB_GetCompletion(client, client, SimpleKZ_GetDefaultStyle(), false);
-}
 
-int GetSpectatedPlayer(int client) {
-	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-}
+/*===============================  Map  ===============================*/
 
 void SetupMap() {
 	// Get just the map name (e.g. remove workshop/id/ prefix)
@@ -37,11 +32,31 @@ void SetupMap() {
 	FormatEx(gC_CurrentMap, sizeof(gC_CurrentMap), "%s", mapPieces[lastPiece - 1]);
 	String_ToLower(gC_CurrentMap, gC_CurrentMap, sizeof(gC_CurrentMap));
 	
+	// Add files to download table
+	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_RECORD);
+	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_MAP);
+	
+	// Precache stuff
+	FakePrecacheSound(REL_SOUNDPATH_BEAT_RECORD);
+	FakePrecacheSound(REL_SOUNDPATH_BEAT_MAP);
+	
 	DB_SetupMap();
 }
 
 void FakePrecacheSound(const char[] relativeSoundPath) {
 	AddToStringTable(FindStringTable("soundprecache"), relativeSoundPath);
+}
+
+
+
+/*===============================  Client  ===============================*/
+
+void SetupClient(int client) {
+	AddItemsPlayerTopMenu(client);
+}
+
+int GetSpectatedPlayer(int client) {
+	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
 }
 
 void EmitSoundToClientSpectators(int client, const char[] sound) {
@@ -51,6 +66,15 @@ void EmitSoundToClientSpectators(int client, const char[] sound) {
 		}
 	}
 }
+
+void UpdateCompletionMVPStars(int client) {
+	// Sets the player's MVP stars as the percentage PRO completion on the server's default style
+	DB_GetCompletion(client, client, SimpleKZ_GetDefaultStyle(), false);
+}
+
+
+
+/*===============================  Announcements  ===============================*/
 
 void AnnounceNewRecord(int client, int course, MovementStyle style, RecordType recordType) {
 	// Print new record message to chat and play sound

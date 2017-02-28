@@ -14,13 +14,14 @@ void TimerTick(int client) {
 
 void TimerSetup(int client) {
 	gB_TimerRunning[client] = false;
+	gB_Paused[client] = false;
 	gB_HasStartedThisMap[client] = false;
 	TimerReset(client);
 }
 
 void TimerReset(int client) {
+	// Reset all stored variables
 	gF_CurrentTime[client] = 0.0;
-	gB_Paused[client] = false;
 	gF_LastResumeTime[client] = 0.0;
 	gB_HasResumedInThisRun[client] = false;
 	gI_CheckpointCount[client] = 0;
@@ -42,16 +43,15 @@ void TimerStart(int client, int course) {
 		return;
 	}
 	
+	Resume(client);
 	TimerReset(client);
-	g_MovementPlayer[client].moveType = MOVETYPE_WALK;
 	gB_TimerRunning[client] = true;
 	gI_CurrentCourse[client] = course;
 	gB_HasStartedThisMap[client] = true;
 	g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
 	g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
 	SplitsReset(client);
-	EmitSoundToClient(client, "buttons/button9.wav");
-	EmitSoundToClientSpectators(client, "buttons/button9.wav");
+	PlayTimerStartSound(client);
 	Call_SimpleKZ_OnTimerStart(client);
 	CloseTeleportMenu(client);
 }
@@ -63,8 +63,7 @@ void TimerEnd(int client, int course) {
 		if (gB_SlayOnEnd[client]) {
 			CreateTimer(3.0, SlayPlayer, client);
 		}
-		EmitSoundToClient(client, "buttons/bell1.wav");
-		EmitSoundToClientSpectators(client, "buttons/bell1.wav");
+		PlayTimerEndSound(client);
 		Call_SimpleKZ_OnTimerEnd(client);
 		CloseTeleportMenu(client);
 	}
@@ -72,8 +71,7 @@ void TimerEnd(int client, int course) {
 
 void TimerForceStop(int client) {
 	if (gB_TimerRunning[client]) {
-		EmitSoundToClient(client, "buttons/button18.wav");
-		EmitSoundToClientSpectators(client, "buttons/button18.wav");
+		PlayTimerForceStopSound(client);
 		gB_TimerRunning[client] = false;
 		Call_SimpleKZ_OnTimerForceStop(client);
 		CloseTeleportMenu(client);
@@ -388,4 +386,35 @@ void PrintEndTimeString(int client) {
 			}
 		}
 	}
+}
+
+void PlayTimerStartSound(int client) {
+	switch (g_Style[client]) {
+		case MovementStyle_Standard: {
+			EmitSoundToClient(client, STYLE_DEFAULT_SOUND_START);
+			EmitSoundToClientSpectators(client, STYLE_DEFAULT_SOUND_START);
+		}
+		case MovementStyle_Legacy: {
+			EmitSoundToClient(client, STYLE_LEGACY_SOUND_START);
+			EmitSoundToClientSpectators(client, STYLE_LEGACY_SOUND_START);
+		}
+	}
+}
+
+void PlayTimerEndSound(int client) {
+	switch (g_Style[client]) {
+		case MovementStyle_Standard: {
+			EmitSoundToClient(client, STYLE_DEFAULT_SOUND_END);
+			EmitSoundToClientSpectators(client, STYLE_DEFAULT_SOUND_END);
+		}
+		case MovementStyle_Legacy: {
+			EmitSoundToClient(client, STYLE_LEGACY_SOUND_END);
+			EmitSoundToClientSpectators(client, STYLE_LEGACY_SOUND_END);
+		}
+	}
+}
+
+void PlayTimerForceStopSound(int client) {
+	EmitSoundToClient(client, SOUND_TIMER_FORCE_STOP);
+	EmitSoundToClientSpectators(client, SOUND_TIMER_FORCE_STOP);
 } 

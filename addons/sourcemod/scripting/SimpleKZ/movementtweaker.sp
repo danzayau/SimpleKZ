@@ -80,16 +80,14 @@ float PrestrafeVelocityModifier(MovementPlayer player) {
 }
 
 bool CheckIfValidPrestrafeKeys(MovementPlayer player) {
-	if (g_Style[player.id] == MovementStyle_Standard) {
-		// If _only_ WA or WD or SA or SD are pressed, then return true.
-		if (((player.buttons & IN_FORWARD && !(player.buttons & IN_BACK)) || (!(player.buttons & IN_FORWARD) && player.buttons & IN_BACK))
-			 && ((player.buttons & IN_MOVELEFT && !(player.buttons & IN_MOVERIGHT)) || (!(player.buttons & IN_MOVELEFT) && player.buttons & IN_MOVERIGHT))) {
-			return true;
+	switch (g_Style[player.id]) {
+		case MovementStyle_Standard: {
+			// If _only_ WA or WD or SA or SD are pressed, then return true.
+			return ((player.buttons & IN_FORWARD && !(player.buttons & IN_BACK)) || (!(player.buttons & IN_FORWARD) && player.buttons & IN_BACK))
+			 && ((player.buttons & IN_MOVELEFT && !(player.buttons & IN_MOVERIGHT)) || (!(player.buttons & IN_MOVELEFT) && player.buttons & IN_MOVERIGHT));
 		}
-	}
-	else if (g_Style[player.id] == MovementStyle_Legacy) {
-		if (player.buttons & IN_MOVELEFT || player.buttons & IN_MOVERIGHT) {
-			return true;
+		case MovementStyle_Legacy: {
+			return player.buttons & IN_MOVELEFT || player.buttons & IN_MOVERIGHT;
 		}
 	}
 	return false;
@@ -127,11 +125,13 @@ void MovementTweakTakeoffSpeed(MovementPlayer player) {
 }
 
 bool HitPerf(MovementPlayer player) {
-	if (g_Style[player.id] == MovementStyle_Standard) {
-		return player.jumpTick - player.landingTick <= STYLE_DEFAULT_PERF_TICKS;
-	}
-	else if (g_Style[player.id] == MovementStyle_Legacy) {
-		return player.jumpTick - player.landingTick <= STYLE_LEGACY_PERF_TICKS;
+	switch (g_Style[player.id]) {
+		case MovementStyle_Standard: {
+			return player.jumpTick - player.landingTick <= STYLE_DEFAULT_PERF_TICKS;
+		}
+		case MovementStyle_Legacy: {
+			return player.jumpTick - player.landingTick <= STYLE_LEGACY_PERF_TICKS;
+		}
 	}
 	return player.jumpTick - player.landingTick <= 1;
 }
@@ -155,13 +155,19 @@ float ApplyTakeoffSpeed(MovementPlayer player, float speed) {
 }
 
 float CalculateTweakedTakeoffSpeed(MovementPlayer player) {
-	if (g_Style[player.id] == MovementStyle_Standard && player.landingSpeed > SPEED_NORMAL) {
-		return 0.2 * player.landingSpeed + 200;
+	switch (g_Style[player.id]) {
+		case MovementStyle_Standard: {
+			if (player.landingSpeed > SPEED_NORMAL) {
+				return 0.2 * player.landingSpeed + 200; // The magic formula
+			}
+		}
+		case MovementStyle_Legacy: {
+			if (player.speed > STYLE_LEGACY_PERF_SPEED_CAP) {
+				return STYLE_LEGACY_PERF_SPEED_CAP;
+			}
+		}
 	}
-	else if (g_Style[player.id] == MovementStyle_Legacy && player.speed > STYLE_LEGACY_PERF_SPEED_CAP) {
-		return STYLE_LEGACY_PERF_SPEED_CAP;
-	}
-	return player.landingSpeed;
+	return player.speed;
 }
 
 void MovementTweakPerfectCrouchJump(MovementPlayer player) {
@@ -176,9 +182,7 @@ void MovementTweakPerfectCrouchJump(MovementPlayer player) {
 /*===============================  Other Tweaks  ===============================*/
 
 void MovementTweakDuckSlowdown(MovementPlayer player) {
-	if (g_Style[player.id] == MovementStyle_Standard || g_Style[player.id] == MovementStyle_Legacy) {
-		if (player.duckSpeed < DUCK_SPEED_MINIMUM) {
-			player.duckSpeed = DUCK_SPEED_MINIMUM;
-		}
+	if (player.duckSpeed < DUCK_SPEED_MINIMUM) {
+		player.duckSpeed = DUCK_SPEED_MINIMUM;
 	}
 } 
