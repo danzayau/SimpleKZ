@@ -6,13 +6,13 @@
 
 void RegisterCommands() {
 	RegConsoleCmd("sm_top", CommandTop, "[KZ] Opens a menu showing the top record holders.");
-	RegConsoleCmd("sm_maptop", CommandMapTop, "[KZ] Opens a menu showing the top times of a map. Usage !maptop <map>");
-	RegConsoleCmd("sm_bmaptop", CommandBMapTop, "[KZ] Opens a menu showing the top bonus times of a map. Usage !btop <#bonus> <map>");
+	RegConsoleCmd("sm_maptop", CommandMapTop, "[KZ] Opens a menu showing the top times of a map. Usage: !maptop <map>");
+	RegConsoleCmd("sm_bmaptop", CommandBMapTop, "[KZ] Opens a menu showing the top bonus times of a map. Usage: !btop <#bonus> <map>");
 	RegConsoleCmd("sm_pb", CommandPB, "[KZ] Prints PB map times and ranks to chat. Usage: !pb <map> <player>");
 	RegConsoleCmd("sm_bpb", CommandBPB, "[KZ] Prints PB bonus times and ranks to chat. Usage: !bpb <#bonus> <map> <player>");
 	RegConsoleCmd("sm_wr", CommandWR, "[KZ] Prints map record times to chat. Usage: !wr <map>");
 	RegConsoleCmd("sm_bwr", CommandBWR, "[KZ] Prints bonus record times to chat. Usage: !bwr <#bonus> <map>");
-	RegConsoleCmd("sm_pc", CommandPC, "[KZ] Prints map completion to chat. Usage !pc <player>");
+	RegConsoleCmd("sm_pc", CommandPC, "[KZ] Prints map completion to chat. Usage: !pc <player>");
 	
 	/* Admin Commands */
 	RegAdminCmd("sm_updatemappool", CommandUpdateMapPool, ADMFLAG_ROOT, "[KZ] Updates the ranked map pool with the list of maps in cfg/sourcemod/SimpleKZ/mappool.cfg.");

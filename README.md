@@ -4,8 +4,6 @@
 
 *A timer plugin for climb maps with all the essentials.*
 
-============================
-
 ### Features
 
  * **KZ Map Compatibility** - Automatically detects start and end timers on KZTimer globally approved maps.
@@ -85,10 +83,10 @@ To add a timer button to your map, use a ```func_button``` with a specific name.
 These commands return results based on your currently selected style.
  
  * ```!top``` - Opens a menu showing the top record holders
- * ```!maptop``` - Opens a menu showing the top times of a map. Usage ```!maptop <map>```
- * ```!bmaptop``` - Opens a menu showing the top bonus times of a map. Usage ```!btop <#bonus> <map>```
+ * ```!maptop``` - Opens a menu showing the top times of a map. Usage: ```!maptop <map>```
+ * ```!bmaptop``` - Opens a menu showing the top bonus times of a map. Usage: ```!btop <#bonus> <map>```
  * ```!pb``` - Prints map times and ranks to chat. Usage: ```!pb <map> <player>```
  * ```!bpb``` - Prints PB bonus times and ranks to chat. Usage: ```!bpb <#bonus> <map> <player>```
  * ```!wr``` - Prints map record times to chat. Usage: ```!wr <map>```
  * ```!bwr``` - Prints bonus record times to chat. Usage: ```!bwr <#bonus> <map>```
- * ```!pc``` - Prints map completion to chat. Usage ```!pc <player>```
+ * ```!pc``` - Prints map completion to chat. Usage: ```!pc <player>```
