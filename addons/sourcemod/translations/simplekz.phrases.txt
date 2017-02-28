@@ -186,6 +186,12 @@
 	{
 		"en"		"{grey}You have reset your timer and your splits."
 	}
+	"Switched Style"
+	{
+		// You have switched to the Legacy style.
+		"#format"	"{1:t}"
+		"en"		"{grey}You have switched to the {purple}{1}{grey} style."
+	}
 	
 	
 	// Option Toggle Chat Messages ////////////////////////////////////////////////////////////

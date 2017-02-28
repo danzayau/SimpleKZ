@@ -7,6 +7,7 @@
 void SetMovementStyle(int client, MovementStyle style) {
 	if (g_Style[client] != style) {
 		g_Style[client] = style;
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Switched Style", gC_StylePhrases[g_Style[client]]);
 		if (gB_TimerRunning[client]) {
 			TimerForceStop(client);
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Changed Style)");

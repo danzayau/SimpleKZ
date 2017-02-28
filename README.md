@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/danzayau/SimpleKZ.svg?branch=master)](https://travis-ci.org/danzayau/SimpleKZ)
 
-SimpleKZ is a timer plugin for KZ maps with all the essentials.
+*A timer plugin for climb maps with all the essentials.*
 
 ============================
 
@@ -46,30 +46,43 @@ To add a timer button to your map, use a ```func_button``` with a specific name.
 
 ### Simple KZ Core Player Commands
 
- * ```!menu``` - Toggle the visibility of the teleport menu.
+**Timer Commands**
+
  * ```!checkpoint``` - Set your checkpoint.
  * ```!gocheck``` - Teleport to your checkpoint.
+ * ```!pause```/```!resume``` - Toggle pausing your timer and stopping you in your position.
  * ```!undo``` - Undo teleport.
  * ```!start```/```!r``` - Teleport to the start of the map.
  * ```!stop``` - Stop your timer.
- * ```!stopsound``` - Stop all sounds e.g. map soundscapes (music).
- * ```!spec``` - Join spectators or spectate a specified player.
- * ```!goto``` - Teleport to another player. Usage: ```!goto <player>```
+
+**Options**
+
  * ```!options``` - Open the options menu.
+ * ```!menu``` - Toggle the visibility of the teleport menu.
  * ```!hide``` - Toggles the visibility of other players.
  * ```!speed``` - Toggle visibility of the centre information panel.
  * ```!hideweapon``` - Toggle visibility of your weapon.
- * ```!measure``` - Open the measurement menu.
  * ```!pistol``` - Open the pistol selection menu.
- * ```!split``` - Make a time split for timing purposes.
+ 
+**Styles**
+
+ * ```!style``` - Opens up the movement style selection menu.
+ * ```!standard```/```!s``` - Switch to the standard movement style.
+ * ```!legacy```/```!l``` - Switch to the standard movement style.
+
+**Other**
+
  * ```!nc``` - Toggle noclip.
  * ```+noclip``` - Noclip (bind a key to it in console).
- * ```!style``` - Opens up the movement style selection menu.
-
+ * ```!spec``` - Join spectators or spectate a specified player.
+ * ```!goto``` - Teleport to another player. Usage: ```!goto <player>```
+ * ```!measure``` - Open the measurement menu.
+ * ```!stopsound``` - Stop all sounds e.g. map soundscapes (music).
+ * ```!split``` - Make a time split for timing purposes.
  
 ### SimpleKZ Ranks Player Commands
 
-These commands use your currently selected style.
+These commands return results based on your currently selected style.
  
  * ```!top``` - Opens a menu showing the top record holders
  * ```!maptop``` - Opens a menu showing the top times of a map. Usage ```!maptop <map>```
