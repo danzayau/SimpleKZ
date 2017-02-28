@@ -145,7 +145,27 @@ forward void SimpleKZ_OnRetrievePlayerID(int client, int playerID);
 native bool SimpleKZ_GetHitPerf(int client);
 
 /**
- * Forces the player's timer to stop. Intended for run invalidation.
+ * Starts the player's timer for a course on the current map.
+ *
+ * @param client    		Client entity index.
+ * @param course    		Course number (0 = main, 1+ = bonus).
+ * @noreturn
+ */
+native void SimpleKZ_StartTimer(int client, int course);
+
+/**
+ * Ends the player's timer for a course on the current map.
+ * Only works if the player's timer is started for that course.
+ *
+ * @param client    		Client entity index.
+ * @param course    		Course number (0 = main, 1+ = bonus).
+ * @noreturn
+ */
+native void SimpleKZ_EndTimer(int client, int course);
+
+/**
+ * Forces the player's timer to stop.
+ * Intended for run invalidation.
  *
  * @param client    		Client entity index.
  * @noreturn
@@ -153,7 +173,8 @@ native bool SimpleKZ_GetHitPerf(int client);
 native void SimpleKZ_ForceStopTimer(int client);
 
 /**
- * Forces all players' timers to stop. Intended for run invalidation.
+ * Forces all players' timers to stop.
+ * Intended for run invalidation.
  *
  * @param client    		Client entity index.
  * @noreturn
@@ -185,7 +206,8 @@ native bool SimpleKZ_GetCurrentCourse(int client);
 native bool SimpleKZ_GetPaused(int client);
 
 /**
- * Gets the player's current run time. Runtime is reset when the player's timer is started.
+ * Gets the player's current run time.
+ * Runtime is reset when the player's timer is started.
  *
  * @param client    		Client entity index.
  * @return					The player's current run time.
@@ -193,7 +215,8 @@ native bool SimpleKZ_GetPaused(int client);
 native float SimpleKZ_GetCurrentTime(int client);
 
 /**
- * Gets the player's current checkpoint count. Checkpoint count is reset when the player's timer is started.
+ * Gets the player's current checkpoint count.
+ * Checkpoint count is reset when the player's timer is started.
  *
  * @param client    		Client entity index.
  * @return					The player's current checkpoint count.
@@ -269,7 +292,7 @@ native MovementStyle SimpleKZ_GetDefaultStyle();
  * @param client			Client entity index.
  * @return					The player's movement style.
  */
-native MovementStyle SimpleKZ_GetOptionStyle(int client);
+native MovementStyle SimpleKZ_GetStyle(int client);
 
 /**
  * Sets the player's movement style.
@@ -278,10 +301,11 @@ native MovementStyle SimpleKZ_GetOptionStyle(int client);
  * @param style				What to set the player's movement style to.
  * @noreturn
  */
-native void SimpleKZ_SetOptionStyle(int client, MovementStyle style);
+native void SimpleKZ_SetStyle(int client, MovementStyle style);
 
 /**
- * Gets the client's PlayerID as retrieved from SimpleKZ Core's "Players" database table. This is accurate after SimpleKZ_OnRetrievePlayerID is called after the client is authorised.
+ * Gets the client's PlayerID as retrieved from SimpleKZ Core's "Players" database table.
+ * This is accurate after SimpleKZ_OnRetrievePlayerID is called after the client is authorised.
  *
  * @param client			Client entity index.
  * @return					PlayerID from SimpleKZ Core's "Players" database table.

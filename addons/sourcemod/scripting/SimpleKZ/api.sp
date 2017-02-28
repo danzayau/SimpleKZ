@@ -107,6 +107,8 @@ void Call_SimpleKZ_OnRetrievePlayerID(int client) {
 void CreateNatives() {
 	CreateNative("SimpleKZ_GetHitPerf", Native_GetHitPerf);
 	
+	CreateNative("SimpleKZ_StartTimer", Native_StartTimer);
+	CreateNative("SimpleKZ_EndTimer", Native_EndTimer);
 	CreateNative("SimpleKZ_ForceStopTimer", Native_ForceStopTimer);
 	CreateNative("SimpleKZ_ForceStopTimerAll", Native_ForceStopTimerAll);
 	CreateNative("SimpleKZ_GetTimerRunning", Native_GetTimerRunning);
@@ -124,14 +126,22 @@ void CreateNatives() {
 	CreateNative("SimpleKZ_TogglePause", Native_TogglePause);
 	
 	CreateNative("SimpleKZ_GetDefaultStyle", Native_GetDefaultStyle);
-	CreateNative("SimpleKZ_GetOptionStyle", Native_GetOptionStyle);
-	CreateNative("SimpleKZ_SetOptionStyle", Native_SetOptionStyle);
+	CreateNative("SimpleKZ_GetStyle", Native_GetStyle);
+	CreateNative("SimpleKZ_SetStyle", Native_SetStyle);
 	
 	CreateNative("SimpleKZ_GetPlayerID", Native_GetPlayerID);
 }
 
 public int Native_GetHitPerf(Handle plugin, int numParams) {
 	return view_as<int>(gB_HitPerf[GetNativeCell(1)]);
+}
+
+public int Native_StartTimer(Handle plugin, int numParams) {
+	TimerStart(GetNativeCell(1), GetNativeCell(2));
+}
+
+public int Native_EndTimer(Handle plugin, int numParams) {
+	TimerEnd(GetNativeCell(1), GetNativeCell(2));
 }
 
 public int Native_ForceStopTimer(Handle plugin, int numParams) {
@@ -190,12 +200,12 @@ public int Native_TogglePause(Handle plugin, int numParams) {
 	TogglePause(GetNativeCell(1));
 }
 
-public int Native_GetOptionStyle(Handle plugin, int numParams) {
+public int Native_GetStyle(Handle plugin, int numParams) {
 	return view_as<int>(g_Style[GetNativeCell(1)]);
 }
 
-public int Native_SetOptionStyle(Handle plugin, int numParams) {
-	SetMovementStyle(GetNativeCell(1), GetNativeCell(2));
+public int Native_SetStyle(Handle plugin, int numParams) {
+	SetMovementStyle(GetNativeCell(1), view_as<MovementStyle>(GetNativeCell(2)));
 }
 
 public int Native_GetDefaultStyle(Handle plugin, int numParams) {

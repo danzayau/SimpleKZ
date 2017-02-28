@@ -39,7 +39,7 @@ enum RecordType {
 forward void SimpleKZ_OnNewRecord(int client, int mapID, int course, MovementStyle style, RecordType recordType, float runTime);
 
 /**
- * Called when the player beats their personal best time (not called when beating a map for the first time).
+ * Called when the player beats their personal best time.
  *
  * @param client			Client entity index.
  * @param mapID 			MapID from SimpleKZ Core's "Maps" database table.
@@ -68,7 +68,8 @@ forward void SimpleKZ_OnRetrieveCurrentMapID(int mapID);
 /*===============================  Natives  ===============================*/
 
 /**
- * Gets the current map's MapID as retrieved from SimpleKZ Core's "Players" database table. This is accurate after SimpleKZ_OnRetrieveCurrentMapID is called after the map is started.
+ * Gets the current map's MapID as retrieved from SimpleKZ Core's "Players" database table.
+ * This is accurate after SimpleKZ_OnRetrieveCurrentMapID is called after the map is started.
  *
  * @return					MapID from SimpleKZ Ranks' "Maps" database table.
  */
