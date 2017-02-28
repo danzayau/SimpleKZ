@@ -198,7 +198,7 @@ void TeleportToCheckpoint(int client) {
 		return;
 	}
 	else if (gB_CurrentMapIsKZPro && gB_TimerRunning[client]) {
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Teleport (kzpro_)");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Teleport (Map)");
 	}
 	else {
 		AddWastedTimeTeleportToCheckpoint(client);

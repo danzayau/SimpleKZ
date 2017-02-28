@@ -102,9 +102,9 @@
 	{
 		"en"		"{darkred}You can't make a checkpoint because you just landed."
 	}
-	"Can't Teleport (kzpro_)"
+	"Can't Teleport (Map)"
 	{
-		"en"		"{darkred}You can't teleport to your checkpoint on a kzpro_ map."
+		"en"		"{darkred}You can't teleport to your checkpoint on this map."
 	}
 	"Can't Undo (TP Was Midair)"
 	{
