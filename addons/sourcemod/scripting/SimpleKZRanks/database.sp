@@ -33,50 +33,26 @@ public void DB_TxnFailure_Generic(Handle db, any data, int numQueries, const cha
 	SetFailState("%T", "Database Transaction Error", LANG_SERVER, error);
 }
 
-/* Used to find a PlayerID from an input string, and passes all parameters to a SQLTxnSuccess using a DataPack */
-void DB_FindPlayer(SQLTxnSuccess onSuccess, int client, const char[] target, int mapID, int course, MovementStyle style) {
-	if (!gB_ConnectedToDB) {
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
-		return;
-	}
+/* Used to find a PlayerID from an input string using an already written method */
+void DB_FindPlayer(const char[] playerSearch, SQLTxnSuccess onSuccess, any data = 0, DBPriority priority = DBPrio_Normal) {
+	char query[512], playerEscaped[MAX_NAME_LENGTH * 2 + 1];
+	SQL_EscapeString(gH_DB, playerSearch, playerEscaped, sizeof(playerEscaped));
 	
-	DataPack data = CreateDataPack();
-	data.WriteCell(client);
-	data.WriteString(target);
-	data.WriteCell(mapID);
-	data.WriteCell(course);
-	data.WriteCell(style);
-	
-	char query[512], targetEscaped[MAX_NAME_LENGTH * 2 + 1];
-	SQL_EscapeString(gH_DB, target, targetEscaped, sizeof(targetEscaped));
-	
-	String_ToLower(targetEscaped, targetEscaped, sizeof(targetEscaped));
+	String_ToLower(playerEscaped, playerEscaped, sizeof(playerEscaped));
 	
 	Transaction txn = SQL_CreateTransaction();
 	
 	// Look for player name and retrieve their PlayerID
-	FormatEx(query, sizeof(query), sql_players_findid, targetEscaped, targetEscaped);
+	FormatEx(query, sizeof(query), sql_players_findid, playerEscaped, playerEscaped);
 	txn.AddQuery(query);
 	
-	SQL_ExecuteTransaction(gH_DB, txn, onSuccess, DB_TxnFailure_Generic, data, DBPrio_Low);
+	SQL_ExecuteTransaction(gH_DB, txn, onSuccess, DB_TxnFailure_Generic, data, priority);
 }
 
-/* Used to find a MapID from an input string, and passes all parameters to a SQLTxnSuccess using a DataPack */
-void DB_FindMap(SQLTxnSuccess onSuccess, int client, int target, const char[] map, int course, MovementStyle style) {
-	if (!gB_ConnectedToDB) {
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
-		return;
-	}
-	
-	DataPack data = CreateDataPack();
-	data.WriteCell(client);
-	data.WriteCell(target);
-	data.WriteString(map);
-	data.WriteCell(course);
-	data.WriteCell(style);
-	
+/* Used to find a MapID from an input string using an already written method */
+void DB_FindMap(const char[] mapSearch, SQLTxnSuccess onSuccess, any data = 0, DBPriority priority = DBPrio_Normal) {
 	char query[512], mapEscaped[129];
-	SQL_EscapeString(gH_DB, map, mapEscaped, sizeof(mapEscaped));
+	SQL_EscapeString(gH_DB, mapSearch, mapEscaped, sizeof(mapEscaped));
 	
 	Transaction txn = SQL_CreateTransaction();
 	
@@ -84,39 +60,27 @@ void DB_FindMap(SQLTxnSuccess onSuccess, int client, int target, const char[] ma
 	FormatEx(query, sizeof(query), sql_maps_findid, mapEscaped, mapEscaped);
 	txn.AddQuery(query);
 	
-	SQL_ExecuteTransaction(gH_DB, txn, onSuccess, DB_TxnFailure_Generic, data, DBPrio_Low);
+	SQL_ExecuteTransaction(gH_DB, txn, onSuccess, DB_TxnFailure_Generic, data, priority);
 }
 
-/* Used to find a PlayerID and MapID based on off input strings, and passes all parameters to a SQLTxnSuccess using a DataPack */
-void DB_FindPlayerAndMap(SQLTxnSuccess onSuccess, int client, const char[] target, const char[] map, int course, MovementStyle style) {
-	if (!gB_ConnectedToDB) {
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
-		return;
-	}
+/* Used to find a PlayerID MapID from input strings using an already written method */
+void DB_FindPlayerAndMap(const char[] playerSearch, const char[] mapSearch, SQLTxnSuccess onSuccess, any data = 0, DBPriority priority = DBPrio_Normal) {
+	char query[512], mapEscaped[129], playerEscaped[MAX_NAME_LENGTH * 2 + 1];
+	SQL_EscapeString(gH_DB, playerSearch, playerEscaped, sizeof(playerEscaped));
+	SQL_EscapeString(gH_DB, mapSearch, mapEscaped, sizeof(mapEscaped));
 	
-	DataPack data = CreateDataPack();
-	data.WriteCell(client);
-	data.WriteString(target);
-	data.WriteString(map);
-	data.WriteCell(course);
-	data.WriteCell(style);
-	
-	char query[512], mapEscaped[129], targetEscaped[MAX_NAME_LENGTH * 2 + 1];
-	SQL_EscapeString(gH_DB, target, targetEscaped, sizeof(targetEscaped));
-	SQL_EscapeString(gH_DB, map, mapEscaped, sizeof(mapEscaped));
-	
-	String_ToLower(targetEscaped, targetEscaped, sizeof(targetEscaped));
+	String_ToLower(playerEscaped, playerEscaped, sizeof(playerEscaped));
 	
 	Transaction txn = SQL_CreateTransaction();
 	
 	// Look for player name and retrieve their PlayerID
-	FormatEx(query, sizeof(query), sql_players_findid, targetEscaped, targetEscaped);
+	FormatEx(query, sizeof(query), sql_players_findid, playerEscaped, playerEscaped);
 	txn.AddQuery(query);
-	// Look for map name and retrieve it's MapID
-	FormatEx(query, sizeof(query), sql_maps_findid, mapEscaped, mapEscaped);
+	// Look for player name and retrieve their PlayerID
+	FormatEx(query, sizeof(query), sql_players_findid, playerEscaped, playerEscaped);
 	txn.AddQuery(query);
 	
-	SQL_ExecuteTransaction(gH_DB, txn, onSuccess, DB_TxnFailure_Generic, data, DBPrio_Low);
+	SQL_ExecuteTransaction(gH_DB, txn, onSuccess, DB_TxnFailure_Generic, data, priority);
 }
 
 
@@ -521,16 +485,28 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	}
 }
 
-void DB_PrintPBs_FindMap(int client, int targetPlayerID, const char[] map, int course, MovementStyle style) {
-	DB_FindMap(DB_TxnSuccess_PrintPBs_FindMap, client, targetPlayerID, map, course, style);
+void DB_PrintPBs_FindMap(int client, int targetPlayerID, const char[] mapSearch, int course, MovementStyle style) {
+	if (!gB_ConnectedToDB) {
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
+		return;
+	}
+	
+	DataPack data = CreateDataPack();
+	data.WriteCell(client);
+	data.WriteCell(targetPlayerID);
+	data.WriteString(mapSearch);
+	data.WriteCell(course);
+	data.WriteCell(style);
+	
+	DB_FindMap(mapSearch, DB_TxnSuccess_PrintPBs_FindMap, data, DBPrio_Low);
 }
 
 public void DB_TxnSuccess_PrintPBs_FindMap(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
 	data.Reset();
 	int client = data.ReadCell();
 	int targetPlayerID = data.ReadCell();
-	char mapSearchString[33];
-	data.ReadString(mapSearchString, sizeof(mapSearchString));
+	char mapSearch[33];
+	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
 	MovementStyle style = data.ReadCell();
 	CloseHandle(data);
@@ -541,7 +517,7 @@ public void DB_TxnSuccess_PrintPBs_FindMap(Handle db, DataPack data, int numQuer
 	}
 	
 	if (SQL_GetRowCount(results[0]) == 0) {
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearchString);
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearch);
 		return;
 	}
 	else if (SQL_FetchRow(results[0])) {  // Result is the MapID
@@ -549,17 +525,29 @@ public void DB_TxnSuccess_PrintPBs_FindMap(Handle db, DataPack data, int numQuer
 	}
 }
 
-void DB_PrintPBs_FindPlayerAndMap(int client, const char[] target, const char[] map, int course, MovementStyle style) {
-	DB_FindPlayerAndMap(DB_TxnSuccess_PrintPBs_FindPlayerAndMap, client, target, map, course, style);
+void DB_PrintPBs_FindPlayerAndMap(int client, const char[] playerSearch, const char[] mapSearch, int course, MovementStyle style) {
+	if (!gB_ConnectedToDB) {
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
+		return;
+	}
+	
+	DataPack data = CreateDataPack();
+	data.WriteCell(client);
+	data.WriteString(playerSearch);
+	data.WriteString(mapSearch);
+	data.WriteCell(course);
+	data.WriteCell(style);
+	
+	DB_FindPlayerAndMap(playerSearch, mapSearch, DB_TxnSuccess_PrintPBs_FindPlayerAndMap, data, DBPrio_Low);
 }
 
 public void DB_TxnSuccess_PrintPBs_FindPlayerAndMap(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
 	data.Reset();
 	int client = data.ReadCell();
-	char targetSearchString[MAX_NAME_LENGTH];
-	data.ReadString(targetSearchString, sizeof(targetSearchString));
-	char mapSearchString[33];
-	data.ReadString(mapSearchString, sizeof(mapSearchString));
+	char playerSearch[MAX_NAME_LENGTH];
+	data.ReadString(playerSearch, sizeof(playerSearch));
+	char mapSearch[33];
+	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
 	MovementStyle style = data.ReadCell();
 	CloseHandle(data);
@@ -569,11 +557,11 @@ public void DB_TxnSuccess_PrintPBs_FindPlayerAndMap(Handle db, DataPack data, in
 		return;
 	}
 	else if (SQL_GetRowCount(results[0]) == 0) {
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Player Not Found", targetSearchString);
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Player Not Found", playerSearch);
 		return;
 	}
 	else if (SQL_GetRowCount(results[1]) == 0) {
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearchString);
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearch);
 		return;
 	}
 	else if (SQL_FetchRow(results[0]) && SQL_FetchRow(results[1])) {  // Results are Target PlayerID and MapID
@@ -678,16 +666,26 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 	}
 }
 
-void DB_PrintRecords_FindMap(int client, const char[] map, int course, MovementStyle style) {
-	DB_FindMap(DB_TxnSuccess_PrintRecords_FindMap, client, -1, map, course, style);
+void DB_PrintRecords_FindMap(int client, const char[] mapSearch, int course, MovementStyle style) {
+	if (!gB_ConnectedToDB) {
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
+		return;
+	}
+	
+	DataPack data = CreateDataPack();
+	data.WriteCell(client);
+	data.WriteString(mapSearch);
+	data.WriteCell(course);
+	data.WriteCell(style);
+	
+	DB_FindMap(mapSearch, DB_TxnSuccess_PrintRecords_FindMap, data, DBPrio_Low);
 }
 
 public void DB_TxnSuccess_PrintRecords_FindMap(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
 	data.Reset();
 	int client = data.ReadCell();
-	data.ReadCell(); // Skip (this database function doesn't have a target player)
-	char mapSearchString[33];
-	data.ReadString(mapSearchString, sizeof(mapSearchString));
+	char mapSearch[33];
+	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
 	MovementStyle style = data.ReadCell();
 	CloseHandle(data);
@@ -696,7 +694,7 @@ public void DB_TxnSuccess_PrintRecords_FindMap(Handle db, DataPack data, int num
 		return;
 	}
 	else if (SQL_GetRowCount(results[0]) == 0) {
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearchString);
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearch);
 		return;
 	}
 	else if (SQL_FetchRow(results[0])) {  // Result is the MapID
@@ -747,16 +745,26 @@ public void DB_TxnSuccess_OpenMapTop(Handle db, DataPack data, int numQueries, H
 	}
 }
 
-void DB_OpenMapTop_FindMap(int client, const char[] map, int course, MovementStyle style) {
-	DB_FindMap(DB_TxnSuccess_OpenMapTop_FindMap, client, -1, map, course, style);
+void DB_OpenMapTop_FindMap(int client, const char[] mapSearch, int course, MovementStyle style) {
+	if (!gB_ConnectedToDB) {
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
+		return;
+	}
+	
+	DataPack data = CreateDataPack();
+	data.WriteCell(client);
+	data.WriteString(mapSearch);
+	data.WriteCell(course);
+	data.WriteCell(style);
+	
+	DB_FindMap(mapSearch, DB_TxnSuccess_OpenMapTop_FindMap, data, DBPrio_Low);
 }
 
 public void DB_TxnSuccess_OpenMapTop_FindMap(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
 	data.Reset();
 	int client = data.ReadCell();
-	data.ReadCell(); // Skip (this database function doesn't have a target player)
-	char mapSearchString[33];
-	data.ReadString(mapSearchString, sizeof(mapSearchString));
+	char mapSearch[33];
+	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
 	MovementStyle style = data.ReadCell();
 	CloseHandle(data);
@@ -766,7 +774,7 @@ public void DB_TxnSuccess_OpenMapTop_FindMap(Handle db, DataPack data, int numQu
 	}
 	
 	if (SQL_GetRowCount(results[0]) == 0) {
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearchString);
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearch);
 		return;
 	}
 	else if (SQL_FetchRow(results[0])) {  // Result is the MapID
@@ -1039,16 +1047,24 @@ public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries
 }
 
 void DB_GetCompletion_FindPlayer(int client, const char[] target, MovementStyle style) {
-	DB_FindPlayer(DB_TxnSuccess_GetCompletion_FindPlayer, client, target, -1, -1, style);
+	if (!gB_ConnectedToDB) {
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
+		return;
+	}
+	
+	DataPack data = CreateDataPack();
+	data.WriteCell(client);
+	data.WriteString(target);
+	data.WriteCell(style);
+	
+	DB_FindPlayer(target, DB_TxnSuccess_GetCompletion_FindPlayer, data, DBPrio_Low);
 }
 
 public void DB_TxnSuccess_GetCompletion_FindPlayer(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
 	data.Reset();
 	int client = data.ReadCell();
-	char targetSearchString[33];
-	data.ReadString(targetSearchString, sizeof(targetSearchString));
-	data.ReadCell(); // Skip (this database function doesn't have a map ID)
-	data.ReadCell(); // Skip (this database function doesn't have a course)
+	char playerSearch[33];
+	data.ReadString(playerSearch, sizeof(playerSearch));
 	MovementStyle style = data.ReadCell();
 	CloseHandle(data);
 	
@@ -1056,7 +1072,7 @@ public void DB_TxnSuccess_GetCompletion_FindPlayer(Handle db, DataPack data, int
 		return;
 	}
 	else if (SQL_GetRowCount(results[0]) == 0) {
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Player Not Found", targetSearchString);
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Player Not Found", playerSearch);
 		return;
 	}
 	else if (SQL_FetchRow(results[0])) {  // Result is the PlayerID
