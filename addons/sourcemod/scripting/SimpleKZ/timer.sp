@@ -189,6 +189,12 @@ void MakeCheckpoint(int client) {
 		gF_LastCheckpointTime[client] = gF_CurrentTime[client];
 		g_MovementPlayer[client].GetOrigin(gF_CheckpointOrigin[client]);
 		g_MovementPlayer[client].GetEyeAngles(gF_CheckpointAngles[client]);
+		if (gB_CheckpointMessages[client]) {
+			CPrintToChat(client, "%t %t", "KZ Prefix", "Make Checkpoint");
+		}
+		if (gB_CheckpointSounds[client]) {
+			EmitSoundToClient(client, SOUND_TELEPORT);
+		}
 	}
 	CloseTeleportMenu(client);
 }
@@ -203,6 +209,9 @@ void TeleportToCheckpoint(int client) {
 	else {
 		AddWastedTimeTeleportToCheckpoint(client);
 		TimerDoTeleport(client, gF_CheckpointOrigin[client], gF_CheckpointAngles[client]);
+		if (gB_TeleportSounds[client]) {
+			EmitSoundToClient(client, SOUND_TELEPORT);
+		}
 	}
 	CloseTeleportMenu(client);
 }
@@ -217,6 +226,9 @@ void UndoTeleport(int client) {
 	else {
 		AddWastedTimeUndoTeleport(client);
 		TimerDoTeleport(client, gF_UndoOrigin[client], gF_UndoAngle[client]);
+		if (gB_TeleportSounds[client]) {
+			EmitSoundToClient(client, SOUND_TELEPORT);
+		}
 	}
 	CloseTeleportMenu(client);
 }

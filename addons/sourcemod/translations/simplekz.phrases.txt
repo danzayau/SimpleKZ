@@ -90,6 +90,10 @@
 	
 	
 	// Command Chat Messages ////////////////////////////////////////////////////////////
+	"Make Checkpoint"
+	{
+		"en"		"{grey}You have set a checkpoint."
+	}
 	"Can't Checkpoint (Dead)"
 	{
 		"en"		"{darkred}You must be alive to make a checkpoint."
@@ -235,11 +239,35 @@
 	}
 	"Option - Slay On End - Enable"
 	{
-		"en"		"{grey}You will now be slain after finishing the map. This helps de-glitch your demo recordings."
+		"en"		"{grey}You will now be slain after finishing a time. This helps de-glitch your demo recordings."
 	}
 	"Option - Slay On End - Disable"
 	{
-		"en"		"{grey}You will no longer be slain after finishing the map."
+		"en"		"{grey}You will no longer be slain after finishing a time."
+	}
+	"Option - Checkpoint Messages - Enable"
+	{
+		"en"		"{grey}You will now see checkpoint messages."
+	}
+	"Option - Checkpoint Messages - Disable"
+	{
+		"en"		"{grey}You will no longer see checkpoint messages."
+	}
+	"Option - Checkpoint Sounds - Enable"
+	{
+		"en"		"{grey}You will now hear a checkpoint sound."
+	}
+	"Option - Checkpoint Sounds - Disable"
+	{
+		"en"		"{grey}You will no longer hear a checkpoint sound."
+	}
+	"Option - Teleport Sounds - Enable"
+	{
+		"en"		"{grey}You will now hear teleport sounds."
+	}
+	"Option - Teleport Sounds - Disable"
+	{
+		"en"		"{grey}You will no longer hear teleport sounds."
 	}
 	
 	
@@ -366,6 +394,18 @@
 	"Options Menu - Pistol"
 	{
 		"en"		"Pistol"
+	}
+	"Options Menu - Checkpoint Messages"
+	{
+		"en"		"Checkpoint messages"
+	}
+	"Options Menu - Checkpoint Sounds"
+	{
+		"en"		"Checkpoint sounds"
+	}
+	"Options Menu - Teleport Sounds"
+	{
+		"en"		"Teleport sounds"
 	}
 	
 	

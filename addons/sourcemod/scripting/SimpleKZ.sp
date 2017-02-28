@@ -53,6 +53,8 @@ public Plugin myinfo =
 #define STYLE_LEGACY_PERF_SPEED_CAP 380.0
 
 #define SOUND_TIMER_FORCE_STOP "buttons/button18.wav" // Not precached
+#define SOUND_CHECKPOINT "buttons/blip1.wav" // Not precached
+#define SOUND_TELEPORT "buttons/blip1.wav" // Not precached
 
 
 
@@ -94,7 +96,7 @@ float gF_LastResumeTime[MAXPLAYERS + 1];
 bool gB_HasResumedInThisRun[MAXPLAYERS + 1] =  { false, ... };
 int gI_CurrentCourse[MAXPLAYERS + 1];
 
-/* Preferences */
+/* Options */
 MovementStyle g_Style[MAXPLAYERS + 1] =  { MovementStyle_Standard, ... };
 bool gB_ShowingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
 bool gB_ShowingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
@@ -104,6 +106,9 @@ bool gB_ShowingWeapon[MAXPLAYERS + 1] =  { true, ... };
 bool gB_AutoRestart[MAXPLAYERS + 1] =  { false, ... };
 bool gB_SlayOnEnd[MAXPLAYERS + 1] =  { false, ... };
 int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
+bool gB_CheckpointMessages[MAXPLAYERS + 1] =  { false, ... };
+bool gB_CheckpointSounds[MAXPLAYERS + 1] =  { false, ... };
+bool gB_TeleportSounds[MAXPLAYERS + 1] =  { false, ... };
 
 /* Button Press Checking */
 int gI_OldButtons[MAXPLAYERS + 1];

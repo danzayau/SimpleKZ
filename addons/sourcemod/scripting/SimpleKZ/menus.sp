@@ -154,6 +154,9 @@ void UpdateOptionsMenu(int client) {
 	OptionsAddPistol(client);
 	OptionsAddBool(client, gB_SlayOnEnd[client], "Options Menu - Slay On End");
 	OptionsAddBool(client, gB_ShowingKeys[client], "Options Menu - Show Keys");
+	OptionsAddBool(client, gB_CheckpointMessages[client], "Options Menu - Checkpoint Messages");
+	OptionsAddBool(client, gB_CheckpointSounds[client], "Options Menu - Checkpoint Sounds");
+	OptionsAddBool(client, gB_TeleportSounds[client], "Options Menu - Teleport Sounds");
 }
 
 void OptionsAddBool(int client, bool option, const char[] optionPhrase) {
@@ -188,6 +191,9 @@ public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int par
 			}
 			case 6:ToggleSlayOnEnd(param1);
 			case 7:ToggleShowKeys(param1);
+			case 8:ToggleCheckpointMessages(param1);
+			case 9:ToggleCheckpointSounds(param1);
+			case 10:ToggleTeleportSounds(param1);
 		}
 		if (param2 != 5) {
 			DisplayOptionsMenu(param1, param2 / 6 * 6); // Round item number down to multiple of 6

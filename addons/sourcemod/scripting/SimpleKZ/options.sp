@@ -14,83 +14,58 @@ void SetDefaultOptions(int client) {
 	gB_AutoRestart[client] = false;
 	gB_SlayOnEnd[client] = false;
 	gI_Pistol[client] = 0;
+	gB_CheckpointMessages[client] = false;
+	gB_CheckpointSounds[client] = false;
+	gB_TeleportSounds[client] = false;
+}
+
+bool ToggleOptionBool(int client, bool option, const char[] disablePhrase, const char[] enablePhrase) {
+	if (option) {
+		CPrintToChat(client, "%t %t", "KZ Prefix", disablePhrase);
+		return false;
+	}
+	CPrintToChat(client, "%t %t", "KZ Prefix", enablePhrase);
+	return true;
 }
 
 void ToggleTeleportMenu(int client) {
-	if (gB_ShowingTeleportMenu[client]) {
-		gB_ShowingTeleportMenu[client] = false;
-		CloseTeleportMenu(client);
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Menu - Disable");
-	}
-	else {
-		gB_ShowingTeleportMenu[client] = true;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Menu - Enable");
-	}
+	gB_ShowingTeleportMenu[client] = ToggleOptionBool(client, gB_ShowingTeleportMenu[client], "Option - Teleport Menu - Disable", "Option - Teleport Menu - Enable");
+	CloseTeleportMenu(client);
 }
 
 void ToggleShowPlayers(int client) {
-	if (gB_ShowingPlayers[client]) {
-		gB_ShowingPlayers[client] = false;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Players - Disable");
-	}
-	else {
-		gB_ShowingPlayers[client] = true;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Players - Enable");
-	}
+	gB_ShowingPlayers[client] = ToggleOptionBool(client, gB_ShowingPlayers[client], "Option - Show Players - Disable", "Option - Show Players - Enable");
 }
 
 void ToggleInfoPanel(int client) {
-	if (gB_ShowingInfoPanel[client]) {
-		gB_ShowingInfoPanel[client] = false;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Info Panel - Disable");
-	}
-	else {
-		gB_ShowingInfoPanel[client] = true;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Info Panel - Enable");
-	}
+	gB_ShowingInfoPanel[client] = ToggleOptionBool(client, gB_ShowingInfoPanel[client], "Option - Info Panel - Disable", "Option - Info Panel - Enable");
 }
 
 void ToggleShowWeapon(int client) {
-	if (gB_ShowingWeapon[client]) {
-		gB_ShowingWeapon[client] = false;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Weapon - Disable");
-	}
-	else {
-		gB_ShowingWeapon[client] = true;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Weapon - Enable");
-	}
+	gB_ShowingWeapon[client] = ToggleOptionBool(client, gB_ShowingWeapon[client], "Option - Show Weapon - Disable", "Option - Show Weapon - Enable");
 	SetDrawViewModel(client, gB_ShowingWeapon[client]);
 }
 
 void ToggleShowKeys(int client) {
-	if (gB_ShowingKeys[client]) {
-		gB_ShowingKeys[client] = false;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Keys - Disable");
-	}
-	else {
-		gB_ShowingKeys[client] = true;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Keys - Enable");
-	}
+	gB_ShowingKeys[client] = ToggleOptionBool(client, gB_ShowingKeys[client], "Option - Show Keys - Disable", "Option - Show Keys - Enable");
 }
 
 void ToggleAutoRestart(int client) {
-	if (gB_AutoRestart[client]) {
-		gB_AutoRestart[client] = false;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Auto Restart - Disable");
-	}
-	else {
-		gB_AutoRestart[client] = true;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Auto Restart - Enable");
-	}
+	gB_AutoRestart[client] = ToggleOptionBool(client, gB_AutoRestart[client], "Option - Auto Restart - Disable", "Option - Auto Restart - Enable");
 }
 
 void ToggleSlayOnEnd(int client) {
-	if (gB_SlayOnEnd[client]) {
-		gB_SlayOnEnd[client] = false;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Slay On End - Disable");
-	}
-	else {
-		gB_SlayOnEnd[client] = true;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Slay On End - Enable");
-	}
+	gB_SlayOnEnd[client] = ToggleOptionBool(client, gB_SlayOnEnd[client], "Option - Slay On End - Disable", "Option - Slay On End - Enable");
+}
+
+void ToggleCheckpointMessages(int client) {
+	gB_CheckpointMessages[client] = ToggleOptionBool(client, gB_CheckpointMessages[client], "Option - Checkpoint Messages - Disable", "Option - Checkpoint Messages - Enable");
+}
+
+void ToggleCheckpointSounds(int client) {
+	gB_CheckpointSounds[client] = ToggleOptionBool(client, gB_CheckpointSounds[client], "Option - Checkpoint Sounds - Disable", "Option - Checkpoint Sounds - Enable");
+}
+
+void ToggleTeleportSounds(int client) {
+	gB_TeleportSounds[client] = ToggleOptionBool(client, gB_TeleportSounds[client], "Option - Teleport Sounds - Disable", "Option - Teleport Sounds - Enable");
 } 

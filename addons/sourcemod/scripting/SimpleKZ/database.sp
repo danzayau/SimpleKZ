@@ -177,6 +177,9 @@ public void DB_TxnSuccess_LoadOptions(Handle db, int client, int numQueries, Han
 		gB_AutoRestart[client] = view_as<bool>(SQL_FetchInt(results[0], 6));
 		gB_SlayOnEnd[client] = view_as<bool>(SQL_FetchInt(results[0], 7));
 		gI_Pistol[client] = SQL_FetchInt(results[0], 8);
+		gB_CheckpointMessages[client] = view_as<bool>(SQL_FetchInt(results[0], 9));
+		gB_CheckpointSounds[client] = view_as<bool>(SQL_FetchInt(results[0], 10));
+		gB_TeleportSounds[client] = view_as<bool>(SQL_FetchInt(results[0], 11));
 	}
 }
 
@@ -205,6 +208,9 @@ void DB_SaveOptions(int client) {
 		view_as<int>(gB_AutoRestart[client]), 
 		view_as<int>(gB_SlayOnEnd[client]), 
 		gI_Pistol[client], 
+		view_as<int>(gB_CheckpointMessages[client]), 
+		view_as<int>(gB_CheckpointSounds[client]), 
+		view_as<int>(gB_TeleportSounds[client]), 
 		gI_PlayerID[client]);
 	txn.AddQuery(query);
 	
