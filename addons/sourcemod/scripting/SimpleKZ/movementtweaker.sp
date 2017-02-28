@@ -83,6 +83,7 @@ bool CheckIfValidPrestrafeKeys(MovementPlayer player) {
 	switch (g_Style[player.id]) {
 		case MovementStyle_Standard: {
 			// If _only_ WA or WD or SA or SD are pressed, then return true.
+			// Oh and... this looks stupid
 			return ((player.buttons & IN_FORWARD && !(player.buttons & IN_BACK)) || (!(player.buttons & IN_FORWARD) && player.buttons & IN_BACK))
 			 && ((player.buttons & IN_MOVELEFT && !(player.buttons & IN_MOVERIGHT)) || (!(player.buttons & IN_MOVELEFT) && player.buttons & IN_MOVERIGHT));
 		}

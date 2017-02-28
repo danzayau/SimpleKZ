@@ -56,12 +56,17 @@ public Plugin myinfo =
 #define SOUND_CHECKPOINT "buttons/blip1.wav" // Not precached
 #define SOUND_TELEPORT "buttons/blip1.wav" // Not precached
 
+#define PLAYER_MODEL_ALPHA 100
+
 
 
 /*===============================  Global Variables  ===============================*/
 
-/* ConVars */
+/* CS:GO ConVars */
+ConVar gCV_DisableImmunityAlpha;
 ConVar gCV_FullAlltalk;
+
+/* SimpleKZ ConVars */
 ConVar gCV_ChatProcessing;
 ConVar gCV_DefaultStyle;
 ConVar gCV_PlayerModelT;
@@ -316,7 +321,7 @@ public void OnClientAuthorized(int client, const char[] auth) {
 
 public void OnClientPutInServer(int client) {
 	if (!IsFakeClient(client)) {
-		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit); // Must be done here, not OnClientAuthorized
+		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
 		PrintConnectMessage(client);
 	}
 }
@@ -342,13 +347,15 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (!IsFakeClient(client)) {
 		CreateTimer(0.0, CleanHUD, client); // Clean HUD (using a 1 frame timer or else it won't work)
-		SetEntProp(client, Prop_Data, "m_takedamage", 0, 1); // Godmode
-		SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true); // No Block
 		SetDrawViewModel(client, gB_ShowingWeapon[client]); // Hide weapon
 		GivePlayerPistol(client, gI_Pistol[client]); // Give player their preferred pistol
-		UpdatePlayerModel(GetClientOfUserId(GetEventInt(event, "userid"))); // Change player model to one that doesn't have landing animation
 		CloseTeleportMenu(client);
 	}
+	SetEntProp(client, Prop_Data, "m_takedamage", 0, 1); // Godmode
+	SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true); // No Block
+	UpdatePlayerModel(GetClientOfUserId(GetEventInt(event, "userid"))); // Change player model to one that doesn't have landing animation
+	SetEntityRenderMode(client, RENDER_TRANSCOLOR);
+	SetEntityRenderColor(client, _, _, _, PLAYER_MODEL_ALPHA);
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2]) {
@@ -421,6 +428,8 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 public void OnMapStart() {
 	SetupMap();
 	LoadKZConfig();
+	// Enforce this ConVar to ensure player transparency works
+	SetConVarInt(gCV_DisableImmunityAlpha, 1);
 }
 
 // Stop round from ever ending

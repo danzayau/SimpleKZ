@@ -4,6 +4,7 @@
 */
 
 void RegisterConVars() {
+	gCV_DisableImmunityAlpha = FindConVar("sv_disable_immunity_alpha");
 	gCV_FullAlltalk = FindConVar("sv_full_alltalk");
 	
 	gCV_ChatProcessing = CreateConVar("kz_chat_processing", "1", "Whether or not SimpleKZ processes player chat (in case you want to use another chat plugin).", FCVAR_NOTIFY, true, 0.0, true, 1.0);

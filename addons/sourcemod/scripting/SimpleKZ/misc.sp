@@ -250,9 +250,10 @@ void EmitSoundToClientSpectators(int client, const char[] sound) {
 
 public Action CleanHUD(Handle timer, int client) {
 	if (IsValidClient(client)) {
-		// Hide radar
+		// (1 << 12) Hide Radar
+		// (1 << 13) Hide Round Timer
 		int clientEntFlags = GetEntProp(client, Prop_Send, "m_iHideHUD");
-		SetEntProp(client, Prop_Send, "m_iHideHUD", clientEntFlags | (1 << 12));
+		SetEntProp(client, Prop_Send, "m_iHideHUD", clientEntFlags | (1 << 12) + (1 << 13));
 	}
 	return Plugin_Continue;
 }
