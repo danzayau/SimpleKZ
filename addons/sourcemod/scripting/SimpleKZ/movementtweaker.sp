@@ -57,7 +57,7 @@ void MovementTweakGeneral(MovementPlayer player) {
 
 float PrestrafeVelocityModifier(MovementPlayer player) {
 	// Note: Still trying to get Legacy prestrafe to feel like it does in KZTimer
-	if (g_Style[player.id] == MovementStyle_Legacy && player.speed < 200.0) {
+	if (g_Style[player.id] == MovementStyle_Legacy && player.speed < STYLE_LEGACY_SPEED_PRESTRAFE_MINIMUM) {
 		gF_PrestrafeVelocityModifier[player.id] = 1.0;
 	}
 	// If correct prestrafe technique is detected, increase prestrafe modifier
@@ -164,7 +164,7 @@ float CalculateTweakedTakeoffSpeed(MovementPlayer player) {
 			}
 		}
 		case MovementStyle_Legacy: {
-			if (player.speed > STYLE_LEGACY_PERF_SPEED_CAP) {
+			if (player.landingSpeed > STYLE_LEGACY_PERF_SPEED_CAP) {
 				return STYLE_LEGACY_PERF_SPEED_CAP;
 			}
 		}

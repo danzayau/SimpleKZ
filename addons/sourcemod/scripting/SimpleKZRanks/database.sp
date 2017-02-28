@@ -14,10 +14,6 @@ void DB_CreateTables() {
 		case DatabaseType_SQLite: {
 			txn.AddQuery(sqlite_maps_create);
 			txn.AddQuery(sqlite_times_create);
-			txn.AddQuery(sqlite_times_create_index1);
-			txn.AddQuery(sqlite_times_create_index2);
-			txn.AddQuery(sqlite_times_create_index3);
-			txn.AddQuery(sqlite_times_create_index4);
 		}
 		case DatabaseType_MySQL: {
 			txn.AddQuery(mysql_maps_create);
@@ -865,15 +861,15 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 		SQL_FetchString(results[1], 0, playerName, sizeof(playerName));
 		switch (timeType) {
 			case TimeType_Normal: {
-				FormatEx(newMenuItem, sizeof(newMenuItem), "[%02d] %s (%d TP)     %s", 
+				FormatEx(newMenuItem, sizeof(newMenuItem), "#%-2d   %11s  %d TP      %s", 
 					rank, SimpleKZ_FormatTime(SQL_FetchFloat(results[1], 1)), SQL_FetchInt(results[1], 2), playerName);
 			}
 			case TimeType_Pro: {
-				FormatEx(newMenuItem, sizeof(newMenuItem), "[%02d] %s     %s", 
+				FormatEx(newMenuItem, sizeof(newMenuItem), "#%-2d   %11s   %s", 
 					rank, SimpleKZ_FormatTime(SQL_FetchFloat(results[1], 1)), playerName);
 			}
 			case TimeType_Theoretical: {
-				FormatEx(newMenuItem, sizeof(newMenuItem), "[%02d] %s (%d TP)     %s", 
+				FormatEx(newMenuItem, sizeof(newMenuItem), "#%-2d   %11s  %d TP      %s", 
 					rank, SimpleKZ_FormatTime(SQL_FetchFloat(results[1], 1)), SQL_FetchInt(results[1], 2), playerName);
 			}
 		}
@@ -955,7 +951,7 @@ public void DB_TxnSuccess_OpenPlayerTop20(Handle db, DataPack data, int numQueri
 		rank++;
 		char playerString[33];
 		SQL_FetchString(results[0], 0, playerString, sizeof(playerString));
-		FormatEx(newMenuItem, sizeof(newMenuItem), "[%02d] %s (%d)", rank, playerString, SQL_FetchInt(results[0], 1));
+		FormatEx(newMenuItem, sizeof(newMenuItem), "#%-2d   %s (%d)", rank, playerString, SQL_FetchInt(results[0], 1));
 		AddMenuItem(gH_PlayerTopSubMenu[client], "", newMenuItem, ITEMDRAW_DISABLED);
 	}
 	

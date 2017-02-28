@@ -51,6 +51,7 @@ public Plugin myinfo =
 #define STYLE_LEGACY_SOUND_END "buttons/button3.wav" // Not precached
 #define STYLE_LEGACY_PERF_TICKS 1
 #define STYLE_LEGACY_PERF_SPEED_CAP 380.0
+#define STYLE_LEGACY_SPEED_PRESTRAFE_MINIMUM 175.0
 
 #define SOUND_TIMER_FORCE_STOP "buttons/button18.wav" // Not precached
 #define SOUND_CHECKPOINT "buttons/blip1.wav" // Not precached

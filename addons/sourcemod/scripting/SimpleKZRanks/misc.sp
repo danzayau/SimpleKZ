@@ -90,7 +90,6 @@ void AnnounceNewRecord(int client, int course, MovementStyle style, RecordType r
 				CPrintToChatAll(" %t", "New Record - Map and Pro", client, gC_StylePhrases[style]);
 			}
 		}
-		EmitSoundToAll(REL_SOUNDPATH_BEAT_RECORD);
 	}
 	else {
 		switch (recordType) {
@@ -101,10 +100,11 @@ void AnnounceNewRecord(int client, int course, MovementStyle style, RecordType r
 				CPrintToChatAll(" %t", "New Bonus Record - Pro", client, course, gC_StylePhrases[style]);
 			}
 			case RecordType_MapAndPro: {
-				CPrintToChatAll(" %t", "New Bonus Record - Map and Pro", client, course, gC_StylePhrases[style]);
+				CPrintToChatAll(" %t", "New Bonus Record - Map and Pro", client, course, course, gC_StylePhrases[style]);
 			}
 		}
 	}
+	EmitSoundToAll(REL_SOUNDPATH_BEAT_RECORD);
 }
 
 void AnnounceNewPersonalBest(int client, int course, MovementStyle style, TimeType timeType, bool firstTime, float improvement, int rank, int maxRank) {

@@ -91,22 +91,6 @@ char sqlite_times_create[] =
 ..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
 ..."CONSTRAINT FK_Times_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
 
-char sqlite_times_create_index1[] = 
-"CREATE INDEX IF NOT EXISTS IX_Times_PlayerID "
-..."ON Times (PlayerID);";
-
-char sqlite_times_create_index2[] = 
-"CREATE INDEX IF NOT EXISTS IX_Times_MapID "
-..."ON Times (MapID);";
-
-char sqlite_times_create_index3[] = 
-"CREATE INDEX IF NOT EXISTS IX_Times_Teleports "
-..."ON Times (Teleports);";
-
-char sqlite_times_create_index4[] = 
-"CREATE INDEX IF NOT EXISTS IX_Times_Style_Course_MapID "
-..."ON Times (Style, Course, MapID);";
-
 char mysql_times_create[] = 
 "CREATE TABLE IF NOT EXISTS Times ("
 ..."TimeID INTEGER UNSIGNED NOT NULL AUTO_INCREMENT, "
@@ -118,10 +102,6 @@ char mysql_times_create[] =
 ..."Teleports SMALLINT UNSIGNED NOT NULL, "
 ..."TheoreticalRunTime FLOAT UNSIGNED NOT NULL, "
 ..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-..."INDEX IX_Times_PlayerID (PlayerID), "
-..."INDEX IX_Times_MapID (MapID), "
-..."INDEX IX_Times_Teleports (Teleports), "
-..."INDEX IX_Times_Style_Course_MapID (Style, Course, MapID), "
 ..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
 ..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
 ..."CONSTRAINT FK_Times_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
@@ -166,29 +146,30 @@ char sql_getpbpro[] =
 ..."ORDER BY RunTime "
 ..."LIMIT %d;";
 
+// There's probably a better way to get map top but this seems to work...
 char sql_getmaptop[] = 
 "SELECT Players.Alias, Times.RunTime, Times.Teleports "
 ..."FROM Times "
 ..."INNER JOIN Players ON Players.PlayerID=Times.PlayerID "
 ..."INNER JOIN "
-..."(SELECT TimeID, MIN(RunTime) "
+..."(SELECT MIN(RunTime) AS PBTime, MapID, Course, Style, PlayerID "
 ..."FROM Times "
 ..."WHERE MapID=%d AND Course=%d AND Style=%d "
-..."GROUP BY TimeID, PlayerID) TopTimes "
-..."ON TopTimes.TimeID=Times.TimeID "
+..."GROUP BY MapID, Course, Style, PlayerID) PBs "
+..."ON PBs.PBTime=Times.RunTime AND PBs.MapID=Times.MapID AND PBs.Course=Times.Course AND PBs.Style=Times.Style AND PBs.PlayerID=Times.PlayerID "
 ..."ORDER BY Times.RunTime "
 ..."LIMIT %d;";
 
 char sql_getmaptoppro[] = 
-"SELECT Players.Alias, Times.RunTime "
+"SELECT Players.Alias, Times.RunTime, Times.Teleports "
 ..."FROM Times "
 ..."INNER JOIN Players ON Players.PlayerID=Times.PlayerID "
 ..."INNER JOIN "
-..."(SELECT TimeID, MIN(RunTime) "
+..."(SELECT MIN(RunTime) AS PBTime, MapID, Course, Style, PlayerID "
 ..."FROM Times "
 ..."WHERE MapID=%d AND Course=%d AND Style=%d AND Teleports=0 "
-..."GROUP BY TimeID, PlayerID) TopTimes "
-..."ON TopTimes.TimeID=Times.TimeID "
+..."GROUP BY MapID, Course, Style, PlayerID) PBs "
+..."ON PBs.PBTime=Times.RunTime AND PBs.MapID=Times.MapID AND PBs.Course=Times.Course AND PBs.Style=Times.Style AND PBs.PlayerID=Times.PlayerID "
 ..."ORDER BY Times.RunTime "
 ..."LIMIT %d;";
 
@@ -197,11 +178,11 @@ char sql_getmaptoptheoretical[] =
 ..."FROM Times "
 ..."INNER JOIN Players ON Players.PlayerID=Times.PlayerID "
 ..."INNER JOIN "
-..."(SELECT TimeID, MIN(TheoreticalRunTime) "
+..."(SELECT MIN(TheoreticalRunTime) AS PBTime, MapID, Course, Style, PlayerID "
 ..."FROM Times "
 ..."WHERE MapID=%d AND Course=%d AND Style=%d "
-..."GROUP BY TimeID, PlayerID) TopTimes "
-..."ON TopTimes.TimeID=Times.TimeID "
+..."GROUP BY MapID, Course, Style, PlayerID) PBs "
+..."ON PBs.PBTime=Times.TheoreticalRunTime AND PBs.MapID=Times.MapID AND PBs.Course=Times.Course AND PBs.Style=Times.Style AND PBs.PlayerID=Times.PlayerID "
 ..."ORDER BY Times.TheoreticalRunTime "
 ..."LIMIT %d;";
 

@@ -27,13 +27,13 @@
 	{
 		// Bill beat the MAP RECORD [Style]!
 		"#format"	"{1:N},{2:t}"
-		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD {2}{grey}!"
+		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD {grey}[{purple}{2}{grey}]!"
 	}
 	"New Record - Pro"
 	{
 		// Bill beat the PRO RECORD [Style]!
 		"#format"	"{1:N},{2:t}"
-		"en"		"{lime}{1}{grey} beat the {blue}PRO RECORD {2}{grey}!"
+		"en"		"{lime}{1}{grey} beat the {blue}PRO RECORD {grey}[{purple}{2}{grey}]!"
 	}
 	"New Record - Map and Pro"
 	{
@@ -56,8 +56,8 @@
 	"New Bonus Record - Map and Pro"
 	{
 		// Bill beat the Bonus 1 MAP RECORD and the PRO RECORD [Style]!
-		"#format"	"{1:N},{2:d},{3:t}"
-		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {yellow}MAP RECORD{grey} and the {gold}Bonus {2} {blue}PRO RECORD {grey}[{purple}{3}{grey}]!"
+		"#format"	"{1:N},{2:d},{3:d},{4:t}"
+		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {yellow}MAP RECORD{grey} and the {gold}Bonus {3} {blue}PRO RECORD {grey}[{purple}{4}{grey}]!"
 	}
 	"New PB - First Time"
 	{
