@@ -1,370 +1,439 @@
 "Phrases"
 {
-	// Chat Messages ////////////////////////////////////////////////////////////
-	"KZ_Tag"
+	// General
+	"Style Menu - Title"
+	{
+		"en"		"Switch Styles"
+	}
+	"Style - Standard"
+	{
+		"en"		"Standard"
+	}
+	"Style - Legacy"
+	{
+		"en"		"Legacy"
+	}
+	"Time Type - Normal"
+	{
+		"en"		"Map"
+	}
+	"Time Type - Pro"
+	{
+		"en"		"Pro"
+	}
+	"Time Type - Theoretical"
+	{
+		"en"		"Theoretical"
+	}
+
+	// General Chat Messages ////////////////////////////////////////////////////////////
+	"KZ Prefix"
 	{
 		"en"		"{grey}[{lightgreen}KZ{grey}]"
 	}
-	"TimeStopped_Generic"
+	"Beat Map"
 	{
-		"en"		"{darkred}Your timer has been stopped."
+		// Bill finished in 01:23.45 (4 TP | 01.02.34) [Style].
+		"#format"	"{1:N},{2:s},{3:d},{4:s},{5:t}"
+		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({yellow}{3} TP{grey} | {grey}{4}{grey}) {grey}[{purple}{5}{grey}]."
 	}
-	"TimeStopped_Noclip"
+	"Beat Map (Pro)"
 	{
-		"en"		"{darkred}Your timer has been stopped because you noclipped."	
+		// Bill finished in 01:23.45 (PRO) [Style].
+		"#format"	"{1:N},{2:s},{3:t}"
+		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey}) {grey}[{purple}{3}{grey}]."
 	}
-	"TimeStopped_Goto"
+	"Beat Bonus"
 	{
-		"en"		"{darkred}Your timer has been stopped because you used !goto."
+		// Bill finished Bonus 1 in 01:23.45 (4 TP | 01.02.34) [Style].
+		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:s},{6:t}"
+		"en"		"{lime}{1}{grey} finished {gold}Bonus {2}{grey} in {default}{3}{grey} ({yellow}{4} TP{grey} | {grey}{5}{grey}) {grey}[{purple}{6}{grey}]."
 	}
-	"Checkpoint_NotAlive"
+	"Beat Bonus (Pro)"
 	{
-		"en"		"{darkred}You must be alive to make a checkpoint."
+		// Bill finished Bonus 1 in 01:23.45 (PRO) [Style].
+		"#format"	"{1:N},{2:d},{3:s},{4:t}"
+		"en"		"{lime}{1}{grey} finished {gold}Bonus {2}{grey} in {default}{3}{grey} ({blue}PRO{grey}) {grey}[{purple}{4}{grey}]."
 	}
-	"Checkpoint_Midair"
+	"Time Stopped"
 	{
-		"en"		"{darkred}You can't make a checkpoint midair."
+		"en"		"{darkred}Your timer has stopped."
 	}
-	"Checkpoint_JustLanded"
+	"Time Stopped (Noclipped)"
 	{
-		"en"		"{darkred}You can't make a checkpoint because you just landed."
+		"en"		"{darkred}Your timer has stopped because you noclipped."	
 	}
-	"Teleport_NotAlive"
+	"Time Stopped (Goto)"
 	{
-		"en"		"{darkred}You must be alive to teleport to your checkpoint."
+		"en"		"{darkred}Your timer has stopped because you used !goto."
 	}
-	"Teleport_NoCheckpoint"
+	"Time Stopped (Changed Style)"
 	{
-		"en"		"{darkred}You don't have a checkpoint set."
+		"en"		"{darkred}Your timer has stopped because you switched style."
 	}
-	"Teleport_KZPro"
-	{
-		"en"		"{darkred}You can't teleport to your checkpoint on a {lime}kzpro_{darkred} map."
-	}
-	"Undo_NotAlive"
-	{
-		"en"		"{darkred}You must be alive to undo a teleport."
-	}
-	"Undo_NoTeleport"
-	{
-		"en"		"{darkred}You don't have a teleport to undo."
-	}
-	"Undo_Midair"
-	{
-		"en"		"{darkred}You can't undo because you teleported midair."
-	}
-	"Pause_JustResumed"
-	{
-		"en"		"{darkred}You can't pause because you just resumed."
-	}
-	"Pause_Midair"
-	{
-		"en"		"{darkred}You can't pause in midair."
-	}
-	"TeleportMenu_Enable"
-	{
-		"en"		"{grey}Your teleport menu has been enabled."
-	}
-	"TeleportMenu_Disable"
-	{
-		"en"		"{grey}Your teleport menu has been disabled."
-	}
-	"ShowPlayers_Enable"
-	{
-		"en"		"{grey}You are now showing other players."
-	}
-	"ShowPlayers_Disable"
-	{
-		"en"		"{grey}You are now hiding other players."
-	}
-	"InfoPanel_Enable"
-	{
-		"en"		"{grey}Your centre information panel has been enabled."
-	}
-	"InfoPanel_Disable"
-	{
-		"en"		"{grey}Your centre information panel has been disabled."
-	}
-	"ShowWeapon_Enable"
-	{
-		"en"		"{grey}You are now showing your weapon."
-	}
-	"ShowWeapon_Disable"
-	{
-		"en"		"{grey}You are now hiding your weapon."
-	}
-	"ShowKeys_Enable"
-	{
-		"en"		"{grey}You are now showing your key presses to yourself."
-	}
-	"ShowKeys_Disable"
-	{
-		"en"		"{grey}You are no longer showing your key presses to yourself."
-	}
-	"AutoRestart_Enable"
-	{
-		"en"		"{grey}Your timer will now restart when you teleport to start."
-	}
-	"AutoRestart_Disable"
-	{
-		"en"		"{grey}Your timer will no longer restart you teleport to start."
-	}
-	"SlayOnEnd_Enable"
-	{
-		"en"		"{grey}You will now be slain after finishing the map. This helps de-glitch your demo recordings."
-	}
-	"SlayOnEnd_Disable"
-	{
-		"en"		"{grey}You will no longer be slain after finishing the map."
-	}
-	"StopSound"
-	{
-		"en"		"{grey}You have stopped all sounds."
-	}
-	"Goto_Success"
-	{
-		// You have teleported to Bill.
-		"#format"	"{1:N}"
-		"en"		"{grey}You have teleported to {lime}{1}{grey}."
-	}
-	"Goto_NoPlayer"
-	{
-		"en"		"{darkred}Please specify a player to go to."
-	}
-	"Goto_NotYourself"
-	{
-		"en"		"{darkred}You can't teleport to yourself."
-	}
-	"Goto_NotAlive"
-	{
-		"en"		"{darkred}The player you specified is not alive."
-	}
-	"Spec_NotYourself"
-	{
-		"en"		"{darkred}You can't spectate yourself."
-	}
-	"Spec_NotAlive"
-	{
-		"en"		"{darkred}The player you specified is not alive."
-	}
-	"Measure_Result"
-	{
-		// Distance: 123.45, Vertical: 12.34.
-		"#format"	"{1:.2f},{2:.2f}"
-		"en"		"{grey}Distance: {default}{1}{grey}, Vertical {default}{2}{grey}."
-	}
-	"Measure_PointsNotSet"
-	{
-		"en"		"{darkred}You must set both points to measure a distance."
-	}
-	"Measure_NotAimingAtSolid"
-	{
-		"en"		"{darkred}You are not aiming at anything solid!"
-	}
-	"Database_NotConnected"
-	{
-		"en"		"{grey}This server isn't connected to a {lime}SimpleKZ{grey} database."
-	}
-	"Split_Make"
-	{
-		// Segment 8:  01:23.45 - Time: 12:34.56
-		"#format"	"{1:d},{2:s},{3:s}"
-		"en"		"{green}Segment {default}{1}{grey}:  {default}{2}{grey}  -  Total: {default}{3}"
-	}
-	"Split_Make_TimerStopped"
-	{
-		// Time since last split:  01:23.45
-		"#format"	"{1:s}"
-		"en"		"{grey}Time since last split:  {default}{1}{grey}"
-	}
-	"Split_MakeFirst"
-	{
-		"en"		"{grey}You have made your first split. Make another to see how much time has passed."
-	}
-	"Split_Reset"
-	{
-		"en"		"{grey}You have reset your timer and your splits."
-	}
-	"BeatMap"
-	{
-		// Bill finished in 01:23.45 (4 TP | 01.02.34).
-		"#format"	"{1:N},{2:s},{3:d},{4:s}"
-		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({yellow}{3} TP{grey} | {grey}{4}{grey})."
-	}
-	"BeatMapPro"
-	{
-		// Bill finished in 01:23.45 (PRO).
-		"#format"	"{1:N},{2:s}"
-		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey})."
-	}
-	"Client_Connect"
+	"Client Connection Message"
 	{
 		// Bill has connected from Australia.
 		"#format"	"{1:s},{2:s}"
 		"en"		"{lime}{1}{grey} has connected from {default}{2}{grey}."
 	}
-	"Client_Disconnect"
+	"Client Disconnection Message"
 	{
 		// Bill has left the game (Disconnect).
 		"#format"	"{1:s},{2:s}"
 		"en"		"{lime}{1}{grey} has left the game ({2})."
 	}
-	"FileOpen_Fail"
+	"Database Not Connected"
 	{
-		// There was a problem opening file: cfg/sourcemod/SimpleKZ/mappool.txt.
-		"#format"	"{1:s}"
-		"en"		"{grey}There was a problem opening file: {default}{1}{grey}."
+		"en"		"{grey}This server isn't connected to a {default}SimpleKZ{grey} database."
 	}
 	
 	
-	// Database Errors ////////////////////////////////////////////////////////////
-	"Database_ConnectionFailed"
+	// Command Chat Messages ////////////////////////////////////////////////////////////
+	"Make Checkpoint"
 	{
-		"#format"	"{1:s}"
-		"en"		"[SimpleKZ] Database connection failed: {1} \n[SimpleKZ] Proceeding without database."
+		"en"		"{grey}You have set a checkpoint."
 	}
-	"Database_InvalidDriver"
+	"Can't Checkpoint (Dead)"
 	{
-		"en"		"[SimpleKZ] Invalid database driver (use SQLite or MySQL)."
+		"en"		"{darkred}You must be alive to make a checkpoint."
 	}
-	"Database_QueryError"
+	"Can't Checkpoint (Midair)"
 	{
-		"#format"	"{1:s}"
-		"en"		"[SimpleKZ] Database query error: {1}"
+		"en"		"{darkred}You can't make a checkpoint midair."
 	}
-	"Database_TransactionError"
+	"Can't Checkpoint (Just Landed)"
 	{
+		"en"		"{darkred}You can't make a checkpoint because you just landed."
+	}
+	"Can't Teleport (Map)"
+	{
+		"en"		"{darkred}You can't teleport to your checkpoint on this map."
+	}
+	"Can't Undo (TP Was Midair)"
+	{
+		"en"		"{darkred}You can't undo because you teleported midair."
+	}
+	"Can't Pause (Just Resumed)"
+	{
+		"en"		"{darkred}You can't pause because you just resumed."
+	}
+	"Can't Pause (Midair)"
+	{
+		"en"		"{darkred}You can't pause in midair."
+	}
+	"Stopped Sounds"
+	{
+		"en"		"{grey}You have stopped all sounds."
+	}
+	"Goto Success"
+	{
+		// You have teleported to Bill.
+		"#format"	"{1:N}"
+		"en"		"{grey}You have teleported to {lime}{1}{grey}."
+	}
+	"Goto Failure (Didn't Specify Player)"
+	{
+		"en"		"{darkred}Please specify a player to go to."
+	}
+	"Goto Failure (Not Yourself)"
+	{
+		"en"		"{darkred}You can't teleport to yourself."
+	}
+	"Goto Failure (Dead)"
+	{
+		"en"		"{darkred}The player you specified is not alive."
+	}
+	"Spectate Failure (Not Yourself)"
+	{
+		"en"		"{darkred}You can't spectate yourself."
+	}
+	"Spectate Failure (Dead)"
+	{
+		"en"		"{darkred}The player you specified is not alive."
+	}
+	"Measure Result"
+	{
+		// Distance: 123.45, Vertical: 12.34.
+		"#format"	"{1:.2f},{2:.2f}"
+		"en"		"{grey}Distance: {default}{1}{grey}, Vertical {default}{2}{grey}."
+	}
+	"Measure Failure (Points Not Set)"
+	{
+		"en"		"{darkred}You must set both points to measure a distance."
+	}
+	"Measure Failure (Not Aiming at Solid)"
+	{
+		"en"		"{darkred}You are not aiming at anything solid!"
+	}
+	"Split Create"
+	{
+		// Segment 8:  01:23.45 - Time: 12:34.56
+		"#format"	"{1:d},{2:s},{3:s}"
+		"en"		"{green}Segment {default}{1}{grey}:  {default}{2}{grey}  -  Total: {default}{3}"
+	}
+	"Split Create (Timer Stopped)"
+	{
+		// Time since last split:  01:23.45
 		"#format"	"{1:s}"
-		"en"		"[SimpleKZ] Database transaction error: {1}"
+		"en"		"{grey}Time since last split:  {default}{1}{grey}"
+	}
+	"Split Create (First)"
+	{
+		"en"		"{grey}You have made your first split. Make another to see how much time has passed."
+	}
+	"Split Reset"
+	{
+		"en"		"{grey}You have reset your timer and your splits."
+	}
+	"Switched Style"
+	{
+		// You have switched to the Legacy style.
+		"#format"	"{1:t}"
+		"en"		"{grey}You have switched to the {purple}{1}{grey} style."
 	}
 	
 	
-	// Info Panel ////////////////////////////////////////////////////////////
-	"InfoPanel_Time"
+	// Option Toggle Chat Messages ////////////////////////////////////////////////////////////
+	"Option - Teleport Menu - Enable"
+	{
+		"en"		"{grey}Your teleport menu has been enabled."
+	}
+	"Option - Teleport Menu - Disable"
+	{
+		"en"		"{grey}Your teleport menu has been disabled."
+	}
+	"Option - Show Players - Enable"
+	{
+		"en"		"{grey}You are now showing other players."
+	}
+	"Option - Show Players - Disable"
+	{
+		"en"		"{grey}You are now hiding other players."
+	}
+	"Option - Info Panel - Enable"
+	{
+		"en"		"{grey}Your centre information panel has been enabled."
+	}
+	"Option - Info Panel - Disable"
+	{
+		"en"		"{grey}Your centre information panel has been disabled."
+	}
+	"Option - Show Weapon - Enable"
+	{
+		"en"		"{grey}You are now showing your weapon."
+	}
+	"Option - Show Weapon - Disable"
+	{
+		"en"		"{grey}You are now hiding your weapon."
+	}
+	"Option - Show Keys - Enable"
+	{
+		"en"		"{grey}You are now showing your key presses to yourself."
+	}
+	"Option - Show Keys - Disable"
+	{
+		"en"		"{grey}You are no longer showing your key presses to yourself."
+	}
+	"Option - Auto Restart - Enable"
+	{
+		"en"		"{grey}Your timer will now restart when you teleport to start."
+	}
+	"Option - Auto Restart - Disable"
+	{
+		"en"		"{grey}Your timer will no longer restart you teleport to start."
+	}
+	"Option - Slay On End - Enable"
+	{
+		"en"		"{grey}You will now be slain after finishing a time. This helps de-glitch your demo recordings."
+	}
+	"Option - Slay On End - Disable"
+	{
+		"en"		"{grey}You will no longer be slain after finishing a time."
+	}
+	"Option - Checkpoint Messages - Enable"
+	{
+		"en"		"{grey}You will now see checkpoint messages."
+	}
+	"Option - Checkpoint Messages - Disable"
+	{
+		"en"		"{grey}You will no longer see checkpoint messages."
+	}
+	"Option - Checkpoint Sounds - Enable"
+	{
+		"en"		"{grey}You will now hear a checkpoint sound."
+	}
+	"Option - Checkpoint Sounds - Disable"
+	{
+		"en"		"{grey}You will no longer hear a checkpoint sound."
+	}
+	"Option - Teleport Sounds - Enable"
+	{
+		"en"		"{grey}You will now hear teleport sounds."
+	}
+	"Option - Teleport Sounds - Disable"
+	{
+		"en"		"{grey}You will no longer hear teleport sounds."
+	}
+	
+	
+	// Info Panel Text ////////////////////////////////////////////////////////////
+	"Info Panel Text - Time"
 	{
 		"en"		"Time"
 	}
-	"InfoPanel_Stopped"
+	"Info Panel Text - Stopped"
 	{
 		"en"		"Stopped"
 	}
-	"InfoPanel_Paused"
+	"Info Panel Text - PAUSED"
 	{
 		"en"		"PAUSED"
 	}
-	"InfoPanel_Speed"
+	"Info Panel Text - Speed"
 	{
 		"en"		"Speed"
 	}
-	"InfoPanel_Keys"
+	"Info Panel Text - Keys"
 	{
 		"en"		"Keys"
 	}
 	
 	
 	// Teleport Menu ////////////////////////////////////////////////////////////
-	"TPMenu_Checkpoint"
+	"TP Menu - Checkpoint"
 	{
 		"en"		"Checkpoint"
 	}
-	"TPMenu_Teleport"
+	"TP Menu - Teleport"
 	{
 		"en"		"Teleport"
 	}
-	"TPMenu_Undo"
+	"TP Menu - Undo TP"
 	{
 		"en"		"Undo TP"
 	}
-	"TPMenu_Pause"
+	"TP Menu - Pause"
 	{
 		"en"		"Pause"
 	}
-	"TPMenu_Resume"
+	"TP Menu - Resume"
 	{
 		"en"		"Resume"
 	}
-	"TPMenu_Restart"
+	"TP Menu - Restart"
 	{
 		"en"		"Restart"
 	}
-	"TPMenu_Respawn"
+	"TP Menu - Respawn"
 	{
 		"en"		"Respawn"
 	}
-	"TPMenu_Rejoin"
-	{
-		"en"		"Rejoin"
-	}
 	
 	// Measure Menu ////////////////////////////////////////////////////////////
-	"MeasureMenu_Title"
+	"Measure Menu - Title"
 	{
 		"en"		"Measure"
 	}
-	"MeasureMenu_PointA"
+	"Measure Menu - Point A"
 	{
 		"en"		"Point A (Green)"
 	}
-	"MeasureMenu_PointB"
+	"Measure Menu - Point B"
 	{
 		"en"		"Point B (Red)"
 	}
-	"MeasureMenu_GetDistance"
+	"Measure Menu - Get Distance"
 	{
 		"en"		"Get Distance"
 	}
 	
 	
 	// Pistol Menu ////////////////////////////////////////////////////////////
-	"PistolMenu_Title"
+	"Pistol Menu - Title"
 	{
 		"en"		"Pick a Pistol"
 	}
 	
 	
 	// Options Menu Menu ////////////////////////////////////////////////////////////
-	"OptionsMenu_Title"
+	"Options Menu - Title"
 	{
 		"en"		"Options"
 	}
-	"OptionsMenu_Enabled"
+	"Options Menu - Enabled"
 	{
 		"en"		"Enabled"
 	}
-	"OptionsMenu_Disabled"
+	"Options Menu - Disabled"
 	{
 		"en"		"Disabled"
 	}
-	"OptionsMenu_TeleportMenu"
+	"Options Menu - Teleport Menu"
 	{
 		"en"		"Teleport menu"
 	}
-	"OptionsMenu_InfoPanel"
+	"Options Menu - Info Panel"
 	{
 		"en"		"Centre panel"
 	}
-	"OptionsMenu_ShowPlayers"
+	"Options Menu - Show Players"
 	{
 		"en"		"Show players"
 	}
-	"OptionsMenu_ShowWeapon"
+	"Options Menu - Show Weapon"
 	{
 		"en"		"Show weapon"
 	}
-	"OptionsMenu_ShowKeys"
+	"Options Menu - Show Keys"
 	{
 		"en"		"Show own keys"
 	}
-	"OptionsMenu_AutoRestart"
+	"Options Menu - Auto Restart"
 	{
 		"en"		"Auto restart"
 	}
-	"OptionsMenu_SlayOnEnd"
+	"Options Menu - Slay On End"
 	{
 		"en"		"End timer slay"
 	}
-	"OptionsMenu_Pistol"
+	"Options Menu - Pistol"
 	{
 		"en"		"Pistol"
+	}
+	"Options Menu - Checkpoint Messages"
+	{
+		"en"		"Checkpoint messages"
+	}
+	"Options Menu - Checkpoint Sounds"
+	{
+		"en"		"Checkpoint sounds"
+	}
+	"Options Menu - Teleport Sounds"
+	{
+		"en"		"Teleport sounds"
+	}
+	
+	
+	// Server/Admin Messages ////////////////////////////////////////////////////////////
+	"Failed to Open File"
+	{
+		// There was a problem opening file: cfg/sourcemod/SimpleKZ/mappool.txt.
+		"#format"	"{1:s}"
+		"en"		"{grey}There was a problem opening file: {default}{1}{grey}."
+	}
+	"Database Connection Failed"
+	{
+		"#format"	"{1:s}"
+		"en"		"[SimpleKZ] Database connection failed: {1} \n[SimpleKZ] Proceeding without database."
+	}
+	"Invalid Database Driver"
+	{
+		"en"		"[SimpleKZ] Invalid database driver (use SQLite or MySQL)."
+	}
+	"Database Transaction Error"
+	{
+		"#format"	"{1:s}"
+		"en"		"[SimpleKZ] Database transaction error: {1}"
 	}
 }

@@ -27,6 +27,11 @@ void RegisterCommands() {
 	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
 	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
 	RegConsoleCmd("sm_split", CommandSplit, "[KZ] Make a time split for timing purposes.");
+	RegConsoleCmd("sm_style", CommandStyle, "[KZ] Open the movement style menu.");
+	RegConsoleCmd("sm_standard", CommandStandard, "[KZ] Switch to the standard style.");
+	RegConsoleCmd("sm_s", CommandStandard, "[KZ] Switch to the standard style.");
+	RegConsoleCmd("sm_legacy", CommandLegacy, "[KZ] Switch to the legacy style.");
+	RegConsoleCmd("sm_l", CommandLegacy, "[KZ] Switch to the legacy style.");
 }
 
 
@@ -81,21 +86,21 @@ public Action CommandTogglePause(int client, int args) {
 }
 
 public Action CommandStopTimer(int client, int args) {
-	SimpleKZ_ForceStopTimer(client);
-	CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Generic");
+	TimerForceStop(client);
+	CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped");
 	return Plugin_Handled;
 }
 
 public Action CommandStopsound(int client, int args) {
 	ClientCommand(client, "snd_playsounds Music.StopAllExceptMusic");
-	CPrintToChat(client, "%t %t", "KZ_Tag", "StopSound");
+	CPrintToChat(client, "%t %t", "KZ Prefix", "Stopped Sounds");
 	return Plugin_Handled;
 }
 
 public Action CommandGoto(int client, int args) {
 	// If no arguments, respond with error message
 	if (args < 1) {
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Goto_NoPlayer");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Failure (Didn't Specify Player)");
 	}
 	// Otherwise try to teleport to the player
 	else {
@@ -105,15 +110,15 @@ public Action CommandGoto(int client, int args) {
 		int target = FindTarget(client, specifiedPlayer, false, false);
 		if (target != -1) {
 			if (target == client) {
-				CPrintToChat(client, "%t %t", "KZ_Tag", "Goto_NotYourself");
+				CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Failure (Not Yourself)");
 			}
 			else if (!IsPlayerAlive(target)) {
-				CPrintToChat(client, "%t %t", "KZ_Tag", "Goto_NotAlive");
+				CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Failure (Dead)");
 			}
 			else {
-				TeleportToOtherPlayer(client, target);
+				GotoPlayer(client, target);
 				if (gB_TimerRunning[client]) {
-					CPrintToChat(client, "%t %t", "KZ_Tag", "TimeStopped_Goto");
+					CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Goto)");
 				}
 				SimpleKZ_ForceStopTimer(client);
 			}
@@ -135,10 +140,10 @@ public Action CommandSpec(int client, int args) {
 		int target = FindTarget(client, specifiedPlayer, false, false);
 		if (target != -1) {
 			if (target == client) {
-				CPrintToChat(client, "%t %t", "KZ_Tag", "Spec_NotYourself");
+				CPrintToChat(client, "%t %t", "KZ Prefix", "Spectate Failure (Not Yourself)");
 			}
 			else if (!IsPlayerAlive(target)) {
-				CPrintToChat(client, "%t %t", "KZ_Tag", "Spec_NotAlive");
+				CPrintToChat(client, "%t %t", "KZ Prefix", "Spectate Failure (Dead)");
 			}
 			else {
 				JoinTeam(client, CS_TEAM_SPECTATOR);
@@ -197,5 +202,20 @@ public Action CommandDisableNoclip(int client, int args) {
 
 public Action CommandSplit(int client, int args) {
 	SplitsMake(client);
+	return Plugin_Handled;
+}
+
+public Action CommandStyle(int client, int args) {
+	DisplayMovementStyleMenu(client);
+	return Plugin_Handled;
+}
+
+public Action CommandStandard(int client, int args) {
+	SetMovementStyle(client, MovementStyle_Standard);
+	return Plugin_Handled;
+}
+
+public Action CommandLegacy(int client, int args) {
+	SetMovementStyle(client, MovementStyle_Legacy);
 	return Plugin_Handled;
 } 

@@ -8,12 +8,14 @@
 #pragma newdecls required
 #pragma semicolon 1
 
+/* Formatted using SPEdit Syntax Reformatter - https://github.com/JulienKluge/Spedit */
+
 public Plugin myinfo = 
 {
 	name = "Simple KZ Ranks", 
 	author = "DanZay", 
-	description = "Player ranks module for SimpleKZ.", 
-	version = "0.8.2", 
+	description = "Player ranks module for SimpleKZ (local/non-global).", 
+	version = "0.9.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -21,7 +23,7 @@ public Plugin myinfo =
 
 /*===============================  Definitions  ===============================*/
 
-#define MAPPOOL_FILE_PATH "cfg/sourcemod/SimpleKZ/mappool.cfg"
+#define FILE_PATH_MAPPOOL "cfg/sourcemod/SimpleKZ/mappool.cfg"
 
 // TO-DO: Replace with sound config
 #define FULL_SOUNDPATH_BEAT_RECORD "sound/SimpleKZ/beatrecord1.mp3"
@@ -33,28 +35,45 @@ public Plugin myinfo =
 
 /*===============================  Global Variables  ===============================*/
 
-bool gB_LateLoad;
-
-char gC_CurrentMap[64];
-char gC_SteamID[MAXPLAYERS + 1][24];
-
-// Database
+/* Database */
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
 DatabaseType g_DBType = DatabaseType_None;
+int gI_CurrentMapID;
 
-// Menus
-char gC_MapTopMap[MAXPLAYERS + 1][64];
+/* Menus */
 Handle gH_MapTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 Handle gH_MapTopSubMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+char gC_MapTopMapName[MAXPLAYERS + 1][64];
+int gI_MapTopMapID[MAXPLAYERS + 1];
+int gI_MapTopCourse[MAXPLAYERS + 1];
+MovementStyle g_MapTopStyle[MAXPLAYERS + 1];
 Handle gH_PlayerTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 Handle gH_PlayerTopSubMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+MovementStyle g_PlayerTopStyle[MAXPLAYERS + 1];
+
+/* Other */
+bool gB_LateLoad;
+char gC_CurrentMap[64];
+
+/* Styles translation phrases for chat messages (respective to MovementStyle enum) */
+char gC_StylePhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
+{ "Style - Standard", 
+	"Style - Legacy"
+};
+
+/* Time type translation phrases for chat messages (respective to TimeType enum) */
+char gC_TimeTypePhrases[SIMPLEKZ_NUMBER_OF_TIME_TYPES][] = 
+{ "Time Type - Normal", 
+	"Time Type - Pro", 
+	"Time Type - Theoretical"
+};
 
 
 
 /*===============================  Includes  ===============================*/
 
-// Global Variable Includes
+/* Global variable includes */
 #include "SimpleKZRanks/sql.sp"
 
 #include "SimpleKZRanks/api.sp"
@@ -68,6 +87,7 @@ Handle gH_PlayerTopSubMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 /*===============================  Plugin Events  ===============================*/
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
+	CreateNatives();
 	RegPluginLibrary("SimpleKZRanks");
 	gB_LateLoad = late;
 	return APLRes_Success;
@@ -84,7 +104,6 @@ public void OnPluginStart() {
 	RegisterCommands();
 	
 	// Translations
-	LoadTranslations("common.phrases");
 	LoadTranslations("simplekz.phrases");
 	LoadTranslations("simplekzranks.phrases");
 	
@@ -101,6 +120,7 @@ public void OnAllPluginsLoaded() {
 	}
 }
 
+// Handles late loading
 void OnLateLoad() {
 	for (int client = 1; client <= MaxClients; client++) {
 		if (IsClientAuthorized(client) && !IsFakeClient(client)) {
@@ -114,6 +134,27 @@ void OnLateLoad() {
 
 
 
+/*===============================  Client and Map Events  ===============================*/
+
+public void OnClientAuthorized(int client, const char[] auth) {
+	// Prepare for client arrival
+	if (!IsFakeClient(client)) {
+		SetupClient(client);
+	}
+}
+
+public void OnClientPutInServer(int client) {
+	if (!IsFakeClient(client)) {
+		UpdateCompletionMVPStars(client);
+	}
+}
+
+public void OnMapStart() {
+	SetupMap();
+}
+
+
+
 /*===============================  SimpleKZ Events  ===============================*/
 
 public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
@@ -123,83 +164,18 @@ public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
 	DB_CreateTables();
 }
 
-public void SimpleKZ_OnTimerStarted(int client, bool firstStart) {
-	if (firstStart && gB_ConnectedToDB) {
-		DB_PrintPBs(client, client, gC_CurrentMap);
+public void SimpleKZ_OnTimerEnd(int client, int course, MovementStyle style, float time, int teleportsUsed, float theoreticalTime) {
+	DB_ProcessTimerEnd(client, style, course, time, teleportsUsed, theoreticalTime);
+}
+
+public void SimpleKZ_OnNewRecord(int client, int mapID, int course, MovementStyle style, RecordType recordType, float runTime) {
+	if (mapID == gI_CurrentMapID) {
+		AnnounceNewRecord(client, course, style, recordType);
 	}
 }
 
-public void SimpleKZ_OnTimerEnded(int client, float time, int teleportsUsed, float theoreticalTime) {
-	DB_ProcessEndTimer(client, gC_CurrentMap, time, teleportsUsed, theoreticalTime);
-}
-
-public void SimpleKZ_OnBeatMapRecord(int client, const char[] map, RecordType recordType, float runTime) {
-	switch (recordType) {
-		case RecordType_Map: {
-			CPrintToChatAll(" %t", "BeatMapRecord", client);
-		}
-		case RecordType_Pro: {
-			CPrintToChatAll(" %t", "BeatProRecord", client);
-		}
-		case RecordType_MapAndPro: {
-			CPrintToChatAll(" %t", "BeatMapAndProRecord", client);
-		}
+public void SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, MovementStyle style, TimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
+	if (mapID == gI_CurrentMapID && rank != 1) {
+		AnnounceNewPersonalBest(client, course, style, timeType, firstTime, improvement, rank, maxRank);
 	}
-	EmitSoundToAll(REL_SOUNDPATH_BEAT_RECORD);
-}
-
-public void SimpleKZ_OnBeatMapFirstTime(int client, const char[] map, RunType runType, float runTime, int rank, int maxRank) {
-	if (rank == 1) {
-		return;
-	}
-	switch (runType) {
-		case RunType_Normal: {
-			CPrintToChat(client, " %t", "BeatMapFirstTime", client, rank, maxRank);
-		}
-		case RunType_Pro: {
-			CPrintToChatAll(" %t", "BeatMapFirstTime_Pro", client, rank, maxRank);
-			EmitSoundToClient(client, REL_SOUNDPATH_BEAT_MAP);
-			EmitSoundToClientSpectators(client, REL_SOUNDPATH_BEAT_MAP);
-		}
-	}
-}
-
-public void SimpleKZ_OnImproveTime(int client, const char[] map, RunType runType, float runTime, float improvement, int rank, int maxRank) {
-	if (rank == 1) {
-		return;
-	}
-	switch (runType) {
-		case RunType_Normal: {
-			CPrintToChat(client, " %t", "ImprovedTime", client, FormatTimeFloat(improvement), rank, maxRank);
-		}
-		case RunType_Pro: {
-			CPrintToChatAll(" %t", "ImprovedTime_Pro", client, FormatTimeFloat(improvement), rank, maxRank);
-		}
-	}
-}
-
-
-
-/*===============================  Miscellaneous Events  ===============================*/
-
-public void OnClientAuthorized(int client, const char[] auth) {
-	if (!IsFakeClient(client)) {
-		SetupClient(client);
-	}
-}
-
-public void OnClientPutInServer(int client) {
-	if (!IsFakeClient(client)) {
-		DB_GetCompletion(client, client, false);
-	}
-}
-
-public void OnMapStart() {
-	UpdateCurrentMap();
-	DB_SaveMapInfo();
-	
-	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_RECORD);
-	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_MAP);
-	FakePrecacheSound(REL_SOUNDPATH_BEAT_RECORD);
-	FakePrecacheSound(REL_SOUNDPATH_BEAT_MAP);
 } 

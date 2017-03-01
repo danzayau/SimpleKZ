@@ -1,7 +1,7 @@
-/* 	Simple KZ API
+/* 	Simple KZ Official Include Files
 	Author: DanZay
 	
-	Plugin Version: 0.8.2
+	Plugin Version: 0.9.0
 	Plugin Website: https://github.com/danzayau/SimpleKZ	
 */
 

@@ -6,11 +6,11 @@
 
 void CreateMenus() {
 	CreateTeleportMenuAll();
-	CreateMeasureMenuAll();
-	CreatePistolMenuAll();
 	CreateOptionsMenuAll();
+	CreateMovementStyleMenuAll();
+	CreatePistolMenuAll();
+	CreateMeasureMenuAll();
 }
-
 
 
 /*===============================  Teleport Menu  ===============================*/
@@ -28,7 +28,7 @@ void CreateTeleportMenu(int client) {
 }
 
 void UpdateTeleportMenu(int client) {
-	if (GetClientMenu(client) == MenuSource_None && gB_ShowingTeleportMenu[client] && !gB_TeleportMenuIsShowing[client]) {
+	if (GetClientMenu(client) == MenuSource_None && gB_ShowingTeleportMenu[client] && !gB_TeleportMenuIsShowing[client] && IsPlayerAlive(client)) {
 		UpdateTeleportMenuItems(client);
 		DisplayMenu(gH_TeleportMenu[client], client, MENU_TIME_FOREVER);
 		gB_TeleportMenuIsShowing[client] = true;
@@ -37,19 +37,12 @@ void UpdateTeleportMenu(int client) {
 
 public int MenuHandler_TeleportMenu(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
-		if (IsPlayerAlive(param1)) {
-			switch (param2) {
-				case 0:MakeCheckpoint(param1);
-				case 1:TeleportToCheckpoint(param1);
-				case 2:TogglePause(param1);
-				case 3:TeleportToStart(param1);
-				case 4:UndoTeleport(param1);
-			}
-		}
-		else {
-			switch (param2) {
-				case 0:JoinTeam(param1, CS_TEAM_CT);
-			}
+		switch (param2) {
+			case 0:MakeCheckpoint(param1);
+			case 1:TeleportToCheckpoint(param1);
+			case 2:TogglePause(param1);
+			case 3:TeleportToStart(param1);
+			case 4:UndoTeleport(param1);
 		}
 	}
 	else if (action == MenuAction_Cancel) {
@@ -58,6 +51,7 @@ public int MenuHandler_TeleportMenu(Menu menu, MenuAction action, int param1, in
 }
 
 void CloseTeleportMenu(int client) {
+	// Closing the teleport menu makes it refresh
 	if (gB_TeleportMenuIsShowing[client]) {
 		CancelClientMenu(client);
 		gB_TeleportMenuIsShowing[client] = false;
@@ -65,16 +59,11 @@ void CloseTeleportMenu(int client) {
 }
 
 void TeleportAddItems(int client) {
-	if (IsPlayerAlive(client)) {
-		TeleportAddItemCheckpoint(client);
-		TeleportAddItemTeleport(client);
-		TeleportAddItemPause(client);
-		TeleportAddItemStart(client);
-		TeleportAddItemUndo(client);
-	}
-	else {
-		TeleportAddItemRejoin(client);
-	}
+	TeleportAddItemCheckpoint(client);
+	TeleportAddItemTeleport(client);
+	TeleportAddItemPause(client);
+	TeleportAddItemStart(client);
+	TeleportAddItemUndo(client);
 }
 
 void UpdateTeleportMenuItems(int client) {
@@ -84,14 +73,14 @@ void UpdateTeleportMenuItems(int client) {
 
 void TeleportAddItemCheckpoint(int client) {
 	char text[16];
-	FormatEx(text, sizeof(text), "%T", "TPMenu_Checkpoint", client);
+	FormatEx(text, sizeof(text), "%T", "TP Menu - Checkpoint", client);
 	AddMenuItem(gH_TeleportMenu[client], "", text);
 }
 
 void TeleportAddItemTeleport(int client) {
 	char text[16];
-	FormatEx(text, sizeof(text), "%T", "TPMenu_Teleport", client);
-	if (gI_CheckpointsSet[client] > 0) {
+	FormatEx(text, sizeof(text), "%T", "TP Menu - Teleport", client);
+	if (gI_CheckpointCount[client] > 0) {
 		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
 	else {
@@ -101,7 +90,7 @@ void TeleportAddItemTeleport(int client) {
 
 void TeleportAddItemUndo(int client) {
 	char text[16];
-	FormatEx(text, sizeof(text), "%T", "TPMenu_Undo", client);
+	FormatEx(text, sizeof(text), "%T", "TP Menu - Undo TP", client);
 	if (gI_TeleportsUsed[client] > 0 && gB_LastTeleportOnGround[client]) {
 		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
@@ -112,38 +101,147 @@ void TeleportAddItemUndo(int client) {
 
 void TeleportAddItemPause(int client) {
 	char text[16];
-	if (gB_TimerRunning[client]) {
-		if (!gB_Paused[client]) {
-			FormatEx(text, sizeof(text), "%T", "TPMenu_Pause", client);
-			AddMenuItem(gH_TeleportMenu[client], "", text);
-		}
-		else {
-			FormatEx(text, sizeof(text), "%T", "TPMenu_Resume", client);
-			AddMenuItem(gH_TeleportMenu[client], "", text);
-		}
+	if (!gB_Paused[client]) {
+		FormatEx(text, sizeof(text), "%T", "TP Menu - Pause", client);
+		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
 	else {
-		FormatEx(text, sizeof(text), "%T", "TPMenu_Pause", client);
-		AddMenuItem(gH_TeleportMenu[client], "", text, ITEMDRAW_DISABLED);
+		FormatEx(text, sizeof(text), "%T", "TP Menu - Resume", client);
+		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
 }
 
 void TeleportAddItemStart(int client) {
 	char text[16];
 	if (gB_HasStartedThisMap[client]) {
-		FormatEx(text, sizeof(text), "%T", "TPMenu_Restart", client);
+		FormatEx(text, sizeof(text), "%T", "TP Menu - Restart", client);
 		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
 	else {
-		FormatEx(text, sizeof(text), "%T", "TPMenu_Respawn", client);
+		FormatEx(text, sizeof(text), "%T", "TP Menu - Respawn", client);
 		AddMenuItem(gH_TeleportMenu[client], "", text);
 	}
 }
 
-void TeleportAddItemRejoin(int client) {
-	char text[16];
-	FormatEx(text, sizeof(text), "%T", "TPMenu_Rejoin", client);
-	AddMenuItem(gH_TeleportMenu[client], "", text);
+
+
+/*===============================  Options Menu ===============================*/
+
+void CreateOptionsMenuAll() {
+	for (int client = 1; client <= MaxClients; client++) {
+		CreateOptionsMenu(client);
+	}
+}
+
+void CreateOptionsMenu(int client) {
+	gH_OptionsMenu[client] = CreateMenu(MenuHandler_Options);
+	SetMenuPagination(gH_OptionsMenu[client], 6);
+}
+
+void DisplayOptionsMenu(int client, int atItem = 0) {
+	UpdateOptionsMenu(client);
+	DisplayMenuAtItem(gH_OptionsMenu[client], client, atItem, MENU_TIME_FOREVER);
+}
+
+void UpdateOptionsMenu(int client) {
+	SetMenuTitle(gH_OptionsMenu[client], "%T", "Options Menu - Title", client);
+	RemoveAllMenuItems(gH_OptionsMenu[client]);
+	OptionsAddBool(client, gB_ShowingTeleportMenu[client], "Options Menu - Teleport Menu");
+	OptionsAddBool(client, gB_ShowingInfoPanel[client], "Options Menu - Info Panel");
+	OptionsAddBool(client, gB_ShowingPlayers[client], "Options Menu - Show Players");
+	OptionsAddBool(client, gB_ShowingWeapon[client], "Options Menu - Show Weapon");
+	OptionsAddBool(client, gB_AutoRestart[client], "Options Menu - Auto Restart");
+	OptionsAddPistol(client);
+	OptionsAddBool(client, gB_SlayOnEnd[client], "Options Menu - Slay On End");
+	OptionsAddBool(client, gB_ShowingKeys[client], "Options Menu - Show Keys");
+	OptionsAddBool(client, gB_CheckpointMessages[client], "Options Menu - Checkpoint Messages");
+	OptionsAddBool(client, gB_CheckpointSounds[client], "Options Menu - Checkpoint Sounds");
+	OptionsAddBool(client, gB_TeleportSounds[client], "Options Menu - Teleport Sounds");
+}
+
+void OptionsAddBool(int client, bool option, const char[] optionPhrase) {
+	char text[32];
+	if (option) {
+		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Enabled", client);
+		AddMenuItem(gH_OptionsMenu[client], "", text);
+	}
+	else {
+		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Disabled", client);
+		AddMenuItem(gH_OptionsMenu[client], "", text);
+	}
+}
+
+void OptionsAddPistol(int client) {
+	char text[32];
+	FormatEx(text, sizeof(text), "%T - %s", "Options Menu - Pistol", client, gC_Pistols[gI_Pistol[client]][1]);
+	AddMenuItem(gH_OptionsMenu[client], "", text);
+}
+
+public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int param2) {
+	if (action == MenuAction_Select) {
+		switch (param2) {
+			case 0:ToggleTeleportMenu(param1);
+			case 1:ToggleInfoPanel(param1);
+			case 2:ToggleShowPlayers(param1);
+			case 3:ToggleShowWeapon(param1);
+			case 4:ToggleAutoRestart(param1);
+			case 5: {
+				gB_CameFromOptionsMenu[param1] = true;
+				DisplayPistolMenu(param1);
+			}
+			case 6:ToggleSlayOnEnd(param1);
+			case 7:ToggleShowKeys(param1);
+			case 8:ToggleCheckpointMessages(param1);
+			case 9:ToggleCheckpointSounds(param1);
+			case 10:ToggleTeleportSounds(param1);
+		}
+		if (param2 != 5) {
+			DisplayOptionsMenu(param1, param2 / 6 * 6); // Round item number down to multiple of 6
+		}
+	}
+}
+
+
+
+/*===============================  Movement Style Menu  ===============================*/
+
+void CreateMovementStyleMenuAll() {
+	for (int client = 1; client <= MaxClients; client++) {
+		CreateMovementStyleMenu(client);
+	}
+}
+
+void CreateMovementStyleMenu(int client) {
+	gH_MovementStyleMenu[client] = CreateMenu(MenuHandler_MovementStyle);
+}
+
+void DisplayMovementStyleMenu(int client) {
+	SetMenuTitle(gH_MovementStyleMenu[client], "%T", "Style Menu - Title", client);
+	AddItemsMovementStyleMenu(client);
+	DisplayMenu(gH_MovementStyleMenu[client], client, MENU_TIME_FOREVER);
+}
+
+void AddItemsMovementStyleMenu(int client) {
+	char text[32];
+	RemoveAllMenuItems(gH_MovementStyleMenu[client]);
+	for (int style = 0; style < SIMPLEKZ_NUMBER_OF_STYLES; style++) {
+		FormatEx(text, sizeof(text), "%T", gC_StylePhrases[style], client);
+		if (style == view_as<int>(g_Style[client])) {
+			AddMenuItem(gH_MovementStyleMenu[client], "", text, ITEMDRAW_DISABLED);
+		}
+		else {
+			AddMenuItem(gH_MovementStyleMenu[client], "", text, ITEMDRAW_DEFAULT);
+		}
+	}
+}
+
+public int MenuHandler_MovementStyle(Menu menu, MenuAction action, int param1, int param2) {
+	if (action == MenuAction_Select) {
+		switch (param2) {
+			case 0:SetMovementStyle(param1, MovementStyle_Standard);
+			case 1:SetMovementStyle(param1, MovementStyle_Legacy);
+		}
+	}
 }
 
 
@@ -158,8 +256,6 @@ void CreatePistolMenuAll() {
 
 void CreatePistolMenu(int client) {
 	gH_PistolMenu[client] = CreateMenu(MenuHandler_Pistol);
-	SetMenuOptionFlags(gH_PistolMenu[client], MENUFLAG_NO_SOUND);
-	SetMenuExitButton(gH_PistolMenu[client], true);
 }
 
 void DisplayPistolMenu(int client) {
@@ -167,7 +263,7 @@ void DisplayPistolMenu(int client) {
 }
 
 void UpdatePistolMenu(int client) {
-	SetMenuTitle(gH_PistolMenu[client], "%T", "PistolMenu_Title", client);
+	SetMenuTitle(gH_PistolMenu[client], "%T", "Pistol Menu - Title", client);
 	RemoveAllMenuItems(gH_PistolMenu[client]);
 	for (int pistol = 0; pistol < sizeof(gC_Pistols); pistol++) {
 		AddMenuItem(gH_PistolMenu[client], "", gC_Pistols[pistol][1]);
@@ -183,31 +279,6 @@ public int MenuHandler_Pistol(Menu menu, MenuAction action, int param1, int para
 	else if (action == MenuAction_Cancel && gB_CameFromOptionsMenu[param1]) {
 		gB_CameFromOptionsMenu[param1] = false;
 		DisplayOptionsMenu(param1);
-	}
-}
-
-void GivePlayerPistol(int client, int pistol) {
-	if (!IsPlayerAlive(client)) {
-		return;
-	}
-	
-	int playerTeam = GetClientTeam(client);
-	// Switch teams to the side that buys that gun so that gun skins load
-	if (strcmp(gC_Pistols[pistol][2], "CT") == 0 && playerTeam != CS_TEAM_CT) {
-		CS_SwitchTeam(client, CS_TEAM_CT);
-	}
-	else if (strcmp(gC_Pistols[pistol][2], "T") == 0 && playerTeam != CS_TEAM_T) {
-		CS_SwitchTeam(client, CS_TEAM_T);
-	}
-	// Give the player this pistol
-	int currentPistol = GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY);
-	if (currentPistol != -1) {
-		RemovePlayerItem(client, currentPistol);
-	}
-	GivePlayerItem(client, gC_Pistols[pistol][0]);
-	// Go back to original team
-	if (1 <= playerTeam && playerTeam <= 3) {
-		CS_SwitchTeam(client, playerTeam);
 	}
 }
 
@@ -231,15 +302,15 @@ void DisplayMeasureMenu(int client) {
 }
 
 void UpdateMeasureMenu(int client) {
-	SetMenuTitle(gH_MeasureMenu[client], "%T", "MeasureMenu_Title", client);
+	SetMenuTitle(gH_MeasureMenu[client], "%T", "Measure Menu - Title", client);
 	
 	char text[32];
 	RemoveAllMenuItems(gH_MeasureMenu[client]);
-	FormatEx(text, sizeof(text), "%T", "MeasureMenu_PointA", client);
+	FormatEx(text, sizeof(text), "%T", "Measure Menu - Point A", client);
 	AddMenuItem(gH_MeasureMenu[client], "", text);
-	FormatEx(text, sizeof(text), "%T", "MeasureMenu_PointB", client);
+	FormatEx(text, sizeof(text), "%T", "Measure Menu - Point B", client);
 	AddMenuItem(gH_MeasureMenu[client], "", text);
-	FormatEx(text, sizeof(text), "%T", "MeasureMenu_GetDistance", client);
+	FormatEx(text, sizeof(text), "%T", "Measure Menu - Get Distance", client);
 	AddMenuItem(gH_MeasureMenu[client], "", text);
 }
 
@@ -256,11 +327,11 @@ public int MenuHandler_Measure(Handle menu, MenuAction action, int param1, int p
 				if (gB_MeasurePosSet[param1][0] && gB_MeasurePosSet[param1][1]) {
 					float vDist = GetVectorDistance(gF_MeasurePos[param1][0], gF_MeasurePos[param1][1]);
 					float vHightDist = (gF_MeasurePos[param1][1][2] - gF_MeasurePos[param1][0][2]);
-					CPrintToChat(param1, "%t %t", "KZ_Tag", "Measure_Result", vDist, vHightDist);
+					CPrintToChat(param1, "%t %t", "KZ Prefix", "Measure Result", vDist, vHightDist);
 					MeasureBeam(param1, gF_MeasurePos[param1][0], gF_MeasurePos[param1][1], 5.0, 2.0, 200, 200, 200);
 				}
 				else {
-					CPrintToChat(param1, "%t %t", "KZ_Tag", "Measure_PointsNotSet");
+					CPrintToChat(param1, "%t %t", "KZ Prefix", "Measure Failure (Points Not Set)");
 				}
 			}
 		}
@@ -282,7 +353,7 @@ void MeasureGetPos(int client, int arg) {
 	
 	if (!TR_DidHit(trace)) {
 		CloseHandle(trace);
-		CPrintToChat(client, "%t %t", "KZ_Tag", "Measure_NotAimingAtSolid");
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Measure Failure (Not Aiming at Solid)");
 		return;
 	}
 	
@@ -401,148 +472,4 @@ void MeasureResetPos(int client) {
 
 public bool TraceFilterPlayers(int entity, int contentsMask) {
 	return (entity > MaxClients);
-}
-
-
-
-/*===============================  Options Menu ===============================*/
-
-void CreateOptionsMenuAll() {
-	for (int client = 1; client <= MaxClients; client++) {
-		CreateOptionsMenu(client);
-	}
-}
-
-void CreateOptionsMenu(int client) {
-	gH_OptionsMenu[client] = CreateMenu(MenuHandler_Options);
-	SetMenuPagination(gH_OptionsMenu[client], 6);
-}
-
-void DisplayOptionsMenu(int client, int atItem = 0) {
-	UpdateOptionsMenu(client);
-	DisplayMenuAtItem(gH_OptionsMenu[client], client, atItem, MENU_TIME_FOREVER);
-}
-
-void UpdateOptionsMenu(int client) {
-	SetMenuTitle(gH_OptionsMenu[client], "%T", "OptionsMenu_Title", client);
-	RemoveAllMenuItems(gH_OptionsMenu[client]);
-	OptionsAddItemTeleportMenu(client);
-	OptionsAddItemInfoPanel(client);
-	OptionsAddItemShowPlayers(client);
-	OptionsAddItemShowWeapon(client);
-	OptionsAddItemAutoRestart(client);
-	OptionsAddItemPistol(client);
-	OptionsAddItemSlayOnEnd(client);
-	OptionsAddItemShowKeys(client);
-}
-
-public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int param2) {
-	if (action == MenuAction_Select) {
-		switch (param2) {
-			case 0:ToggleTeleportMenu(param1);
-			case 1:ToggleInfoPanel(param1);
-			case 2:ToggleShowPlayers(param1);
-			case 3:ToggleShowWeapon(param1);
-			case 4:ToggleAutoRestart(param1);
-			case 5: {
-				gB_CameFromOptionsMenu[param1] = true;
-				DisplayPistolMenu(param1);
-			}
-			case 6:ToggleSlayOnEnd(param1);
-			case 7:ToggleShowKeys(param1);
-		}
-		if (param2 != 5) {
-			DisplayOptionsMenu(param1, param2 / 6 * 6); // Round item number down to multiple of 6
-		}
-	}
-}
-
-void OptionsAddItemTeleportMenu(int client) {
-	char text[32];
-	if (gB_ShowingTeleportMenu[client]) {
-		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_TeleportMenu", client, "OptionsMenu_Enabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-	else {
-		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_TeleportMenu", client, "OptionsMenu_Disabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-}
-
-void OptionsAddItemInfoPanel(int client) {
-	char text[32];
-	if (gB_ShowingInfoPanel[client]) {
-		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_InfoPanel", client, "OptionsMenu_Enabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-	else {
-		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_InfoPanel", client, "OptionsMenu_Disabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-}
-
-void OptionsAddItemShowPlayers(int client) {
-	char text[32];
-	if (gB_ShowingPlayers[client]) {
-		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_ShowPlayers", client, "OptionsMenu_Enabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-	else {
-		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_ShowPlayers", client, "OptionsMenu_Disabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-}
-
-void OptionsAddItemShowWeapon(int client) {
-	char text[32];
-	if (gB_ShowingWeapon[client]) {
-		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_ShowWeapon", client, "OptionsMenu_Enabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-	else {
-		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_ShowWeapon", client, "OptionsMenu_Disabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-}
-
-void OptionsAddItemShowKeys(int client) {
-	char text[32];
-	if (gB_ShowingKeys[client]) {
-		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_ShowKeys", client, "OptionsMenu_Enabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-	else {
-		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_ShowKeys", client, "OptionsMenu_Disabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-}
-
-void OptionsAddItemAutoRestart(int client) {
-	char text[32];
-	if (gB_AutoRestart[client]) {
-		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_AutoRestart", client, "OptionsMenu_Enabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-	else {
-		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_AutoRestart", client, "OptionsMenu_Disabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-}
-
-void OptionsAddItemSlayOnEnd(int client) {
-	char text[32];
-	if (gB_SlayOnEnd[client]) {
-		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_SlayOnEnd", client, "OptionsMenu_Enabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-	else {
-		FormatEx(text, sizeof(text), "%T - %T", "OptionsMenu_SlayOnEnd", client, "OptionsMenu_Disabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
-	}
-}
-
-void OptionsAddItemPistol(int client) {
-	char text[32];
-	FormatEx(text, sizeof(text), "%T - %s", "OptionsMenu_Pistol", client, gC_Pistols[gI_Pistol[client]][1]);
-	AddMenuItem(gH_OptionsMenu[client], "", text);
 } 

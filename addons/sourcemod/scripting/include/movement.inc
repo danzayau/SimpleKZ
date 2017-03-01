@@ -579,7 +579,7 @@ methodmap MovementPlayer __nullable__ {
 	}
 	
 	public void SetEyeAngles(float eyeAngles[3]) {
-		Movement_SetVelocity(this.id, eyeAngles);
+		Movement_SetEyeAngles(this.id, eyeAngles);
 	}
 	
 	property bool turning {
@@ -597,6 +597,12 @@ methodmap MovementPlayer __nullable__ {
 	property bool turningRight {
 		public get() {
 			return Movement_GetTurningRight(this.id);
+		}
+	}
+	
+	property int buttons {
+		public get() {
+			return GetClientButtons(this.id);
 		}
 	}
 } 
