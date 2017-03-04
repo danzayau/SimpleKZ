@@ -9,44 +9,44 @@
 char sqlite_players_create[] = 
 "CREATE TABLE IF NOT EXISTS Players ("
 ..."PlayerID INTEGER, "
-..."SteamID VARCHAR(24) NOT NULL UNIQUE, "
-..."Alias VARCHAR(32) NOT NULL, "
-..."Country VARCHAR(45) NOT NULL, "
-..."FirstSeen TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-..."LastSeen TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."SteamID INTEGER NOT NULL UNIQUE, "
+..."Alias TEXT, "
+..."Country TEXT, "
+..."IP TEXT, "
+..."FirstSeen INTEGER DEFAULT CURRENT_TIMESTAMP, "
+..."LastSeen INTEGER DEFAULT CURRENT_TIMESTAMP, "
 ..."CONSTRAINT PK_Player PRIMARY KEY (PlayerID));";
 
 char mysql_players_create[] = 
 "CREATE TABLE IF NOT EXISTS Players ("
-..."PlayerID INTEGER UNSIGNED NOT NULL AUTO_INCREMENT, "
-..."SteamID VARCHAR(24) NOT NULL UNIQUE, "
-..."Alias VARCHAR(32) NOT NULL, "
-..."Country VARCHAR(45) NOT NULL, "
-..."FirstSeen TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-..."LastSeen TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."PlayerID INTEGER UNSIGNED AUTO_INCREMENT, "
+..."SteamID BIGINT UNSIGNED NOT NULL UNIQUE, "
+..."Alias VARCHAR(32), "
+..."Country VARCHAR(45), "
+..."IP VARCHAR(15), "
+..."FirstSeen TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+..."LastSeen TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
 ..."CONSTRAINT PK_Player PRIMARY KEY (PlayerID));";
 
 char sqlite_players_insert[] = 
-"INSERT OR IGNORE INTO Players "
-..."(Alias, Country, SteamID) "
-..."VALUES('%s', '%s', '%s');";
+"INSERT OR IGNORE INTO Players (Alias, Country, IP, SteamID) "
+..."VALUES ('%s', '%s', '%s', %s);";
 
 char sqlite_players_update[] = 
 "UPDATE OR IGNORE Players "
-..."SET Alias='%s', Country='%s', LastSeen=CURRENT_TIMESTAMP "
-..."WHERE SteamID='%s';";
+..."SET Alias='%s', Country='%s', IP='%s', LastSeen=CURRENT_TIMESTAMP "
+..."WHERE SteamID=%s;";
 
 char mysql_players_upsert[] = 
-"INSERT INTO Players "
-..."(Alias, Country, SteamID) "
-..."VALUES('%s', '%s', '%s') "
+"INSERT INTO Players (Alias, Country, IP, SteamID) "
+..."VALUES ('%s', '%s', '%s', %s) "
 ..."ON DUPLICATE KEY UPDATE "
-..."SteamID=VALUES(SteamID), Alias=VALUES(Alias), Country=VALUES(Country), LastSeen=CURRENT_TIMESTAMP;";
+..."SteamID=VALUES(SteamID), Alias=VALUES(Alias), Country=VALUES(Country), IP=VALUES(IP), LastSeen=CURRENT_TIMESTAMP;";
 
 char sql_players_getplayerid[] = 
 "SELECT PlayerID "
 ..."FROM Players "
-..."WHERE SteamID='%s';";
+..."WHERE SteamID=%s;";
 
 
 
@@ -55,44 +55,42 @@ char sql_players_getplayerid[] =
 char sqlite_options_create[] = 
 "CREATE TABLE IF NOT EXISTS Options ("
 ..."PlayerID INTEGER, "
-..."Style TINYINT UNSIGNED NOT NULL, "
-..."ShowingTeleportMenu TINYINT(1) NOT NULL DEFAULT '1', "
-..."ShowingInfoPanel TINYINT(1) NOT NULL DEFAULT '1', "
-..."ShowingKeys TINYINT(1) NOT NULL DEFAULT '0', "
-..."ShowingPlayers TINYINT(1) NOT NULL DEFAULT '1', "
-..."ShowingWeapon TINYINT(1) NOT NULL DEFAULT '1', "
-..."AutoRestart TINYINT(1) NOT NULL DEFAULT '0', "
-..."SlayOnEnd TINYINT(1) NOT NULL DEFAULT '0', "
-..."Pistol TINYINT UNSIGNED NOT NULL DEFAULT '0', "
-..."CheckpointMessages TINYINT(1) NOT NULL DEFAULT '0', "
-..."CheckpointSounds TINYINT(1) NOT NULL DEFAULT '0', "
-..."TeleportSounds TINYINT(1) NOT NULL DEFAULT '0', "
+..."Style INTEGER NOT NULL DEFAULT '0', "
+..."ShowingTeleportMenu INTEGER NOT NULL DEFAULT '1', "
+..."ShowingInfoPanel INTEGER NOT NULL DEFAULT '1', "
+..."ShowingKeys INTEGER NOT NULL DEFAULT '0', "
+..."ShowingPlayers INTEGER NOT NULL DEFAULT '1', "
+..."ShowingWeapon INTEGER NOT NULL DEFAULT '1', "
+..."AutoRestart INTEGER NOT NULL DEFAULT '0', "
+..."SlayOnEnd INTEGER NOT NULL DEFAULT '0', "
+..."Pistol INTEGER NOT NULL DEFAULT '0', "
+..."CheckpointMessages INTEGER NOT NULL DEFAULT '0', "
+..."CheckpointSounds INTEGER NOT NULL DEFAULT '0', "
+..."TeleportSounds INTEGER NOT NULL DEFAULT '0', "
 ..."CONSTRAINT PK_Options PRIMARY KEY (PlayerID), "
 ..."CONSTRAINT FK_Options_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE);";
 
 char mysql_options_create[] = 
 "CREATE TABLE IF NOT EXISTS Options ("
-..."PlayerID INTEGER UNSIGNED NOT NULL, "
-..."Style TINYINT UNSIGNED NOT NULL, "
-..."ShowingTeleportMenu TINYINT(1) NOT NULL DEFAULT '1', "
-..."ShowingInfoPanel TINYINT(1) NOT NULL DEFAULT '1', "
-..."ShowingKeys TINYINT(1) NOT NULL DEFAULT '0', "
-..."ShowingPlayers TINYINT(1) NOT NULL DEFAULT '1', "
-..."ShowingWeapon TINYINT(1) NOT NULL DEFAULT '1', "
-..."AutoRestart TINYINT(1) NOT NULL DEFAULT '0', "
-..."SlayOnEnd TINYINT(1) NOT NULL DEFAULT '0', "
+..."PlayerID INTEGER UNSIGNED, "
+..."Style TINYINT UNSIGNED NOT NULL DEFAULT '0', "
+..."ShowingTeleportMenu TINYINT UNSIGNED NOT NULL DEFAULT '1', "
+..."ShowingInfoPanel TINYINT UNSIGNED NOT NULL DEFAULT '1', "
+..."ShowingKeys TINYINT UNSIGNED NOT NULL DEFAULT '0', "
+..."ShowingPlayers TINYINT UNSIGNED NOT NULL DEFAULT '1', "
+..."ShowingWeapon TINYINT UNSIGNED NOT NULL DEFAULT '1', "
+..."AutoRestart TINYINT UNSIGNED NOT NULL DEFAULT '0', "
+..."SlayOnEnd TINYINT UNSIGNED NOT NULL DEFAULT '0', "
 ..."Pistol TINYINT UNSIGNED NOT NULL DEFAULT '0', "
-..."CheckpointMessages TINYINT(1) NOT NULL DEFAULT '0', "
-..."CheckpointSounds TINYINT(1) NOT NULL DEFAULT '0', "
-..."TeleportSounds TINYINT(1) NOT NULL DEFAULT '0', "
+..."CheckpointMessages TINYINT UNSIGNED NOT NULL DEFAULT '0', "
+..."CheckpointSounds TINYINT UNSIGNED NOT NULL DEFAULT '0', "
+..."TeleportSounds TINYINT UNSIGNED NOT NULL DEFAULT '0', "
 ..."CONSTRAINT PK_Options PRIMARY KEY (PlayerID), "
 ..."CONSTRAINT FK_Options_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE);";
 
 char sql_options_insert[] = 
-"INSERT "
-..."INTO Options "
-..."(PlayerID, Style) "
-..."VALUES(%d, %d);";
+"INSERT INTO Options (PlayerID, Style) "
+..."VALUES (%d, %d);";
 
 char sql_options_update[] = 
 "UPDATE Options "
@@ -102,4 +100,75 @@ char sql_options_update[] =
 char sql_options_get[] = 
 "SELECT Style, ShowingTeleportMenu, ShowingInfoPanel, ShowingKeys, ShowingPlayers, ShowingWeapon, AutoRestart, SlayOnEnd, Pistol, CheckpointMessages, CheckpointSounds, TeleportSounds "
 ..."FROM Options "
-..."WHERE PlayerID=%d;"; 
+..."WHERE PlayerID=%d;";
+
+
+
+/*===============================  Maps Table  ===============================*/
+
+char sqlite_maps_create[] = 
+"CREATE TABLE IF NOT EXISTS Maps ("
+..."MapID INTEGER, "
+..."Name VARCHAR(32) NOT NULL UNIQUE, "
+..."LastPlayed INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."CONSTRAINT PK_Maps PRIMARY KEY (MapID));";
+
+char mysql_maps_create[] = 
+"CREATE TABLE IF NOT EXISTS Maps ("
+..."MapID INTEGER UNSIGNED AUTO_INCREMENT, "
+..."Name VARCHAR(32) NOT NULL UNIQUE, "
+..."InRankedPool TINYINT NOT NULL DEFAULT '0', "
+..."LastPlayed TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."CONSTRAINT PK_Maps PRIMARY KEY (MapID));";
+
+char sqlite_maps_insert[] = 
+"INSERT OR IGNORE INTO Maps (Name) "
+..."VALUES ('%s');";
+
+char sqlite_maps_update[] = 
+"UPDATE OR IGNORE Maps "
+..."SET LastPlayed=CURRENT_TIMESTAMP "
+..."WHERE Name='%s';";
+
+char mysql_maps_upsert[] = 
+"INSERT INTO Maps (Name) "
+..."VALUES ('%s') "
+..."ON DUPLICATE KEY UPDATE "
+..."LastPlayed=CURRENT_TIMESTAMP;";
+
+char sql_maps_findid[] = 
+"SELECT MapID, Name "
+..."FROM Maps "
+..."WHERE Name LIKE '%%%s%%' "
+..."ORDER BY (Name='%s') DESC, LENGTH(Name) "
+..."LIMIT 1;";
+
+
+
+/*===============================  MapCourses Table  ===============================*/
+
+char sqlite_mapcourses_create[] = 
+"CREATE TABLE IF NOT EXISTS MapCourses ("
+..."MapCourseID INTEGER, "
+..."MapID INTEGER, "
+..."CourseID INTEGER, "
+..."CONSTRAINT PK_MapCourses PRIMARY KEY (MapCourseID), "
+..."CONSTRAINT UQ_MapCourses_MapIDCourseID UNIQUE (MapID, CourseID), "
+..."CONSTRAINT FK_MapCourses_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
+
+char mysql_mapcourses_create[] = 
+"CREATE TABLE IF NOT EXISTS MapCourses ("
+..."MapCourseID INTEGER UNSIGNED, "
+..."MapID INTEGER UNSIGNED NOT NULL, "
+..."CourseID INTEGER UNSIGNED NOT NULL, "
+..."CONSTRAINT PK_MapCourses PRIMARY KEY (MapCourseID), "
+..."CONSTRAINT UQ_MapCourses_MapIDCourseID UNIQUE (MapID, CourseID), "
+..."CONSTRAINT FK_MapCourses_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
+
+char sqlite_mapcourses_insert[] = 
+"INSERT OR IGNORE INTO MapCourses (MapID, CourseID) "
+..."VALUES (%d, %d);";
+
+char mysql_mapcourses_insert[] = 
+"INSERT IGNORE INTO MapCourses (MapID, CourseID) "
+..."VALUES (%d, %d);"; 

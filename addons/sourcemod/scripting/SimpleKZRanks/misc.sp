@@ -20,29 +20,6 @@ void String_ToLower(const char[] input, char[] output, int size) {
 	output[i] = '\0';
 }
 
-
-
-/*===============================  Map  ===============================*/
-
-void SetupMap() {
-	// Get just the map name (e.g. remove workshop/id/ prefix)
-	GetCurrentMap(gC_CurrentMap, sizeof(gC_CurrentMap));
-	char mapPieces[5][64];
-	int lastPiece = ExplodeString(gC_CurrentMap, "/", mapPieces, sizeof(mapPieces), sizeof(mapPieces[]));
-	FormatEx(gC_CurrentMap, sizeof(gC_CurrentMap), "%s", mapPieces[lastPiece - 1]);
-	String_ToLower(gC_CurrentMap, gC_CurrentMap, sizeof(gC_CurrentMap));
-	
-	// Add files to download table
-	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_RECORD);
-	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_MAP);
-	
-	// Precache stuff
-	FakePrecacheSound(REL_SOUNDPATH_BEAT_RECORD);
-	FakePrecacheSound(REL_SOUNDPATH_BEAT_MAP);
-	
-	DB_SetupMap();
-}
-
 void FakePrecacheSound(const char[] relativeSoundPath) {
 	AddToStringTable(FindStringTable("soundprecache"), relativeSoundPath);
 }

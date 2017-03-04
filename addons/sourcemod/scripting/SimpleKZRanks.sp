@@ -15,7 +15,7 @@ public Plugin myinfo =
 	name = "Simple KZ Ranks", 
 	author = "DanZay", 
 	description = "Player ranks module for SimpleKZ (local/non-global).", 
-	version = "0.9.0", 
+	version = "0.9.1", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -39,7 +39,6 @@ public Plugin myinfo =
 Database gH_DB = null;
 bool gB_ConnectedToDB = false;
 DatabaseType g_DBType = DatabaseType_None;
-int gI_CurrentMapID;
 
 /* Menus */
 Handle gH_MapTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
@@ -54,7 +53,6 @@ MovementStyle g_PlayerTopStyle[MAXPLAYERS + 1];
 
 /* Other */
 bool gB_LateLoad;
-char gC_CurrentMap[64];
 
 /* Styles translation phrases for chat messages (respective to MovementStyle enum) */
 char gC_StylePhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
@@ -87,7 +85,6 @@ char gC_TimeTypePhrases[SIMPLEKZ_NUMBER_OF_TIME_TYPES][] =
 /*===============================  Plugin Events  ===============================*/
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
-	CreateNatives();
 	RegPluginLibrary("SimpleKZRanks");
 	gB_LateLoad = late;
 	return APLRes_Success;
@@ -150,7 +147,13 @@ public void OnClientPutInServer(int client) {
 }
 
 public void OnMapStart() {
-	SetupMap();
+	// Add files to download table
+	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_RECORD);
+	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_MAP);
+	
+	// Precache stuff
+	FakePrecacheSound(REL_SOUNDPATH_BEAT_RECORD);
+	FakePrecacheSound(REL_SOUNDPATH_BEAT_MAP);
 }
 
 
@@ -169,13 +172,13 @@ public void SimpleKZ_OnTimerEnd(int client, int course, MovementStyle style, flo
 }
 
 public void SimpleKZ_OnNewRecord(int client, int mapID, int course, MovementStyle style, RecordType recordType, float runTime) {
-	if (mapID == gI_CurrentMapID) {
+	if (mapID == SimpleKZ_GetCurrentMapID()) {
 		AnnounceNewRecord(client, course, style, recordType);
 	}
 }
 
 public void SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, MovementStyle style, TimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
-	if (mapID == gI_CurrentMapID && rank != 1) {
+	if (mapID == SimpleKZ_GetCurrentMapID() && rank != 1) {
 		AnnounceNewPersonalBest(client, course, style, timeType, firstTime, improvement, rank, maxRank);
 	}
 } 

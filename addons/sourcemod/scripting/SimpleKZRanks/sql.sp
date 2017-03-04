@@ -4,40 +4,53 @@
 */
 
 
+/*===============================  Times Table  ===============================*/
+
+char sqlite_times_create[] = 
+"CREATE TABLE IF NOT EXISTS Times ("
+..."TimeID INTEGER, "
+..."PlayerID INTEGER NOT NULL, "
+..."MapID INTEGER NOT NULL, "
+..."Course INTEGER NOT NULL, "
+..."Style INTEGER NOT NULL, "
+..."RunTime INTEGER NOT NULL, "
+..."Teleports INTEGER NOT NULL, "
+..."TheoreticalRunTime INTEGER NOT NULL, "
+..."Created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
+..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
+..."CONSTRAINT FK_Times_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
+
+char mysql_times_create[] = 
+"CREATE TABLE IF NOT EXISTS Times ("
+..."TimeID INTEGER UNSIGNED AUTO_INCREMENT, "
+..."PlayerID INTEGER UNSIGNED NOT NULL, "
+..."MapID INTEGER UNSIGNED NOT NULL, "
+..."Course TINYINT UNSIGNED NOT NULL, "
+..."Style TINYINT UNSIGNED NOT NULL, "
+..."RunTime INTEGER UNSIGNED NOT NULL, "
+..."Teleports SMALLINT UNSIGNED NOT NULL, "
+..."TheoreticalRunTime INTEGER UNSIGNED NOT NULL, "
+..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
+..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
+..."CONSTRAINT FK_Times_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
+
+char sql_times_insert[] = 
+"INSERT INTO Times (PlayerID, MapID, Course, Style, RunTime, Teleports, TheoreticalRunTime) "
+..."VALUES (%d, %d, %d, %d, %d, %d, %d);";
+
+
+
 /*===============================  Maps Table  ===============================*/
 
-char sqlite_maps_create[] = 
-"CREATE TABLE IF NOT EXISTS Maps ("
-..."MapID INTEGER, "
-..."Name VARCHAR(32) NOT NULL UNIQUE, "
-..."InRankedPool TINYINT(1) NOT NULL DEFAULT '0', "
-..."LastPlayed TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-..."CONSTRAINT PK_Maps PRIMARY KEY (MapID));";
+char sqlite_maps_alter1[] = 
+"ALTER TABLE Maps "
+..."ADD InRankedPool INTEGER NOT NULL DEFAULT '0';";
 
-char mysql_maps_create[] = 
-"CREATE TABLE IF NOT EXISTS Maps ("
-..."MapID INTEGER UNSIGNED NOT NULL AUTO_INCREMENT, "
-..."Name VARCHAR(32) NOT NULL UNIQUE, "
-..."InRankedPool TINYINT(1) NOT NULL DEFAULT '0', "
-..."LastPlayed TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-..."CONSTRAINT PK_Maps PRIMARY KEY (MapID));";
-
-char sqlite_maps_insert[] = 
-"INSERT OR IGNORE INTO Maps "
-..."(Name) "
-..."VALUES('%s');";
-
-char sqlite_maps_update[] = 
-"UPDATE OR IGNORE Maps "
-..."SET LastPlayed=CURRENT_TIMESTAMP "
-..."WHERE Name='%s';";
-
-char mysql_maps_upsert[] = 
-"INSERT INTO Maps "
-..."(Name) "
-..."VALUES('%s') "
-..."ON DUPLICATE KEY UPDATE "
-..."LastPlayed=CURRENT_TIMESTAMP;";
+char mysql_maps_alter1[] = 
+"ALTER TABLE Maps "
+..."ADD InRankedPool INTEGER NOT NULL DEFAULT '0';";
 
 char sqlite_maps_insertranked[] = 
 "INSERT OR IGNORE INTO Maps "
@@ -50,9 +63,8 @@ char sqlite_maps_updateranked[] =
 ..."WHERE Name='%s';";
 
 char mysql_maps_upsertranked[] = 
-"INSERT INTO Maps "
-..."(InRankedPool, Name) "
-..."VALUES(%d, '%s') "
+"INSERT INTO Maps (InRankedPool, Name) "
+..."VALUES (%d, '%s') "
 ..."ON DUPLICATE KEY UPDATE "
 ..."InRankedPool=VALUES(InRankedPool);";
 
@@ -71,46 +83,6 @@ char sql_maps_findid[] =
 ..."WHERE Name LIKE '%%%s%%' "
 ..."ORDER BY (Name='%s') DESC, LENGTH(Name) "
 ..."LIMIT 1;";
-
-
-
-/*===============================  Times Table  ===============================*/
-
-char sqlite_times_create[] = 
-"CREATE TABLE IF NOT EXISTS Times ("
-..."TimeID INTEGER, "
-..."PlayerID INTEGER, "
-..."MapID INTEGER, "
-..."Course INTEGER UNSIGNED NOT NULL, "
-..."Style INTEGER UNSIGNED NOT NULL, "
-..."RunTime FLOAT UNSIGNED NOT NULL, "
-..."Teleports SMALLINT UNSIGNED NOT NULL, "
-..."TheoreticalRunTime FLOAT UNSIGNED NOT NULL, "
-..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
-..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
-..."CONSTRAINT FK_Times_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
-
-char mysql_times_create[] = 
-"CREATE TABLE IF NOT EXISTS Times ("
-..."TimeID INTEGER UNSIGNED NOT NULL AUTO_INCREMENT, "
-..."PlayerID INTEGER UNSIGNED NOT NULL, "
-..."MapID INTEGER UNSIGNED NOT NULL, "
-..."Course TINYINT UNSIGNED NOT NULL, "
-..."Style TINYINT UNSIGNED NOT NULL, "
-..."RunTime FLOAT UNSIGNED NOT NULL, "
-..."Teleports SMALLINT UNSIGNED NOT NULL, "
-..."TheoreticalRunTime FLOAT UNSIGNED NOT NULL, "
-..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
-..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
-..."CONSTRAINT FK_Times_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
-
-char sql_times_insert[] = 
-"INSERT "
-..."INTO Times "
-..."(PlayerID, MapID, Course, Style, RunTime, Teleports, TheoreticalRunTime) "
-..."VALUES(%d, %d, %d, %d, %f, %d, %f);";
 
 
 

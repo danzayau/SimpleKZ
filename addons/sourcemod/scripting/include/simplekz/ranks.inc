@@ -1,7 +1,7 @@
 /* 	Simple KZ Ranks Include File
 	Author: DanZay
 	
-	Plugin Version: 0.9.0
+	Plugin Version: 0.9.1
 	Plugin Website: https://github.com/danzayau/SimpleKZ	
 */
 
@@ -39,7 +39,7 @@ enum RecordType {
 forward void SimpleKZ_OnNewRecord(int client, int mapID, int course, MovementStyle style, RecordType recordType, float runTime);
 
 /**
- * Called when the player beats their personal best time.
+ * Called when the player beats their personal best time (not called for theoretical times).
  *
  * @param client			Client entity index.
  * @param mapID 			MapID from SimpleKZ Core's "Maps" database table.
@@ -53,24 +53,4 @@ forward void SimpleKZ_OnNewRecord(int client, int mapID, int course, MovementSty
  * @param maxRank			The number of players with times on the map.
  * @noreturn
  */
-forward void SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, MovementStyle style, TimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank);
-
-/**
- * Called after SimpleKZ Ranks retrieves the current map's MapID from the "Maps" database table.
- *
- * @param playerID			MapID from SimpleKZ Core's "Maps" database table.
- * @noreturn
- */
-forward void SimpleKZ_OnRetrieveCurrentMapID(int mapID);
-
-
-
-/*===============================  Natives  ===============================*/
-
-/**
- * Gets the current map's MapID as retrieved from SimpleKZ Core's "Players" database table.
- * This is accurate after SimpleKZ_OnRetrieveCurrentMapID is called after the map is started.
- *
- * @return					MapID from SimpleKZ Ranks' "Maps" database table.
- */
-native int SimpleKZ_GetCurrentMapID(int client); 
+forward void SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, MovementStyle style, TimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank); 

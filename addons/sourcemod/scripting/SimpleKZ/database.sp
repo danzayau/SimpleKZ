@@ -38,20 +38,25 @@ void DB_SetupDatabase() {
 }
 
 void DB_CreateTables() {
-	Transaction txn = SQL_CreateTransaction();
+	SQL_LockDatabase(gH_DB);
 	
+	// Create/alter database tables
 	switch (g_DBType) {
 		case DatabaseType_SQLite: {
-			txn.AddQuery(sqlite_players_create);
-			txn.AddQuery(sqlite_options_create);
+			SQL_FastQuery(gH_DB, sqlite_players_create);
+			SQL_FastQuery(gH_DB, sqlite_options_create);
+			SQL_FastQuery(gH_DB, sqlite_maps_create);
+			SQL_FastQuery(gH_DB, sqlite_mapcourses_create);
 		}
 		case DatabaseType_MySQL: {
-			txn.AddQuery(mysql_players_create);
-			txn.AddQuery(mysql_options_create);
+			SQL_FastQuery(gH_DB, mysql_players_create);
+			SQL_FastQuery(gH_DB, mysql_options_create);
+			SQL_FastQuery(gH_DB, mysql_maps_create);
+			SQL_FastQuery(gH_DB, mysql_mapcourses_create);
 		}
 	}
 	
-	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, 0, DBPrio_High);
+	SQL_UnlockDatabase(gH_DB);
 }
 
 /* Error report callback for failed transactions */
@@ -70,10 +75,10 @@ void DB_SetupClient(int client) {
 		return;
 	}
 	
-	char query[512], name[MAX_NAME_LENGTH], nameEscaped[MAX_NAME_LENGTH * 2 + 1], steamID[24], clientIP[32], country[45];
+	char query[512], name[MAX_NAME_LENGTH], nameEscaped[MAX_NAME_LENGTH * 2 + 1], steamID[18], clientIP[16], country[45];
 	GetClientName(client, name, MAX_NAME_LENGTH);
 	SQL_EscapeString(gH_DB, name, nameEscaped, MAX_NAME_LENGTH * 2 + 1);
-	GetClientAuthId(client, AuthId_Steam2, steamID, sizeof(steamID), true);
+	GetClientAuthId(client, AuthId_SteamID64, steamID, sizeof(steamID), true);
 	GetClientIP(client, clientIP, sizeof(clientIP));
 	if (!GeoipCountry(clientIP, country, sizeof(country))) {
 		country = "Unknown";
@@ -85,15 +90,15 @@ void DB_SetupClient(int client) {
 	switch (g_DBType) {
 		case DatabaseType_SQLite: {
 			// UPDATE OR IGNORE
-			FormatEx(query, sizeof(query), sqlite_players_update, nameEscaped, country, steamID);
+			FormatEx(query, sizeof(query), sqlite_players_update, nameEscaped, country, clientIP, steamID);
 			txn.AddQuery(query);
 			// INSERT OR IGNORE
-			FormatEx(query, sizeof(query), sqlite_players_insert, nameEscaped, country, steamID);
+			FormatEx(query, sizeof(query), sqlite_players_insert, nameEscaped, country, clientIP, steamID);
 			txn.AddQuery(query);
 		}
 		case DatabaseType_MySQL: {
 			// INSERT ... ON DUPLICATE KEY ...
-			FormatEx(query, sizeof(query), mysql_players_upsert, nameEscaped, country, steamID);
+			FormatEx(query, sizeof(query), mysql_players_upsert, nameEscaped, country, clientIP, steamID);
 			txn.AddQuery(query);
 		}
 	}
@@ -215,4 +220,94 @@ void DB_SaveOptions(int client) {
 	txn.AddQuery(query);
 	
 	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, client, DBPrio_High);
+}
+
+
+
+/*===============================  Maps  ===============================*/
+
+void DB_SetupMap() {
+	if (!gB_ConnectedToDB) {
+		return;
+	}
+	
+	char query[512];
+	
+	Transaction txn = SQL_CreateTransaction();
+	
+	// Insert/Update map into database
+	switch (g_DBType) {
+		case DatabaseType_SQLite: {
+			// UPDATE OR IGNORE
+			FormatEx(query, sizeof(query), sqlite_maps_update, gC_CurrentMap);
+			txn.AddQuery(query);
+			// INSERT OR IGNORE
+			FormatEx(query, sizeof(query), sqlite_maps_insert, gC_CurrentMap);
+			txn.AddQuery(query);
+		}
+		case DatabaseType_MySQL: {
+			// INSERT ... ON DUPLICATE KEY ...
+			FormatEx(query, sizeof(query), mysql_maps_upsert, gC_CurrentMap);
+			txn.AddQuery(query);
+		}
+	}
+	// Retrieve mapID of map name
+	FormatEx(query, sizeof(query), sql_maps_findid, gC_CurrentMap, gC_CurrentMap);
+	txn.AddQuery(query);
+	
+	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_SetupMap, DB_TxnFailure_Generic, 0, DBPrio_High);
+}
+
+public void DB_TxnSuccess_SetupMap(Handle db, any data, int numQueries, Handle[] results, any[] queryData) {
+	switch (g_DBType) {
+		case DatabaseType_SQLite: {
+			if (SQL_FetchRow(results[2])) {
+				gI_CurrentMapID = SQL_FetchInt(results[2], 0);
+				Call_SimpleKZ_OnRetrieveCurrentMapID();
+			}
+		}
+		case DatabaseType_MySQL: {
+			if (SQL_FetchRow(results[1])) {
+				gI_CurrentMapID = SQL_FetchInt(results[1], 0);
+				Call_SimpleKZ_OnRetrieveCurrentMapID();
+			}
+		}
+	}
+	
+	DB_InsertMapCourses();
+}
+
+void DB_InsertMapCourses() {
+	if (!gB_ConnectedToDB) {
+		return;
+	}
+	
+	int entity = -1;
+	char tempString[32], query[512];
+	
+	Transaction txn = SQL_CreateTransaction();
+	
+	while ((entity = FindEntityByClassname(entity, "func_button")) != -1) {
+		GetEntPropString(entity, Prop_Data, "m_iName", tempString, sizeof(tempString));
+		if (StrEqual("climb_startbutton", tempString, false)) {
+			switch (g_DBType) {
+				case DatabaseType_SQLite:FormatEx(query, sizeof(query), sqlite_mapcourses_insert, gI_CurrentMapID, 0);
+				case DatabaseType_MySQL:FormatEx(query, sizeof(query), mysql_mapcourses_insert, gI_CurrentMapID, 0);
+			}
+			txn.AddQuery(query);
+			PrintToServer("start button");
+		}
+		else if (MatchRegex(gRE_BonusStartButton, tempString) > 0) {
+			GetRegexSubString(gRE_BonusStartButton, 1, tempString, sizeof(tempString));
+			int bonus = StringToInt(tempString);
+			switch (g_DBType) {
+				case DatabaseType_SQLite:FormatEx(query, sizeof(query), sqlite_mapcourses_insert, gI_CurrentMapID, bonus);
+				case DatabaseType_MySQL:FormatEx(query, sizeof(query), mysql_mapcourses_insert, gI_CurrentMapID, bonus);
+			}
+			txn.AddQuery(query);
+			PrintToServer("bonus button %d", bonus);
+		}
+	}
+	
+	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, 0, DBPrio_High);
 } 

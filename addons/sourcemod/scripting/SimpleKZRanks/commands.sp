@@ -32,7 +32,7 @@ public Action CommandTop(int client, int args) {
 public Action CommandMapTop(int client, int args) {
 	if (args == 0) {
 		// Open map top for current map and their current style
-		DB_OpenMapTop(client, gI_CurrentMapID, 0, SimpleKZ_GetStyle(client));
+		DB_OpenMapTop(client, SimpleKZ_GetCurrentMapID(), 0, SimpleKZ_GetStyle(client));
 	}
 	else if (args >= 1) {
 		// Open map top for specified map and their current style
@@ -46,7 +46,7 @@ public Action CommandMapTop(int client, int args) {
 public Action CommandBMapTop(int client, int args) {
 	if (args == 0) {
 		// Open Bonus 1 top for current map and their current style
-		DB_OpenMapTop(client, gI_CurrentMapID, 1, SimpleKZ_GetStyle(client));
+		DB_OpenMapTop(client, SimpleKZ_GetCurrentMapID(), 1, SimpleKZ_GetStyle(client));
 	}
 	else if (args == 1) {
 		// Open specified Bonus # top for current map and their current style
@@ -54,7 +54,7 @@ public Action CommandBMapTop(int client, int args) {
 		GetCmdArg(1, argBonus, sizeof(argBonus));
 		int bonus = StringToInt(argBonus);
 		if (bonus > 0) {
-			DB_OpenMapTop(client, gI_CurrentMapID, bonus, SimpleKZ_GetStyle(client));
+			DB_OpenMapTop(client, SimpleKZ_GetCurrentMapID(), bonus, SimpleKZ_GetStyle(client));
 		}
 	}
 	else if (args >= 2) {
@@ -76,7 +76,7 @@ public Action CommandBMapTop(int client, int args) {
 public Action CommandPB(int client, int args) {
 	if (args == 0) {
 		// Print their PBs for current map and their current style
-		DB_PrintPBs(client, SimpleKZ_GetPlayerID(client), gI_CurrentMapID, 0, SimpleKZ_GetStyle(client));
+		DB_PrintPBs(client, SimpleKZ_GetPlayerID(client), SimpleKZ_GetCurrentMapID(), 0, SimpleKZ_GetStyle(client));
 	}
 	else if (args == 1) {
 		// Print their PBs for specified map and their current style
@@ -97,7 +97,7 @@ public Action CommandPB(int client, int args) {
 public Action CommandBPB(int client, int args) {
 	if (args == 0) {
 		// Print their Bonus 1 PBs for current map and their current style
-		DB_PrintPBs(client, SimpleKZ_GetPlayerID(client), gI_CurrentMapID, 1, SimpleKZ_GetStyle(client));
+		DB_PrintPBs(client, SimpleKZ_GetPlayerID(client), SimpleKZ_GetCurrentMapID(), 1, SimpleKZ_GetStyle(client));
 	}
 	else if (args == 1) {
 		// Print their specified Bonus # PBs for current map and their current style
@@ -105,7 +105,7 @@ public Action CommandBPB(int client, int args) {
 		GetCmdArg(1, argBonus, sizeof(argBonus));
 		int bonus = StringToInt(argBonus);
 		if (bonus > 0) {
-			DB_PrintPBs(client, SimpleKZ_GetPlayerID(client), gI_CurrentMapID, bonus, SimpleKZ_GetStyle(client));
+			DB_PrintPBs(client, SimpleKZ_GetPlayerID(client), SimpleKZ_GetCurrentMapID(), bonus, SimpleKZ_GetStyle(client));
 		}
 		else {
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
@@ -144,7 +144,7 @@ public Action CommandBPB(int client, int args) {
 public Action CommandWR(int client, int args) {
 	if (args == 0) {
 		// Print record times for current map and their current style
-		DB_PrintRecords(client, gI_CurrentMapID, 0, SimpleKZ_GetStyle(client));
+		DB_PrintRecords(client, SimpleKZ_GetCurrentMapID(), 0, SimpleKZ_GetStyle(client));
 	}
 	else if (args >= 1) {
 		// Print record times for specified map and their current style
@@ -158,7 +158,7 @@ public Action CommandWR(int client, int args) {
 public Action CommandBWR(int client, int args) {
 	if (args == 0) {
 		// Print Bonus 1 record times for current map and their current style
-		DB_PrintRecords(client, gI_CurrentMapID, 1, SimpleKZ_GetStyle(client));
+		DB_PrintRecords(client, SimpleKZ_GetCurrentMapID(), 1, SimpleKZ_GetStyle(client));
 	}
 	else if (args == 1) {
 		// Print specified Bonus # record times for current map and their current style
@@ -166,7 +166,7 @@ public Action CommandBWR(int client, int args) {
 		GetCmdArg(1, argBonus, sizeof(argBonus));
 		int bonus = StringToInt(argBonus);
 		if (bonus > 0) {
-			DB_PrintRecords(client, gI_CurrentMapID, bonus, SimpleKZ_GetStyle(client));
+			DB_PrintRecords(client, SimpleKZ_GetCurrentMapID(), bonus, SimpleKZ_GetStyle(client));
 		}
 		else {
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);

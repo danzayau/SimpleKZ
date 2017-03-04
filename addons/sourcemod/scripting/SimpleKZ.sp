@@ -21,7 +21,7 @@ public Plugin myinfo =
 	name = "Simple KZ Core", 
 	author = "DanZay", 
 	description = "A simple KZ plugin with timer and optional database.", 
-	version = "0.9.0", 
+	version = "0.9.1", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -78,6 +78,7 @@ Database gH_DB = null;
 bool gB_ConnectedToDB = false;
 DatabaseType g_DBType = DatabaseType_None;
 int gI_PlayerID[MAXPLAYERS + 1];
+int gI_CurrentMapID;
 
 /* Menus */
 Handle gH_PistolMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
@@ -231,6 +232,7 @@ char gC_StylePhrases[SIMPLEKZ_NUMBER_OF_STYLES][] =
 #include "SimpleKZ/commands.sp"
 #include "SimpleKZ/database.sp"
 #include "SimpleKZ/infopanel.sp"
+#include "SimpleKZ/mappingapi.sp"
 #include "SimpleKZ/menus.sp"
 #include "SimpleKZ/misc.sp"
 #include "SimpleKZ/movementtweaker.sp"
@@ -267,7 +269,6 @@ public void OnPluginStart() {
 	HookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);
 	HookEvent("player_death", OnPlayerDeath, EventHookMode_Pre);
 	HookEvent("round_start", OnRoundStart, EventHookMode_Pre);
-	HookEntityOutput("func_button", "OnPressed", OnButtonPress);
 	HookEntityOutput("trigger_multiple", "OnStartTouch", OnTrigMultiStartTouch);
 	AddCommandListener(OnSay, "say");
 	AddCommandListener(OnSay, "say_team");
@@ -463,8 +464,10 @@ public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &
 	return Plugin_Continue;
 }
 
-// Force full alltalk on round start
+// Force full alltalk on round start, and setup entity hooks
 public void OnRoundStart(Event event, const char[] name, bool dontBroadcast) {
 	SetConVarInt(gCV_FullAlltalk, 1);
 	TimerForceStopAll();
+	
+	SetupMapEntityHooks();
 } 

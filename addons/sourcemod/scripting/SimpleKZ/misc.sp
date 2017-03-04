@@ -78,6 +78,8 @@ void SetupMap() {
 	
 	// Precache stuff
 	PrecacheModels();
+	
+	DB_SetupMap();
 }
 
 void PrecacheModels() {

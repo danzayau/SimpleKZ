@@ -1,7 +1,7 @@
 /* 	Simple KZ Core Include File
 	Author: DanZay
 	
-	Plugin Version: 0.9.0
+	Plugin Version: 0.9.1
 	Plugin Website: https://github.com/danzayau/SimpleKZ	
 */
 
@@ -131,6 +131,14 @@ forward void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType);
  * @noreturn
  */
 forward void SimpleKZ_OnRetrievePlayerID(int client, int playerID);
+
+/**
+ * Called after SimpleKZ Ranks retrieves the current map's MapID from the "Maps" database table.
+ *
+ * @param playerID			MapID from SimpleKZ Core's "Maps" database table.
+ * @noreturn
+ */
+forward void SimpleKZ_OnRetrieveCurrentMapID(int mapID);
 
 
 
@@ -312,28 +320,10 @@ native void SimpleKZ_SetStyle(int client, MovementStyle style);
  */
 native int SimpleKZ_GetPlayerID(int client);
 
-
-
-/*===============================  Stocks  ===============================*/
-
-stock char[] SimpleKZ_FormatTime(float time) {
-	char formattedTime[12];
-	
-	int roundedTime = RoundFloat(time * 100); // Time rounded to number of centiseconds
-	
-	int centiseconds = roundedTime % 100;
-	roundedTime = (roundedTime - centiseconds) / 100;
-	int seconds = roundedTime % 60;
-	roundedTime = (roundedTime - seconds) / 60;
-	int minutes = roundedTime % 60;
-	roundedTime = (roundedTime - minutes) / 60;
-	int hours = roundedTime;
-	
-	if (hours == 0) {
-		FormatEx(formattedTime, sizeof(formattedTime), "%02d:%02d.%02d", minutes, seconds, centiseconds);
-	}
-	else {
-		FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d:%02d.%02d", hours, minutes, seconds, centiseconds);
-	}
-	return formattedTime;
-} 
+/**
+ * Gets the current map's MapID as retrieved from SimpleKZ Core's "Maps" database table.
+ * This is accurate after SimpleKZ_OnRetrieveCurrentMapID is called after the map is started.
+ *
+ * @return					MapID from SimpleKZ Ranks' "Maps" database table.
+ */
+native int SimpleKZ_GetCurrentMapID(); 

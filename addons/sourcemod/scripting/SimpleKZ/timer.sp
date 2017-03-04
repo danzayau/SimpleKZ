@@ -90,43 +90,6 @@ void TimerForceStopAll() {
 
 /*===============================  Start and End Buttons  ===============================*/
 
-public void OnButtonPress(const char[] name, int caller, int activator, float delay) {
-	if (!IsValidEntity(caller) || !IsValidClient(activator)) {
-		return;
-	}
-	
-	char tempString[32];
-	// Get the class name of the activator
-	GetEdictClassname(activator, tempString, sizeof(tempString));
-	if (StrEqual(tempString, "player")) {
-		// Get the name of the pressed func_button
-		GetEntPropString(caller, Prop_Data, "m_iName", tempString, sizeof(tempString));
-		// Check if button entity name is something we want to do something with
-		if (StrEqual("climb_startbutton", tempString, false)) {
-			g_MovementPlayer[activator].GetOrigin(gF_StartButtonOrigin[activator]);
-			TimerStart(activator, 0);
-		}
-		else if (StrEqual("climb_endbutton", tempString, false)) {
-			g_MovementPlayer[activator].GetOrigin(gF_EndButtonOrigin[activator]);
-			TimerEnd(activator, 0);
-		}
-		else if (MatchRegex(gRE_BonusStartButton, tempString) > 0) {
-			GetRegexSubString(gRE_BonusStartButton, 1, tempString, sizeof(tempString));
-			int bonus = StringToInt(tempString);
-			if (bonus > 0) {
-				TimerStart(activator, bonus);
-			}
-		}
-		else if (MatchRegex(gRE_BonusEndButton, tempString) > 0) {
-			GetRegexSubString(gRE_BonusEndButton, 1, tempString, sizeof(tempString));
-			int bonus = StringToInt(tempString);
-			if (bonus > 0) {
-				TimerEnd(activator, bonus);
-			}
-		}
-	}
-}
-
 void CheckForTimerButtonPress(int client) {
 	// If just pressed +use button
 	if (!(gI_OldButtons[client] & IN_USE) && GetClientButtons(client) & IN_USE) {

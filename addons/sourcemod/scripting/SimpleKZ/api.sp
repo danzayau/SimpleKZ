@@ -16,6 +16,7 @@ Handle gH_Forward_SimpleKZ_OnPlayerResume;
 Handle gH_Forward_SimpleKZ_OnPlayerTeleport;
 Handle gH_Forward_SimpleKZ_OnDatabaseConnect;
 Handle gH_Forward_SimpleKZ_OnRetrievePlayerID;
+Handle gH_Forward_SimpleKZ_OnRetrieveCurrentMapID;
 
 void CreateGlobalForwards() {
 	gH_Forward_SimpleKZ_OnChangeMovementStyle = CreateGlobalForward("SimpleKZ_OnChangeMovementStyle", ET_Event, Param_Cell, Param_Cell);
@@ -28,6 +29,7 @@ void CreateGlobalForwards() {
 	gH_Forward_SimpleKZ_OnPlayerTeleport = CreateGlobalForward("SimpleKZ_OnTimerTeleport", ET_Event, Param_Cell);
 	gH_Forward_SimpleKZ_OnDatabaseConnect = CreateGlobalForward("SimpleKZ_OnDatabaseConnect", ET_Event, Param_Cell, Param_Cell);
 	gH_Forward_SimpleKZ_OnRetrievePlayerID = CreateGlobalForward("SimpleKZ_OnRetrievePlayerID", ET_Event, Param_Cell, Param_Cell);
+	gH_Forward_SimpleKZ_OnRetrieveCurrentMapID = CreateGlobalForward("SimpleKZ_OnRetrieveCurrentMapID", ET_Event, Param_Cell);
 }
 
 void Call_SimpleKZ_OnChangeMovementStyle(int client) {
@@ -100,6 +102,12 @@ void Call_SimpleKZ_OnRetrievePlayerID(int client) {
 	Call_Finish();
 }
 
+void Call_SimpleKZ_OnRetrieveCurrentMapID() {
+	Call_StartForward(gH_Forward_SimpleKZ_OnRetrieveCurrentMapID);
+	Call_PushCell(gI_CurrentMapID);
+	Call_Finish();
+}
+
 
 
 /*===============================  Natives  ===============================*/
@@ -130,6 +138,7 @@ void CreateNatives() {
 	CreateNative("SimpleKZ_SetStyle", Native_SetStyle);
 	
 	CreateNative("SimpleKZ_GetPlayerID", Native_GetPlayerID);
+	CreateNative("SimpleKZ_GetCurrentMapID", Native_GetCurrentMapID);
 }
 
 public int Native_GetHitPerf(Handle plugin, int numParams) {
@@ -214,4 +223,8 @@ public int Native_GetDefaultStyle(Handle plugin, int numParams) {
 
 public int Native_GetPlayerID(Handle plugin, int numParams) {
 	return gI_PlayerID[GetNativeCell(1)];
+}
+
+public int Native_GetCurrentMapID(Handle plugin, int numParams) {
+	return gI_CurrentMapID;
 } 
