@@ -14,8 +14,8 @@ public Plugin myinfo =
 {
 	name = "Simple KZ Ranks", 
 	author = "DanZay", 
-	description = "Player ranks module for SimpleKZ (local/non-global).", 
-	version = "0.9.1", 
+	description = "Local ranks module for SimpleKZ.", 
+	version = "0.10.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -46,21 +46,21 @@ Handle gH_MapTopSubMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 char gC_MapTopMapName[MAXPLAYERS + 1][64];
 int gI_MapTopMapID[MAXPLAYERS + 1];
 int gI_MapTopCourse[MAXPLAYERS + 1];
-MovementStyle g_MapTopStyle[MAXPLAYERS + 1];
+KZMovementStyle g_MapTopStyle[MAXPLAYERS + 1];
 Handle gH_PlayerTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 Handle gH_PlayerTopSubMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-MovementStyle g_PlayerTopStyle[MAXPLAYERS + 1];
+KZMovementStyle g_PlayerTopStyle[MAXPLAYERS + 1];
 
 /* Other */
 bool gB_LateLoad;
 
-/* Styles translation phrases for chat messages (respective to MovementStyle enum) */
+/* Styles translation phrases for chat messages (respective to KZMovementStyle enum) */
 char gC_StylePhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
 { "Style - Standard", 
 	"Style - Legacy"
 };
 
-/* Time type translation phrases for chat messages (respective to TimeType enum) */
+/* Time type translation phrases for chat messages (respective to KZTimeType enum) */
 char gC_TimeTypePhrases[SIMPLEKZ_NUMBER_OF_TIME_TYPES][] = 
 { "Time Type - Normal", 
 	"Time Type - Pro", 
@@ -72,20 +72,20 @@ char gC_TimeTypePhrases[SIMPLEKZ_NUMBER_OF_TIME_TYPES][] =
 /*===============================  Includes  ===============================*/
 
 /* Global variable includes */
-#include "SimpleKZRanks/sql.sp"
+#include "simplekz-localranks/sql.sp"
 
-#include "SimpleKZRanks/api.sp"
-#include "SimpleKZRanks/commands.sp"
-#include "SimpleKZRanks/database.sp"
-#include "SimpleKZRanks/menus.sp"
-#include "SimpleKZRanks/misc.sp"
+#include "simplekz-localranks/api.sp"
+#include "simplekz-localranks/commands.sp"
+#include "simplekz-localranks/database.sp"
+#include "simplekz-localranks/menus.sp"
+#include "simplekz-localranks/misc.sp"
 
 
 
 /*===============================  Plugin Events  ===============================*/
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
-	RegPluginLibrary("SimpleKZRanks");
+	RegPluginLibrary("simplekz-localranks");
 	gB_LateLoad = late;
 	return APLRes_Success;
 }
@@ -101,8 +101,9 @@ public void OnPluginStart() {
 	RegisterCommands();
 	
 	// Translations
-	LoadTranslations("simplekz.phrases");
-	LoadTranslations("simplekzranks.phrases");
+	LoadTranslations("simplekz-core.phrases");
+	LoadTranslations("simplekz-localdb.phrases");
+	LoadTranslations("simplekz-localranks.phrases");
 	
 	CreateMenus();
 	
@@ -112,8 +113,8 @@ public void OnPluginStart() {
 }
 
 public void OnAllPluginsLoaded() {
-	if (!LibraryExists("SimpleKZ")) {
-		SetFailState("This plugin requires the SimpleKZ core plugin.");
+	if (!LibraryExists("simplekz-core")) {
+		SetFailState("This plugin requires the SimpleKZ Core plugin.");
 	}
 }
 
@@ -167,17 +168,17 @@ public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
 	DB_CreateTables();
 }
 
-public void SimpleKZ_OnTimerEnd(int client, int course, MovementStyle style, float time, int teleportsUsed, float theoreticalTime) {
-	DB_ProcessTimerEnd(client, style, course, time, teleportsUsed, theoreticalTime);
+public void SimpleKZ_OnStoreTimeInDB(int client, int playerID, int mapID, int course, KZMovementStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS) {
+	DB_ProcessNewTime(client, playerID, mapID, course, style, runTimeMS, teleportsUsed);
 }
 
-public void SimpleKZ_OnNewRecord(int client, int mapID, int course, MovementStyle style, RecordType recordType, float runTime) {
+public void SimpleKZ_OnNewRecord(int client, int mapID, int course, KZMovementStyle style, KZRecordType recordType, float runTime) {
 	if (mapID == SimpleKZ_GetCurrentMapID()) {
 		AnnounceNewRecord(client, course, style, recordType);
 	}
 }
 
-public void SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, MovementStyle style, TimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
+public void SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, KZMovementStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
 	if (mapID == SimpleKZ_GetCurrentMapID() && rank != 1) {
 		AnnounceNewPersonalBest(client, course, style, timeType, firstTime, improvement, rank, maxRank);
 	}

@@ -24,7 +24,7 @@ void RegisterCommands() {
 
 public Action CommandTop(int client, int args) {
 	// Open player top for the player's selected style
-	g_PlayerTopStyle[client] = SimpleKZ_GetStyle(client);
+	g_PlayerTopStyle[client] = view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style));
 	DisplayPlayerTopMenu(client);
 	return Plugin_Handled;
 }
@@ -32,13 +32,13 @@ public Action CommandTop(int client, int args) {
 public Action CommandMapTop(int client, int args) {
 	if (args == 0) {
 		// Open map top for current map and their current style
-		DB_OpenMapTop(client, SimpleKZ_GetCurrentMapID(), 0, SimpleKZ_GetStyle(client));
+		DB_OpenMapTop(client, SimpleKZ_GetCurrentMapID(), 0, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 	}
 	else if (args >= 1) {
 		// Open map top for specified map and their current style
 		char specifiedMap[33];
 		GetCmdArg(1, specifiedMap, sizeof(specifiedMap));
-		DB_OpenMapTop_FindMap(client, specifiedMap, 0, SimpleKZ_GetStyle(client));
+		DB_OpenMapTop_FindMap(client, specifiedMap, 0, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 	}
 	return Plugin_Handled;
 }
@@ -46,7 +46,7 @@ public Action CommandMapTop(int client, int args) {
 public Action CommandBMapTop(int client, int args) {
 	if (args == 0) {
 		// Open Bonus 1 top for current map and their current style
-		DB_OpenMapTop(client, SimpleKZ_GetCurrentMapID(), 1, SimpleKZ_GetStyle(client));
+		DB_OpenMapTop(client, SimpleKZ_GetCurrentMapID(), 1, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 	}
 	else if (args == 1) {
 		// Open specified Bonus # top for current map and their current style
@@ -54,7 +54,7 @@ public Action CommandBMapTop(int client, int args) {
 		GetCmdArg(1, argBonus, sizeof(argBonus));
 		int bonus = StringToInt(argBonus);
 		if (bonus > 0) {
-			DB_OpenMapTop(client, SimpleKZ_GetCurrentMapID(), bonus, SimpleKZ_GetStyle(client));
+			DB_OpenMapTop(client, SimpleKZ_GetCurrentMapID(), bonus, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 		}
 	}
 	else if (args >= 2) {
@@ -64,7 +64,7 @@ public Action CommandBMapTop(int client, int args) {
 		GetCmdArg(2, argMap, sizeof(argMap));
 		int bonus = StringToInt(argBonus);
 		if (bonus > 0) {
-			DB_OpenMapTop_FindMap(client, argMap, bonus, SimpleKZ_GetStyle(client));
+			DB_OpenMapTop_FindMap(client, argMap, bonus, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 		}
 		else {
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
@@ -76,20 +76,20 @@ public Action CommandBMapTop(int client, int args) {
 public Action CommandPB(int client, int args) {
 	if (args == 0) {
 		// Print their PBs for current map and their current style
-		DB_PrintPBs(client, SimpleKZ_GetPlayerID(client), SimpleKZ_GetCurrentMapID(), 0, SimpleKZ_GetStyle(client));
+		DB_PrintPBs(client, SimpleKZ_GetPlayerID(client), SimpleKZ_GetCurrentMapID(), 0, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 	}
 	else if (args == 1) {
 		// Print their PBs for specified map and their current style
 		char argMap[33];
 		GetCmdArg(1, argMap, sizeof(argMap));
-		DB_PrintPBs_FindMap(client, SimpleKZ_GetPlayerID(client), argMap, 0, SimpleKZ_GetStyle(client));
+		DB_PrintPBs_FindMap(client, SimpleKZ_GetPlayerID(client), argMap, 0, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 	}
 	else if (args >= 2) {
 		// Print specified player's PBs for specified map and their current style
 		char argMap[33], argPlayer[MAX_NAME_LENGTH];
 		GetCmdArg(1, argMap, sizeof(argMap));
 		GetCmdArg(2, argPlayer, sizeof(argPlayer));
-		DB_PrintPBs_FindPlayerAndMap(client, argPlayer, argMap, 0, SimpleKZ_GetStyle(client));
+		DB_PrintPBs_FindPlayerAndMap(client, argPlayer, argMap, 0, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 	}
 	return Plugin_Handled;
 }
@@ -97,7 +97,7 @@ public Action CommandPB(int client, int args) {
 public Action CommandBPB(int client, int args) {
 	if (args == 0) {
 		// Print their Bonus 1 PBs for current map and their current style
-		DB_PrintPBs(client, SimpleKZ_GetPlayerID(client), SimpleKZ_GetCurrentMapID(), 1, SimpleKZ_GetStyle(client));
+		DB_PrintPBs(client, SimpleKZ_GetPlayerID(client), SimpleKZ_GetCurrentMapID(), 1, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 	}
 	else if (args == 1) {
 		// Print their specified Bonus # PBs for current map and their current style
@@ -105,7 +105,7 @@ public Action CommandBPB(int client, int args) {
 		GetCmdArg(1, argBonus, sizeof(argBonus));
 		int bonus = StringToInt(argBonus);
 		if (bonus > 0) {
-			DB_PrintPBs(client, SimpleKZ_GetPlayerID(client), SimpleKZ_GetCurrentMapID(), bonus, SimpleKZ_GetStyle(client));
+			DB_PrintPBs(client, SimpleKZ_GetPlayerID(client), SimpleKZ_GetCurrentMapID(), bonus, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 		}
 		else {
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
@@ -118,7 +118,7 @@ public Action CommandBPB(int client, int args) {
 		GetCmdArg(2, argMap, sizeof(argMap));
 		int bonus = StringToInt(argBonus);
 		if (bonus > 0) {
-			DB_PrintPBs_FindMap(client, SimpleKZ_GetPlayerID(client), argMap, bonus, SimpleKZ_GetStyle(client));
+			DB_PrintPBs_FindMap(client, SimpleKZ_GetPlayerID(client), argMap, bonus, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 		}
 		else {
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
@@ -132,7 +132,7 @@ public Action CommandBPB(int client, int args) {
 		GetCmdArg(3, argPlayer, sizeof(argPlayer));
 		int bonus = StringToInt(argBonus);
 		if (bonus > 0) {
-			DB_PrintPBs_FindPlayerAndMap(client, argPlayer, argMap, bonus, SimpleKZ_GetStyle(client));
+			DB_PrintPBs_FindPlayerAndMap(client, argPlayer, argMap, bonus, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 		}
 		else {
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
@@ -144,13 +144,13 @@ public Action CommandBPB(int client, int args) {
 public Action CommandWR(int client, int args) {
 	if (args == 0) {
 		// Print record times for current map and their current style
-		DB_PrintRecords(client, SimpleKZ_GetCurrentMapID(), 0, SimpleKZ_GetStyle(client));
+		DB_PrintRecords(client, SimpleKZ_GetCurrentMapID(), 0, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 	}
 	else if (args >= 1) {
 		// Print record times for specified map and their current style
 		char argMap[33];
 		GetCmdArg(1, argMap, sizeof(argMap));
-		DB_PrintRecords_FindMap(client, argMap, 0, SimpleKZ_GetStyle(client));
+		DB_PrintRecords_FindMap(client, argMap, 0, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 	}
 	return Plugin_Handled;
 }
@@ -158,7 +158,7 @@ public Action CommandWR(int client, int args) {
 public Action CommandBWR(int client, int args) {
 	if (args == 0) {
 		// Print Bonus 1 record times for current map and their current style
-		DB_PrintRecords(client, SimpleKZ_GetCurrentMapID(), 1, SimpleKZ_GetStyle(client));
+		DB_PrintRecords(client, SimpleKZ_GetCurrentMapID(), 1, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 	}
 	else if (args == 1) {
 		// Print specified Bonus # record times for current map and their current style
@@ -166,7 +166,7 @@ public Action CommandBWR(int client, int args) {
 		GetCmdArg(1, argBonus, sizeof(argBonus));
 		int bonus = StringToInt(argBonus);
 		if (bonus > 0) {
-			DB_PrintRecords(client, SimpleKZ_GetCurrentMapID(), bonus, SimpleKZ_GetStyle(client));
+			DB_PrintRecords(client, SimpleKZ_GetCurrentMapID(), bonus, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 		}
 		else {
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
@@ -179,7 +179,7 @@ public Action CommandBWR(int client, int args) {
 		GetCmdArg(2, argMap, sizeof(argMap));
 		int bonus = StringToInt(argBonus);
 		if (bonus > 0) {
-			DB_PrintRecords_FindMap(client, argMap, bonus, SimpleKZ_GetStyle(client));
+			DB_PrintRecords_FindMap(client, argMap, bonus, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 		}
 		else {
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
@@ -190,13 +190,13 @@ public Action CommandBWR(int client, int args) {
 
 public Action CommandPC(int client, int args) {
 	if (args < 1) {
-		DB_GetCompletion(client, client, SimpleKZ_GetStyle(client), true);
+		DB_GetCompletion(client, client, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)), true);
 	}
 	else if (args >= 1) {
 		// Print record times for specified map and their current style
 		char argPlayer[MAX_NAME_LENGTH];
 		GetCmdArg(1, argPlayer, sizeof(argPlayer));
-		DB_GetCompletion_FindPlayer(client, argPlayer, SimpleKZ_GetStyle(client));
+		DB_GetCompletion_FindPlayer(client, argPlayer, view_as<KZMovementStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 	}
 	return Plugin_Handled;
 }

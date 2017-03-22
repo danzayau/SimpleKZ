@@ -16,7 +16,7 @@
 
 ### Requirements
 
- * **Tested Against**: SourceMod 1.7 Latest / 1.8 Latest / 1.9 Latest
+ * **Tested Using**: SourceMod 1.8
  * [**MovementAPI Plugin**](https://github.com/danzayau/MovementAPI) (included in ```SimpleKZ.zip```)
 
 ### Installation
@@ -76,9 +76,8 @@ To add a timer button to your map, use a ```func_button``` with a specific name.
  * ```!goto``` - Teleport to another player. Usage: ```!goto <player>```
  * ```!measure``` - Open the measurement menu.
  * ```!stopsound``` - Stop all sounds e.g. map soundscapes (music).
- * ```!split``` - Make a time split for timing purposes.
  
-### SimpleKZ Ranks Player Commands
+### SimpleKZ Local Ranks Player Commands
 
 These commands return results based on your currently selected style.
  

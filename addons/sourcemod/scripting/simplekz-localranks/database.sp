@@ -12,11 +12,9 @@ void DB_CreateTables() {
 	// Create/alter database tables
 	switch (g_DBType) {
 		case DatabaseType_SQLite: {
-			SQL_FastQuery(gH_DB, sqlite_times_create);
 			SQL_FastQuery(gH_DB, sqlite_maps_alter1);
 		}
 		case DatabaseType_MySQL: {
-			SQL_FastQuery(gH_DB, mysql_times_create);
 			SQL_FastQuery(gH_DB, mysql_maps_alter1);
 		}
 	}
@@ -140,53 +138,43 @@ public void DB_TxnSuccess_UpdateRankedMapPool(Handle db, int client, int numQuer
 
 /*===============================  End Time Processing  ===============================*/
 
-void DB_ProcessTimerEnd(int client, MovementStyle style, int course, float runTime, int teleportsUsed, float theoreticalTime) {
+void DB_ProcessNewTime(int client, int playerID, int mapID, int course, KZMovementStyle style, int runTimeMS, int teleportsUsed) {
 	if (!gB_ConnectedToDB) {
 		return;
 	}
 	
 	char query[512];
-	int playerID = SimpleKZ_GetPlayerID(client);
-	int currentMapID = SimpleKZ_GetCurrentMapID();
-	int runTimeMS = SimpleKZ_TimeFloatToInt(runTime);
-	int theoreticalTimeMS = SimpleKZ_TimeFloatToInt(theoreticalTime);
 	
 	DataPack data = CreateDataPack();
 	data.WriteCell(client);
-	data.WriteCell(currentMapID);
+	data.WriteCell(playerID);
+	data.WriteCell(mapID);
 	data.WriteCell(course);
 	data.WriteCell(style);
-	data.WriteFloat(runTime);
 	data.WriteCell(runTimeMS);
 	data.WriteCell(teleportsUsed);
 	
-	PrintToChat(client, "%d", runTimeMS);
-	
 	Transaction txn = SQL_CreateTransaction();
 	
-	// Save runTime to DB
-	FormatEx(query, sizeof(query), sql_times_insert, playerID, currentMapID, course, style, runTimeMS, teleportsUsed, theoreticalTimeMS);
-	txn.AddQuery(query);
-	
 	// Get Top 2 PBs
-	FormatEx(query, sizeof(query), sql_getpb, playerID, currentMapID, course, style, 2);
+	FormatEx(query, sizeof(query), sql_getpb, playerID, mapID, course, style, 2);
 	txn.AddQuery(query);
 	// Get Rank
-	FormatEx(query, sizeof(query), sql_getmaprank, playerID, currentMapID, course, style, currentMapID, course, style);
+	FormatEx(query, sizeof(query), sql_getmaprank, playerID, mapID, course, style, mapID, course, style);
 	txn.AddQuery(query);
 	// Get Number of Players with Times
-	FormatEx(query, sizeof(query), sql_getlowestmaprank, currentMapID, course, style);
+	FormatEx(query, sizeof(query), sql_getlowestmaprank, mapID, course, style);
 	txn.AddQuery(query);
 	
 	if (teleportsUsed == 0) {
 		// Get Top 2 PRO PBs
-		FormatEx(query, sizeof(query), sql_getpbpro, playerID, currentMapID, course, style, 2);
+		FormatEx(query, sizeof(query), sql_getpbpro, playerID, mapID, course, style, 2);
 		txn.AddQuery(query);
 		// Get PRO Rank
-		FormatEx(query, sizeof(query), sql_getmaprankpro, playerID, currentMapID, course, style, currentMapID, course, style);
+		FormatEx(query, sizeof(query), sql_getmaprankpro, playerID, mapID, course, style, mapID, course, style);
 		txn.AddQuery(query);
 		// Get Number of Players with PRO Times
-		FormatEx(query, sizeof(query), sql_getlowestmaprankpro, currentMapID, course, style);
+		FormatEx(query, sizeof(query), sql_getlowestmaprankpro, mapID, course, style);
 		txn.AddQuery(query);
 	}
 	
@@ -196,17 +184,20 @@ void DB_ProcessTimerEnd(int client, MovementStyle style, int course, float runTi
 public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
 	data.Reset();
 	int client = data.ReadCell();
+	int playerID = data.ReadCell();
 	int mapID = data.ReadCell();
 	int course = data.ReadCell();
-	MovementStyle style = data.ReadCell();
-	float runTime = data.ReadFloat();
+	KZMovementStyle style = data.ReadCell();
 	int runTimeMS = data.ReadCell();
 	int teleportsUsed = data.ReadCell();
 	CloseHandle(data);
 	
-	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
+	// Client is no longer valid so don't continue
+	if (!IsValidClient(client) || playerID != SimpleKZ_GetPlayerID(client)) {
 		return;
 	}
+	
+	float runTime = SimpleKZ_TimeIntToFloat(runTimeMS);
 	
 	bool newPB = false;
 	bool firstTime = false;
@@ -221,13 +212,13 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 	int maxRankPro;
 	
 	// Check for new PB
-	if (SQL_GetRowCount(results[1]) == 2) {
-		SQL_FetchRow(results[1]);
-		if (runTimeMS == SQL_FetchInt(results[1], 0)) {
+	if (SQL_GetRowCount(results[0]) == 2) {
+		SQL_FetchRow(results[0]);
+		if (runTimeMS == SQL_FetchInt(results[0], 0)) {
 			newPB = true;
 			// Time they just beat is second row
-			SQL_FetchRow(results[1]);
-			improvement = SimpleKZ_TimeIntToFloat(SQL_FetchInt(results[1], 0) - runTimeMS);
+			SQL_FetchRow(results[0]);
+			improvement = SimpleKZ_TimeIntToFloat(SQL_FetchInt(results[0], 0) - runTimeMS);
 		}
 	}
 	else {  // Only 1 row (the time they just got) so this is their first time
@@ -237,22 +228,22 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 	
 	// If new PB, get rank information
 	if (newPB) {
+		SQL_FetchRow(results[1]);
+		rank = SQL_FetchInt(results[1], 0);
 		SQL_FetchRow(results[2]);
-		rank = SQL_FetchInt(results[2], 0);
-		SQL_FetchRow(results[3]);
-		maxRank = SQL_FetchInt(results[3], 0);
+		maxRank = SQL_FetchInt(results[2], 0);
 	}
 	
 	// Repeat for PRO runs if necessary
 	if (teleportsUsed == 0) {
 		// Check for new PRO PB
-		if (SQL_GetRowCount(results[4]) == 2) {
-			SQL_FetchRow(results[4]);
-			if (runTimeMS - SQL_FetchInt(results[4], 0)) {
+		if (SQL_GetRowCount(results[3]) == 2) {
+			SQL_FetchRow(results[3]);
+			if (runTimeMS == SQL_FetchInt(results[3], 0)) {
 				newPBPro = true;
 				// Time they just beat is second row
-				SQL_FetchRow(results[4]);
-				improvementPro = SimpleKZ_TimeIntToFloat(SQL_FetchInt(results[4], 0) - runTimeMS);
+				SQL_FetchRow(results[3]);
+				improvementPro = SimpleKZ_TimeIntToFloat(SQL_FetchInt(results[3], 0) - runTimeMS);
 			}
 		}
 		else {  // Only 1 row (the time they just got)
@@ -261,46 +252,46 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 		}
 		// If new PB, get rank information
 		if (newPBPro) {
+			SQL_FetchRow(results[4]);
+			rankPro = SQL_FetchInt(results[4], 0);
 			SQL_FetchRow(results[5]);
-			rankPro = SQL_FetchInt(results[5], 0);
-			SQL_FetchRow(results[6]);
-			maxRankPro = SQL_FetchInt(results[6], 0);
+			maxRankPro = SQL_FetchInt(results[5], 0);
 		}
 	}
 	
-	// Call OnNewPersonalBest forward (TimeType_Normal)
+	// Call OnNewPersonalBest forward (KZTimeType_Normal)
 	if (newPB) {
 		if (firstTime) {
-			Call_SimpleKZ_OnNewPersonalBest(client, mapID, course, style, TimeType_Normal, true, runTime, -1.0, rank, maxRank);
+			Call_SimpleKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Normal, true, runTime, -1.0, rank, maxRank);
 		}
 		else {
-			Call_SimpleKZ_OnNewPersonalBest(client, mapID, course, style, TimeType_Normal, false, runTime, improvement, rank, maxRank);
+			Call_SimpleKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Normal, false, runTime, improvement, rank, maxRank);
 		}
 	}
-	// Call OnNewPersonalBest forward (TimeType_Pro)
+	// Call OnNewPersonalBest forward (KZTimeType_Pro)
 	if (newPBPro) {
 		if (firstTimePro) {
-			Call_SimpleKZ_OnNewPersonalBest(client, mapID, course, style, TimeType_Pro, true, runTime, -1.0, rankPro, maxRankPro);
+			Call_SimpleKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Pro, true, runTime, -1.0, rankPro, maxRankPro);
 		}
 		else {
-			Call_SimpleKZ_OnNewPersonalBest(client, mapID, course, style, TimeType_Pro, false, runTime, improvementPro, rankPro, maxRankPro);
+			Call_SimpleKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Pro, false, runTime, improvementPro, rankPro, maxRankPro);
 		}
 	}
 	
 	// Call OnNewRecord forward
 	if ((newPB && rank == 1) && !(newPBPro && rankPro == 1)) {
-		Call_SimpleKZ_OnNewRecord(client, mapID, course, style, RecordType_Map, runTime);
+		Call_SimpleKZ_OnNewRecord(client, mapID, course, style, KZRecordType_Map, runTime);
 	}
 	else if (!(newPB && rank == 1) && (newPBPro && rankPro == 1)) {
-		Call_SimpleKZ_OnNewRecord(client, mapID, course, style, RecordType_Pro, runTime);
+		Call_SimpleKZ_OnNewRecord(client, mapID, course, style, KZRecordType_Pro, runTime);
 	}
 	else if ((newPB && rank == 1) && (newPBPro && rankPro == 1)) {
-		Call_SimpleKZ_OnNewRecord(client, mapID, course, style, RecordType_MapAndPro, runTime);
+		Call_SimpleKZ_OnNewRecord(client, mapID, course, style, KZRecordType_MapAndPro, runTime);
 	}
 	
 	// Update PRO Completion [Standard] percentage in scoreboard
-	if (style == MovementStyle_Standard && course == 0 && firstTimePro) {
-		DB_GetCompletion(client, client, MovementStyle_Standard, false);
+	if (style == KZMovementStyle_Standard && course == 0 && firstTimePro) {
+		DB_GetCompletion(client, client, KZMovementStyle_Standard, false);
 	}
 }
 
@@ -308,7 +299,7 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 
 /*===============================  Print Personal Bests  ===============================*/
 
-void DB_PrintPBs(int client, int targetPlayerID, int mapID, int course, MovementStyle style) {
+void DB_PrintPBs(int client, int targetPlayerID, int mapID, int course, KZMovementStyle style) {
 	if (!gB_ConnectedToDB) {
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
 		return;
@@ -357,10 +348,10 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	data.Reset();
 	int client = data.ReadCell();
 	int course = data.ReadCell();
-	MovementStyle style = data.ReadCell();
+	KZMovementStyle style = data.ReadCell();
 	CloseHandle(data);
 	
-	// Client, target or mapID is no longer valid so don't continue
+	// Client is no longer valid so don't continue
 	if (!IsValidClient(client)) {
 		return;
 	}
@@ -442,7 +433,7 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	}
 }
 
-void DB_PrintPBs_FindMap(int client, int targetPlayerID, const char[] mapSearch, int course, MovementStyle style) {
+void DB_PrintPBs_FindMap(int client, int targetPlayerID, const char[] mapSearch, int course, KZMovementStyle style) {
 	if (!gB_ConnectedToDB) {
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
 		return;
@@ -465,7 +456,7 @@ public void DB_TxnSuccess_PrintPBs_FindMap(Handle db, DataPack data, int numQuer
 	char mapSearch[33];
 	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
-	MovementStyle style = data.ReadCell();
+	KZMovementStyle style = data.ReadCell();
 	CloseHandle(data);
 	
 	// Client is no longer valid so don't continue
@@ -482,7 +473,7 @@ public void DB_TxnSuccess_PrintPBs_FindMap(Handle db, DataPack data, int numQuer
 	}
 }
 
-void DB_PrintPBs_FindPlayerAndMap(int client, const char[] playerSearch, const char[] mapSearch, int course, MovementStyle style) {
+void DB_PrintPBs_FindPlayerAndMap(int client, const char[] playerSearch, const char[] mapSearch, int course, KZMovementStyle style) {
 	if (!gB_ConnectedToDB) {
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
 		return;
@@ -506,7 +497,7 @@ public void DB_TxnSuccess_PrintPBs_FindPlayerAndMap(Handle db, DataPack data, in
 	char mapSearch[33];
 	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
-	MovementStyle style = data.ReadCell();
+	KZMovementStyle style = data.ReadCell();
 	CloseHandle(data);
 	
 	// Client is no longer valid so don't continue
@@ -530,7 +521,7 @@ public void DB_TxnSuccess_PrintPBs_FindPlayerAndMap(Handle db, DataPack data, in
 
 /*===============================  Print Records  ===============================*/
 
-void DB_PrintRecords(int client, int mapID, int course, MovementStyle style) {
+void DB_PrintRecords(int client, int mapID, int course, KZMovementStyle style) {
 	char query[512];
 	
 	DataPack data = CreateDataPack();
@@ -557,7 +548,7 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 	data.Reset();
 	int client = data.ReadCell();
 	int course = data.ReadCell();
-	MovementStyle style = data.ReadCell();
+	KZMovementStyle style = data.ReadCell();
 	CloseHandle(data);
 	
 	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
@@ -623,7 +614,7 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 	}
 }
 
-void DB_PrintRecords_FindMap(int client, const char[] mapSearch, int course, MovementStyle style) {
+void DB_PrintRecords_FindMap(int client, const char[] mapSearch, int course, KZMovementStyle style) {
 	if (!gB_ConnectedToDB) {
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
 		return;
@@ -644,7 +635,7 @@ public void DB_TxnSuccess_PrintRecords_FindMap(Handle db, DataPack data, int num
 	char mapSearch[33];
 	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
-	MovementStyle style = data.ReadCell();
+	KZMovementStyle style = data.ReadCell();
 	CloseHandle(data);
 	
 	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
@@ -663,7 +654,7 @@ public void DB_TxnSuccess_PrintRecords_FindMap(Handle db, DataPack data, int num
 
 /*===============================  Map Top Menu  ===============================*/
 
-void DB_OpenMapTop(int client, int mapID, int course, MovementStyle style) {
+void DB_OpenMapTop(int client, int mapID, int course, KZMovementStyle style) {
 	char query[512];
 	
 	DataPack data = CreateDataPack();
@@ -686,7 +677,7 @@ public void DB_TxnSuccess_OpenMapTop(Handle db, DataPack data, int numQueries, H
 	int client = data.ReadCell();
 	int mapID = data.ReadCell();
 	int course = data.ReadCell();
-	MovementStyle style = data.ReadCell();
+	KZMovementStyle style = data.ReadCell();
 	CloseHandle(data);
 	
 	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
@@ -702,7 +693,7 @@ public void DB_TxnSuccess_OpenMapTop(Handle db, DataPack data, int numQueries, H
 	}
 }
 
-void DB_OpenMapTop_FindMap(int client, const char[] mapSearch, int course, MovementStyle style) {
+void DB_OpenMapTop_FindMap(int client, const char[] mapSearch, int course, KZMovementStyle style) {
 	if (!gB_ConnectedToDB) {
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
 		return;
@@ -723,7 +714,7 @@ public void DB_TxnSuccess_OpenMapTop_FindMap(Handle db, DataPack data, int numQu
 	char mapSearch[33];
 	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
-	MovementStyle style = data.ReadCell();
+	KZMovementStyle style = data.ReadCell();
 	CloseHandle(data);
 	
 	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
@@ -743,7 +734,7 @@ public void DB_TxnSuccess_OpenMapTop_FindMap(Handle db, DataPack data, int numQu
 
 /*===============================  Map Top Submenu  ===============================*/
 
-void DB_OpenMapTop20(int client, int mapID, int course, MovementStyle style, TimeType timeType) {
+void DB_OpenMapTop20(int client, int mapID, int course, KZMovementStyle style, KZTimeType timeType) {
 	if (!gB_ConnectedToDB) {
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
 		return;
@@ -764,9 +755,9 @@ void DB_OpenMapTop20(int client, int mapID, int course, MovementStyle style, Tim
 	txn.AddQuery(query);
 	// Get top 20 times for each time type
 	switch (timeType) {
-		case TimeType_Normal:FormatEx(query, sizeof(query), sql_getmaptop, mapID, course, style, 20);
-		case TimeType_Pro:FormatEx(query, sizeof(query), sql_getmaptoppro, mapID, course, style, 20);
-		case TimeType_Theoretical:FormatEx(query, sizeof(query), sql_getmaptoptheoretical, mapID, course, style, 20);
+		case KZTimeType_Normal:FormatEx(query, sizeof(query), sql_getmaptop, mapID, course, style, 20);
+		case KZTimeType_Pro:FormatEx(query, sizeof(query), sql_getmaptoppro, mapID, course, style, 20);
+		case KZTimeType_Theoretical:FormatEx(query, sizeof(query), sql_getmaptoptheoretical, mapID, course, style, 20);
 	}
 	txn.AddQuery(query);
 	
@@ -777,8 +768,8 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 	data.Reset();
 	int client = data.ReadCell();
 	int course = data.ReadCell();
-	MovementStyle style = data.ReadCell();
-	TimeType timeType = data.ReadCell();
+	KZMovementStyle style = data.ReadCell();
+	KZTimeType timeType = data.ReadCell();
 	CloseHandle(data);
 	
 	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
@@ -793,9 +784,9 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 	// Check if there are any times
 	if (SQL_GetRowCount(results[1]) == 0) {
 		switch (timeType) {
-			case TimeType_Normal:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times");
-			case TimeType_Pro:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times (Pro)");
-			case TimeType_Theoretical:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times");
+			case KZTimeType_Normal:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times");
+			case KZTimeType_Pro:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times (Pro)");
+			case KZTimeType_Theoretical:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times");
 		}
 		DisplayMapTopMenu(client);
 		return;
@@ -823,16 +814,16 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 		SQL_FetchString(results[1], 0, playerName, sizeof(playerName));
 		runTime = SimpleKZ_TimeIntToFloat(SQL_FetchInt(results[1], 1));
 		switch (timeType) {
-			case TimeType_Normal: {
+			case KZTimeType_Normal: {
 				teleports = SQL_FetchInt(results[1], 2);
 				FormatEx(newMenuItem, sizeof(newMenuItem), "#%-2d   %11s  %d TP      %s", 
 					rank, SimpleKZ_FormatTime(runTime), teleports, playerName);
 			}
-			case TimeType_Pro: {
+			case KZTimeType_Pro: {
 				FormatEx(newMenuItem, sizeof(newMenuItem), "#%-2d   %11s   %s", 
 					rank, SimpleKZ_FormatTime(runTime), playerName);
 			}
-			case TimeType_Theoretical: {
+			case KZTimeType_Theoretical: {
 				teleports = SQL_FetchInt(results[1], 2);
 				FormatEx(newMenuItem, sizeof(newMenuItem), "#%-2d   %11s  %d TP      %s", 
 					rank, SimpleKZ_FormatTime(runTime), teleports, playerName);
@@ -848,7 +839,7 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 
 /*===============================  Player Top  ===============================*/
 
-void DB_OpenPlayerTop20(int client, TimeType timeType, MovementStyle style) {
+void DB_OpenPlayerTop20(int client, KZTimeType timeType, KZMovementStyle style) {
 	if (!gB_ConnectedToDB) {
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
 		return;
@@ -865,15 +856,15 @@ void DB_OpenPlayerTop20(int client, TimeType timeType, MovementStyle style) {
 	
 	// Get top 20 players
 	switch (timeType) {
-		case TimeType_Normal: {
+		case KZTimeType_Normal: {
 			FormatEx(query, sizeof(query), sql_gettopplayers_map, style);
 			txn.AddQuery(query);
 		}
-		case TimeType_Pro: {
+		case KZTimeType_Pro: {
 			FormatEx(query, sizeof(query), sql_gettopplayers_pro, style);
 			txn.AddQuery(query);
 		}
-		case TimeType_Theoretical: {
+		case KZTimeType_Theoretical: {
 			FormatEx(query, sizeof(query), sql_gettopplayers_theoretical, style);
 			txn.AddQuery(query);
 		}
@@ -885,8 +876,8 @@ void DB_OpenPlayerTop20(int client, TimeType timeType, MovementStyle style) {
 public void DB_TxnSuccess_OpenPlayerTop20(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
 	data.Reset();
 	int client = data.ReadCell();
-	RecordType timeType = data.ReadCell();
-	MovementStyle style = data.ReadCell();
+	KZRecordType timeType = data.ReadCell();
+	KZMovementStyle style = data.ReadCell();
 	CloseHandle(data);
 	
 	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue
@@ -895,9 +886,9 @@ public void DB_TxnSuccess_OpenPlayerTop20(Handle db, DataPack data, int numQueri
 	
 	if (SQL_GetRowCount(results[0]) == 0) {
 		switch (timeType) {
-			case TimeType_Normal:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times");
-			case TimeType_Pro:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times (Pro)");
-			case TimeType_Theoretical:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times");
+			case KZTimeType_Normal:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times");
+			case KZTimeType_Pro:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times (Pro)");
+			case KZTimeType_Theoretical:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times");
 		}
 		DisplayPlayerTopMenu(client);
 		return;
@@ -927,7 +918,7 @@ public void DB_TxnSuccess_OpenPlayerTop20(Handle db, DataPack data, int numQueri
 
 /*===============================  Percentage Completion  ===============================*/
 
-void DB_GetCompletion(int client, int targetPlayerID, MovementStyle style, bool print) {
+void DB_GetCompletion(int client, int targetPlayerID, KZMovementStyle style, bool print) {
 	if (!gB_ConnectedToDB) {
 		if (print) {
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
@@ -964,7 +955,7 @@ public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries
 	data.Reset();
 	int client = data.ReadCell();
 	int targetPlayerID = data.ReadCell();
-	MovementStyle style = data.ReadCell();
+	KZMovementStyle style = data.ReadCell();
 	bool print = data.ReadCell();
 	CloseHandle(data);
 	
@@ -1007,7 +998,7 @@ public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries
 	}
 }
 
-void DB_GetCompletion_FindPlayer(int client, const char[] target, MovementStyle style) {
+void DB_GetCompletion_FindPlayer(int client, const char[] target, KZMovementStyle style) {
 	if (!gB_ConnectedToDB) {
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Database Not Connected");
 		return;
@@ -1026,7 +1017,7 @@ public void DB_TxnSuccess_GetCompletion_FindPlayer(Handle db, DataPack data, int
 	int client = data.ReadCell();
 	char playerSearch[33];
 	data.ReadString(playerSearch, sizeof(playerSearch));
-	MovementStyle style = data.ReadCell();
+	KZMovementStyle style = data.ReadCell();
 	CloseHandle(data);
 	
 	if (!IsValidClient(client)) {  // Client is no longer valid so don't continue

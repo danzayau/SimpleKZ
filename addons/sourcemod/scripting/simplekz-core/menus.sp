@@ -28,7 +28,7 @@ void CreateTeleportMenu(int client) {
 }
 
 void UpdateTeleportMenu(int client) {
-	if (GetClientMenu(client) == MenuSource_None && gB_ShowingTeleportMenu[client] && !gB_TeleportMenuIsShowing[client] && IsPlayerAlive(client)) {
+	if (GetClientMenu(client) == MenuSource_None && gI_ShowingTeleportMenu[client] && !gB_TeleportMenuIsShowing[client] && IsPlayerAlive(client)) {
 		UpdateTeleportMenuItems(client);
 		DisplayMenu(gH_TeleportMenu[client], client, MENU_TIME_FOREVER);
 		gB_TeleportMenuIsShowing[client] = true;
@@ -146,22 +146,22 @@ void DisplayOptionsMenu(int client, int atItem = 0) {
 void UpdateOptionsMenu(int client) {
 	SetMenuTitle(gH_OptionsMenu[client], "%T", "Options Menu - Title", client);
 	RemoveAllMenuItems(gH_OptionsMenu[client]);
-	OptionsAddBool(client, gB_ShowingTeleportMenu[client], "Options Menu - Teleport Menu");
-	OptionsAddBool(client, gB_ShowingInfoPanel[client], "Options Menu - Info Panel");
-	OptionsAddBool(client, gB_ShowingPlayers[client], "Options Menu - Show Players");
-	OptionsAddBool(client, gB_ShowingWeapon[client], "Options Menu - Show Weapon");
-	OptionsAddBool(client, gB_AutoRestart[client], "Options Menu - Auto Restart");
+	OptionsAddToggle(client, gI_ShowingTeleportMenu[client], "Options Menu - Teleport Menu");
+	OptionsAddToggle(client, gI_ShowingInfoPanel[client], "Options Menu - Info Panel");
+	OptionsAddToggle(client, gI_ShowingPlayers[client], "Options Menu - Show Players");
+	OptionsAddToggle(client, gI_ShowingWeapon[client], "Options Menu - Show Weapon");
+	OptionsAddToggle(client, gI_AutoRestart[client], "Options Menu - Auto Restart");
 	OptionsAddPistol(client);
-	OptionsAddBool(client, gB_SlayOnEnd[client], "Options Menu - Slay On End");
-	OptionsAddBool(client, gB_ShowingKeys[client], "Options Menu - Show Keys");
-	OptionsAddBool(client, gB_CheckpointMessages[client], "Options Menu - Checkpoint Messages");
-	OptionsAddBool(client, gB_CheckpointSounds[client], "Options Menu - Checkpoint Sounds");
-	OptionsAddBool(client, gB_TeleportSounds[client], "Options Menu - Teleport Sounds");
+	OptionsAddToggle(client, gI_SlayOnEnd[client], "Options Menu - Slay On End");
+	OptionsAddToggle(client, gI_ShowingKeys[client], "Options Menu - Show Keys");
+	OptionsAddToggle(client, gI_CheckpointMessages[client], "Options Menu - Checkpoint Messages");
+	OptionsAddToggle(client, gI_CheckpointSounds[client], "Options Menu - Checkpoint Sounds");
+	OptionsAddToggle(client, gI_TeleportSounds[client], "Options Menu - Teleport Sounds");
 }
 
-void OptionsAddBool(int client, bool option, const char[] optionPhrase) {
+void OptionsAddToggle(int client, int option, const char[] optionPhrase) {
 	char text[32];
-	if (option) {
+	if (option == SIMPLEKZ_OPTION_ENABLED) {
 		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Enabled", client);
 		AddMenuItem(gH_OptionsMenu[client], "", text);
 	}
@@ -238,8 +238,8 @@ void AddItemsMovementStyleMenu(int client) {
 public int MenuHandler_MovementStyle(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
 		switch (param2) {
-			case 0:SetMovementStyle(param1, MovementStyle_Standard);
-			case 1:SetMovementStyle(param1, MovementStyle_Legacy);
+			case 0:SetMovementStyle(param1, KZMovementStyle_Standard);
+			case 1:SetMovementStyle(param1, KZMovementStyle_Legacy);
 		}
 	}
 }

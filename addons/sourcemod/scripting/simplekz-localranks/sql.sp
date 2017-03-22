@@ -4,44 +4,6 @@
 */
 
 
-/*===============================  Times Table  ===============================*/
-
-char sqlite_times_create[] = 
-"CREATE TABLE IF NOT EXISTS Times ("
-..."TimeID INTEGER, "
-..."PlayerID INTEGER NOT NULL, "
-..."MapID INTEGER NOT NULL, "
-..."Course INTEGER NOT NULL, "
-..."Style INTEGER NOT NULL, "
-..."RunTime INTEGER NOT NULL, "
-..."Teleports INTEGER NOT NULL, "
-..."TheoreticalRunTime INTEGER NOT NULL, "
-..."Created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
-..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
-..."CONSTRAINT FK_Times_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
-
-char mysql_times_create[] = 
-"CREATE TABLE IF NOT EXISTS Times ("
-..."TimeID INTEGER UNSIGNED AUTO_INCREMENT, "
-..."PlayerID INTEGER UNSIGNED NOT NULL, "
-..."MapID INTEGER UNSIGNED NOT NULL, "
-..."Course TINYINT UNSIGNED NOT NULL, "
-..."Style TINYINT UNSIGNED NOT NULL, "
-..."RunTime INTEGER UNSIGNED NOT NULL, "
-..."Teleports SMALLINT UNSIGNED NOT NULL, "
-..."TheoreticalRunTime INTEGER UNSIGNED NOT NULL, "
-..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
-..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
-..."CONSTRAINT FK_Times_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
-
-char sql_times_insert[] = 
-"INSERT INTO Times (PlayerID, MapID, Course, Style, RunTime, Teleports, TheoreticalRunTime) "
-..."VALUES (%d, %d, %d, %d, %d, %d, %d);";
-
-
-
 /*===============================  Maps Table  ===============================*/
 
 char sqlite_maps_alter1[] = 

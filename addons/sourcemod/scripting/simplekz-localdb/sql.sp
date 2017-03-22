@@ -9,7 +9,7 @@
 char sqlite_players_create[] = 
 "CREATE TABLE IF NOT EXISTS Players ("
 ..."PlayerID INTEGER, "
-..."SteamID INTEGER NOT NULL UNIQUE, "
+..."SteamID64 INTEGER NOT NULL UNIQUE, "
 ..."Alias TEXT, "
 ..."Country TEXT, "
 ..."IP TEXT, "
@@ -20,7 +20,7 @@ char sqlite_players_create[] =
 char mysql_players_create[] = 
 "CREATE TABLE IF NOT EXISTS Players ("
 ..."PlayerID INTEGER UNSIGNED AUTO_INCREMENT, "
-..."SteamID BIGINT UNSIGNED NOT NULL UNIQUE, "
+..."SteamID64 BIGINT UNSIGNED NOT NULL UNIQUE, "
 ..."Alias VARCHAR(32), "
 ..."Country VARCHAR(45), "
 ..."IP VARCHAR(15), "
@@ -29,24 +29,24 @@ char mysql_players_create[] =
 ..."CONSTRAINT PK_Player PRIMARY KEY (PlayerID));";
 
 char sqlite_players_insert[] = 
-"INSERT OR IGNORE INTO Players (Alias, Country, IP, SteamID) "
+"INSERT OR IGNORE INTO Players (Alias, Country, IP, SteamID64) "
 ..."VALUES ('%s', '%s', '%s', %s);";
 
 char sqlite_players_update[] = 
 "UPDATE OR IGNORE Players "
 ..."SET Alias='%s', Country='%s', IP='%s', LastSeen=CURRENT_TIMESTAMP "
-..."WHERE SteamID=%s;";
+..."WHERE SteamID64=%s;";
 
 char mysql_players_upsert[] = 
-"INSERT INTO Players (Alias, Country, IP, SteamID) "
+"INSERT INTO Players (Alias, Country, IP, SteamID64) "
 ..."VALUES ('%s', '%s', '%s', %s) "
 ..."ON DUPLICATE KEY UPDATE "
-..."SteamID=VALUES(SteamID), Alias=VALUES(Alias), Country=VALUES(Country), IP=VALUES(IP), LastSeen=CURRENT_TIMESTAMP;";
+..."SteamID64=VALUES(SteamID64), Alias=VALUES(Alias), Country=VALUES(Country), IP=VALUES(IP), LastSeen=CURRENT_TIMESTAMP;";
 
 char sql_players_getplayerid[] = 
 "SELECT PlayerID "
 ..."FROM Players "
-..."WHERE SteamID=%s;";
+..."WHERE SteamID64=%s;";
 
 
 
@@ -145,30 +145,38 @@ char sql_maps_findid[] =
 
 
 
-/*===============================  MapCourses Table  ===============================*/
+/*===============================  Times Table  ===============================*/
 
-char sqlite_mapcourses_create[] = 
-"CREATE TABLE IF NOT EXISTS MapCourses ("
-..."MapCourseID INTEGER, "
-..."MapID INTEGER, "
-..."CourseID INTEGER, "
-..."CONSTRAINT PK_MapCourses PRIMARY KEY (MapCourseID), "
-..."CONSTRAINT UQ_MapCourses_MapIDCourseID UNIQUE (MapID, CourseID), "
-..."CONSTRAINT FK_MapCourses_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
+char sqlite_times_create[] = 
+"CREATE TABLE IF NOT EXISTS Times ("
+..."TimeID INTEGER, "
+..."PlayerID INTEGER NOT NULL, "
+..."MapID INTEGER NOT NULL, "
+..."Course INTEGER NOT NULL, "
+..."Style INTEGER NOT NULL, "
+..."RunTime INTEGER NOT NULL, "
+..."Teleports INTEGER NOT NULL, "
+..."TheoreticalRunTime INTEGER NOT NULL, "
+..."Created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
+..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
+..."CONSTRAINT FK_Times_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
 
-char mysql_mapcourses_create[] = 
-"CREATE TABLE IF NOT EXISTS MapCourses ("
-..."MapCourseID INTEGER UNSIGNED, "
+char mysql_times_create[] = 
+"CREATE TABLE IF NOT EXISTS Times ("
+..."TimeID INTEGER UNSIGNED AUTO_INCREMENT, "
+..."PlayerID INTEGER UNSIGNED NOT NULL, "
 ..."MapID INTEGER UNSIGNED NOT NULL, "
-..."CourseID INTEGER UNSIGNED NOT NULL, "
-..."CONSTRAINT PK_MapCourses PRIMARY KEY (MapCourseID), "
-..."CONSTRAINT UQ_MapCourses_MapIDCourseID UNIQUE (MapID, CourseID), "
-..."CONSTRAINT FK_MapCourses_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
+..."Course TINYINT UNSIGNED NOT NULL, "
+..."Style TINYINT UNSIGNED NOT NULL, "
+..."RunTime INTEGER UNSIGNED NOT NULL, "
+..."Teleports SMALLINT UNSIGNED NOT NULL, "
+..."TheoreticalRunTime INTEGER UNSIGNED NOT NULL, "
+..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
+..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
+..."CONSTRAINT FK_Times_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
 
-char sqlite_mapcourses_insert[] = 
-"INSERT OR IGNORE INTO MapCourses (MapID, CourseID) "
-..."VALUES (%d, %d);";
-
-char mysql_mapcourses_insert[] = 
-"INSERT IGNORE INTO MapCourses (MapID, CourseID) "
-..."VALUES (%d, %d);"; 
+char sql_times_insert[] = 
+"INSERT INTO Times (PlayerID, MapID, Course, Style, RunTime, Teleports, TheoreticalRunTime) "
+..."VALUES (%d, %d, %d, %d, %d, %d, %d);"; 

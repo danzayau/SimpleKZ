@@ -26,7 +26,6 @@ void RegisterCommands() {
 	RegConsoleCmd("sm_nc", CommandToggleNoclip, "[KZ] Toggle noclip.");
 	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
 	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
-	RegConsoleCmd("sm_split", CommandSplit, "[KZ] Make a time split for timing purposes.");
 	RegConsoleCmd("sm_style", CommandStyle, "[KZ] Open the movement style menu.");
 	RegConsoleCmd("sm_standard", CommandStandard, "[KZ] Switch to the standard style.");
 	RegConsoleCmd("sm_s", CommandStandard, "[KZ] Switch to the standard style.");
@@ -200,22 +199,17 @@ public Action CommandDisableNoclip(int client, int args) {
 	return Plugin_Handled;
 }
 
-public Action CommandSplit(int client, int args) {
-	SplitsMake(client);
-	return Plugin_Handled;
-}
-
 public Action CommandStyle(int client, int args) {
 	DisplayMovementStyleMenu(client);
 	return Plugin_Handled;
 }
 
 public Action CommandStandard(int client, int args) {
-	SetMovementStyle(client, MovementStyle_Standard);
+	SetMovementStyle(client, KZMovementStyle_Standard);
 	return Plugin_Handled;
 }
 
 public Action CommandLegacy(int client, int args) {
-	SetMovementStyle(client, MovementStyle_Legacy);
+	SetMovementStyle(client, KZMovementStyle_Legacy);
 	return Plugin_Handled;
 } 

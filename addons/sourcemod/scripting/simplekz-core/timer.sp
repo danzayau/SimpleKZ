@@ -50,7 +50,6 @@ void TimerStart(int client, int course) {
 	gB_HasStartedThisMap[client] = true;
 	g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
 	g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
-	SplitsReset(client);
 	PlayTimerStartSound(client);
 	Call_SimpleKZ_OnTimerStart(client);
 	CloseTeleportMenu(client);
@@ -60,7 +59,7 @@ void TimerEnd(int client, int course) {
 	if (gB_TimerRunning[client] && course == gI_CurrentCourse[client]) {
 		gB_TimerRunning[client] = false;
 		PrintEndTimeString(client);
-		if (gB_SlayOnEnd[client]) {
+		if (gI_SlayOnEnd[client]) {
 			CreateTimer(3.0, SlayPlayer, client);
 		}
 		PlayTimerEndSound(client);
@@ -127,7 +126,7 @@ void TeleportToStart(int client) {
 		}
 		AddWastedTimeTeleportToStart(client);
 		TimerDoTeleport(client, gF_StartOrigin[client], gF_StartAngles[client]);
-		if (gB_AutoRestart[client]) {
+		if (gI_AutoRestart[client]) {
 			TimerStart(client, gI_LastCourseStarted[client]);
 		}
 	}
@@ -152,10 +151,10 @@ void MakeCheckpoint(int client) {
 		gF_LastCheckpointTime[client] = gF_CurrentTime[client];
 		g_MovementPlayer[client].GetOrigin(gF_CheckpointOrigin[client]);
 		g_MovementPlayer[client].GetEyeAngles(gF_CheckpointAngles[client]);
-		if (gB_CheckpointMessages[client]) {
+		if (gI_CheckpointMessages[client]) {
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Make Checkpoint");
 		}
-		if (gB_CheckpointSounds[client]) {
+		if (gI_CheckpointSounds[client]) {
 			EmitSoundToClient(client, SOUND_TELEPORT);
 		}
 	}
@@ -172,7 +171,7 @@ void TeleportToCheckpoint(int client) {
 	else {
 		AddWastedTimeTeleportToCheckpoint(client);
 		TimerDoTeleport(client, gF_CheckpointOrigin[client], gF_CheckpointAngles[client]);
-		if (gB_TeleportSounds[client]) {
+		if (gI_TeleportSounds[client]) {
 			EmitSoundToClient(client, SOUND_TELEPORT);
 		}
 	}
@@ -189,7 +188,7 @@ void UndoTeleport(int client) {
 	else {
 		AddWastedTimeUndoTeleport(client);
 		TimerDoTeleport(client, gF_UndoOrigin[client], gF_UndoAngle[client]);
-		if (gB_TeleportSounds[client]) {
+		if (gI_TeleportSounds[client]) {
 			EmitSoundToClient(client, SOUND_TELEPORT);
 		}
 	}
@@ -333,13 +332,13 @@ void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
 void PrintEndTimeString(int client) {
 	if (gI_CurrentCourse[client] == 0) {
 		switch (GetCurrentTimeType(client)) {
-			case TimeType_Normal: {
+			case KZTimeType_Normal: {
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map", 
 					client, SimpleKZ_FormatTime(gF_CurrentTime[client]), 
 					gI_TeleportsUsed[client], SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
 			}
-			case TimeType_Pro: {
+			case KZTimeType_Pro: {
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map (Pro)", 
 					client, SimpleKZ_FormatTime(gF_CurrentTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
@@ -348,13 +347,13 @@ void PrintEndTimeString(int client) {
 	}
 	else {
 		switch (GetCurrentTimeType(client)) {
-			case TimeType_Normal: {
+			case KZTimeType_Normal: {
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus", 
 					client, gI_CurrentCourse[client], SimpleKZ_FormatTime(gF_CurrentTime[client]), 
 					gI_TeleportsUsed[client], SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
 			}
-			case TimeType_Pro: {
+			case KZTimeType_Pro: {
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus (Pro)", 
 					client, gI_CurrentCourse[client], SimpleKZ_FormatTime(gF_CurrentTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
@@ -365,11 +364,11 @@ void PrintEndTimeString(int client) {
 
 void PlayTimerStartSound(int client) {
 	switch (g_Style[client]) {
-		case MovementStyle_Standard: {
+		case KZMovementStyle_Standard: {
 			EmitSoundToClient(client, STYLE_DEFAULT_SOUND_START);
 			EmitSoundToClientSpectators(client, STYLE_DEFAULT_SOUND_START);
 		}
-		case MovementStyle_Legacy: {
+		case KZMovementStyle_Legacy: {
 			EmitSoundToClient(client, STYLE_LEGACY_SOUND_START);
 			EmitSoundToClientSpectators(client, STYLE_LEGACY_SOUND_START);
 		}
@@ -378,11 +377,11 @@ void PlayTimerStartSound(int client) {
 
 void PlayTimerEndSound(int client) {
 	switch (g_Style[client]) {
-		case MovementStyle_Standard: {
+		case KZMovementStyle_Standard: {
 			EmitSoundToClient(client, STYLE_DEFAULT_SOUND_END);
 			EmitSoundToClientSpectators(client, STYLE_DEFAULT_SOUND_END);
 		}
-		case MovementStyle_Legacy: {
+		case KZMovementStyle_Legacy: {
 			EmitSoundToClient(client, STYLE_LEGACY_SOUND_END);
 			EmitSoundToClientSpectators(client, STYLE_LEGACY_SOUND_END);
 		}

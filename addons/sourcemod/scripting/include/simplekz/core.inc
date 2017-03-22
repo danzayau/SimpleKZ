@@ -1,7 +1,7 @@
 /* 	Simple KZ Core Include File
 	Author: DanZay
 	
-	Plugin Version: 0.9.1
+	Plugin Version: 0.10.0
 	Plugin Website: https://github.com/danzayau/SimpleKZ	
 */
 
@@ -17,30 +17,50 @@
 #define SIMPLEKZ_NUMBER_OF_TIME_TYPES 3
 #define SIMPLEKZ_NUMBER_OF_STYLES 2
 
+#define SIMPLEKZ_OPTION_DISABLED 0
+#define SIMPLEKZ_OPTION_ENABLED 1
+
 
 
 /*===============================  Enumerations  ===============================*/
 
-enum TimeType {
-	TimeType_Normal = 0, 
-	TimeType_Pro, 
-	TimeType_Theoretical
+enum KZTimeType {
+	KZTimeType_Normal = 0, 
+	KZTimeType_Pro, 
+	KZTimeType_Theoretical
 }
 
-enum MovementStyle {
-	MovementStyle_Standard = 0, 
-	MovementStyle_Legacy
+enum KZMovementStyle {
+	KZMovementStyle_Standard = 0, 
+	KZMovementStyle_Legacy
 }
 
-enum DatabaseType {
-	DatabaseType_None = -1, 
-	DatabaseType_MySQL, 
-	DatabaseType_SQLite
+enum KZOption {
+	KZOption_Style = 0, 
+	KZOption_ShowingTeleportMenu, 
+	KZOption_ShowingInfoPanel, 
+	KZOption_ShowingKeys, 
+	KZOption_ShowingPlayers, 
+	KZOption_ShowingWeapon, 
+	KZOption_AutoRestart, 
+	KZOption_SlayOnEnd, 
+	KZOption_Pistol, 
+	KZOption_CheckpointMessages, 
+	KZOption_CheckpointSounds, 
+	KZOption_TeleportSounds
 }
 
 
 
 /*===============================  Forwards  ===============================*/
+
+/**
+ * Called when the SimpleKZ Core has set up the client after authorization.
+ *
+ * @param client			Client entity index.
+ * @noreturn
+ */
+forward void SimpleKZ_OnClientSetup(int client);
 
 /**
  * Called when the player changes their movement style.
@@ -49,7 +69,7 @@ enum DatabaseType {
  * @param newStyle			Movement style they changed to.
  * @noreturn
  */
-forward void SimpleKZ_OnChangeMovementStyle(int client, MovementStyle newStyle);
+forward void SimpleKZ_OnChangeMovementStyle(int client, KZMovementStyle newStyle);
 
 /**
  * Called when the player hits a plugin-based perfect b-hop.
@@ -67,7 +87,7 @@ forward void SimpleKZ_OnPlayerPerfectBunnyhop(int client);
  * @param style				The movement style of the player.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerStart(int client, int course, MovementStyle style);
+forward void SimpleKZ_OnTimerStart(int client, int course, KZMovementStyle style);
 
 /**
  * Called when the player ends their timer.
@@ -80,7 +100,7 @@ forward void SimpleKZ_OnTimerStart(int client, int course, MovementStyle style);
  * @param theoreticalTime	Theoretical end time without using teleports.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerEnd(int client, int course, MovementStyle style, float time, int teleportsUsed, float theoreticalTime);
+forward void SimpleKZ_OnTimerEnd(int client, int course, KZMovementStyle style, float time, int teleportsUsed, float theoreticalTime);
 
 /**
  * Called when the player's timer has been force stopped (without finishing the map).
@@ -113,32 +133,6 @@ forward void SimpleKZ_OnPlayerResume(int client);
  * @noreturn
  */
 forward void SimpleKZ_OnPlayerTeleport(int client);
-
-/**
- * Called when the server connects to a SimpleKZ database.
- *
- * @param database			Database handle.
- * @param DBType			Database type (see DatabaseType enumeration)
- * @noreturn
- */
-forward void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType);
-
-/**
- * Called after SimpleKZ Core retrieves a client's PlayerID from SimpleKZ Core's "Players" database table.
- *
- * @param client			The name of the map (without prefixes e.g. workshop/).
- * @param playerID			PlayerID from SimpleKZ Core's "Players" database table.
- * @noreturn
- */
-forward void SimpleKZ_OnRetrievePlayerID(int client, int playerID);
-
-/**
- * Called after SimpleKZ Ranks retrieves the current map's MapID from the "Maps" database table.
- *
- * @param playerID			MapID from SimpleKZ Core's "Maps" database table.
- * @noreturn
- */
-forward void SimpleKZ_OnRetrieveCurrentMapID(int mapID);
 
 
 
@@ -290,40 +284,25 @@ native void SimpleKZ_TogglePause(int client);
 /**
  * Gets the default movement style as set by convar kz_default_style.
  *
- * @return					The default movement style (see MovementStyle enumeration).
+ * @return					The default movement style (see KZMovementStyle enumeration).
  */
-native MovementStyle SimpleKZ_GetDefaultStyle();
+native KZMovementStyle SimpleKZ_GetDefaultStyle();
 
 /**
- * Gets the player's chosen movement style.
+ * Gets the player's option value.
  *
  * @param client			Client entity index.
+ * @param option			The SimpleKZ option (see KZOption enumeration).
  * @return					The player's movement style.
  */
-native MovementStyle SimpleKZ_GetStyle(int client);
+native int SimpleKZ_GetOption(int client, KZOption option);
 
 /**
- * Sets the player's movement style.
+ * Sets the player's option value.
  *
  * @param client			Client entity index.
- * @param style				What to set the player's movement style to.
+ * @param option			The SimpleKZ option (see KZOption enumeration).
+ * @param optionValue		What to set the player's option to.
  * @noreturn
  */
-native void SimpleKZ_SetStyle(int client, MovementStyle style);
-
-/**
- * Gets the client's PlayerID as retrieved from SimpleKZ Core's "Players" database table.
- * This is accurate after SimpleKZ_OnRetrievePlayerID is called after the client is authorised.
- *
- * @param client			Client entity index.
- * @return					PlayerID from SimpleKZ Core's "Players" database table.
- */
-native int SimpleKZ_GetPlayerID(int client);
-
-/**
- * Gets the current map's MapID as retrieved from SimpleKZ Core's "Maps" database table.
- * This is accurate after SimpleKZ_OnRetrieveCurrentMapID is called after the map is started.
- *
- * @return					MapID from SimpleKZ Ranks' "Maps" database table.
- */
-native int SimpleKZ_GetCurrentMapID(); 
+native void SimpleKZ_SetOption(int client, KZOption option, any optionValue); 

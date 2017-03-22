@@ -5,10 +5,10 @@
 
 
 void UpdateInfoPanel(int client) {
-	if (gB_ShowingInfoPanel[client]) {
+	if (gI_ShowingInfoPanel[client]) {
 		MovementPlayer player = g_MovementPlayer[client];
 		if (IsPlayerAlive(player.id)) {
-			if (gB_ShowingKeys[player.id]) {
+			if (gI_ShowingKeys[player.id]) {
 				PrintHintText(player.id, "%s", GetInfoPanelWithKeys(player));
 			}
 			else {
@@ -64,13 +64,13 @@ char[] GetInfoPanelTimeString(MovementPlayer player) {
 	char timeString[64];
 	if (gB_TimerRunning[player.id]) {
 		switch (GetCurrentTimeType(player.id)) {
-			case TimeType_Normal: {
+			case KZTimeType_Normal: {
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#ffdd99'>%s</font>", 
 					"Info Panel Text - Time", player.id, 
 					SimpleKZ_FormatTime(gF_CurrentTime[player.id]));
 			}
-			case TimeType_Pro: {
+			case KZTimeType_Pro: {
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#6699ff'>%s</font>", 
 					"Info Panel Text - Time", player.id, 

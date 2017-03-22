@@ -46,13 +46,13 @@ void DB_CreateTables() {
 			SQL_FastQuery(gH_DB, sqlite_players_create);
 			SQL_FastQuery(gH_DB, sqlite_options_create);
 			SQL_FastQuery(gH_DB, sqlite_maps_create);
-			SQL_FastQuery(gH_DB, sqlite_mapcourses_create);
+			SQL_FastQuery(gH_DB, sqlite_times_create);
 		}
 		case DatabaseType_MySQL: {
 			SQL_FastQuery(gH_DB, mysql_players_create);
 			SQL_FastQuery(gH_DB, mysql_options_create);
 			SQL_FastQuery(gH_DB, mysql_maps_create);
-			SQL_FastQuery(gH_DB, mysql_mapcourses_create);
+			SQL_FastQuery(gH_DB, mysql_times_create);
 		}
 	}
 	
@@ -68,7 +68,7 @@ public void DB_TxnFailure_Generic(Handle db, any data, int numQueries, const cha
 
 /*===============================  Players  ===============================*/
 
-void DB_SetupClient(int client) {
+void DB_SetupClient(KZPlayer player) {
 	// Setup Client Step 1 - Upsert them into Players Table
 	
 	if (!gB_ConnectedToDB) {
@@ -76,10 +76,10 @@ void DB_SetupClient(int client) {
 	}
 	
 	char query[512], name[MAX_NAME_LENGTH], nameEscaped[MAX_NAME_LENGTH * 2 + 1], steamID[18], clientIP[16], country[45];
-	GetClientName(client, name, MAX_NAME_LENGTH);
+	GetClientName(player.id, name, MAX_NAME_LENGTH);
 	SQL_EscapeString(gH_DB, name, nameEscaped, MAX_NAME_LENGTH * 2 + 1);
-	GetClientAuthId(client, AuthId_SteamID64, steamID, sizeof(steamID), true);
-	GetClientIP(client, clientIP, sizeof(clientIP));
+	GetClientAuthId(player.id, AuthId_SteamID64, steamID, sizeof(steamID), true);
+	GetClientIP(player.id, clientIP, sizeof(clientIP));
 	if (!GeoipCountry(clientIP, country, sizeof(country))) {
 		country = "Unknown";
 	}
@@ -106,11 +106,11 @@ void DB_SetupClient(int client) {
 	FormatEx(query, sizeof(query), sql_players_getplayerid, steamID);
 	txn.AddQuery(query);
 	
-	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_SetupClient, DB_TxnFailure_Generic, client, DBPrio_High);
+	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_SetupClient, DB_TxnFailure_Generic, player, DBPrio_High);
 }
 
-public void DB_TxnSuccess_SetupClient(Handle db, int client, int numQueries, Handle[] results, any[] queryData) {
-	if (!IsClientAuthorized(client)) {  // Client is no longer authorised so don't continue
+public void DB_TxnSuccess_SetupClient(Handle db, KZPlayer player, int numQueries, Handle[] results, any[] queryData) {
+	if (!IsClientAuthorized(player.id)) {  // Client is no longer authorised so don't continue
 		return;
 	}
 	
@@ -118,29 +118,28 @@ public void DB_TxnSuccess_SetupClient(Handle db, int client, int numQueries, Han
 	switch (g_DBType) {
 		case DatabaseType_SQLite: {
 			if (SQL_FetchRow(results[2])) {
-				gI_PlayerID[client] = SQL_FetchInt(results[2], 0);
-				Call_SimpleKZ_OnRetrievePlayerID(client);
+				gI_DBPlayerID[player.id] = SQL_FetchInt(results[2], 0);
+				Call_SimpleKZ_OnRetrievePlayerID(player.id);
 			}
 		}
 		case DatabaseType_MySQL: {
 			if (SQL_FetchRow(results[1])) {
-				gI_PlayerID[client] = SQL_FetchInt(results[1], 0);
-				Call_SimpleKZ_OnRetrievePlayerID(client);
+				gI_DBPlayerID[player.id] = SQL_FetchInt(results[1], 0);
+				Call_SimpleKZ_OnRetrievePlayerID(player.id);
 			}
 		}
 	}
 	
 	// Load options now that PlayerID has been retrieved
-	DB_LoadOptions(client);
+	DB_LoadOptions(player);
 }
 
 
 
 /*===============================  Options  ===============================*/
 
-void DB_LoadOptions(int client) {
+void DB_LoadOptions(KZPlayer player) {
 	if (!gB_ConnectedToDB) {
-		SetDefaultOptions(client);
 		return;
 	}
 	
@@ -149,14 +148,14 @@ void DB_LoadOptions(int client) {
 	Transaction txn = SQL_CreateTransaction();
 	
 	// Get options for the client's PlayerID
-	FormatEx(query, sizeof(query), sql_options_get, gI_PlayerID[client]);
+	FormatEx(query, sizeof(query), sql_options_get, player.db_playerID);
 	txn.AddQuery(query);
 	
-	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_LoadOptions, DB_TxnFailure_Generic, client, DBPrio_High);
+	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_LoadOptions, DB_TxnFailure_Generic, player, DBPrio_High);
 }
 
-public void DB_TxnSuccess_LoadOptions(Handle db, int client, int numQueries, Handle[] results, any[] queryData) {
-	if (!IsClientAuthorized(client)) {  // Client is no longer authorised so don't continue
+public void DB_TxnSuccess_LoadOptions(Handle db, KZPlayer player, int numQueries, Handle[] results, any[] queryData) {
+	if (!IsClientAuthorized(player.id)) {  // Client is no longer authorised so don't continue
 		return;
 	}
 	
@@ -167,32 +166,33 @@ public void DB_TxnSuccess_LoadOptions(Handle db, int client, int numQueries, Han
 		Transaction txn = SQL_CreateTransaction();
 		
 		// Insert options
-		FormatEx(query, sizeof(query), sql_options_insert, gI_PlayerID[client], GetConVarInt(gCV_DefaultStyle));
+		FormatEx(query, sizeof(query), sql_options_insert, player.db_playerID, SimpleKZ_GetDefaultStyle());
 		txn.AddQuery(query);
 		
-		SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_InsertOptions, DB_TxnFailure_Generic, client, DBPrio_High);
+		SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_InsertOptions, DB_TxnFailure_Generic, player, DBPrio_High);
 	}
+	
 	else if (SQL_FetchRow(results[0])) {
-		g_Style[client] = view_as<MovementStyle>(SQL_FetchInt(results[0], 0));
-		gB_ShowingTeleportMenu[client] = view_as<bool>(SQL_FetchInt(results[0], 1));
-		gB_ShowingInfoPanel[client] = view_as<bool>(SQL_FetchInt(results[0], 2));
-		gB_ShowingKeys[client] = view_as<bool>(SQL_FetchInt(results[0], 3));
-		gB_ShowingPlayers[client] = view_as<bool>(SQL_FetchInt(results[0], 4));
-		gB_ShowingWeapon[client] = view_as<bool>(SQL_FetchInt(results[0], 5));
-		gB_AutoRestart[client] = view_as<bool>(SQL_FetchInt(results[0], 6));
-		gB_SlayOnEnd[client] = view_as<bool>(SQL_FetchInt(results[0], 7));
-		gI_Pistol[client] = SQL_FetchInt(results[0], 8);
-		gB_CheckpointMessages[client] = view_as<bool>(SQL_FetchInt(results[0], 9));
-		gB_CheckpointSounds[client] = view_as<bool>(SQL_FetchInt(results[0], 10));
-		gB_TeleportSounds[client] = view_as<bool>(SQL_FetchInt(results[0], 11));
+		player.style = view_as<KZMovementStyle>(SQL_FetchInt(results[0], 0));
+		player.showingTeleportMenu = SQL_FetchInt(results[0], 1);
+		player.showingInfoPanel = SQL_FetchInt(results[0], 2);
+		player.showingKeys = SQL_FetchInt(results[0], 3);
+		player.showingPlayers = SQL_FetchInt(results[0], 4);
+		player.showingWeapon = SQL_FetchInt(results[0], 5);
+		player.autoRestart = SQL_FetchInt(results[0], 6);
+		player.slayOnEnd = SQL_FetchInt(results[0], 7);
+		player.pistol = SQL_FetchInt(results[0], 8);
+		player.checkpointMessages = SQL_FetchInt(results[0], 9);
+		player.checkpointSounds = SQL_FetchInt(results[0], 10);
+		player.teleportSounds = SQL_FetchInt(results[0], 11);
 	}
 }
 
-public void DB_TxnSuccess_InsertOptions(Handle db, int client, int numQueries, Handle[] results, any[] queryData) {
-	DB_LoadOptions(client);
+public void DB_TxnSuccess_InsertOptions(Handle db, KZPlayer player, int numQueries, Handle[] results, any[] queryData) {
+	DB_LoadOptions(player);
 }
 
-void DB_SaveOptions(int client) {
+void DB_SaveOptions(KZPlayer player) {
 	if (!gB_ConnectedToDB) {
 		return;
 	}
@@ -204,22 +204,22 @@ void DB_SaveOptions(int client) {
 	// Update options
 	FormatEx(query, sizeof(query), 
 		sql_options_update, 
-		g_Style[client], 
-		view_as<int>(gB_ShowingTeleportMenu[client]), 
-		view_as<int>(gB_ShowingInfoPanel[client]), 
-		view_as<int>(gB_ShowingKeys[client]), 
-		view_as<int>(gB_ShowingPlayers[client]), 
-		view_as<int>(gB_ShowingWeapon[client]), 
-		view_as<int>(gB_AutoRestart[client]), 
-		view_as<int>(gB_SlayOnEnd[client]), 
-		gI_Pistol[client], 
-		view_as<int>(gB_CheckpointMessages[client]), 
-		view_as<int>(gB_CheckpointSounds[client]), 
-		view_as<int>(gB_TeleportSounds[client]), 
-		gI_PlayerID[client]);
+		player.style, 
+		player.showingTeleportMenu, 
+		player.showingInfoPanel, 
+		player.showingKeys, 
+		player.showingPlayers, 
+		player.showingWeapon, 
+		player.autoRestart, 
+		player.slayOnEnd, 
+		player.pistol, 
+		player.checkpointMessages, 
+		player.checkpointSounds, 
+		player.teleportSounds, 
+		gI_DBPlayerID[player.id]);
 	txn.AddQuery(query);
 	
-	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, client, DBPrio_High);
+	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, _, DBPrio_High);
 }
 
 
@@ -232,6 +232,14 @@ void DB_SetupMap() {
 	}
 	
 	char query[512];
+	
+	char map[64];
+	GetCurrentMap(map, sizeof(map));
+	// Get just the map name (e.g. remove workshop/id/ prefix)
+	char mapPieces[5][64];
+	int lastPiece = ExplodeString(map, "/", mapPieces, sizeof(mapPieces), sizeof(mapPieces[]));
+	FormatEx(map, sizeof(map), "%s", mapPieces[lastPiece - 1]);
+	String_ToLower(map, map, sizeof(map));
 	
 	Transaction txn = SQL_CreateTransaction();
 	
@@ -262,52 +270,64 @@ public void DB_TxnSuccess_SetupMap(Handle db, any data, int numQueries, Handle[]
 	switch (g_DBType) {
 		case DatabaseType_SQLite: {
 			if (SQL_FetchRow(results[2])) {
-				gI_CurrentMapID = SQL_FetchInt(results[2], 0);
+				gI_DBCurrentMapID = SQL_FetchInt(results[2], 0);
 				Call_SimpleKZ_OnRetrieveCurrentMapID();
 			}
 		}
 		case DatabaseType_MySQL: {
 			if (SQL_FetchRow(results[1])) {
-				gI_CurrentMapID = SQL_FetchInt(results[1], 0);
+				gI_DBCurrentMapID = SQL_FetchInt(results[1], 0);
 				Call_SimpleKZ_OnRetrieveCurrentMapID();
 			}
 		}
 	}
-	
-	DB_InsertMapCourses();
 }
 
-void DB_InsertMapCourses() {
+
+
+/*===============================  Times  ===============================*/
+
+void DB_StoreTime(KZPlayer player, int course, KZMovementStyle style, float runTime, int teleportsUsed, float theoreticalRunTime) {
 	if (!gB_ConnectedToDB) {
 		return;
 	}
 	
-	int entity = -1;
-	char tempString[32], query[512];
+	char query[512];
+	int playerID = gI_DBPlayerID[player.id];
+	int mapID = SimpleKZ_GetCurrentMapID();
+	int runTimeMS = SimpleKZ_TimeFloatToInt(runTime);
+	int theoreticalRunTimeMS = SimpleKZ_TimeFloatToInt(theoreticalRunTime);
+	
+	DataPack data = CreateDataPack();
+	data.WriteCell(player.id);
+	data.WriteCell(playerID);
+	data.WriteCell(mapID);
+	data.WriteCell(course);
+	data.WriteCell(style);
+	data.WriteCell(runTimeMS);
+	data.WriteCell(teleportsUsed);
+	data.WriteCell(theoreticalRunTimeMS);
 	
 	Transaction txn = SQL_CreateTransaction();
 	
-	while ((entity = FindEntityByClassname(entity, "func_button")) != -1) {
-		GetEntPropString(entity, Prop_Data, "m_iName", tempString, sizeof(tempString));
-		if (StrEqual("climb_startbutton", tempString, false)) {
-			switch (g_DBType) {
-				case DatabaseType_SQLite:FormatEx(query, sizeof(query), sqlite_mapcourses_insert, gI_CurrentMapID, 0);
-				case DatabaseType_MySQL:FormatEx(query, sizeof(query), mysql_mapcourses_insert, gI_CurrentMapID, 0);
-			}
-			txn.AddQuery(query);
-			PrintToServer("start button");
-		}
-		else if (MatchRegex(gRE_BonusStartButton, tempString) > 0) {
-			GetRegexSubString(gRE_BonusStartButton, 1, tempString, sizeof(tempString));
-			int bonus = StringToInt(tempString);
-			switch (g_DBType) {
-				case DatabaseType_SQLite:FormatEx(query, sizeof(query), sqlite_mapcourses_insert, gI_CurrentMapID, bonus);
-				case DatabaseType_MySQL:FormatEx(query, sizeof(query), mysql_mapcourses_insert, gI_CurrentMapID, bonus);
-			}
-			txn.AddQuery(query);
-			PrintToServer("bonus button %d", bonus);
-		}
-	}
+	// Save runTime to DB
+	FormatEx(query, sizeof(query), sql_times_insert, playerID, mapID, course, style, runTimeMS, teleportsUsed, theoreticalRunTimeMS);
+	txn.AddQuery(query);
 	
-	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, 0, DBPrio_High);
+	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_SaveTime, DB_TxnFailure_Generic, data, DBPrio_Normal);
+}
+
+public void DB_TxnSuccess_SaveTime(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData) {
+	data.Reset();
+	int client = data.ReadCell();
+	int playerID = data.ReadCell();
+	int mapID = data.ReadCell();
+	int course = data.ReadCell();
+	KZMovementStyle style = data.ReadCell();
+	int runTimeMS = data.ReadCell();
+	int teleportsUsed = data.ReadCell();
+	int theoreticalTimeMS = data.ReadCell();
+	CloseHandle(data);
+	
+	Call_SimpleKZ_OnStoreTimeInDB(client, playerID, mapID, course, style, runTimeMS, teleportsUsed, theoreticalTimeMS);
 } 

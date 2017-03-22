@@ -78,8 +78,6 @@ void SetupMap() {
 	
 	// Precache stuff
 	PrecacheModels();
-	
-	DB_SetupMap();
 }
 
 void PrecacheModels() {
@@ -102,14 +100,14 @@ void PrecachePlayerModels() {
 /*===============================  Client  ===============================*/
 
 void SetupClient(int client) {
-	DB_SetupClient(client);
+	SetDefaultOptions(client);
 	TimerSetup(client);
 	UpdatePistolMenu(client);
 	UpdateMeasureMenu(client);
 	MeasureResetPos(client);
 	UpdateOptionsMenu(client);
-	SplitsSetup(client);
 	NoBhopBlockCPSetup(client);
+	Call_SimpleKZ_OnClientSetup(client);
 }
 
 void PrintConnectMessage(int client) {
@@ -195,12 +193,12 @@ void ToggleNoclip(int client) {
 	}
 }
 
-TimeType GetCurrentTimeType(int client) {
+KZTimeType GetCurrentTimeType(int client) {
 	if (gI_TeleportsUsed[client] == 0) {
-		return TimeType_Pro;
+		return KZTimeType_Pro;
 	}
 	else {
-		return TimeType_Normal;
+		return KZTimeType_Normal;
 	}
 }
 
@@ -273,53 +271,6 @@ public Action ZeroVelocity(Handle timer, int client) {
 		g_MovementPlayer[client].SetBaseVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
 	}
 	return Plugin_Continue;
-}
-
-
-
-/*===============================  Splits  ===============================*/
-
-void SplitsSetup(int client) {
-	gI_Splits[client] = 0;
-	gF_SplitRunTime[client] = 0.0;
-	gF_SplitGameTime[client] = 0.0;
-}
-
-void SplitsReset(int client) {
-	if (IsClientInGame(client) && gB_HasStartedThisMap[client] && gI_Splits[client] != 0) {
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Split Reset");
-	}
-	gI_Splits[client] = 0;
-	gF_SplitRunTime[client] = 0.0;
-	gF_SplitGameTime[client] = 0.0;
-}
-
-void SplitsMake(int client) {
-	if ((GetGameTime() - gF_SplitGameTime[client]) < TIME_SPLIT_COOLDOWN) {  // Ignore split spam
-		CloseTeleportMenu(client);
-		return;
-	}
-	
-	gI_Splits[client]++;
-	if (gB_TimerRunning[client]) {
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Split Create", 
-			gI_Splits[client], 
-			SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_SplitRunTime[client]), 
-			SimpleKZ_FormatTime(gF_CurrentTime[client]));
-	}
-	else {
-		if (gI_Splits[client] == 1) {
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Split Create (First)");
-		}
-		else {
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Split Create (Timer Stopped)", 
-				SimpleKZ_FormatTime(GetGameTime() - gF_SplitGameTime[client]));
-		}
-	}
-	gF_SplitRunTime[client] = gF_CurrentTime[client];
-	gF_SplitGameTime[client] = GetGameTime();
-	
-	CloseTeleportMenu(client);
 }
 
 

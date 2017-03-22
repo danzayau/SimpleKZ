@@ -1,7 +1,7 @@
-/* 	Simple KZ Official Include Files
+/* 	Simple KZ Official Include File
 	Author: DanZay
 	
-	Plugin Version: 0.9.1
+	Plugin Version: 0.10.0
 	Plugin Website: https://github.com/danzayau/SimpleKZ	
 */
 
@@ -11,7 +11,8 @@
 #define _simplekz_included_
 
 #include <simplekz/core>
-#include <simplekz/ranks>
+#include <simplekz/localdb>
+#include <simplekz/localranks>
 
 
 
@@ -45,22 +46,224 @@ stock char[] SimpleKZ_FormatTime(float time) {
 	return formattedTime;
 }
 
-/**
- * Converts a time float (seconds) to an integer (milliseconds).
- *
- * @param time				Time in seconds.
- * @return					Number of milliseconds.
- */
-stock int SimpleKZ_TimeFloatToInt(float time) {
-	return RoundFloat(time * 1000.0);
-}
 
-/**
- * Converts a time integer (milliseconds) to a float (seconds).
- *
- * @param time				Time in milliseconds.
- * @return					Number of seconds.
- */
-stock float SimpleKZ_TimeIntToFloat(int time) {
-	return time / 1000.0;
+
+/*===============================  Methodmap  ===============================*/
+
+methodmap KZPlayer __nullable__ {
+	public KZPlayer(int id) {
+		return view_as<KZPlayer>(id);
+	}
+	
+	property int id {
+		public get() {
+			return view_as<int>(this);
+		}
+	}
+	
+	
+	/*===============================  Timer Functions  ===============================*/
+	
+	public void StartTimer(int course) {
+		SimpleKZ_StartTimer(this.id, course);
+	}
+	
+	public void EndTimer(int course) {
+		SimpleKZ_EndTimer(this.id, course);
+	}
+	
+	public void ForceStopTimer() {
+		SimpleKZ_ForceStopTimer(this.id);
+	}
+	
+	public void TeleportToStart() {
+		SimpleKZ_TeleportToStart(this.id);
+	}
+	
+	public void TeleportToCheckpoint() {
+		SimpleKZ_TeleportToCheckpoint(this.id);
+	}
+	
+	public void UndoTeleport() {
+		SimpleKZ_UndoTeleport(this.id);
+	}
+	
+	public void Pause() {
+		SimpleKZ_Pause(this.id);
+	}
+	
+	public void Resume() {
+		SimpleKZ_Resume(this.id);
+	}
+	
+	public void TogglePause() {
+		SimpleKZ_TogglePause(this.id);
+	}
+	
+	
+	/*===============================  Timer Properties  ===============================*/
+	
+	property bool timerRunning {
+		public get() {
+			return SimpleKZ_GetTimerRunning(this.id);
+		}
+	}
+	
+	property int currentCourse {
+		public get() {
+			return SimpleKZ_GetCurrentCourse(this.id);
+		}
+	}
+	
+	property bool paused {
+		public get() {
+			return SimpleKZ_GetCurrentCourse(this.id);
+		}
+		public set(bool pause) {
+			if (pause) {
+				this.Pause();
+			}
+			else {
+				this.Resume();
+			}
+		}
+	}
+	
+	property float currentTime {
+		public get() {
+			return SimpleKZ_GetCurrentTime(this.id);
+		}
+	}
+	
+	property int checkpointCount {
+		public get() {
+			return SimpleKZ_GetCheckpointCount(this.id);
+		}
+	}
+	
+	
+	/*===============================  Options Properties  ===============================*/
+	
+	property KZMovementStyle style {
+		public get() {
+			return view_as<KZMovementStyle>(SimpleKZ_GetOption(this.id, KZOption_Style));
+		}
+		public set(KZMovementStyle value) {
+			SimpleKZ_SetOption(this.id, KZOption_Style, value);
+		}
+	}
+	
+	property int showingTeleportMenu {
+		public get() {
+			return SimpleKZ_GetOption(this.id, KZOption_ShowingTeleportMenu);
+		}
+		public set(int value) {
+			SimpleKZ_SetOption(this.id, KZOption_ShowingTeleportMenu, value);
+		}
+	}
+	
+	property int showingInfoPanel {
+		public get() {
+			return SimpleKZ_GetOption(this.id, KZOption_ShowingInfoPanel);
+		}
+		public set(int value) {
+			SimpleKZ_SetOption(this.id, KZOption_ShowingInfoPanel, value);
+		}
+	}
+	
+	property int showingKeys {
+		public get() {
+			return SimpleKZ_GetOption(this.id, KZOption_ShowingKeys);
+		}
+		public set(int value) {
+			SimpleKZ_SetOption(this.id, KZOption_ShowingKeys, value);
+		}
+	}
+	
+	property int showingPlayers {
+		public get() {
+			return SimpleKZ_GetOption(this.id, KZOption_ShowingPlayers);
+		}
+		public set(int value) {
+			SimpleKZ_GetOption(this.id, KZOption_ShowingPlayers);
+		}
+	}
+	
+	property int showingWeapon {
+		public get() {
+			return SimpleKZ_GetOption(this.id, KZOption_ShowingWeapon);
+		}
+		public set(int value) {
+			SimpleKZ_GetOption(this.id, KZOption_ShowingWeapon);
+		}
+	}
+	
+	property int autoRestart {
+		public get() {
+			return SimpleKZ_GetOption(this.id, KZOption_AutoRestart);
+		}
+		public set(int value) {
+			SimpleKZ_GetOption(this.id, KZOption_AutoRestart);
+		}
+	}
+	
+	property int slayOnEnd {
+		public get() {
+			return SimpleKZ_GetOption(this.id, KZOption_SlayOnEnd);
+		}
+		public set(int value) {
+			SimpleKZ_GetOption(this.id, KZOption_SlayOnEnd);
+		}
+	}
+	
+	property int pistol {
+		public get() {
+			return SimpleKZ_GetOption(this.id, KZOption_Pistol);
+		}
+		public set(int value) {
+			SimpleKZ_GetOption(this.id, KZOption_Pistol);
+		}
+	}
+	
+	property int checkpointMessages {
+		public get() {
+			return SimpleKZ_GetOption(this.id, KZOption_CheckpointMessages);
+		}
+		public set(int value) {
+			SimpleKZ_GetOption(this.id, KZOption_CheckpointMessages);
+		}
+	}
+	
+	property int checkpointSounds {
+		public get() {
+			return SimpleKZ_GetOption(this.id, KZOption_CheckpointSounds);
+		}
+		public set(int value) {
+			SimpleKZ_GetOption(this.id, KZOption_CheckpointSounds);
+		}
+	}
+	
+	property int teleportSounds {
+		public get() {
+			return SimpleKZ_GetOption(this.id, KZOption_TeleportSounds);
+		}
+		public set(int value) {
+			SimpleKZ_GetOption(this.id, KZOption_TeleportSounds);
+		}
+	}
+	
+	
+	/*===============================  Other Properties  ===============================*/
+	
+	property bool hitPerf {
+		public get() {
+			return SimpleKZ_GetHitPerf(this.id);
+		}
+	}
+	
+	property int db_playerID {
+		public get() {
+			return SimpleKZ_GetPlayerID(this.id);
+		}
+	}
 } 
