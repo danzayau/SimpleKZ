@@ -12,7 +12,7 @@
  * **Database Support** - Store player options, times and more using either a MySQL or SQLite database.
  * **Essential Extras** - Map bonus support, centre info panel, teleport menu, noclip, !goto, !measure and more.
 
-============================
+---
 
 ### Requirements
 
@@ -40,7 +40,7 @@ To add a timer button to your map, use a ```func_button``` with a specific name.
  
 **NOTE:** Enable both the ```Don't move``` and ```Toggle``` flags to avoid any usability issues.
 
-============================
+---
 
 ### Simple KZ Core Player Commands
 
