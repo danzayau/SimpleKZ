@@ -11,33 +11,12 @@
 #define _simplekz_core_included_
 
 
-
-/*===============================  Definitions  ===============================*/
-
-#define SIMPLEKZ_NUMBER_OF_TIME_TYPES 3
-#define SIMPLEKZ_NUMBER_OF_STYLES 2
-
-#define SIMPLEKZ_OPTION_DISABLED 0
-#define SIMPLEKZ_OPTION_ENABLED 1
-
-#define SIMPLEKZ_TIMERTEXT_DISABLED 0
-#define SIMPLEKZ_TIMERTEXT_LEFT 1
-#define SIMPLEKZ_TIMERTEXT_TOP 2
-#define SIMPLEKZ_TIMERTEXT_BOTTOM 3
-
-
-
 /*===============================  Enumerations  ===============================*/
 
 enum KZTimeType {
 	KZTimeType_Normal = 0, 
 	KZTimeType_Pro, 
 	KZTimeType_Theoretical
-}
-
-enum KZMovementStyle {
-	KZMovementStyle_Standard = 0, 
-	KZMovementStyle_Legacy
 }
 
 enum KZOption {
@@ -56,12 +35,87 @@ enum KZOption {
 	KZOption_TimerText
 }
 
+/*	Each option has it's own enumeration to specify the meaning of its value. */
+
+enum KZStyle {
+	KZStyle_Standard = 0, 
+	KZStyle_Legacy
+}
+
+enum KZShowingTeleportMenu {
+	KZShowingTeleportMenu_Disabled = 0, 
+	KZShowingTeleportMenu_Enabled
+}
+
+enum KZShowingInfoPanel {
+	KZShowingInfoPanel_Disabled = 0, 
+	KZShowingInfoPanel_Enabled
+}
+
+enum KZShowingKeys {
+	KZShowingKeys_Disabled = 0, 
+	KZShowingKeys_Enabled
+}
+
+enum KZShowingPlayers {
+	KZShowingPlayers_Disabled = 0, 
+	KZShowingPlayers_Enabled
+}
+
+enum KZShowingWeapon {
+	KZShowingWeapon_Disabled = 0, 
+	KZShowingWeapon_Enabled
+}
+
+enum KZAutoRestart {
+	KZAutoRestart_Disabled = 0, 
+	KZAutoRestart_Enabled
+}
+
+enum KZSlayOnEnd {
+	KZSlayOnEnd_Disabled = 0, 
+	KZSlayOnEnd_Enabled
+}
+
+enum KZPistol {
+	KZPistol_USP = 0, 
+	KZPistol_Glock, 
+	KZPistol_P250, 
+	KZPistol_Dualies, 
+	KZPistol_Deagle, 
+	KZPistol_CZ75A, 
+	KZPistol_FiveSeveN, 
+	KZPistol_Tec9
+}
+
+enum KZCheckpointMessages {
+	KZCheckpointMessages_Disabled = 0, 
+	KZCheckpointMessages_Enabled
+}
+
+enum KZCheckpointSounds {
+	KZCheckpointSounds_Disabled = 0, 
+	KZCheckpointSounds_Enabled
+}
+
+enum KZTeleportSounds {
+	KZTeleportSounds_Disabled = 0, 
+	KZTeleportSounds_Enabled
+}
+
+enum KZTimerText {
+	KZTimerText_Disabled = 0, 
+	KZTimerText_Top, 
+	KZTimerText_Bottom
+}
+
 
 
 /*===============================  Forwards  ===============================*/
 
 /**
  * Called when the SimpleKZ Core has set up the client after authorization.
+ * At this point, many variables relating to the client (e.g. options) have been set.
  *
  * @param client			Client entity index.
  * @noreturn
@@ -69,13 +123,14 @@ enum KZOption {
 forward void SimpleKZ_OnClientSetup(int client);
 
 /**
- * Called when the player changes their movement style.
+ * Called when the player changes an option.
  *
  * @param client			Client entity index.
- * @param newStyle			Movement style they changed to.
+ * @param option			The option that was changed
+ * @param newValue			The new value of the option.
  * @noreturn
  */
-forward void SimpleKZ_OnChangeMovementStyle(int client, KZMovementStyle newStyle);
+forward void SimpleKZ_OnChangeOption(int client, KZOption option, any newValue);
 
 /**
  * Called when the player hits a plugin-based perfect b-hop.
@@ -93,7 +148,7 @@ forward void SimpleKZ_OnPlayerPerfectBunnyhop(int client);
  * @param style				The movement style of the player.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerStart(int client, int course, KZMovementStyle style);
+forward void SimpleKZ_OnTimerStart(int client, int course, KZStyle style);
 
 /**
  * Called when the player ends their timer.
@@ -106,7 +161,7 @@ forward void SimpleKZ_OnTimerStart(int client, int course, KZMovementStyle style
  * @param theoreticalTime	Theoretical end time without using teleports.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerEnd(int client, int course, KZMovementStyle style, float time, int teleportsUsed, float theoreticalTime);
+forward void SimpleKZ_OnTimerEnd(int client, int course, KZStyle style, float time, int teleportsUsed, float theoreticalTime);
 
 /**
  * Called when the player's timer has been force stopped (without finishing the map).
@@ -290,16 +345,18 @@ native void SimpleKZ_TogglePause(int client);
 /**
  * Gets the default movement style as set by convar kz_default_style.
  *
- * @return					The default movement style (see KZMovementStyle enumeration).
+ * @return					The default movement style (see KZStyle enumeration).
  */
-native KZMovementStyle SimpleKZ_GetDefaultStyle();
+native KZStyle SimpleKZ_GetDefaultStyle();
 
 /**
- * Gets the player's option value.
+ * Gets the current value of a player's option. Note that this
+ * returns an int, whereas options use an enumerated tag.
+ * Use the KZPlayer method map to simplify this caveat.
  *
  * @param client			Client entity index.
  * @param option			The SimpleKZ option (see KZOption enumeration).
- * @return					The player's movement style.
+ * @return					The current value of a player's option.
  */
 native int SimpleKZ_GetOption(int client, KZOption option);
 

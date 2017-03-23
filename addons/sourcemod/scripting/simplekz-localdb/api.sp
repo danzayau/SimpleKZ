@@ -38,7 +38,7 @@ void Call_SimpleKZ_OnRetrieveCurrentMapID() {
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnStoreTimeInDB(int client, int playerID, int mapID, int course, KZMovementStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS) {
+void Call_SimpleKZ_OnStoreTimeInDB(int client, int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS) {
 	Call_StartForward(gH_Forward_SimpleKZ_OnStoreTimeInDB);
 	Call_PushCell(client);
 	Call_PushCell(playerID);

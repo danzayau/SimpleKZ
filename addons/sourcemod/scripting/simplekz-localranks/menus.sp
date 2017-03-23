@@ -40,7 +40,7 @@ void DisplayMapTopMenu(int client) {
 void AddItemsMapTopMenu(int client) {
 	char text[32];
 	RemoveAllMenuItems(gH_MapTopMenu[client]);
-	for (int timeType = 0; timeType < SIMPLEKZ_NUMBER_OF_TIME_TYPES; timeType++) {
+	for (int timeType = 0; timeType < view_as<int>(KZTimeType); timeType++) {
 		FormatEx(text, sizeof(text), "%T", "Map Top Menu - Top 20", client, gC_TimeTypePhrases[timeType]);
 		AddMenuItem(gH_MapTopMenu[client], "", text);
 	}
@@ -87,7 +87,7 @@ public int MenuHandler_PlayerTop(Menu menu, MenuAction action, int param1, int p
 void AddItemsPlayerTopMenu(int client) {
 	char text[32];
 	RemoveAllMenuItems(gH_PlayerTopMenu[client]);
-	for (int timeType = 0; timeType < SIMPLEKZ_NUMBER_OF_TIME_TYPES; timeType++) {
+	for (int timeType = 0; timeType < view_as<int>(KZTimeType); timeType++) {
 		FormatEx(text, sizeof(text), "%T", "Player Top Menu - Top 20", client, gC_TimeTypePhrases[timeType]);
 		AddMenuItem(gH_PlayerTopMenu[client], "", text);
 	}

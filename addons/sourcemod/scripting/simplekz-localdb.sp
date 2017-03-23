@@ -117,6 +117,6 @@ public void OnMapStart() {
 	DB_SetupMap();
 }
 
-public void SimpleKZ_OnTimerEnd(int client, int course, KZMovementStyle style, float time, int teleportsUsed, float theoreticalTime) {
+public void SimpleKZ_OnTimerEnd(int client, int course, KZStyle style, float time, int teleportsUsed, float theoreticalTime) {
 	DB_StoreTime(g_KZPlayer[client], course, style, time, teleportsUsed, theoreticalTime);
 } 

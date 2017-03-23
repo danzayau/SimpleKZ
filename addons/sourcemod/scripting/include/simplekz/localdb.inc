@@ -86,7 +86,7 @@ forward void SimpleKZ_OnRetrieveCurrentMapID(int mapID);
  * @param theoreticalRunTimeMS	Theoretical end time without using teleports (milliseconds).
  * @noreturn
  */
-forward void SimpleKZ_OnSaveTimeToDB(int playerID, int mapID, int course, KZMovementStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS);
+forward void SimpleKZ_OnSaveTimeToDB(int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS);
 
 
 

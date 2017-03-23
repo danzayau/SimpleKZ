@@ -173,19 +173,19 @@ public void DB_TxnSuccess_LoadOptions(Handle db, KZPlayer player, int numQueries
 	}
 	
 	else if (SQL_FetchRow(results[0])) {
-		player.style = view_as<KZMovementStyle>(SQL_FetchInt(results[0], 0));
-		player.showingTeleportMenu = SQL_FetchInt(results[0], 1);
-		player.showingInfoPanel = SQL_FetchInt(results[0], 2);
-		player.showingKeys = SQL_FetchInt(results[0], 3);
-		player.showingPlayers = SQL_FetchInt(results[0], 4);
-		player.showingWeapon = SQL_FetchInt(results[0], 5);
-		player.autoRestart = SQL_FetchInt(results[0], 6);
-		player.slayOnEnd = SQL_FetchInt(results[0], 7);
-		player.pistol = SQL_FetchInt(results[0], 8);
-		player.checkpointMessages = SQL_FetchInt(results[0], 9);
-		player.checkpointSounds = SQL_FetchInt(results[0], 10);
-		player.teleportSounds = SQL_FetchInt(results[0], 11);
-		player.timerText = SQL_FetchInt(results[0], 12);
+		player.style = view_as<KZStyle>(SQL_FetchInt(results[0], 0));
+		player.showingTeleportMenu = view_as<KZShowingTeleportMenu>(SQL_FetchInt(results[0], 1));
+		player.showingInfoPanel = view_as<KZShowingInfoPanel>(SQL_FetchInt(results[0], 2));
+		player.showingKeys = view_as<KZShowingKeys>(SQL_FetchInt(results[0], 3));
+		player.showingPlayers = view_as<KZShowingPlayers>(SQL_FetchInt(results[0], 4));
+		player.showingWeapon = view_as<KZShowingWeapon>(SQL_FetchInt(results[0], 5));
+		player.autoRestart = view_as<KZAutoRestart>(SQL_FetchInt(results[0], 6));
+		player.slayOnEnd = view_as<KZSlayOnEnd>(SQL_FetchInt(results[0], 7));
+		player.pistol = view_as<KZPistol>(SQL_FetchInt(results[0], 8));
+		player.checkpointMessages = view_as<KZCheckpointMessages>(SQL_FetchInt(results[0], 9));
+		player.checkpointSounds = view_as<KZCheckpointSounds>(SQL_FetchInt(results[0], 10));
+		player.teleportSounds = view_as<KZTeleportSounds>(SQL_FetchInt(results[0], 11));
+		player.timerText = view_as<KZTimerText>(SQL_FetchInt(results[0], 12));
 	}
 }
 
@@ -289,7 +289,7 @@ public void DB_TxnSuccess_SetupMap(Handle db, any data, int numQueries, Handle[]
 
 /*===============================  Times  ===============================*/
 
-void DB_StoreTime(KZPlayer player, int course, KZMovementStyle style, float runTime, int teleportsUsed, float theoreticalRunTime) {
+void DB_StoreTime(KZPlayer player, int course, KZStyle style, float runTime, int teleportsUsed, float theoreticalRunTime) {
 	if (!gB_ConnectedToDB) {
 		return;
 	}
@@ -325,7 +325,7 @@ public void DB_TxnSuccess_SaveTime(Handle db, DataPack data, int numQueries, Han
 	int playerID = data.ReadCell();
 	int mapID = data.ReadCell();
 	int course = data.ReadCell();
-	KZMovementStyle style = data.ReadCell();
+	KZStyle style = data.ReadCell();
 	int runTimeMS = data.ReadCell();
 	int teleportsUsed = data.ReadCell();
 	int theoreticalTimeMS = data.ReadCell();

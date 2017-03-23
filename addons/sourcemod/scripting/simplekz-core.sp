@@ -28,8 +28,6 @@ public Plugin myinfo =
 
 /*===============================  Definitions  ===============================*/
 
-#define DEFAULT_PISTOL 0
-
 #define TIME_PAUSE_COOLDOWN 1.0
 #define TIME_SPLIT_COOLDOWN 1.0
 #define TIME_BHOP_TRIGGER_DETECTION 0.2
@@ -98,19 +96,19 @@ bool gB_HasResumedInThisRun[MAXPLAYERS + 1];
 int gI_CurrentCourse[MAXPLAYERS + 1];
 
 /* Options */
-KZMovementStyle g_Style[MAXPLAYERS + 1];
-int gI_ShowingTeleportMenu[MAXPLAYERS + 1];
-int gI_ShowingInfoPanel[MAXPLAYERS + 1];
-int gI_ShowingKeys[MAXPLAYERS + 1];
-int gI_ShowingPlayers[MAXPLAYERS + 1];
-int gI_ShowingWeapon[MAXPLAYERS + 1];
-int gI_AutoRestart[MAXPLAYERS + 1];
-int gI_SlayOnEnd[MAXPLAYERS + 1];
-int gI_Pistol[MAXPLAYERS + 1];
-int gI_CheckpointMessages[MAXPLAYERS + 1];
-int gI_CheckpointSounds[MAXPLAYERS + 1];
-int gI_TeleportSounds[MAXPLAYERS + 1];
-int gI_TimerText[MAXPLAYERS + 1];
+KZStyle g_Style[MAXPLAYERS + 1];
+KZShowingTeleportMenu g_ShowingTeleportMenu[MAXPLAYERS + 1];
+KZShowingInfoPanel g_ShowingInfoPanel[MAXPLAYERS + 1];
+KZShowingKeys g_ShowingKeys[MAXPLAYERS + 1];
+KZShowingPlayers g_ShowingPlayers[MAXPLAYERS + 1];
+KZShowingWeapon g_ShowingWeapon[MAXPLAYERS + 1];
+KZAutoRestart g_AutoRestart[MAXPLAYERS + 1];
+KZSlayOnEnd g_SlayOnEnd[MAXPLAYERS + 1];
+KZPistol g_Pistol[MAXPLAYERS + 1];
+KZCheckpointMessages g_CheckpointMessages[MAXPLAYERS + 1];
+KZCheckpointSounds g_CheckpointSounds[MAXPLAYERS + 1];
+KZTeleportSounds g_TeleportSounds[MAXPLAYERS + 1];
+KZTimerText g_TimerText[MAXPLAYERS + 1];
 
 /* Button Press Checking */
 int gI_OldButtons[MAXPLAYERS + 1];
@@ -186,7 +184,8 @@ int gI_WeaponRunSpeeds[] =
 	210, 245, 230, 240, 240, 
 	230, 215 };
 
-/* Pistol Entity Names (entity name | alias | team that buys it) */
+/* Pistol Entity Names (entity name | alias | team that buys it) 
+	Respective to the KZPistol enumeration. */
 char gC_Pistols[][][] = 
 {
 	{ "weapon_hkp2000", "P2000 / USP-S", "CT" }, 
@@ -207,8 +206,8 @@ char gC_RadioCommands[][] =
 	"inposition", "reportingin", "getout", "negative", "enemydown", "compliment", "thanks", "cheer"
 };
 
-/* Styles translation phrases for chat messages (respective to KZMovementStyle enum) */
-char gC_StylePhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
+/* Styles translation phrases for chat messages (respective to KZStyle enum) */
+char gC_StylePhrases[view_as<int>(KZStyle)][] = 
 {
 	"Style - Standard", 
 	"Style - Legacy"
@@ -218,7 +217,6 @@ char gC_StylePhrases[SIMPLEKZ_NUMBER_OF_STYLES][] =
 char gC_TimerTextOptionPhrases[][] = 
 {
 	"Options Menu - Disabled", 
-	"Options Menu - Left", 
 	"Options Menu - Top", 
 	"Options Menu - Bottom"
 };
@@ -332,8 +330,8 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (!IsFakeClient(client)) {
 		CreateTimer(0.0, CleanHUD, client); // Clean HUD (using a 1 frame timer or else it won't work)
-		SetDrawViewModel(client, view_as<bool>(gI_ShowingWeapon[client])); // Hide weapon
-		GivePlayerPistol(client, gI_Pistol[client]); // Give player their preferred pistol
+		SetDrawViewModel(client, view_as<bool>(g_ShowingWeapon[client])); // Hide weapon
+		GivePlayerPistol(client, g_Pistol[client]); // Give player their preferred pistol
 		CloseTeleportMenu(client);
 	}
 	SetEntProp(client, Prop_Data, "m_takedamage", 0, 1); // Godmode
@@ -425,7 +423,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
 
 // Hide other players
 public Action OnSetTransmit(int entity, int client) {
-	if (!gI_ShowingPlayers[client] && entity != client && entity != GetSpectatedPlayer(client)) {
+	if (!g_ShowingPlayers[client] && entity != client && entity != GetSpectatedPlayer(client)) {
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;

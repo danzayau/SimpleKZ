@@ -7,7 +7,7 @@
 /*===============================  Forwards  ===============================*/
 
 Handle gH_Forward_SimpleKZ_OnClientSetup;
-Handle gH_Forward_SimpleKZ_OnChangeMovementStyle;
+Handle gH_Forward_SimpleKZ_OnChangeOption;
 Handle gH_Forward_SimpleKZ_OnPerfectBunnyhop;
 Handle gH_Forward_SimpleKZ_OnTimerStart;
 Handle gH_Forward_SimpleKZ_OnTimerEnd;
@@ -18,7 +18,7 @@ Handle gH_Forward_SimpleKZ_OnPlayerTeleport;
 
 void CreateGlobalForwards() {
 	gH_Forward_SimpleKZ_OnClientSetup = CreateGlobalForward("SimpleKZ_OnClientSetup", ET_Event, Param_Cell);
-	gH_Forward_SimpleKZ_OnChangeMovementStyle = CreateGlobalForward("SimpleKZ_OnChangeMovementStyle", ET_Event, Param_Cell, Param_Cell);
+	gH_Forward_SimpleKZ_OnChangeOption = CreateGlobalForward("SimpleKZ_OnChangeOption", ET_Event, Param_Cell, Param_Cell, Param_Cell);
 	gH_Forward_SimpleKZ_OnPerfectBunnyhop = CreateGlobalForward("SimpleKZ_OnPerfectBunnyhop", ET_Event, Param_Cell);
 	gH_Forward_SimpleKZ_OnTimerStart = CreateGlobalForward("SimpleKZ_OnTimerStart", ET_Event, Param_Cell, Param_Cell, Param_Cell);
 	gH_Forward_SimpleKZ_OnTimerEnd = CreateGlobalForward("SimpleKZ_OnTimerEnd", ET_Event, Param_Cell, Param_Cell, Param_Cell, Param_Float, Param_Cell, Param_Float);
@@ -34,10 +34,11 @@ void Call_SimpleKZ_OnClientSetup(int client) {
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnChangeMovementStyle(int client) {
-	Call_StartForward(gH_Forward_SimpleKZ_OnChangeMovementStyle);
+void Call_SimpleKZ_OnChangeOption(int client, KZOption option, any optionValue) {
+	Call_StartForward(gH_Forward_SimpleKZ_OnChangeOption);
 	Call_PushCell(client);
-	Call_PushCell(g_Style[client]);
+	Call_PushCell(option);
+	Call_PushCell(optionValue);
 	Call_Finish();
 }
 

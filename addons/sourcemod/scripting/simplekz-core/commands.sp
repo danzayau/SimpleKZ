@@ -55,7 +55,7 @@ public Action CommandJoinTeam(int client, const char[] command, int argc) {
 /*===============================  Command Handlers  ===============================*/
 
 public Action CommandToggleMenu(int client, int args) {
-	ToggleTeleportMenu(client);
+	IncrementOption(client, KZOption_ShowingTeleportMenu);
 	return Plugin_Handled;
 }
 
@@ -160,17 +160,17 @@ public Action CommandOptions(int client, int args) {
 }
 
 public Action CommandToggleShowPlayers(int client, int args) {
-	ToggleShowPlayers(client);
+	IncrementOption(client, KZOption_ShowingPlayers);
 	return Plugin_Handled;
 }
 
 public Action CommandToggleInfoPanel(int client, int args) {
-	ToggleInfoPanel(client);
+	IncrementOption(client, KZOption_ShowingInfoPanel);
 	return Plugin_Handled;
 }
 
 public Action CommandToggleShowWeapon(int client, int args) {
-	ToggleShowWeapon(client);
+	IncrementOption(client, KZOption_ShowingWeapon);
 	return Plugin_Handled;
 }
 
@@ -205,11 +205,11 @@ public Action CommandStyle(int client, int args) {
 }
 
 public Action CommandStandard(int client, int args) {
-	SetMovementStyle(client, KZMovementStyle_Standard);
+	SetOption(client, KZOption_Style, KZStyle_Standard);
 	return Plugin_Handled;
 }
 
 public Action CommandLegacy(int client, int args) {
-	SetMovementStyle(client, KZMovementStyle_Legacy);
+	SetOption(client, KZOption_Style, KZStyle_Legacy);
 	return Plugin_Handled;
 } 

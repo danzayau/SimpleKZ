@@ -144,119 +144,119 @@ methodmap KZPlayer __nullable__ {
 	
 	/*===============================  Options Properties  ===============================*/
 	
-	property KZMovementStyle style {
+	property KZStyle style {
 		public get() {
-			return view_as<KZMovementStyle>(SimpleKZ_GetOption(this.id, KZOption_Style));
+			return view_as<KZStyle>(SimpleKZ_GetOption(this.id, KZOption_Style));
 		}
-		public set(KZMovementStyle value) {
+		public set(KZStyle value) {
 			SimpleKZ_SetOption(this.id, KZOption_Style, value);
 		}
 	}
 	
-	property int showingTeleportMenu {
+	property KZShowingTeleportMenu showingTeleportMenu {
 		public get() {
-			return SimpleKZ_GetOption(this.id, KZOption_ShowingTeleportMenu);
+			return view_as<KZShowingTeleportMenu>(SimpleKZ_GetOption(this.id, KZOption_ShowingTeleportMenu));
 		}
-		public set(int value) {
+		public set(KZShowingTeleportMenu value) {
 			SimpleKZ_SetOption(this.id, KZOption_ShowingTeleportMenu, value);
 		}
 	}
 	
-	property int showingInfoPanel {
+	property KZShowingInfoPanel showingInfoPanel {
 		public get() {
-			return SimpleKZ_GetOption(this.id, KZOption_ShowingInfoPanel);
+			return view_as<KZShowingInfoPanel>(SimpleKZ_GetOption(this.id, KZOption_ShowingInfoPanel));
 		}
-		public set(int value) {
+		public set(KZShowingInfoPanel value) {
 			SimpleKZ_SetOption(this.id, KZOption_ShowingInfoPanel, value);
 		}
 	}
 	
-	property int showingKeys {
+	property KZShowingKeys showingKeys {
 		public get() {
-			return SimpleKZ_GetOption(this.id, KZOption_ShowingKeys);
+			return view_as<KZShowingKeys>(SimpleKZ_GetOption(this.id, KZOption_ShowingKeys));
 		}
-		public set(int value) {
+		public set(KZShowingKeys value) {
 			SimpleKZ_SetOption(this.id, KZOption_ShowingKeys, value);
 		}
 	}
 	
-	property int showingPlayers {
+	property KZShowingPlayers showingPlayers {
 		public get() {
-			return SimpleKZ_GetOption(this.id, KZOption_ShowingPlayers);
+			return view_as<KZShowingPlayers>(SimpleKZ_GetOption(this.id, KZOption_ShowingPlayers));
 		}
-		public set(int value) {
+		public set(KZShowingPlayers value) {
 			SimpleKZ_SetOption(this.id, KZOption_ShowingPlayers, value);
 		}
 	}
 	
-	property int showingWeapon {
+	property KZShowingWeapon showingWeapon {
 		public get() {
-			return SimpleKZ_GetOption(this.id, KZOption_ShowingWeapon);
+			return view_as<KZShowingWeapon>(SimpleKZ_GetOption(this.id, KZOption_ShowingWeapon));
 		}
-		public set(int value) {
+		public set(KZShowingWeapon value) {
 			SimpleKZ_SetOption(this.id, KZOption_ShowingWeapon, value);
 		}
 	}
 	
-	property int autoRestart {
+	property KZAutoRestart autoRestart {
 		public get() {
-			return SimpleKZ_GetOption(this.id, KZOption_AutoRestart);
+			return view_as<KZAutoRestart>(SimpleKZ_GetOption(this.id, KZOption_AutoRestart));
 		}
-		public set(int value) {
+		public set(KZAutoRestart value) {
 			SimpleKZ_SetOption(this.id, KZOption_AutoRestart, value);
 		}
 	}
 	
-	property int slayOnEnd {
+	property KZSlayOnEnd slayOnEnd {
 		public get() {
-			return SimpleKZ_GetOption(this.id, KZOption_SlayOnEnd);
+			return view_as<KZSlayOnEnd>(SimpleKZ_GetOption(this.id, KZOption_SlayOnEnd));
 		}
-		public set(int value) {
+		public set(KZSlayOnEnd value) {
 			SimpleKZ_SetOption(this.id, KZOption_SlayOnEnd, value);
 		}
 	}
 	
-	property int pistol {
+	property KZPistol pistol {
 		public get() {
-			return SimpleKZ_GetOption(this.id, KZOption_Pistol);
+			return view_as<KZPistol>(SimpleKZ_GetOption(this.id, KZOption_Pistol));
 		}
-		public set(int value) {
+		public set(KZPistol value) {
 			SimpleKZ_SetOption(this.id, KZOption_Pistol, value);
 		}
 	}
 	
-	property int checkpointMessages {
+	property KZCheckpointMessages checkpointMessages {
 		public get() {
-			return SimpleKZ_GetOption(this.id, KZOption_CheckpointMessages);
+			return view_as<KZCheckpointMessages>(SimpleKZ_GetOption(this.id, KZOption_CheckpointMessages));
 		}
-		public set(int value) {
+		public set(KZCheckpointMessages value) {
 			SimpleKZ_SetOption(this.id, KZOption_CheckpointMessages, value);
 		}
 	}
 	
-	property int checkpointSounds {
+	property KZCheckpointSounds checkpointSounds {
 		public get() {
-			return SimpleKZ_GetOption(this.id, KZOption_CheckpointSounds);
+			return view_as<KZCheckpointSounds>(SimpleKZ_GetOption(this.id, KZOption_CheckpointSounds));
 		}
-		public set(int value) {
+		public set(KZCheckpointSounds value) {
 			SimpleKZ_SetOption(this.id, KZOption_CheckpointSounds, value);
 		}
 	}
 	
-	property int teleportSounds {
+	property KZTeleportSounds teleportSounds {
 		public get() {
-			return SimpleKZ_GetOption(this.id, KZOption_TeleportSounds);
+			return view_as<KZTeleportSounds>(SimpleKZ_GetOption(this.id, KZOption_TeleportSounds));
 		}
-		public set(int value) {
+		public set(KZTeleportSounds value) {
 			SimpleKZ_SetOption(this.id, KZOption_TeleportSounds, value);
 		}
 	}
 	
-	property int timerText {
+	property KZTimerText timerText {
 		public get() {
-			return SimpleKZ_GetOption(this.id, KZOption_TimerText);
+			return view_as<KZTimerText>(SimpleKZ_GetOption(this.id, KZOption_TimerText));
 		}
-		public set(int value) {
+		public set(KZTimerText value) {
 			SimpleKZ_SetOption(this.id, KZOption_TimerText, value);
 		}
 	}

@@ -46,22 +46,22 @@ Handle gH_MapTopSubMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 char gC_MapTopMapName[MAXPLAYERS + 1][64];
 int gI_MapTopMapID[MAXPLAYERS + 1];
 int gI_MapTopCourse[MAXPLAYERS + 1];
-KZMovementStyle g_MapTopStyle[MAXPLAYERS + 1];
+KZStyle g_MapTopStyle[MAXPLAYERS + 1];
 Handle gH_PlayerTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 Handle gH_PlayerTopSubMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-KZMovementStyle g_PlayerTopStyle[MAXPLAYERS + 1];
+KZStyle g_PlayerTopStyle[MAXPLAYERS + 1];
 
 /* Other */
 bool gB_LateLoad;
 
-/* Styles translation phrases for chat messages (respective to KZMovementStyle enum) */
-char gC_StylePhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
+/* Styles translation phrases for chat messages (respective to KZStyle enum) */
+char gC_StylePhrases[view_as<int>(KZStyle)][] = 
 { "Style - Standard", 
 	"Style - Legacy"
 };
 
 /* Time type translation phrases for chat messages (respective to KZTimeType enum) */
-char gC_TimeTypePhrases[SIMPLEKZ_NUMBER_OF_TIME_TYPES][] = 
+char gC_TimeTypePhrases[view_as<int>(KZTimeType)][] = 
 { "Time Type - Normal", 
 	"Time Type - Pro", 
 	"Time Type - Theoretical"
@@ -168,17 +168,17 @@ public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
 	DB_CreateTables();
 }
 
-public void SimpleKZ_OnStoreTimeInDB(int client, int playerID, int mapID, int course, KZMovementStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS) {
+public void SimpleKZ_OnStoreTimeInDB(int client, int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS) {
 	DB_ProcessNewTime(client, playerID, mapID, course, style, runTimeMS, teleportsUsed);
 }
 
-public void SimpleKZ_OnNewRecord(int client, int mapID, int course, KZMovementStyle style, KZRecordType recordType, float runTime) {
+public void SimpleKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime) {
 	if (mapID == SimpleKZ_GetCurrentMapID()) {
 		AnnounceNewRecord(client, course, style, recordType);
 	}
 }
 
-public void SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, KZMovementStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
+public void SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
 	if (mapID == SimpleKZ_GetCurrentMapID() && rank != 1) {
 		AnnounceNewPersonalBest(client, course, style, timeType, firstTime, improvement, rank, maxRank);
 	}

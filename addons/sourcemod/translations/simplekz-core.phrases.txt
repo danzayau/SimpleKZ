@@ -349,14 +349,6 @@
 	{
 		"en"		"Disabled"
 	}
-	"Options Menu - Left"
-	{
-		"en"		"Left"
-	}
-	"Options Menu - Right"
-	{
-		"en"		"Right"
-	}
 	"Options Menu - Top"
 	{
 		"en"		"Top"

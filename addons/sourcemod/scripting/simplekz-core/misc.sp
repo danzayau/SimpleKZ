@@ -211,8 +211,8 @@ void UpdatePlayerModel(int client) {
 	}
 }
 
-void GivePlayerPistol(int client, int pistol) {
-	if (!IsPlayerAlive(client)) {
+void GivePlayerPistol(int client, KZPistol pistol) {
+	if (!IsClientInGame(client) || !IsPlayerAlive(client)) {
 		return;
 	}
 	
@@ -311,21 +311,18 @@ bool JustTouchedBhopBlock(int client) {
 /*===============================  Timer Text  ===============================*/
 
 void UpdateTimerText(int client) {
-	if (gI_TimerText[client] == SIMPLEKZ_TIMERTEXT_DISABLED) {
+	if (g_TimerText[client] == KZTimerText_Disabled) {
 		return;
 	}
 	
-	switch (gI_TimerText[client]) {
-		case SIMPLEKZ_TIMERTEXT_DISABLED: {
+	switch (g_TimerText[client]) {
+		case KZTimerText_Disabled: {
 			return;
 		}
-		case SIMPLEKZ_TIMERTEXT_LEFT: {
-			SetHudTextParams(0.01, 0.3, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
-		}
-		case SIMPLEKZ_TIMERTEXT_TOP: {
+		case KZTimerText_Top: {
 			SetHudTextParams(-1.0, 0.013, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
 		}
-		case SIMPLEKZ_TIMERTEXT_BOTTOM: {
+		case KZTimerText_Bottom: {
 			SetHudTextParams(-1.0, 0.957, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
 		}
 	}

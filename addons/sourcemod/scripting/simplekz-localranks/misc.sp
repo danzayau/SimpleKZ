@@ -53,7 +53,7 @@ void UpdateCompletionMVPStars(int client) {
 
 /*===============================  Announcements  ===============================*/
 
-void AnnounceNewRecord(int client, int course, KZMovementStyle style, KZRecordType recordType) {
+void AnnounceNewRecord(int client, int course, KZStyle style, KZRecordType recordType) {
 	// Print new record message to chat and play sound
 	if (course == 0) {
 		switch (recordType) {
@@ -84,7 +84,7 @@ void AnnounceNewRecord(int client, int course, KZMovementStyle style, KZRecordTy
 	EmitSoundToAll(REL_SOUNDPATH_BEAT_RECORD);
 }
 
-void AnnounceNewPersonalBest(int client, int course, KZMovementStyle style, KZTimeType timeType, bool firstTime, float improvement, int rank, int maxRank) {
+void AnnounceNewPersonalBest(int client, int course, KZStyle style, KZTimeType timeType, bool firstTime, float improvement, int rank, int maxRank) {
 	// Print new PB message to chat and play sound if first time beating the map PRO
 	if (course == 0) {
 		switch (timeType) {
