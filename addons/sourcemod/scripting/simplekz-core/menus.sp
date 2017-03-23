@@ -235,12 +235,7 @@ void AddItemsMovementStyleMenu(int client) {
 	RemoveAllMenuItems(gH_MovementStyleMenu[client]);
 	for (int style = 0; style < SIMPLEKZ_NUMBER_OF_STYLES; style++) {
 		FormatEx(text, sizeof(text), "%T", gC_StylePhrases[style], client);
-		if (style == view_as<int>(g_Style[client])) {
-			AddMenuItem(gH_MovementStyleMenu[client], "", text, ITEMDRAW_DISABLED);
-		}
-		else {
-			AddMenuItem(gH_MovementStyleMenu[client], "", text, ITEMDRAW_DEFAULT);
-		}
+		AddMenuItem(gH_MovementStyleMenu[client], "", text, ITEMDRAW_DEFAULT);
 	}
 }
 
