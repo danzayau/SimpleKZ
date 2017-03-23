@@ -166,26 +166,6 @@
 	{
 		"en"		"{darkred}You are not aiming at anything solid!"
 	}
-	"Split Create"
-	{
-		// Segment 8:  01:23.45 - Time: 12:34.56
-		"#format"	"{1:d},{2:s},{3:s}"
-		"en"		"{green}Segment {default}{1}{grey}:  {default}{2}{grey}  -  Total: {default}{3}"
-	}
-	"Split Create (Timer Stopped)"
-	{
-		// Time since last split:  01:23.45
-		"#format"	"{1:s}"
-		"en"		"{grey}Time since last split:  {default}{1}{grey}"
-	}
-	"Split Create (First)"
-	{
-		"en"		"{grey}You have made your first split. Make another to see how much time has passed."
-	}
-	"Split Reset"
-	{
-		"en"		"{grey}You have reset your timer and your splits."
-	}
 	"Switched Style"
 	{
 		// You have switched to the Legacy style.
@@ -369,6 +349,22 @@
 	{
 		"en"		"Disabled"
 	}
+	"Options Menu - Left"
+	{
+		"en"		"Left"
+	}
+	"Options Menu - Right"
+	{
+		"en"		"Right"
+	}
+	"Options Menu - Top"
+	{
+		"en"		"Top"
+	}
+	"Options Menu - Bottom"
+	{
+		"en"		"Bottom"
+	}
 	"Options Menu - Teleport Menu"
 	{
 		"en"		"Teleport menu"
@@ -412,6 +408,10 @@
 	"Options Menu - Teleport Sounds"
 	{
 		"en"		"Teleport sounds"
+	}
+	"Options Menu - Timer Text"
+	{
+		"en"		"Timer text"
 	}
 	
 	

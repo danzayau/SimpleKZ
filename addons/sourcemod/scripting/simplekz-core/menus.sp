@@ -157,6 +157,7 @@ void UpdateOptionsMenu(int client) {
 	OptionsAddToggle(client, gI_CheckpointMessages[client], "Options Menu - Checkpoint Messages");
 	OptionsAddToggle(client, gI_CheckpointSounds[client], "Options Menu - Checkpoint Sounds");
 	OptionsAddToggle(client, gI_TeleportSounds[client], "Options Menu - Teleport Sounds");
+	OptionsAddTimerText(client);
 }
 
 void OptionsAddToggle(int client, int option, const char[] optionPhrase) {
@@ -177,6 +178,12 @@ void OptionsAddPistol(int client) {
 	AddMenuItem(gH_OptionsMenu[client], "", text);
 }
 
+void OptionsAddTimerText(int client) {
+	char text[32];
+	FormatEx(text, sizeof(text), "%T - %T", "Options Menu - Timer Text", client, gC_TimerTextOptionPhrases[gI_TimerText[client]], client);
+	AddMenuItem(gH_OptionsMenu[client], "", text);
+}
+
 public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
 		switch (param2) {
@@ -194,8 +201,10 @@ public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int par
 			case 8:ToggleCheckpointMessages(param1);
 			case 9:ToggleCheckpointSounds(param1);
 			case 10:ToggleTeleportSounds(param1);
+			case 11:IncrementTimerText(param1);
 		}
 		if (param2 != 5) {
+			// Reopen the menu at the same place
 			DisplayOptionsMenu(param1, param2 / 6 * 6); // Round item number down to multiple of 6
 		}
 	}

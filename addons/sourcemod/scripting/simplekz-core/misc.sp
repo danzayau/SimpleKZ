@@ -304,4 +304,39 @@ bool JustTouchedBhopBlock(int client) {
 		return true;
 	}
 	return false;
+}
+
+
+
+/*===============================  Timer Text  ===============================*/
+
+void UpdateTimerText(int client) {
+	if (gI_TimerText[client] == SIMPLEKZ_TIMERTEXT_DISABLED) {
+		return;
+	}
+	
+	switch (gI_TimerText[client]) {
+		case SIMPLEKZ_TIMERTEXT_DISABLED: {
+			return;
+		}
+		case SIMPLEKZ_TIMERTEXT_LEFT: {
+			SetHudTextParams(0.01, 0.3, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
+		}
+		case SIMPLEKZ_TIMERTEXT_TOP: {
+			SetHudTextParams(-1.0, 0.013, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
+		}
+		case SIMPLEKZ_TIMERTEXT_BOTTOM: {
+			SetHudTextParams(-1.0, 0.957, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
+		}
+	}
+	
+	if (IsPlayerAlive(client) && gB_TimerRunning[client]) {
+		ShowHudText(client, 0, SimpleKZ_FormatTime(gF_CurrentTime[client]));
+	}
+	else {
+		int spectatedPlayer = GetSpectatedPlayer(client);
+		if (IsValidClient(spectatedPlayer) && gB_TimerRunning[spectatedPlayer]) {
+			ShowHudText(client, 0, SimpleKZ_FormatTime(gF_CurrentTime[spectatedPlayer]));
+		}
+	}
 } 

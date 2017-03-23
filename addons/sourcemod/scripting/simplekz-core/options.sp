@@ -5,24 +5,22 @@
 
 
 int GetOption(int client, KZOption option) {
-	int optionValue;
-	
 	switch (option) {
-		case KZOption_Style:optionValue = view_as<int>(g_Style[client]);
-		case KZOption_ShowingTeleportMenu:optionValue = gI_ShowingTeleportMenu[client];
-		case KZOption_ShowingInfoPanel:optionValue = gI_ShowingInfoPanel[client];
-		case KZOption_ShowingKeys:optionValue = gI_ShowingKeys[client];
-		case KZOption_ShowingPlayers:optionValue = gI_ShowingPlayers[client];
-		case KZOption_ShowingWeapon:optionValue = gI_ShowingWeapon[client];
-		case KZOption_AutoRestart:optionValue = gI_AutoRestart[client];
-		case KZOption_SlayOnEnd:optionValue = gI_SlayOnEnd[client];
-		case KZOption_Pistol:optionValue = gI_Pistol[client];
-		case KZOption_CheckpointMessages:optionValue = gI_CheckpointMessages[client];
-		case KZOption_CheckpointSounds:optionValue = gI_CheckpointSounds[client];
-		case KZOption_TeleportSounds:optionValue = gI_TeleportSounds[client];
+		case KZOption_Style:return view_as<int>(g_Style[client]);
+		case KZOption_ShowingTeleportMenu:return gI_ShowingTeleportMenu[client];
+		case KZOption_ShowingInfoPanel:return gI_ShowingInfoPanel[client];
+		case KZOption_ShowingKeys:return gI_ShowingKeys[client];
+		case KZOption_ShowingPlayers:return gI_ShowingPlayers[client];
+		case KZOption_ShowingWeapon:return gI_ShowingWeapon[client];
+		case KZOption_AutoRestart:return gI_AutoRestart[client];
+		case KZOption_SlayOnEnd:return gI_SlayOnEnd[client];
+		case KZOption_Pistol:return gI_Pistol[client];
+		case KZOption_CheckpointMessages:return gI_CheckpointMessages[client];
+		case KZOption_CheckpointSounds:return gI_CheckpointSounds[client];
+		case KZOption_TeleportSounds:return gI_TeleportSounds[client];
+		case KZOption_TimerText:return gI_TimerText[client];
 	}
-	
-	return optionValue;
+	return -1;
 }
 
 void SetOption(int client, KZOption option, any optionValue) {
@@ -39,6 +37,7 @@ void SetOption(int client, KZOption option, any optionValue) {
 		case KZOption_CheckpointMessages:gI_CheckpointMessages[client] = view_as<int>(optionValue);
 		case KZOption_CheckpointSounds:gI_CheckpointSounds[client] = view_as<int>(optionValue);
 		case KZOption_TeleportSounds:gI_TeleportSounds[client] = view_as<int>(optionValue);
+		case KZOption_TimerText:gI_TimerText[client] = view_as<int>(optionValue);
 	}
 }
 
@@ -51,19 +50,31 @@ void SetDefaultOptions(int client) {
 	gI_ShowingWeapon[client] = SIMPLEKZ_OPTION_ENABLED;
 	gI_AutoRestart[client] = SIMPLEKZ_OPTION_DISABLED;
 	gI_SlayOnEnd[client] = SIMPLEKZ_OPTION_DISABLED;
-	gI_Pistol[client] = 0;
+	gI_Pistol[client] = DEFAULT_PISTOL;
 	gI_CheckpointMessages[client] = SIMPLEKZ_OPTION_DISABLED;
 	gI_CheckpointSounds[client] = SIMPLEKZ_OPTION_DISABLED;
 	gI_TeleportSounds[client] = SIMPLEKZ_OPTION_DISABLED;
+	gI_TimerText[client] = SIMPLEKZ_TIMERTEXT_DISABLED;
 }
 
-bool ToggleOption(int client, int option, const char[] disablePhrase, const char[] enablePhrase) {
+// Toggle option between enabled and disabled, and print the related phrases to chat
+int ToggleOption(int client, int option, const char[] disablePhrase, const char[] enablePhrase) {
 	if (option == SIMPLEKZ_OPTION_ENABLED) {
 		CPrintToChat(client, "%t %t", "KZ Prefix", disablePhrase);
-		return false;
+		return SIMPLEKZ_OPTION_DISABLED;
 	}
 	CPrintToChat(client, "%t %t", "KZ Prefix", enablePhrase);
-	return true;
+	return SIMPLEKZ_OPTION_ENABLED;
+}
+
+// Increment an option variable. Resets to 0 if the new value exceeds maximumValue.
+int IncrementOption(int option, int maximumValue) {
+	int newValue = option;
+	newValue++;
+	if (newValue > maximumValue) {
+		newValue = 0;
+	}
+	return newValue;
 }
 
 void ToggleTeleportMenu(int client) {
@@ -106,4 +117,8 @@ void ToggleCheckpointSounds(int client) {
 
 void ToggleTeleportSounds(int client) {
 	gI_TeleportSounds[client] = ToggleOption(client, gI_TeleportSounds[client], "Option - Teleport Sounds - Disable", "Option - Teleport Sounds - Enable");
+}
+
+void IncrementTimerText(int client) {
+	gI_TimerText[client] = IncrementOption(gI_TimerText[client], 3);
 } 

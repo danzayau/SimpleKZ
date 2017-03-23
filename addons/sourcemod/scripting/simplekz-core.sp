@@ -28,6 +28,8 @@ public Plugin myinfo =
 
 /*===============================  Definitions  ===============================*/
 
+#define DEFAULT_PISTOL 0
+
 #define TIME_PAUSE_COOLDOWN 1.0
 #define TIME_SPLIT_COOLDOWN 1.0
 #define TIME_BHOP_TRIGGER_DETECTION 0.2
@@ -108,6 +110,7 @@ int gI_Pistol[MAXPLAYERS + 1];
 int gI_CheckpointMessages[MAXPLAYERS + 1];
 int gI_CheckpointSounds[MAXPLAYERS + 1];
 int gI_TeleportSounds[MAXPLAYERS + 1];
+int gI_TimerText[MAXPLAYERS + 1];
 
 /* Button Press Checking */
 int gI_OldButtons[MAXPLAYERS + 1];
@@ -197,14 +200,27 @@ char gC_Pistols[][][] =
 };
 
 /* Radio commands */
-char gC_RadioCommands[][] =  { "coverme", "takepoint", "holdpos", "regroup", "followme", "takingfire", "go", 
+char gC_RadioCommands[][] = 
+{
+	"coverme", "takepoint", "holdpos", "regroup", "followme", "takingfire", "go", 
 	"fallback", "sticktog", "getinpos", "stormfront", "report", "roger", "enemyspot", "needbackup", "sectorclear", 
-	"inposition", "reportingin", "getout", "negative", "enemydown", "compliment", "thanks", "cheer" };
+	"inposition", "reportingin", "getout", "negative", "enemydown", "compliment", "thanks", "cheer"
+};
 
 /* Styles translation phrases for chat messages (respective to KZMovementStyle enum) */
 char gC_StylePhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
-{ "Style - Standard", 
+{
+	"Style - Standard", 
 	"Style - Legacy"
+};
+
+/* Timer text option phrases */
+char gC_TimerTextOptionPhrases[][] = 
+{
+	"Options Menu - Disabled", 
+	"Options Menu - Left", 
+	"Options Menu - Top", 
+	"Options Menu - Bottom"
 };
 
 
@@ -331,6 +347,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	TimerTick(client);
 	UpdateTeleportMenu(client); // Can be moved to a slower timer
 	UpdateInfoPanel(client); // Can be moved to a slower timer
+	UpdateTimerText(client); // Can be moved to a slower timer
 	CheckForTimerButtonPress(client);
 	MovementTweakGeneral(g_MovementPlayer[client]);
 }

@@ -20,6 +20,11 @@
 #define SIMPLEKZ_OPTION_DISABLED 0
 #define SIMPLEKZ_OPTION_ENABLED 1
 
+#define SIMPLEKZ_TIMERTEXT_DISABLED 0
+#define SIMPLEKZ_TIMERTEXT_LEFT 1
+#define SIMPLEKZ_TIMERTEXT_TOP 2
+#define SIMPLEKZ_TIMERTEXT_BOTTOM 3
+
 
 
 /*===============================  Enumerations  ===============================*/
@@ -47,7 +52,8 @@ enum KZOption {
 	KZOption_Pistol, 
 	KZOption_CheckpointMessages, 
 	KZOption_CheckpointSounds, 
-	KZOption_TeleportSounds
+	KZOption_TeleportSounds, 
+	KZOption_TimerText
 }
 
 

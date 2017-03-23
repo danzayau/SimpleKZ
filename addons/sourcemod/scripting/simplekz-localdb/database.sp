@@ -185,6 +185,7 @@ public void DB_TxnSuccess_LoadOptions(Handle db, KZPlayer player, int numQueries
 		player.checkpointMessages = SQL_FetchInt(results[0], 9);
 		player.checkpointSounds = SQL_FetchInt(results[0], 10);
 		player.teleportSounds = SQL_FetchInt(results[0], 11);
+		player.timerText = SQL_FetchInt(results[0], 12);
 	}
 }
 
@@ -216,6 +217,7 @@ void DB_SaveOptions(KZPlayer player) {
 		player.checkpointMessages, 
 		player.checkpointSounds, 
 		player.teleportSounds, 
+		player.timerText, 
 		gI_DBPlayerID[player.id]);
 	txn.AddQuery(query);
 	

@@ -185,7 +185,7 @@ methodmap KZPlayer __nullable__ {
 			return SimpleKZ_GetOption(this.id, KZOption_ShowingPlayers);
 		}
 		public set(int value) {
-			SimpleKZ_GetOption(this.id, KZOption_ShowingPlayers);
+			SimpleKZ_SetOption(this.id, KZOption_ShowingPlayers, value);
 		}
 	}
 	
@@ -194,7 +194,7 @@ methodmap KZPlayer __nullable__ {
 			return SimpleKZ_GetOption(this.id, KZOption_ShowingWeapon);
 		}
 		public set(int value) {
-			SimpleKZ_GetOption(this.id, KZOption_ShowingWeapon);
+			SimpleKZ_SetOption(this.id, KZOption_ShowingWeapon, value);
 		}
 	}
 	
@@ -203,7 +203,7 @@ methodmap KZPlayer __nullable__ {
 			return SimpleKZ_GetOption(this.id, KZOption_AutoRestart);
 		}
 		public set(int value) {
-			SimpleKZ_GetOption(this.id, KZOption_AutoRestart);
+			SimpleKZ_SetOption(this.id, KZOption_AutoRestart, value);
 		}
 	}
 	
@@ -212,7 +212,7 @@ methodmap KZPlayer __nullable__ {
 			return SimpleKZ_GetOption(this.id, KZOption_SlayOnEnd);
 		}
 		public set(int value) {
-			SimpleKZ_GetOption(this.id, KZOption_SlayOnEnd);
+			SimpleKZ_SetOption(this.id, KZOption_SlayOnEnd, value);
 		}
 	}
 	
@@ -221,7 +221,7 @@ methodmap KZPlayer __nullable__ {
 			return SimpleKZ_GetOption(this.id, KZOption_Pistol);
 		}
 		public set(int value) {
-			SimpleKZ_GetOption(this.id, KZOption_Pistol);
+			SimpleKZ_SetOption(this.id, KZOption_Pistol, value);
 		}
 	}
 	
@@ -230,7 +230,7 @@ methodmap KZPlayer __nullable__ {
 			return SimpleKZ_GetOption(this.id, KZOption_CheckpointMessages);
 		}
 		public set(int value) {
-			SimpleKZ_GetOption(this.id, KZOption_CheckpointMessages);
+			SimpleKZ_SetOption(this.id, KZOption_CheckpointMessages, value);
 		}
 	}
 	
@@ -239,7 +239,7 @@ methodmap KZPlayer __nullable__ {
 			return SimpleKZ_GetOption(this.id, KZOption_CheckpointSounds);
 		}
 		public set(int value) {
-			SimpleKZ_GetOption(this.id, KZOption_CheckpointSounds);
+			SimpleKZ_SetOption(this.id, KZOption_CheckpointSounds, value);
 		}
 	}
 	
@@ -248,7 +248,16 @@ methodmap KZPlayer __nullable__ {
 			return SimpleKZ_GetOption(this.id, KZOption_TeleportSounds);
 		}
 		public set(int value) {
-			SimpleKZ_GetOption(this.id, KZOption_TeleportSounds);
+			SimpleKZ_SetOption(this.id, KZOption_TeleportSounds, value);
+		}
+	}
+	
+	property int timerText {
+		public get() {
+			return SimpleKZ_GetOption(this.id, KZOption_TimerText);
+		}
+		public set(int value) {
+			SimpleKZ_SetOption(this.id, KZOption_TimerText, value);
 		}
 	}
 	
