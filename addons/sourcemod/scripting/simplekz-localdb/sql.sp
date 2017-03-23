@@ -13,8 +13,8 @@ char sqlite_players_create[] =
 ..."Alias TEXT, "
 ..."Country TEXT, "
 ..."IP TEXT, "
-..."FirstSeen INTEGER DEFAULT CURRENT_TIMESTAMP, "
-..."LastSeen INTEGER DEFAULT CURRENT_TIMESTAMP, "
+..."LastPlayed INTEGER DEFAULT CURRENT_TIMESTAMP, "
+..."Created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, "
 ..."CONSTRAINT PK_Player PRIMARY KEY (PlayerID));";
 
 char mysql_players_create[] = 
@@ -24,8 +24,8 @@ char mysql_players_create[] =
 ..."Alias VARCHAR(32), "
 ..."Country VARCHAR(45), "
 ..."IP VARCHAR(15), "
-..."FirstSeen TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
-..."LastSeen TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+..."LastPlayed TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
 ..."CONSTRAINT PK_Player PRIMARY KEY (PlayerID));";
 
 char sqlite_players_insert[] = 
@@ -34,14 +34,14 @@ char sqlite_players_insert[] =
 
 char sqlite_players_update[] = 
 "UPDATE OR IGNORE Players "
-..."SET Alias='%s', Country='%s', IP='%s', LastSeen=CURRENT_TIMESTAMP "
+..."SET Alias='%s', Country='%s', IP='%s', LastPlayed=CURRENT_TIMESTAMP "
 ..."WHERE SteamID64=%s;";
 
 char mysql_players_upsert[] = 
 "INSERT INTO Players (Alias, Country, IP, SteamID64) "
 ..."VALUES ('%s', '%s', '%s', %s) "
 ..."ON DUPLICATE KEY UPDATE "
-..."SteamID64=VALUES(SteamID64), Alias=VALUES(Alias), Country=VALUES(Country), IP=VALUES(IP), LastSeen=CURRENT_TIMESTAMP;";
+..."SteamID64=VALUES(SteamID64), Alias=VALUES(Alias), Country=VALUES(Country), IP=VALUES(IP), LastPlayed=CURRENT_TIMESTAMP;";
 
 char sql_players_getplayerid[] = 
 "SELECT PlayerID "
@@ -113,6 +113,7 @@ char sqlite_maps_create[] =
 ..."MapID INTEGER, "
 ..."Name VARCHAR(32) NOT NULL UNIQUE, "
 ..."LastPlayed INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."Created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, "
 ..."CONSTRAINT PK_Maps PRIMARY KEY (MapID));";
 
 char mysql_maps_create[] = 
@@ -121,6 +122,7 @@ char mysql_maps_create[] =
 ..."Name VARCHAR(32) NOT NULL UNIQUE, "
 ..."InRankedPool TINYINT NOT NULL DEFAULT '0', "
 ..."LastPlayed TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
 ..."CONSTRAINT PK_Maps PRIMARY KEY (MapID));";
 
 char sqlite_maps_insert[] = 

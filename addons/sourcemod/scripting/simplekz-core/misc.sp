@@ -156,6 +156,10 @@ void JoinTeam(int client, int team) {
 }
 
 void SetDrawViewModel(int client, bool drawViewModel) {
+	if (!IsClientInGame(client) || !IsPlayerAlive(client)) {
+		return;
+	}
+	
 	SetEntProp(client, Prop_Send, "m_bDrawViewmodel", drawViewModel);
 }
 
