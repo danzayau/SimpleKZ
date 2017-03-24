@@ -207,7 +207,9 @@ void Pause(int client) {
 	else if (gB_TimerRunning[client] && gB_HasResumedInThisRun[client] && gF_CurrentTime[client] - gF_LastResumeTime[client] < TIME_PAUSE_COOLDOWN) {
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Just Resumed)");
 	}
-	else if (gB_TimerRunning[client] && !g_MovementPlayer[client].onGround) {
+	// Can't pause in the air if timer is running and player is moving
+	else if (gB_TimerRunning[client] && !g_MovementPlayer[client].onGround
+		 && !(g_MovementPlayer[client].speed == 0 && g_MovementPlayer[client].verticalVelocity == 0)) {
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Midair)");
 	}
 	else {
