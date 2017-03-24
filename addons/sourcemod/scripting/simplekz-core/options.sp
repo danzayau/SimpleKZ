@@ -35,8 +35,7 @@ void SetOption(int client, KZOption option, any optionValue) {
 			if (g_Style[client] != optionValue) {
 				changedOption = true;
 				g_Style[client] = optionValue;
-				if (gB_TimerRunning[client]) {
-					TimerForceStop(client);
+				if (TimerForceStop(client)) {
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Changed Style)");
 				}
 			}

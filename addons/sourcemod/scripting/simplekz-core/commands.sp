@@ -85,8 +85,9 @@ public Action CommandTogglePause(int client, int args) {
 }
 
 public Action CommandStopTimer(int client, int args) {
-	TimerForceStop(client);
-	CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped");
+	if (TimerForceStop(client)) {
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped");
+	}
 	return Plugin_Handled;
 }
 

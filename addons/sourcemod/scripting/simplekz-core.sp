@@ -390,8 +390,7 @@ public Action OnSay(int client, const char[] command, int argc) {
 
 // Force stop timer when they enter noclip
 public void OnStartNoclipping(int client) {
-	if (!IsFakeClient(client) && gB_TimerRunning[client]) {
-		TimerForceStop(client);
+	if (!IsFakeClient(client) && TimerForceStop(client)) {
 		gB_Paused[client] = false;
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Noclipped)");
 	}
@@ -400,7 +399,7 @@ public void OnStartNoclipping(int client) {
 // Force stop timer when a player dies
 public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (!IsFakeClient(client) && gB_TimerRunning[client]) {
+	if (!IsFakeClient(client)) {
 		TimerForceStop(client);
 	}
 }
@@ -452,4 +451,22 @@ public void OnRoundStart(Event event, const char[] name, bool dontBroadcast) {
 	TimerForceStopAll();
 	
 	SetupMapEntityHooks();
+}
+
+// Command usage from certain plugins force stop the player's timer (slap, teleport etc.)
+public Action OnLogAction(Handle source, Identity ident, int client, int target, const char[] message) {
+	if (!IsValidClient(client)) {
+		return Plugin_Continue;
+	}
+	
+	if (ident == Identity_Plugin) {
+		char pluginFilename[PLATFORM_MAX_PATH];
+		GetPluginFilename(source, pluginFilename, sizeof(pluginFilename));
+		if (StrEqual(pluginFilename, "playercommands.smx") || StrEqual(pluginFilename, "funcommands.smx")) {
+			if (TimerForceStop(target)) {
+				CPrintToChat(target, "%t %t", "KZ Prefix", "Time Stopped");
+			}
+		}
+	}
+	return Plugin_Continue;
 } 

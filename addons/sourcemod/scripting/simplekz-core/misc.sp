@@ -222,10 +222,10 @@ void GivePlayerPistol(int client, KZPistol pistol) {
 	
 	int playerTeam = GetClientTeam(client);
 	// Switch teams to the side that buys that gun so that gun skins load
-	if (strcmp(gC_Pistols[pistol][2], "CT") == 0 && playerTeam != CS_TEAM_CT) {
+	if (StrEqual(gC_Pistols[pistol][2], "CT") && playerTeam != CS_TEAM_CT) {
 		CS_SwitchTeam(client, CS_TEAM_CT);
 	}
-	else if (strcmp(gC_Pistols[pistol][2], "T") == 0 && playerTeam != CS_TEAM_T) {
+	else if (StrEqual(gC_Pistols[pistol][2], "T") && playerTeam != CS_TEAM_T) {
 		CS_SwitchTeam(client, CS_TEAM_T);
 	}
 	// Give the player this pistol

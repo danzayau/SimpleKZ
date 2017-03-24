@@ -231,9 +231,9 @@ native void SimpleKZ_EndTimer(int client, int course);
  * Intended for run invalidation.
  *
  * @param client    		Client entity index.
- * @noreturn
+ * @return					Whether or not the player's timer was stopped.
  */
-native void SimpleKZ_ForceStopTimer(int client);
+native bool SimpleKZ_ForceStopTimer(int client);
 
 /**
  * Forces all players' timers to stop.

@@ -68,13 +68,15 @@ void TimerEnd(int client, int course) {
 	}
 }
 
-void TimerForceStop(int client) {
+bool TimerForceStop(int client) {
 	if (gB_TimerRunning[client]) {
 		PlayTimerForceStopSound(client);
 		gB_TimerRunning[client] = false;
 		Call_SimpleKZ_OnTimerForceStop(client);
 		CloseTeleportMenu(client);
+		return true;
 	}
+	return false;
 }
 
 void TimerForceStopAll() {

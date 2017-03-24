@@ -72,8 +72,8 @@ methodmap KZPlayer __nullable__ {
 		SimpleKZ_EndTimer(this.id, course);
 	}
 	
-	public void ForceStopTimer() {
-		SimpleKZ_ForceStopTimer(this.id);
+	public bool ForceStopTimer() {
+		return SimpleKZ_ForceStopTimer(this.id);
 	}
 	
 	public void TeleportToStart() {

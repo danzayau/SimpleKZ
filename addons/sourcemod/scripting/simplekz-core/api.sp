@@ -134,7 +134,7 @@ public int Native_EndTimer(Handle plugin, int numParams) {
 }
 
 public int Native_ForceStopTimer(Handle plugin, int numParams) {
-	TimerForceStop(GetNativeCell(1));
+	return view_as<int>(TimerForceStop(GetNativeCell(1)));
 }
 
 public int Native_ForceStopTimerAll(Handle plugin, int numParams) {
