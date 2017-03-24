@@ -100,14 +100,14 @@ void PrecachePlayerModels() {
 /*===============================  Client  ===============================*/
 
 void SetupClient(int client) {
-	DB_SetupClient(client);
+	SetDefaultOptions(client);
 	TimerSetup(client);
 	UpdatePistolMenu(client);
 	UpdateMeasureMenu(client);
 	MeasureResetPos(client);
 	UpdateOptionsMenu(client);
-	SplitsSetup(client);
 	NoBhopBlockCPSetup(client);
+	Call_SimpleKZ_OnClientSetup(client);
 }
 
 void PrintConnectMessage(int client) {
@@ -156,6 +156,10 @@ void JoinTeam(int client, int team) {
 }
 
 void SetDrawViewModel(int client, bool drawViewModel) {
+	if (!IsClientInGame(client) || !IsPlayerAlive(client)) {
+		return;
+	}
+	
 	SetEntProp(client, Prop_Send, "m_bDrawViewmodel", drawViewModel);
 }
 
@@ -193,12 +197,12 @@ void ToggleNoclip(int client) {
 	}
 }
 
-TimeType GetCurrentTimeType(int client) {
+KZTimeType GetCurrentTimeType(int client) {
 	if (gI_TeleportsUsed[client] == 0) {
-		return TimeType_Pro;
+		return KZTimeType_Pro;
 	}
 	else {
-		return TimeType_Normal;
+		return KZTimeType_Normal;
 	}
 }
 
@@ -211,17 +215,17 @@ void UpdatePlayerModel(int client) {
 	}
 }
 
-void GivePlayerPistol(int client, int pistol) {
-	if (!IsPlayerAlive(client)) {
+void GivePlayerPistol(int client, KZPistol pistol) {
+	if (!IsClientInGame(client) || !IsPlayerAlive(client)) {
 		return;
 	}
 	
 	int playerTeam = GetClientTeam(client);
 	// Switch teams to the side that buys that gun so that gun skins load
-	if (strcmp(gC_Pistols[pistol][2], "CT") == 0 && playerTeam != CS_TEAM_CT) {
+	if (StrEqual(gC_Pistols[pistol][2], "CT") && playerTeam != CS_TEAM_CT) {
 		CS_SwitchTeam(client, CS_TEAM_CT);
 	}
-	else if (strcmp(gC_Pistols[pistol][2], "T") == 0 && playerTeam != CS_TEAM_T) {
+	else if (StrEqual(gC_Pistols[pistol][2], "T") && playerTeam != CS_TEAM_T) {
 		CS_SwitchTeam(client, CS_TEAM_T);
 	}
 	// Give the player this pistol
@@ -248,6 +252,15 @@ void EmitSoundToClientSpectators(int client, const char[] sound) {
 	}
 }
 
+void SetWeaponVisibility(int client) {
+	if (g_ShowingWeapon[client] == KZShowingWeapon_Enabled) {
+		SetDrawViewModel(client, true);
+	}
+	else {
+		SetDrawViewModel(client, false);
+	}
+}
+
 public Action CleanHUD(Handle timer, int client) {
 	if (IsValidClient(client)) {
 		// (1 << 12) Hide Radar
@@ -271,53 +284,6 @@ public Action ZeroVelocity(Handle timer, int client) {
 		g_MovementPlayer[client].SetBaseVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
 	}
 	return Plugin_Continue;
-}
-
-
-
-/*===============================  Splits  ===============================*/
-
-void SplitsSetup(int client) {
-	gI_Splits[client] = 0;
-	gF_SplitRunTime[client] = 0.0;
-	gF_SplitGameTime[client] = 0.0;
-}
-
-void SplitsReset(int client) {
-	if (IsClientInGame(client) && gB_HasStartedThisMap[client] && gI_Splits[client] != 0) {
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Split Reset");
-	}
-	gI_Splits[client] = 0;
-	gF_SplitRunTime[client] = 0.0;
-	gF_SplitGameTime[client] = 0.0;
-}
-
-void SplitsMake(int client) {
-	if ((GetGameTime() - gF_SplitGameTime[client]) < TIME_SPLIT_COOLDOWN) {  // Ignore split spam
-		CloseTeleportMenu(client);
-		return;
-	}
-	
-	gI_Splits[client]++;
-	if (gB_TimerRunning[client]) {
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Split Create", 
-			gI_Splits[client], 
-			SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_SplitRunTime[client]), 
-			SimpleKZ_FormatTime(gF_CurrentTime[client]));
-	}
-	else {
-		if (gI_Splits[client] == 1) {
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Split Create (First)");
-		}
-		else {
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Split Create (Timer Stopped)", 
-				SimpleKZ_FormatTime(GetGameTime() - gF_SplitGameTime[client]));
-		}
-	}
-	gF_SplitRunTime[client] = gF_CurrentTime[client];
-	gF_SplitGameTime[client] = GetGameTime();
-	
-	CloseTeleportMenu(client);
 }
 
 
@@ -351,4 +317,36 @@ bool JustTouchedBhopBlock(int client) {
 		return true;
 	}
 	return false;
+}
+
+
+
+/*===============================  Timer Text  ===============================*/
+
+void UpdateTimerText(int client) {
+	if (g_TimerText[client] == KZTimerText_Disabled) {
+		return;
+	}
+	
+	switch (g_TimerText[client]) {
+		case KZTimerText_Disabled: {
+			return;
+		}
+		case KZTimerText_Top: {
+			SetHudTextParams(-1.0, 0.013, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
+		}
+		case KZTimerText_Bottom: {
+			SetHudTextParams(-1.0, 0.957, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
+		}
+	}
+	
+	if (IsPlayerAlive(client) && gB_TimerRunning[client]) {
+		ShowHudText(client, 0, SimpleKZ_FormatTime(gF_CurrentTime[client]));
+	}
+	else {
+		int spectatedPlayer = GetSpectatedPlayer(client);
+		if (IsValidClient(spectatedPlayer) && gB_TimerRunning[spectatedPlayer]) {
+			ShowHudText(client, 0, SimpleKZ_FormatTime(gF_CurrentTime[spectatedPlayer]));
+		}
+	}
 } 

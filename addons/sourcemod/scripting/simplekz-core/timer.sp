@@ -50,7 +50,6 @@ void TimerStart(int client, int course) {
 	gB_HasStartedThisMap[client] = true;
 	g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
 	g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
-	SplitsReset(client);
 	PlayTimerStartSound(client);
 	Call_SimpleKZ_OnTimerStart(client);
 	CloseTeleportMenu(client);
@@ -60,7 +59,7 @@ void TimerEnd(int client, int course) {
 	if (gB_TimerRunning[client] && course == gI_CurrentCourse[client]) {
 		gB_TimerRunning[client] = false;
 		PrintEndTimeString(client);
-		if (gB_SlayOnEnd[client]) {
+		if (g_SlayOnEnd[client] == KZSlayOnEnd_Enabled) {
 			CreateTimer(3.0, SlayPlayer, client);
 		}
 		PlayTimerEndSound(client);
@@ -69,13 +68,15 @@ void TimerEnd(int client, int course) {
 	}
 }
 
-void TimerForceStop(int client) {
+bool TimerForceStop(int client) {
 	if (gB_TimerRunning[client]) {
 		PlayTimerForceStopSound(client);
 		gB_TimerRunning[client] = false;
 		Call_SimpleKZ_OnTimerForceStop(client);
 		CloseTeleportMenu(client);
+		return true;
 	}
+	return false;
 }
 
 void TimerForceStopAll() {
@@ -89,43 +90,6 @@ void TimerForceStopAll() {
 
 
 /*===============================  Start and End Buttons  ===============================*/
-
-public void OnButtonPress(const char[] name, int caller, int activator, float delay) {
-	if (!IsValidEntity(caller) || !IsValidClient(activator)) {
-		return;
-	}
-	
-	char tempString[32];
-	// Get the class name of the activator
-	GetEdictClassname(activator, tempString, sizeof(tempString));
-	if (StrEqual(tempString, "player")) {
-		// Get the name of the pressed func_button
-		GetEntPropString(caller, Prop_Data, "m_iName", tempString, sizeof(tempString));
-		// Check if button entity name is something we want to do something with
-		if (StrEqual("climb_startbutton", tempString, false)) {
-			g_MovementPlayer[activator].GetOrigin(gF_StartButtonOrigin[activator]);
-			TimerStart(activator, 0);
-		}
-		else if (StrEqual("climb_endbutton", tempString, false)) {
-			g_MovementPlayer[activator].GetOrigin(gF_EndButtonOrigin[activator]);
-			TimerEnd(activator, 0);
-		}
-		else if (MatchRegex(gRE_BonusStartButton, tempString) > 0) {
-			GetRegexSubString(gRE_BonusStartButton, 1, tempString, sizeof(tempString));
-			int bonus = StringToInt(tempString);
-			if (bonus > 0) {
-				TimerStart(activator, bonus);
-			}
-		}
-		else if (MatchRegex(gRE_BonusEndButton, tempString) > 0) {
-			GetRegexSubString(gRE_BonusEndButton, 1, tempString, sizeof(tempString));
-			int bonus = StringToInt(tempString);
-			if (bonus > 0) {
-				TimerEnd(activator, bonus);
-			}
-		}
-	}
-}
 
 void CheckForTimerButtonPress(int client) {
 	// If just pressed +use button
@@ -164,7 +128,7 @@ void TeleportToStart(int client) {
 		}
 		AddWastedTimeTeleportToStart(client);
 		TimerDoTeleport(client, gF_StartOrigin[client], gF_StartAngles[client]);
-		if (gB_AutoRestart[client]) {
+		if (g_AutoRestart[client] == KZAutoRestart_Enabled) {
 			TimerStart(client, gI_LastCourseStarted[client]);
 		}
 	}
@@ -189,10 +153,10 @@ void MakeCheckpoint(int client) {
 		gF_LastCheckpointTime[client] = gF_CurrentTime[client];
 		g_MovementPlayer[client].GetOrigin(gF_CheckpointOrigin[client]);
 		g_MovementPlayer[client].GetEyeAngles(gF_CheckpointAngles[client]);
-		if (gB_CheckpointMessages[client]) {
+		if (g_CheckpointMessages[client] == KZCheckpointMessages_Enabled) {
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Make Checkpoint");
 		}
-		if (gB_CheckpointSounds[client]) {
+		if (g_CheckpointSounds[client] == KZCheckpointSounds_Enabled) {
 			EmitSoundToClient(client, SOUND_TELEPORT);
 		}
 	}
@@ -209,7 +173,7 @@ void TeleportToCheckpoint(int client) {
 	else {
 		AddWastedTimeTeleportToCheckpoint(client);
 		TimerDoTeleport(client, gF_CheckpointOrigin[client], gF_CheckpointAngles[client]);
-		if (gB_TeleportSounds[client]) {
+		if (g_TeleportSounds[client] == KZTeleportSounds_Enabled) {
 			EmitSoundToClient(client, SOUND_TELEPORT);
 		}
 	}
@@ -226,7 +190,7 @@ void UndoTeleport(int client) {
 	else {
 		AddWastedTimeUndoTeleport(client);
 		TimerDoTeleport(client, gF_UndoOrigin[client], gF_UndoAngle[client]);
-		if (gB_TeleportSounds[client]) {
+		if (g_TeleportSounds[client]) {
 			EmitSoundToClient(client, SOUND_TELEPORT);
 		}
 	}
@@ -243,7 +207,9 @@ void Pause(int client) {
 	else if (gB_TimerRunning[client] && gB_HasResumedInThisRun[client] && gF_CurrentTime[client] - gF_LastResumeTime[client] < TIME_PAUSE_COOLDOWN) {
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Just Resumed)");
 	}
-	else if (gB_TimerRunning[client] && !g_MovementPlayer[client].onGround) {
+	// Can't pause in the air if timer is running and player is moving
+	else if (gB_TimerRunning[client] && !g_MovementPlayer[client].onGround
+		 && !(g_MovementPlayer[client].speed == 0 && g_MovementPlayer[client].verticalVelocity == 0)) {
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Midair)");
 	}
 	else {
@@ -370,13 +336,13 @@ void TimerDoTeleport(int client, float destination[3], float eyeAngles[3]) {
 void PrintEndTimeString(int client) {
 	if (gI_CurrentCourse[client] == 0) {
 		switch (GetCurrentTimeType(client)) {
-			case TimeType_Normal: {
+			case KZTimeType_Normal: {
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map", 
 					client, SimpleKZ_FormatTime(gF_CurrentTime[client]), 
 					gI_TeleportsUsed[client], SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
 			}
-			case TimeType_Pro: {
+			case KZTimeType_Pro: {
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map (Pro)", 
 					client, SimpleKZ_FormatTime(gF_CurrentTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
@@ -385,13 +351,13 @@ void PrintEndTimeString(int client) {
 	}
 	else {
 		switch (GetCurrentTimeType(client)) {
-			case TimeType_Normal: {
+			case KZTimeType_Normal: {
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus", 
 					client, gI_CurrentCourse[client], SimpleKZ_FormatTime(gF_CurrentTime[client]), 
 					gI_TeleportsUsed[client], SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
 			}
-			case TimeType_Pro: {
+			case KZTimeType_Pro: {
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus (Pro)", 
 					client, gI_CurrentCourse[client], SimpleKZ_FormatTime(gF_CurrentTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
@@ -402,11 +368,11 @@ void PrintEndTimeString(int client) {
 
 void PlayTimerStartSound(int client) {
 	switch (g_Style[client]) {
-		case MovementStyle_Standard: {
+		case KZStyle_Standard: {
 			EmitSoundToClient(client, STYLE_DEFAULT_SOUND_START);
 			EmitSoundToClientSpectators(client, STYLE_DEFAULT_SOUND_START);
 		}
-		case MovementStyle_Legacy: {
+		case KZStyle_Legacy: {
 			EmitSoundToClient(client, STYLE_LEGACY_SOUND_START);
 			EmitSoundToClientSpectators(client, STYLE_LEGACY_SOUND_START);
 		}
@@ -415,11 +381,11 @@ void PlayTimerStartSound(int client) {
 
 void PlayTimerEndSound(int client) {
 	switch (g_Style[client]) {
-		case MovementStyle_Standard: {
+		case KZStyle_Standard: {
 			EmitSoundToClient(client, STYLE_DEFAULT_SOUND_END);
 			EmitSoundToClientSpectators(client, STYLE_DEFAULT_SOUND_END);
 		}
-		case MovementStyle_Legacy: {
+		case KZStyle_Legacy: {
 			EmitSoundToClient(client, STYLE_LEGACY_SOUND_END);
 			EmitSoundToClientSpectators(client, STYLE_LEGACY_SOUND_END);
 		}

@@ -6,7 +6,6 @@
 
 #include <basecomm>
 #include <geoip>
-
 #include <colorvariables>
 #include <movement>
 #include <simplekz>
@@ -20,8 +19,8 @@ public Plugin myinfo =
 {
 	name = "Simple KZ Core", 
 	author = "DanZay", 
-	description = "A simple KZ plugin with timer and optional database.", 
-	version = "0.9.0", 
+	description = "A simple KZ timer plugin.", 
+	version = "0.10.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -73,16 +72,10 @@ ConVar gCV_DefaultStyle;
 ConVar gCV_PlayerModelT;
 ConVar gCV_PlayerModelCT;
 
-/* Database */
-Database gH_DB = null;
-bool gB_ConnectedToDB = false;
-DatabaseType g_DBType = DatabaseType_None;
-int gI_PlayerID[MAXPLAYERS + 1];
-
 /* Menus */
-Handle gH_PistolMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-Handle gH_TeleportMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1] =  { false, ... };
+Handle gH_PistolMenu[MAXPLAYERS + 1];
+Handle gH_TeleportMenu[MAXPLAYERS + 1];
+bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1];
 Handle gH_OptionsMenu[MAXPLAYERS + 1];
 bool gB_CameFromOptionsMenu[MAXPLAYERS + 1];
 Handle gH_MovementStyleMenu[MAXPLAYERS + 1];
@@ -95,33 +88,34 @@ char gC_PlayerModelT[256];
 char gC_PlayerModelCT[256];
 
 /* Timer */
-bool gB_TimerRunning[MAXPLAYERS + 1] =  { false, ... };
+bool gB_TimerRunning[MAXPLAYERS + 1];
 float gF_CurrentTime[MAXPLAYERS + 1];
-bool gB_Paused[MAXPLAYERS + 1] =  { false, ... };
+bool gB_Paused[MAXPLAYERS + 1];
 float gF_LastResumeTime[MAXPLAYERS + 1];
-bool gB_HasResumedInThisRun[MAXPLAYERS + 1] =  { false, ... };
+bool gB_HasResumedInThisRun[MAXPLAYERS + 1];
 int gI_CurrentCourse[MAXPLAYERS + 1];
 
 /* Options */
-MovementStyle g_Style[MAXPLAYERS + 1] =  { MovementStyle_Standard, ... };
-bool gB_ShowingTeleportMenu[MAXPLAYERS + 1] =  { true, ... };
-bool gB_ShowingInfoPanel[MAXPLAYERS + 1] =  { true, ... };
-bool gB_ShowingKeys[MAXPLAYERS + 1] =  { false, ... };
-bool gB_ShowingPlayers[MAXPLAYERS + 1] =  { true, ... };
-bool gB_ShowingWeapon[MAXPLAYERS + 1] =  { true, ... };
-bool gB_AutoRestart[MAXPLAYERS + 1] =  { false, ... };
-bool gB_SlayOnEnd[MAXPLAYERS + 1] =  { false, ... };
-int gI_Pistol[MAXPLAYERS + 1] =  { 0, ... };
-bool gB_CheckpointMessages[MAXPLAYERS + 1] =  { false, ... };
-bool gB_CheckpointSounds[MAXPLAYERS + 1] =  { false, ... };
-bool gB_TeleportSounds[MAXPLAYERS + 1] =  { false, ... };
+KZStyle g_Style[MAXPLAYERS + 1];
+KZShowingTeleportMenu g_ShowingTeleportMenu[MAXPLAYERS + 1];
+KZShowingInfoPanel g_ShowingInfoPanel[MAXPLAYERS + 1];
+KZShowingKeys g_ShowingKeys[MAXPLAYERS + 1];
+KZShowingPlayers g_ShowingPlayers[MAXPLAYERS + 1];
+KZShowingWeapon g_ShowingWeapon[MAXPLAYERS + 1];
+KZAutoRestart g_AutoRestart[MAXPLAYERS + 1];
+KZSlayOnEnd g_SlayOnEnd[MAXPLAYERS + 1];
+KZPistol g_Pistol[MAXPLAYERS + 1];
+KZCheckpointMessages g_CheckpointMessages[MAXPLAYERS + 1];
+KZCheckpointSounds g_CheckpointSounds[MAXPLAYERS + 1];
+KZTeleportSounds g_TeleportSounds[MAXPLAYERS + 1];
+KZTimerText g_TimerText[MAXPLAYERS + 1];
 
 /* Button Press Checking */
 int gI_OldButtons[MAXPLAYERS + 1];
 Regex gRE_BonusStartButton;
 Regex gRE_BonusEndButton;
-bool gB_HasStartedThisMap[MAXPLAYERS + 1] =  { false, ... };
-bool gB_HasEndedThisMap[MAXPLAYERS + 1] =  { false, ... };
+bool gB_HasStartedThisMap[MAXPLAYERS + 1];
+bool gB_HasEndedThisMap[MAXPLAYERS + 1];
 float gF_StartButtonOrigin[MAXPLAYERS + 1][3];
 float gF_EndButtonOrigin[MAXPLAYERS + 1][3];
 int gI_LastCourseStarted[MAXPLAYERS + 1];
@@ -150,25 +144,20 @@ float gF_UndoAngle[MAXPLAYERS + 1][3];
 float gF_PauseAngles[MAXPLAYERS + 1][3];
 
 /* Position Restoration */
-bool gB_HasSavedPosition[MAXPLAYERS + 1] =  { false, ... };
+bool gB_HasSavedPosition[MAXPLAYERS + 1];
 float gF_SavedOrigin[MAXPLAYERS + 1][3];
 float gF_SavedAngles[MAXPLAYERS + 1][3];
 
 /* Measure */
-Handle gH_MeasureMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+Handle gH_MeasureMenu[MAXPLAYERS + 1];
 int gI_GlowSprite;
 bool gB_MeasurePosSet[MAXPLAYERS + 1][2];
 float gF_MeasurePos[MAXPLAYERS + 1][2][3];
 Handle gH_P2PRed[MAXPLAYERS + 1];
 Handle gH_P2PGreen[MAXPLAYERS + 1];
 
-/* Splits */
-int gI_Splits[MAXPLAYERS + 1];
-float gF_SplitRunTime[MAXPLAYERS + 1];
-float gF_SplitGameTime[MAXPLAYERS + 1];
-
 /* Other */
-bool gB_LateLoad = false;
+bool gB_LateLoad;
 char gC_CurrentMap[64];
 bool gB_CurrentMapIsKZPro;
 int gI_JustTouchedTrigMulti[MAXPLAYERS + 1];
@@ -195,7 +184,8 @@ int gI_WeaponRunSpeeds[] =
 	210, 245, 230, 240, 240, 
 	230, 215 };
 
-/* Pistol Entity Names (entity name | alias | team that buys it) */
+/* Pistol Entity Names (entity name | alias | team that buys it) 
+	Respective to the KZPistol enumeration. */
 char gC_Pistols[][][] = 
 {
 	{ "weapon_hkp2000", "P2000 / USP-S", "CT" }, 
@@ -209,33 +199,42 @@ char gC_Pistols[][][] =
 };
 
 /* Radio commands */
-char gC_RadioCommands[][] =  { "coverme", "takepoint", "holdpos", "regroup", "followme", "takingfire", "go", 
+char gC_RadioCommands[][] = 
+{
+	"coverme", "takepoint", "holdpos", "regroup", "followme", "takingfire", "go", 
 	"fallback", "sticktog", "getinpos", "stormfront", "report", "roger", "enemyspot", "needbackup", "sectorclear", 
-	"inposition", "reportingin", "getout", "negative", "enemydown", "compliment", "thanks", "cheer" };
+	"inposition", "reportingin", "getout", "negative", "enemydown", "compliment", "thanks", "cheer"
+};
 
-/* Styles translation phrases for chat messages (respective to MovementStyle enum) */
-char gC_StylePhrases[SIMPLEKZ_NUMBER_OF_STYLES][] = 
-{ "Style - Standard", 
+/* Styles translation phrases for chat messages (respective to KZStyle enum) */
+char gC_StylePhrases[view_as<int>(KZStyle)][] = 
+{
+	"Style - Standard", 
 	"Style - Legacy"
+};
+
+/* Timer text option phrases */
+char gC_TimerTextOptionPhrases[][] = 
+{
+	"Options Menu - Disabled", 
+	"Options Menu - Top", 
+	"Options Menu - Bottom"
 };
 
 
 
 /*===============================  Includes  ===============================*/
 
-/* Global variable includes */
-#include "SimpleKZ/sql.sp"
-
-#include "SimpleKZ/api.sp"
-#include "SimpleKZ/convars.sp"
-#include "SimpleKZ/commands.sp"
-#include "SimpleKZ/database.sp"
-#include "SimpleKZ/infopanel.sp"
-#include "SimpleKZ/menus.sp"
-#include "SimpleKZ/misc.sp"
-#include "SimpleKZ/movementtweaker.sp"
-#include "SimpleKZ/options.sp"
-#include "SimpleKZ/timer.sp"
+#include "simplekz-core/api.sp"
+#include "simplekz-core/convars.sp"
+#include "simplekz-core/commands.sp"
+#include "simplekz-core/infopanel.sp"
+#include "simplekz-core/mappingapi.sp"
+#include "simplekz-core/menus.sp"
+#include "simplekz-core/misc.sp"
+#include "simplekz-core/movementtweaker.sp"
+#include "simplekz-core/options.sp"
+#include "simplekz-core/timer.sp"
 
 
 
@@ -243,7 +242,7 @@ char gC_StylePhrases[SIMPLEKZ_NUMBER_OF_STYLES][] =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
 	CreateNatives();
-	RegPluginLibrary("SimpleKZ");
+	RegPluginLibrary("simplekz-core");
 	gB_LateLoad = late;
 	return APLRes_Success;
 }
@@ -255,11 +254,20 @@ public void OnPluginStart() {
 		SetFailState("This plugin is only for CS:GO.");
 	}
 	
+	// Translations
+	LoadTranslations("common.phrases");
+	LoadTranslations("simplekz-core.phrases");
+	
+	// Setup
 	CreateGlobalForwards();
 	RegisterConVars();
-	AutoExecConfig(true, "SimpleKZ", "sourcemod/SimpleKZ");
+	AutoExecConfig(true, "simplekz-core", "sourcemod/SimpleKZ");
 	RegisterCommands();
 	AddCommandListeners();
+	
+	SetupMovementMethodmaps();
+	CompileRegexes();
+	CreateMenus();
 	
 	// Hooks
 	HookEvent("player_disconnect", OnPlayerDisconnect, EventHookMode_Pre);
@@ -267,33 +275,13 @@ public void OnPluginStart() {
 	HookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);
 	HookEvent("player_death", OnPlayerDeath, EventHookMode_Pre);
 	HookEvent("round_start", OnRoundStart, EventHookMode_Pre);
-	HookEntityOutput("func_button", "OnPressed", OnButtonPress);
 	HookEntityOutput("trigger_multiple", "OnStartTouch", OnTrigMultiStartTouch);
 	AddCommandListener(OnSay, "say");
 	AddCommandListener(OnSay, "say_team");
 	AddNormalSoundHook(view_as<NormalSHook>(OnNormalSound));
 	
-	// Translations
-	LoadTranslations("common.phrases");
-	LoadTranslations("simplekz.phrases");
-	
-	// Setup
-	SetupMovementMethodmaps();
-	CreateMenus();
-	CompileRegexes();
-	DB_SetupDatabase();
-	
 	if (gB_LateLoad) {
 		OnLateLoad();
-	}
-}
-
-public void OnLibraryAdded(const char[] name) {
-	// Send database info if dependent plugins load late
-	if (StrEqual(name, "SimpleKZRanks")) {
-		if (gB_ConnectedToDB) {
-			Call_SimpleKZ_OnDatabaseConnect();
-		}
 	}
 }
 
@@ -327,12 +315,6 @@ public void OnClientPutInServer(int client) {
 	}
 }
 
-public void OnClientDisconnect(int client) {
-	if (!IsFakeClient(client)) {
-		DB_SaveOptions(client);
-	}
-}
-
 // Print custom disconnection message
 public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -348,8 +330,8 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (!IsFakeClient(client)) {
 		CreateTimer(0.0, CleanHUD, client); // Clean HUD (using a 1 frame timer or else it won't work)
-		SetDrawViewModel(client, gB_ShowingWeapon[client]); // Hide weapon
-		GivePlayerPistol(client, gI_Pistol[client]); // Give player their preferred pistol
+		SetWeaponVisibility(client); // Hide weapon
+		GivePlayerPistol(client, g_Pistol[client]); // Give player their preferred pistol
 		CloseTeleportMenu(client);
 	}
 	SetEntProp(client, Prop_Data, "m_takedamage", 0, 1); // Godmode
@@ -363,6 +345,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	TimerTick(client);
 	UpdateTeleportMenu(client); // Can be moved to a slower timer
 	UpdateInfoPanel(client); // Can be moved to a slower timer
+	UpdateTimerText(client); // Can be moved to a slower timer
 	CheckForTimerButtonPress(client);
 	MovementTweakGeneral(g_MovementPlayer[client]);
 }
@@ -407,8 +390,7 @@ public Action OnSay(int client, const char[] command, int argc) {
 
 // Force stop timer when they enter noclip
 public void OnStartNoclipping(int client) {
-	if (!IsFakeClient(client) && gB_TimerRunning[client]) {
-		TimerForceStop(client);
+	if (!IsFakeClient(client) && TimerForceStop(client)) {
 		gB_Paused[client] = false;
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Noclipped)");
 	}
@@ -417,7 +399,7 @@ public void OnStartNoclipping(int client) {
 // Force stop timer when a player dies
 public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (!IsFakeClient(client) && gB_TimerRunning[client]) {
+	if (!IsFakeClient(client)) {
 		TimerForceStop(client);
 	}
 }
@@ -440,7 +422,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
 
 // Hide other players
 public Action OnSetTransmit(int entity, int client) {
-	if (!gB_ShowingPlayers[client] && entity != client && entity != GetSpectatedPlayer(client)) {
+	if (g_ShowingPlayers[client] == KZShowingPlayers_Disabled && entity != client && entity != GetSpectatedPlayer(client)) {
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
@@ -463,8 +445,28 @@ public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &
 	return Plugin_Continue;
 }
 
-// Force full alltalk on round start
+// Force full alltalk on round start, and setup entity hooks
 public void OnRoundStart(Event event, const char[] name, bool dontBroadcast) {
 	SetConVarInt(gCV_FullAlltalk, 1);
 	TimerForceStopAll();
+	
+	SetupMapEntityHooks();
+}
+
+// Command usage from certain common plugins force stop the player's timer (slap, gravity etc.)
+public Action OnLogAction(Handle source, Identity ident, int client, int target, const char[] message) {
+	if (!IsValidClient(client)) {
+		return Plugin_Continue;
+	}
+	
+	if (ident == Identity_Plugin) {
+		char pluginFilename[PLATFORM_MAX_PATH];
+		GetPluginFilename(source, pluginFilename, sizeof(pluginFilename));
+		if (StrEqual(pluginFilename, "playercommands.smx") || StrEqual(pluginFilename, "funcommands.smx")) {
+			if (TimerForceStop(target)) {
+				CPrintToChat(target, "%t %t", "KZ Prefix", "Time Stopped");
+			}
+		}
+	}
+	return Plugin_Continue;
 } 

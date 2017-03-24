@@ -1,7 +1,7 @@
 /* 	Simple KZ Core Include File
 	Author: DanZay
 	
-	Plugin Version: 0.9.0
+	Plugin Version: 0.10.0
 	Plugin Website: https://github.com/danzayau/SimpleKZ	
 */
 
@@ -11,31 +11,103 @@
 #define _simplekz_core_included_
 
 
-
-/*===============================  Definitions  ===============================*/
-
-#define SIMPLEKZ_NUMBER_OF_TIME_TYPES 3
-#define SIMPLEKZ_NUMBER_OF_STYLES 2
-
-
-
 /*===============================  Enumerations  ===============================*/
 
-enum TimeType {
-	TimeType_Normal = 0, 
-	TimeType_Pro, 
-	TimeType_Theoretical
+enum KZTimeType {
+	KZTimeType_Normal = 0, 
+	KZTimeType_Pro, 
+	KZTimeType_Theoretical
 }
 
-enum MovementStyle {
-	MovementStyle_Standard = 0, 
-	MovementStyle_Legacy
+enum KZOption {
+	KZOption_Style = 0, 
+	KZOption_ShowingTeleportMenu, 
+	KZOption_ShowingInfoPanel, 
+	KZOption_ShowingKeys, 
+	KZOption_ShowingPlayers, 
+	KZOption_ShowingWeapon, 
+	KZOption_AutoRestart, 
+	KZOption_SlayOnEnd, 
+	KZOption_Pistol, 
+	KZOption_CheckpointMessages, 
+	KZOption_CheckpointSounds, 
+	KZOption_TeleportSounds, 
+	KZOption_TimerText
 }
 
-enum DatabaseType {
-	DatabaseType_None = -1, 
-	DatabaseType_MySQL, 
-	DatabaseType_SQLite
+/*	Each option has it's own enumeration to specify the meaning of its value,
+	and so it's a bit easier to add more option values. */
+
+enum KZStyle {
+	KZStyle_Standard = 0, 
+	KZStyle_Legacy
+}
+
+enum KZShowingTeleportMenu {
+	KZShowingTeleportMenu_Disabled = 0, 
+	KZShowingTeleportMenu_Enabled
+}
+
+enum KZShowingInfoPanel {
+	KZShowingInfoPanel_Disabled = 0, 
+	KZShowingInfoPanel_Enabled
+}
+
+enum KZShowingKeys {
+	KZShowingKeys_Disabled = 0, 
+	KZShowingKeys_Enabled
+}
+
+enum KZShowingPlayers {
+	KZShowingPlayers_Disabled = 0, 
+	KZShowingPlayers_Enabled
+}
+
+enum KZShowingWeapon {
+	KZShowingWeapon_Disabled = 0, 
+	KZShowingWeapon_Enabled
+}
+
+enum KZAutoRestart {
+	KZAutoRestart_Disabled = 0, 
+	KZAutoRestart_Enabled
+}
+
+enum KZSlayOnEnd {
+	KZSlayOnEnd_Disabled = 0, 
+	KZSlayOnEnd_Enabled
+}
+
+enum KZPistol {
+	KZPistol_USP = 0, 
+	KZPistol_Glock, 
+	KZPistol_P250, 
+	KZPistol_Dualies, 
+	KZPistol_Deagle, 
+	KZPistol_CZ75A, 
+	KZPistol_FiveSeveN, 
+	KZPistol_Tec9
+}
+
+enum KZCheckpointMessages {
+	KZCheckpointMessages_Disabled = 0, 
+	KZCheckpointMessages_Enabled
+}
+
+enum KZCheckpointSounds {
+	KZCheckpointSounds_Disabled = 0, 
+	KZCheckpointSounds_Enabled
+}
+
+enum KZTeleportSounds {
+	KZTeleportSounds_Disabled = 0, 
+	KZTeleportSounds_Enabled
+}
+
+enum KZTimerText {
+	KZTimerText_Disabled = 0, 
+	KZTimerText_Top, 
+	KZTimerText_Bottom
 }
 
 
@@ -43,13 +115,23 @@ enum DatabaseType {
 /*===============================  Forwards  ===============================*/
 
 /**
- * Called when the player changes their movement style.
+ * Called when the SimpleKZ Core has set up the client after authorization.
+ * At this point, many variables relating to the client (e.g. options) have been set.
  *
  * @param client			Client entity index.
- * @param newStyle			Movement style they changed to.
  * @noreturn
  */
-forward void SimpleKZ_OnChangeMovementStyle(int client, MovementStyle newStyle);
+forward void SimpleKZ_OnClientSetup(int client);
+
+/**
+ * Called when the player changes an option.
+ *
+ * @param client			Client entity index.
+ * @param option			The option that was changed
+ * @param newValue			The new value of the option.
+ * @noreturn
+ */
+forward void SimpleKZ_OnChangeOption(int client, KZOption option, any newValue);
 
 /**
  * Called when the player hits a plugin-based perfect b-hop.
@@ -67,7 +149,7 @@ forward void SimpleKZ_OnPlayerPerfectBunnyhop(int client);
  * @param style				The movement style of the player.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerStart(int client, int course, MovementStyle style);
+forward void SimpleKZ_OnTimerStart(int client, int course, KZStyle style);
 
 /**
  * Called when the player ends their timer.
@@ -80,7 +162,7 @@ forward void SimpleKZ_OnTimerStart(int client, int course, MovementStyle style);
  * @param theoreticalTime	Theoretical end time without using teleports.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerEnd(int client, int course, MovementStyle style, float time, int teleportsUsed, float theoreticalTime);
+forward void SimpleKZ_OnTimerEnd(int client, int course, KZStyle style, float time, int teleportsUsed, float theoreticalTime);
 
 /**
  * Called when the player's timer has been force stopped (without finishing the map).
@@ -113,24 +195,6 @@ forward void SimpleKZ_OnPlayerResume(int client);
  * @noreturn
  */
 forward void SimpleKZ_OnPlayerTeleport(int client);
-
-/**
- * Called when the server connects to a SimpleKZ database.
- *
- * @param database			Database handle.
- * @param DBType			Database type (see DatabaseType enumeration)
- * @noreturn
- */
-forward void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType);
-
-/**
- * Called after SimpleKZ Core retrieves a client's PlayerID from SimpleKZ Core's "Players" database table.
- *
- * @param client			The name of the map (without prefixes e.g. workshop/).
- * @param playerID			PlayerID from SimpleKZ Core's "Players" database table.
- * @noreturn
- */
-forward void SimpleKZ_OnRetrievePlayerID(int client, int playerID);
 
 
 
@@ -168,9 +232,9 @@ native void SimpleKZ_EndTimer(int client, int course);
  * Intended for run invalidation.
  *
  * @param client    		Client entity index.
- * @noreturn
+ * @return					Whether or not the player's timer was stopped.
  */
-native void SimpleKZ_ForceStopTimer(int client);
+native bool SimpleKZ_ForceStopTimer(int client);
 
 /**
  * Forces all players' timers to stop.
@@ -282,58 +346,27 @@ native void SimpleKZ_TogglePause(int client);
 /**
  * Gets the default movement style as set by convar kz_default_style.
  *
- * @return					The default movement style (see MovementStyle enumeration).
+ * @return					The default movement style (see KZStyle enumeration).
  */
-native MovementStyle SimpleKZ_GetDefaultStyle();
+native KZStyle SimpleKZ_GetDefaultStyle();
 
 /**
- * Gets the player's chosen movement style.
+ * Gets the current value of a player's option. Note that this
+ * returns an int, whereas options use an enumerated tag.
+ * Use the KZPlayer method map to simplify this caveat.
  *
  * @param client			Client entity index.
- * @return					The player's movement style.
+ * @param option			The SimpleKZ option (see KZOption enumeration).
+ * @return					The current value of a player's option.
  */
-native MovementStyle SimpleKZ_GetStyle(int client);
+native int SimpleKZ_GetOption(int client, KZOption option);
 
 /**
- * Sets the player's movement style.
+ * Sets the player's option value.
  *
  * @param client			Client entity index.
- * @param style				What to set the player's movement style to.
+ * @param option			The SimpleKZ option (see KZOption enumeration).
+ * @param optionValue		What to set the player's option to.
  * @noreturn
  */
-native void SimpleKZ_SetStyle(int client, MovementStyle style);
-
-/**
- * Gets the client's PlayerID as retrieved from SimpleKZ Core's "Players" database table.
- * This is accurate after SimpleKZ_OnRetrievePlayerID is called after the client is authorised.
- *
- * @param client			Client entity index.
- * @return					PlayerID from SimpleKZ Core's "Players" database table.
- */
-native int SimpleKZ_GetPlayerID(int client);
-
-
-
-/*===============================  Stocks  ===============================*/
-
-stock char[] SimpleKZ_FormatTime(float time) {
-	char formattedTime[12];
-	
-	int roundedTime = RoundFloat(time * 100); // Time rounded to number of centiseconds
-	
-	int centiseconds = roundedTime % 100;
-	roundedTime = (roundedTime - centiseconds) / 100;
-	int seconds = roundedTime % 60;
-	roundedTime = (roundedTime - seconds) / 60;
-	int minutes = roundedTime % 60;
-	roundedTime = (roundedTime - minutes) / 60;
-	int hours = roundedTime;
-	
-	if (hours == 0) {
-		FormatEx(formattedTime, sizeof(formattedTime), "%02d:%02d.%02d", minutes, seconds, centiseconds);
-	}
-	else {
-		FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d:%02d.%02d", hours, minutes, seconds, centiseconds);
-	}
-	return formattedTime;
-} 
+native void SimpleKZ_SetOption(int client, KZOption option, any optionValue); 

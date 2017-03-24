@@ -47,13 +47,13 @@
 	{
 		// Bill finished Bonus 1 in 01:23.45 (4 TP | 01.02.34) [Style].
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:s},{6:t}"
-		"en"		"{lime}{1}{grey} finished {gold}Bonus {2}{grey} in {default}{3}{grey} ({yellow}{4} TP{grey} | {grey}{5}{grey}) {grey}[{purple}{6}{grey}]."
+		"en"		"{lime}{1}{grey} finished {darkblue}Bonus {2}{grey} in {default}{3}{grey} ({yellow}{4} TP{grey} | {grey}{5}{grey}) {grey}[{purple}{6}{grey}]."
 	}
 	"Beat Bonus (Pro)"
 	{
 		// Bill finished Bonus 1 in 01:23.45 (PRO) [Style].
 		"#format"	"{1:N},{2:d},{3:s},{4:t}"
-		"en"		"{lime}{1}{grey} finished {gold}Bonus {2}{grey} in {default}{3}{grey} ({blue}PRO{grey}) {grey}[{purple}{4}{grey}]."
+		"en"		"{lime}{1}{grey} finished {darkblue}Bonus {2}{grey} in {default}{3}{grey} ({blue}PRO{grey}) {grey}[{purple}{4}{grey}]."
 	}
 	"Time Stopped"
 	{
@@ -165,26 +165,6 @@
 	"Measure Failure (Not Aiming at Solid)"
 	{
 		"en"		"{darkred}You are not aiming at anything solid!"
-	}
-	"Split Create"
-	{
-		// Segment 8:  01:23.45 - Time: 12:34.56
-		"#format"	"{1:d},{2:s},{3:s}"
-		"en"		"{green}Segment {default}{1}{grey}:  {default}{2}{grey}  -  Total: {default}{3}"
-	}
-	"Split Create (Timer Stopped)"
-	{
-		// Time since last split:  01:23.45
-		"#format"	"{1:s}"
-		"en"		"{grey}Time since last split:  {default}{1}{grey}"
-	}
-	"Split Create (First)"
-	{
-		"en"		"{grey}You have made your first split. Make another to see how much time has passed."
-	}
-	"Split Reset"
-	{
-		"en"		"{grey}You have reset your timer and your splits."
 	}
 	"Switched Style"
 	{
@@ -369,6 +349,14 @@
 	{
 		"en"		"Disabled"
 	}
+	"Options Menu - Top"
+	{
+		"en"		"Top"
+	}
+	"Options Menu - Bottom"
+	{
+		"en"		"Bottom"
+	}
 	"Options Menu - Teleport Menu"
 	{
 		"en"		"Teleport menu"
@@ -413,6 +401,10 @@
 	{
 		"en"		"Teleport sounds"
 	}
+	"Options Menu - Timer Text"
+	{
+		"en"		"Timer text"
+	}
 	
 	
 	// Server/Admin Messages ////////////////////////////////////////////////////////////
@@ -421,19 +413,5 @@
 		// There was a problem opening file: cfg/sourcemod/SimpleKZ/mappool.txt.
 		"#format"	"{1:s}"
 		"en"		"{grey}There was a problem opening file: {default}{1}{grey}."
-	}
-	"Database Connection Failed"
-	{
-		"#format"	"{1:s}"
-		"en"		"[SimpleKZ] Database connection failed: {1} \n[SimpleKZ] Proceeding without database."
-	}
-	"Invalid Database Driver"
-	{
-		"en"		"[SimpleKZ] Invalid database driver (use SQLite or MySQL)."
-	}
-	"Database Transaction Error"
-	{
-		"#format"	"{1:s}"
-		"en"		"[SimpleKZ] Database transaction error: {1}"
 	}
 }

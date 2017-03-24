@@ -4,20 +4,6 @@
 */
 
 
-void SetMovementStyle(int client, MovementStyle style) {
-	if (g_Style[client] != style) {
-		g_Style[client] = style;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Switched Style", gC_StylePhrases[g_Style[client]]);
-		if (gB_TimerRunning[client]) {
-			TimerForceStop(client);
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Changed Style)");
-		}
-		Call_SimpleKZ_OnChangeMovementStyle(client);
-	}
-}
-
-
-
 /*===============================  Movement API Events  ===============================*/
 
 public void OnStartTouchGround(int client) {
@@ -27,7 +13,7 @@ public void OnStartTouchGround(int client) {
 public void OnStopTouchGround(int client, bool jumped, bool ducked, bool landed) {
 	if (jumped) {
 		MovementTweakTakeoffSpeed(g_MovementPlayer[client]);
-		if (g_Style[client] == MovementStyle_Standard && ducked) {
+		if (g_Style[client] == KZStyle_Standard && ducked) {
 			MovementTweakPerfectCrouchJump(g_MovementPlayer[client]);
 		}
 	}
@@ -36,12 +22,16 @@ public void OnStopTouchGround(int client, bool jumped, bool ducked, bool landed)
 		gB_HitPerf[client] = false;
 	}
 	// Reset prestrafe modifier if Standard (this is what enables 'pre b-hopping' in Legacy)
-	if (g_Style[client] == MovementStyle_Standard) {
+	if (g_Style[client] == KZStyle_Standard) {
 		gF_PrestrafeVelocityModifier[client] = 1.0;
 	}
 }
 
 public void OnStopTouchLadder(int client) {
+	gB_HitPerf[client] = false;
+}
+
+public void OnStopNoclipping(int client) {
 	gB_HitPerf[client] = false;
 }
 
@@ -57,7 +47,7 @@ void MovementTweakGeneral(MovementPlayer player) {
 
 float PrestrafeVelocityModifier(MovementPlayer player) {
 	// Note: Still trying to get Legacy prestrafe to feel like it does in KZTimer
-	if (g_Style[player.id] == MovementStyle_Legacy && player.speed < STYLE_LEGACY_SPEED_PRESTRAFE_MINIMUM) {
+	if (g_Style[player.id] == KZStyle_Legacy && player.speed < STYLE_LEGACY_SPEED_PRESTRAFE_MINIMUM) {
 		gF_PrestrafeVelocityModifier[player.id] = 1.0;
 	}
 	// If correct prestrafe technique is detected, increase prestrafe modifier
@@ -82,13 +72,13 @@ float PrestrafeVelocityModifier(MovementPlayer player) {
 
 bool CheckIfValidPrestrafeKeys(MovementPlayer player) {
 	switch (g_Style[player.id]) {
-		case MovementStyle_Standard: {
+		case KZStyle_Standard: {
 			// If _only_ WA or WD or SA or SD are pressed, then return true.
 			// Oh and... this looks stupid
 			return ((player.buttons & IN_FORWARD && !(player.buttons & IN_BACK)) || (!(player.buttons & IN_FORWARD) && player.buttons & IN_BACK))
 			 && ((player.buttons & IN_MOVELEFT && !(player.buttons & IN_MOVERIGHT)) || (!(player.buttons & IN_MOVELEFT) && player.buttons & IN_MOVERIGHT));
 		}
-		case MovementStyle_Legacy: {
+		case KZStyle_Legacy: {
 			return player.buttons & IN_MOVELEFT || player.buttons & IN_MOVERIGHT;
 		}
 	}
@@ -128,10 +118,10 @@ void MovementTweakTakeoffSpeed(MovementPlayer player) {
 
 bool HitPerf(MovementPlayer player) {
 	switch (g_Style[player.id]) {
-		case MovementStyle_Standard: {
+		case KZStyle_Standard: {
 			return player.jumpTick - player.landingTick <= STYLE_DEFAULT_PERF_TICKS;
 		}
-		case MovementStyle_Legacy: {
+		case KZStyle_Legacy: {
 			return player.jumpTick - player.landingTick <= STYLE_LEGACY_PERF_TICKS;
 		}
 	}
@@ -158,12 +148,12 @@ float ApplyTakeoffSpeed(MovementPlayer player, float speed) {
 
 float CalculateTweakedTakeoffSpeed(MovementPlayer player) {
 	switch (g_Style[player.id]) {
-		case MovementStyle_Standard: {
+		case KZStyle_Standard: {
 			if (player.landingSpeed > SPEED_NORMAL) {
 				return 0.2 * player.landingSpeed + 200; // The magic formula
 			}
 		}
-		case MovementStyle_Legacy: {
+		case KZStyle_Legacy: {
 			if (player.landingSpeed > STYLE_LEGACY_PERF_SPEED_CAP) {
 				return STYLE_LEGACY_PERF_SPEED_CAP;
 			}

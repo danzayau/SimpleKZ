@@ -28,7 +28,7 @@ void CreateTeleportMenu(int client) {
 }
 
 void UpdateTeleportMenu(int client) {
-	if (GetClientMenu(client) == MenuSource_None && gB_ShowingTeleportMenu[client] && !gB_TeleportMenuIsShowing[client] && IsPlayerAlive(client)) {
+	if (GetClientMenu(client) == MenuSource_None && g_ShowingTeleportMenu[client] == KZShowingTeleportMenu_Enabled && !gB_TeleportMenuIsShowing[client] && IsPlayerAlive(client)) {
 		UpdateTeleportMenuItems(client);
 		DisplayMenu(gH_TeleportMenu[client], client, MENU_TIME_FOREVER);
 		gB_TeleportMenuIsShowing[client] = true;
@@ -146,56 +146,64 @@ void DisplayOptionsMenu(int client, int atItem = 0) {
 void UpdateOptionsMenu(int client) {
 	SetMenuTitle(gH_OptionsMenu[client], "%T", "Options Menu - Title", client);
 	RemoveAllMenuItems(gH_OptionsMenu[client]);
-	OptionsAddBool(client, gB_ShowingTeleportMenu[client], "Options Menu - Teleport Menu");
-	OptionsAddBool(client, gB_ShowingInfoPanel[client], "Options Menu - Info Panel");
-	OptionsAddBool(client, gB_ShowingPlayers[client], "Options Menu - Show Players");
-	OptionsAddBool(client, gB_ShowingWeapon[client], "Options Menu - Show Weapon");
-	OptionsAddBool(client, gB_AutoRestart[client], "Options Menu - Auto Restart");
+	OptionsAddToggle(client, g_ShowingTeleportMenu[client], "Options Menu - Teleport Menu");
+	OptionsAddToggle(client, g_ShowingInfoPanel[client], "Options Menu - Info Panel");
+	OptionsAddToggle(client, g_ShowingPlayers[client], "Options Menu - Show Players");
+	OptionsAddToggle(client, g_ShowingWeapon[client], "Options Menu - Show Weapon");
+	OptionsAddToggle(client, g_AutoRestart[client], "Options Menu - Auto Restart");
 	OptionsAddPistol(client);
-	OptionsAddBool(client, gB_SlayOnEnd[client], "Options Menu - Slay On End");
-	OptionsAddBool(client, gB_ShowingKeys[client], "Options Menu - Show Keys");
-	OptionsAddBool(client, gB_CheckpointMessages[client], "Options Menu - Checkpoint Messages");
-	OptionsAddBool(client, gB_CheckpointSounds[client], "Options Menu - Checkpoint Sounds");
-	OptionsAddBool(client, gB_TeleportSounds[client], "Options Menu - Teleport Sounds");
+	OptionsAddToggle(client, g_SlayOnEnd[client], "Options Menu - Slay On End");
+	OptionsAddToggle(client, g_ShowingKeys[client], "Options Menu - Show Keys");
+	OptionsAddToggle(client, g_CheckpointMessages[client], "Options Menu - Checkpoint Messages");
+	OptionsAddToggle(client, g_CheckpointSounds[client], "Options Menu - Checkpoint Sounds");
+	OptionsAddToggle(client, g_TeleportSounds[client], "Options Menu - Teleport Sounds");
+	OptionsAddTimerText(client);
 }
 
-void OptionsAddBool(int client, bool option, const char[] optionPhrase) {
+void OptionsAddToggle(int client, any optionValue, const char[] optionPhrase) {
 	char text[32];
-	if (option) {
-		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Enabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
+	if (view_as<int>(optionValue) == 0) {
+		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Disabled", client);
 	}
 	else {
-		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Disabled", client);
-		AddMenuItem(gH_OptionsMenu[client], "", text);
+		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Enabled", client);
 	}
+	AddMenuItem(gH_OptionsMenu[client], "", text);
 }
 
 void OptionsAddPistol(int client) {
 	char text[32];
-	FormatEx(text, sizeof(text), "%T - %s", "Options Menu - Pistol", client, gC_Pistols[gI_Pistol[client]][1]);
+	FormatEx(text, sizeof(text), "%T - %s", "Options Menu - Pistol", client, gC_Pistols[g_Pistol[client]][1]);
+	AddMenuItem(gH_OptionsMenu[client], "", text);
+}
+
+void OptionsAddTimerText(int client) {
+	char text[32];
+	FormatEx(text, sizeof(text), "%T - %T", "Options Menu - Timer Text", client, gC_TimerTextOptionPhrases[g_TimerText[client]], client);
 	AddMenuItem(gH_OptionsMenu[client], "", text);
 }
 
 public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
 		switch (param2) {
-			case 0:ToggleTeleportMenu(param1);
-			case 1:ToggleInfoPanel(param1);
-			case 2:ToggleShowPlayers(param1);
-			case 3:ToggleShowWeapon(param1);
-			case 4:ToggleAutoRestart(param1);
+			case 0:IncrementOption(param1, KZOption_ShowingTeleportMenu);
+			case 1:IncrementOption(param1, KZOption_ShowingInfoPanel);
+			case 2:IncrementOption(param1, KZOption_ShowingPlayers);
+			case 3:IncrementOption(param1, KZOption_ShowingWeapon);
+			case 4:IncrementOption(param1, KZOption_AutoRestart);
 			case 5: {
 				gB_CameFromOptionsMenu[param1] = true;
 				DisplayPistolMenu(param1);
 			}
-			case 6:ToggleSlayOnEnd(param1);
-			case 7:ToggleShowKeys(param1);
-			case 8:ToggleCheckpointMessages(param1);
-			case 9:ToggleCheckpointSounds(param1);
-			case 10:ToggleTeleportSounds(param1);
+			case 6:IncrementOption(param1, KZOption_SlayOnEnd);
+			case 7:IncrementOption(param1, KZOption_ShowingKeys);
+			case 8:IncrementOption(param1, KZOption_CheckpointMessages);
+			case 9:IncrementOption(param1, KZOption_CheckpointSounds);
+			case 10:IncrementOption(param1, KZOption_TeleportSounds);
+			case 11:IncrementOption(param1, KZOption_TimerText);
 		}
 		if (param2 != 5) {
+			// Reopen the menu at the same place
 			DisplayOptionsMenu(param1, param2 / 6 * 6); // Round item number down to multiple of 6
 		}
 	}
@@ -224,22 +232,17 @@ void DisplayMovementStyleMenu(int client) {
 void AddItemsMovementStyleMenu(int client) {
 	char text[32];
 	RemoveAllMenuItems(gH_MovementStyleMenu[client]);
-	for (int style = 0; style < SIMPLEKZ_NUMBER_OF_STYLES; style++) {
+	for (int style = 0; style < view_as<int>(KZStyle); style++) {
 		FormatEx(text, sizeof(text), "%T", gC_StylePhrases[style], client);
-		if (style == view_as<int>(g_Style[client])) {
-			AddMenuItem(gH_MovementStyleMenu[client], "", text, ITEMDRAW_DISABLED);
-		}
-		else {
-			AddMenuItem(gH_MovementStyleMenu[client], "", text, ITEMDRAW_DEFAULT);
-		}
+		AddMenuItem(gH_MovementStyleMenu[client], "", text, ITEMDRAW_DEFAULT);
 	}
 }
 
 public int MenuHandler_MovementStyle(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
 		switch (param2) {
-			case 0:SetMovementStyle(param1, MovementStyle_Standard);
-			case 1:SetMovementStyle(param1, MovementStyle_Legacy);
+			case 0:SetOption(param1, KZOption_Style, KZStyle_Standard);
+			case 1:SetOption(param1, KZOption_Style, KZStyle_Legacy);
 		}
 	}
 }
@@ -272,8 +275,8 @@ void UpdatePistolMenu(int client) {
 
 public int MenuHandler_Pistol(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
-		gI_Pistol[param1] = param2;
-		GivePlayerPistol(param1, param2);
+		g_Pistol[param1] = view_as<KZPistol>(param2);
+		GivePlayerPistol(param1, view_as<KZPistol>(param2));
 		DisplayPistolMenu(param1);
 	}
 	else if (action == MenuAction_Cancel && gB_CameFromOptionsMenu[param1]) {

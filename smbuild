@@ -1,15 +1,20 @@
 Plugin(
-	name='SimpleKZ',
-	source='addons/sourcemod/scripting/SimpleKZ.sp'
+	name='simplekz-core',
+	source='addons/sourcemod/scripting/simplekz-core.sp'
 )
 
 Plugin(
-	name='SimpleKZRanks',
-	source='addons/sourcemod/scripting/SimpleKZRanks.sp'
+	name='simplekz-localdb',
+	source='addons/sourcemod/scripting/simplekz-localdb.sp'
+)
+
+Plugin(
+	name='simplekz-localranks',
+	source='addons/sourcemod/scripting/simplekz-localranks.sp'
 )
 
 Package(name='SimpleKZ',
-	plugins=['SimpleKZ', 'SimpleKZRanks'],
+	plugins=['simplekz-core', 'simplekz-localdb', 'simplekz-localranks'],
 	filegroups={
 		'.':['README.md', 'LICENSE'],
 	}

@@ -26,7 +26,6 @@ void RegisterCommands() {
 	RegConsoleCmd("sm_nc", CommandToggleNoclip, "[KZ] Toggle noclip.");
 	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
 	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
-	RegConsoleCmd("sm_split", CommandSplit, "[KZ] Make a time split for timing purposes.");
 	RegConsoleCmd("sm_style", CommandStyle, "[KZ] Open the movement style menu.");
 	RegConsoleCmd("sm_standard", CommandStandard, "[KZ] Switch to the standard style.");
 	RegConsoleCmd("sm_s", CommandStandard, "[KZ] Switch to the standard style.");
@@ -56,7 +55,7 @@ public Action CommandJoinTeam(int client, const char[] command, int argc) {
 /*===============================  Command Handlers  ===============================*/
 
 public Action CommandToggleMenu(int client, int args) {
-	ToggleTeleportMenu(client);
+	IncrementOption(client, KZOption_ShowingTeleportMenu);
 	return Plugin_Handled;
 }
 
@@ -86,8 +85,9 @@ public Action CommandTogglePause(int client, int args) {
 }
 
 public Action CommandStopTimer(int client, int args) {
-	TimerForceStop(client);
-	CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped");
+	if (TimerForceStop(client)) {
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped");
+	}
 	return Plugin_Handled;
 }
 
@@ -161,17 +161,17 @@ public Action CommandOptions(int client, int args) {
 }
 
 public Action CommandToggleShowPlayers(int client, int args) {
-	ToggleShowPlayers(client);
+	IncrementOption(client, KZOption_ShowingPlayers);
 	return Plugin_Handled;
 }
 
 public Action CommandToggleInfoPanel(int client, int args) {
-	ToggleInfoPanel(client);
+	IncrementOption(client, KZOption_ShowingInfoPanel);
 	return Plugin_Handled;
 }
 
 public Action CommandToggleShowWeapon(int client, int args) {
-	ToggleShowWeapon(client);
+	IncrementOption(client, KZOption_ShowingWeapon);
 	return Plugin_Handled;
 }
 
@@ -200,22 +200,17 @@ public Action CommandDisableNoclip(int client, int args) {
 	return Plugin_Handled;
 }
 
-public Action CommandSplit(int client, int args) {
-	SplitsMake(client);
-	return Plugin_Handled;
-}
-
 public Action CommandStyle(int client, int args) {
 	DisplayMovementStyleMenu(client);
 	return Plugin_Handled;
 }
 
 public Action CommandStandard(int client, int args) {
-	SetMovementStyle(client, MovementStyle_Standard);
+	SetOption(client, KZOption_Style, KZStyle_Standard);
 	return Plugin_Handled;
 }
 
 public Action CommandLegacy(int client, int args) {
-	SetMovementStyle(client, MovementStyle_Legacy);
+	SetOption(client, KZOption_Style, KZStyle_Legacy);
 	return Plugin_Handled;
 } 

@@ -6,7 +6,8 @@
 
 /*===============================  Forwards  ===============================*/
 
-Handle gH_Forward_SimpleKZ_OnChangeMovementStyle;
+Handle gH_Forward_SimpleKZ_OnClientSetup;
+Handle gH_Forward_SimpleKZ_OnChangeOption;
 Handle gH_Forward_SimpleKZ_OnPerfectBunnyhop;
 Handle gH_Forward_SimpleKZ_OnTimerStart;
 Handle gH_Forward_SimpleKZ_OnTimerEnd;
@@ -14,11 +15,10 @@ Handle gH_Forward_SimpleKZ_OnTimerForceStop;
 Handle gH_Forward_SimpleKZ_OnPlayerPause;
 Handle gH_Forward_SimpleKZ_OnPlayerResume;
 Handle gH_Forward_SimpleKZ_OnPlayerTeleport;
-Handle gH_Forward_SimpleKZ_OnDatabaseConnect;
-Handle gH_Forward_SimpleKZ_OnRetrievePlayerID;
 
 void CreateGlobalForwards() {
-	gH_Forward_SimpleKZ_OnChangeMovementStyle = CreateGlobalForward("SimpleKZ_OnChangeMovementStyle", ET_Event, Param_Cell, Param_Cell);
+	gH_Forward_SimpleKZ_OnClientSetup = CreateGlobalForward("SimpleKZ_OnClientSetup", ET_Event, Param_Cell);
+	gH_Forward_SimpleKZ_OnChangeOption = CreateGlobalForward("SimpleKZ_OnChangeOption", ET_Event, Param_Cell, Param_Cell, Param_Cell);
 	gH_Forward_SimpleKZ_OnPerfectBunnyhop = CreateGlobalForward("SimpleKZ_OnPerfectBunnyhop", ET_Event, Param_Cell);
 	gH_Forward_SimpleKZ_OnTimerStart = CreateGlobalForward("SimpleKZ_OnTimerStart", ET_Event, Param_Cell, Param_Cell, Param_Cell);
 	gH_Forward_SimpleKZ_OnTimerEnd = CreateGlobalForward("SimpleKZ_OnTimerEnd", ET_Event, Param_Cell, Param_Cell, Param_Cell, Param_Float, Param_Cell, Param_Float);
@@ -26,14 +26,19 @@ void CreateGlobalForwards() {
 	gH_Forward_SimpleKZ_OnPlayerPause = CreateGlobalForward("SimpleKZ_OnTimerPause", ET_Event, Param_Cell);
 	gH_Forward_SimpleKZ_OnPlayerResume = CreateGlobalForward("SimpleKZ_OnTimerResume", ET_Event, Param_Cell);
 	gH_Forward_SimpleKZ_OnPlayerTeleport = CreateGlobalForward("SimpleKZ_OnTimerTeleport", ET_Event, Param_Cell);
-	gH_Forward_SimpleKZ_OnDatabaseConnect = CreateGlobalForward("SimpleKZ_OnDatabaseConnect", ET_Event, Param_Cell, Param_Cell);
-	gH_Forward_SimpleKZ_OnRetrievePlayerID = CreateGlobalForward("SimpleKZ_OnRetrievePlayerID", ET_Event, Param_Cell, Param_Cell);
 }
 
-void Call_SimpleKZ_OnChangeMovementStyle(int client) {
-	Call_StartForward(gH_Forward_SimpleKZ_OnChangeMovementStyle);
+void Call_SimpleKZ_OnClientSetup(int client) {
+	Call_StartForward(gH_Forward_SimpleKZ_OnClientSetup);
 	Call_PushCell(client);
-	Call_PushCell(g_Style[client]);
+	Call_Finish();
+}
+
+void Call_SimpleKZ_OnChangeOption(int client, KZOption option, any optionValue) {
+	Call_StartForward(gH_Forward_SimpleKZ_OnChangeOption);
+	Call_PushCell(client);
+	Call_PushCell(option);
+	Call_PushCell(optionValue);
 	Call_Finish();
 }
 
@@ -86,20 +91,6 @@ void Call_SimpleKZ_OnPlayerTeleport(int client) {
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnDatabaseConnect() {
-	Call_StartForward(gH_Forward_SimpleKZ_OnDatabaseConnect);
-	Call_PushCell(gH_DB);
-	Call_PushCell(g_DBType);
-	Call_Finish();
-}
-
-void Call_SimpleKZ_OnRetrievePlayerID(int client) {
-	Call_StartForward(gH_Forward_SimpleKZ_OnRetrievePlayerID);
-	Call_PushCell(client);
-	Call_PushCell(gI_PlayerID[client]);
-	Call_Finish();
-}
-
 
 
 /*===============================  Natives  ===============================*/
@@ -126,10 +117,8 @@ void CreateNatives() {
 	CreateNative("SimpleKZ_TogglePause", Native_TogglePause);
 	
 	CreateNative("SimpleKZ_GetDefaultStyle", Native_GetDefaultStyle);
-	CreateNative("SimpleKZ_GetStyle", Native_GetStyle);
-	CreateNative("SimpleKZ_SetStyle", Native_SetStyle);
-	
-	CreateNative("SimpleKZ_GetPlayerID", Native_GetPlayerID);
+	CreateNative("SimpleKZ_GetOption", Native_GetOption);
+	CreateNative("SimpleKZ_SetOption", Native_SetOption);
 }
 
 public int Native_GetHitPerf(Handle plugin, int numParams) {
@@ -145,7 +134,7 @@ public int Native_EndTimer(Handle plugin, int numParams) {
 }
 
 public int Native_ForceStopTimer(Handle plugin, int numParams) {
-	TimerForceStop(GetNativeCell(1));
+	return view_as<int>(TimerForceStop(GetNativeCell(1)));
 }
 
 public int Native_ForceStopTimerAll(Handle plugin, int numParams) {
@@ -200,18 +189,14 @@ public int Native_TogglePause(Handle plugin, int numParams) {
 	TogglePause(GetNativeCell(1));
 }
 
-public int Native_GetStyle(Handle plugin, int numParams) {
-	return view_as<int>(g_Style[GetNativeCell(1)]);
-}
-
-public int Native_SetStyle(Handle plugin, int numParams) {
-	SetMovementStyle(GetNativeCell(1), view_as<MovementStyle>(GetNativeCell(2)));
-}
-
 public int Native_GetDefaultStyle(Handle plugin, int numParams) {
 	return GetConVarInt(gCV_DefaultStyle);
 }
 
-public int Native_GetPlayerID(Handle plugin, int numParams) {
-	return gI_PlayerID[GetNativeCell(1)];
+public int Native_GetOption(Handle plugin, int numParams) {
+	return GetOption(GetNativeCell(1), GetNativeCell(2));
+}
+
+public int Native_SetOption(Handle plugin, int numParams) {
+	SetOption(GetNativeCell(1), GetNativeCell(2), GetNativeCell(3));
 } 
