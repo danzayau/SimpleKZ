@@ -237,10 +237,10 @@ void PrintOptionChangeMessage(int client, KZOption option) {
 		case KZOption_ShowingWeapon: {
 			switch (g_ShowingPlayers[client]) {
 				case KZShowingPlayers_Disabled: {
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Players - Disable");
+					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Weapon - Disable");
 				}
 				case KZShowingPlayers_Enabled: {
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Players - Enable");
+					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Weapon - Enable");
 				}
 			}
 		}
@@ -267,10 +267,10 @@ void PrintOptionChangeMessage(int client, KZOption option) {
 		case KZOption_CheckpointMessages: {
 			switch (g_CheckpointMessages[client]) {
 				case KZSlayOnEnd_Disabled: {
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Slay On End - Disable");
+					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Checkpoint Messages - Disable");
 				}
 				case KZSlayOnEnd_Enabled: {
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Slay On End - Enable");
+					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Checkpoint Messages - Enable");
 				}
 			}
 		}
