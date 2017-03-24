@@ -59,7 +59,7 @@ void TimerEnd(int client, int course) {
 	if (gB_TimerRunning[client] && course == gI_CurrentCourse[client]) {
 		gB_TimerRunning[client] = false;
 		PrintEndTimeString(client);
-		if (g_SlayOnEnd[client]) {
+		if (g_SlayOnEnd[client] == KZSlayOnEnd_Enabled) {
 			CreateTimer(3.0, SlayPlayer, client);
 		}
 		PlayTimerEndSound(client);
@@ -128,7 +128,7 @@ void TeleportToStart(int client) {
 		}
 		AddWastedTimeTeleportToStart(client);
 		TimerDoTeleport(client, gF_StartOrigin[client], gF_StartAngles[client]);
-		if (g_AutoRestart[client]) {
+		if (g_AutoRestart[client] == KZAutoRestart_Enabled) {
 			TimerStart(client, gI_LastCourseStarted[client]);
 		}
 	}
@@ -153,10 +153,10 @@ void MakeCheckpoint(int client) {
 		gF_LastCheckpointTime[client] = gF_CurrentTime[client];
 		g_MovementPlayer[client].GetOrigin(gF_CheckpointOrigin[client]);
 		g_MovementPlayer[client].GetEyeAngles(gF_CheckpointAngles[client]);
-		if (g_CheckpointMessages[client]) {
+		if (g_CheckpointMessages[client] == KZCheckpointMessages_Enabled) {
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Make Checkpoint");
 		}
-		if (g_CheckpointSounds[client]) {
+		if (g_CheckpointSounds[client] == KZCheckpointSounds_Enabled) {
 			EmitSoundToClient(client, SOUND_TELEPORT);
 		}
 	}
@@ -173,7 +173,7 @@ void TeleportToCheckpoint(int client) {
 	else {
 		AddWastedTimeTeleportToCheckpoint(client);
 		TimerDoTeleport(client, gF_CheckpointOrigin[client], gF_CheckpointAngles[client]);
-		if (g_TeleportSounds[client]) {
+		if (g_TeleportSounds[client] == KZTeleportSounds_Enabled) {
 			EmitSoundToClient(client, SOUND_TELEPORT);
 		}
 	}

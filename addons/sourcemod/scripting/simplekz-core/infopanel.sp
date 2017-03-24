@@ -5,10 +5,10 @@
 
 
 void UpdateInfoPanel(int client) {
-	if (g_ShowingInfoPanel[client]) {
+	if (g_ShowingInfoPanel[client] == KZShowingInfoPanel_Enabled) {
 		MovementPlayer player = g_MovementPlayer[client];
 		if (IsPlayerAlive(player.id)) {
-			if (g_ShowingKeys[player.id]) {
+			if (g_ShowingKeys[player.id] == KZShowingKeys_Enabled) {
 				PrintHintText(player.id, "%s", GetInfoPanelWithKeys(player));
 			}
 			else {

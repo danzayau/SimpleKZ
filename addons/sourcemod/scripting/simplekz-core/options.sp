@@ -69,7 +69,7 @@ void SetOption(int client, KZOption option, any optionValue) {
 			if (g_ShowingWeapon[client] != optionValue) {
 				changedOption = true;
 				g_ShowingWeapon[client] = optionValue;
-				SetDrawViewModel(client, view_as<bool>(g_ShowingWeapon[client]));
+				SetWeaponVisibility(client);
 			}
 		}
 		case KZOption_AutoRestart: {

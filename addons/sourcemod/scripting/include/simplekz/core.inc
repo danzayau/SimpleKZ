@@ -35,7 +35,8 @@ enum KZOption {
 	KZOption_TimerText
 }
 
-/*	Each option has it's own enumeration to specify the meaning of its value. */
+/*	Each option has it's own enumeration to specify the meaning of its value,
+	and so it's a bit easier to add more option values. */
 
 enum KZStyle {
 	KZStyle_Standard = 0, 

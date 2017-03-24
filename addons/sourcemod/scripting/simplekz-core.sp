@@ -330,7 +330,7 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (!IsFakeClient(client)) {
 		CreateTimer(0.0, CleanHUD, client); // Clean HUD (using a 1 frame timer or else it won't work)
-		SetDrawViewModel(client, view_as<bool>(g_ShowingWeapon[client])); // Hide weapon
+		SetWeaponVisibility(client); // Hide weapon
 		GivePlayerPistol(client, g_Pistol[client]); // Give player their preferred pistol
 		CloseTeleportMenu(client);
 	}
@@ -422,7 +422,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
 
 // Hide other players
 public Action OnSetTransmit(int entity, int client) {
-	if (!g_ShowingPlayers[client] && entity != client && entity != GetSpectatedPlayer(client)) {
+	if (g_ShowingPlayers[client] == KZShowingPlayers_Disabled && entity != client && entity != GetSpectatedPlayer(client)) {
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
@@ -453,7 +453,7 @@ public void OnRoundStart(Event event, const char[] name, bool dontBroadcast) {
 	SetupMapEntityHooks();
 }
 
-// Command usage from certain plugins force stop the player's timer (slap, teleport etc.)
+// Command usage from certain common plugins force stop the player's timer (slap, gravity etc.)
 public Action OnLogAction(Handle source, Identity ident, int client, int target, const char[] message) {
 	if (!IsValidClient(client)) {
 		return Plugin_Continue;

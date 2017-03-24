@@ -28,7 +28,7 @@ void CreateTeleportMenu(int client) {
 }
 
 void UpdateTeleportMenu(int client) {
-	if (GetClientMenu(client) == MenuSource_None && g_ShowingTeleportMenu[client] && !gB_TeleportMenuIsShowing[client] && IsPlayerAlive(client)) {
+	if (GetClientMenu(client) == MenuSource_None && g_ShowingTeleportMenu[client] == KZShowingTeleportMenu_Enabled && !gB_TeleportMenuIsShowing[client] && IsPlayerAlive(client)) {
 		UpdateTeleportMenuItems(client);
 		DisplayMenu(gH_TeleportMenu[client], client, MENU_TIME_FOREVER);
 		gB_TeleportMenuIsShowing[client] = true;

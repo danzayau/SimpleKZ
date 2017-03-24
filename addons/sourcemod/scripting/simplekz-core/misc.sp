@@ -252,6 +252,15 @@ void EmitSoundToClientSpectators(int client, const char[] sound) {
 	}
 }
 
+void SetWeaponVisibility(int client) {
+	if (g_ShowingWeapon[client] == KZShowingWeapon_Enabled) {
+		SetDrawViewModel(client, true);
+	}
+	else {
+		SetDrawViewModel(client, false);
+	}
+}
+
 public Action CleanHUD(Handle timer, int client) {
 	if (IsValidClient(client)) {
 		// (1 << 12) Hide Radar
