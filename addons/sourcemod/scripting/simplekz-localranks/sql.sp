@@ -12,7 +12,7 @@ char sqlite_maps_alter1[] =
 
 char mysql_maps_alter1[] = 
 "ALTER TABLE Maps "
-..."ADD InRankedPool INTEGER NOT NULL DEFAULT '0';";
+..."ADD InRankedPool TINYINT NOT NULL DEFAULT '0';";
 
 char sqlite_maps_insertranked[] = 
 "INSERT OR IGNORE INTO Maps "
