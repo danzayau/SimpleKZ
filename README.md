@@ -17,11 +17,11 @@
 ### Requirements
 
  * **Tested Using**: SourceMod 1.8
- * [**MovementAPI Plugin**](https://github.com/danzayau/MovementAPI) (included in ```SimpleKZ.zip```)
+ * [**MovementAPI Plugin**](https://github.com/danzayau/MovementAPI) (included in ```SimpleKZ-vX.X.X.zip```)
 
 ### Installation
 
- * Download and extract ```SimpleKZ.zip``` from the latest GitHub release to ```csgo/``` in your server directory.
+ * Download and extract ```SimpleKZ-vX.X.X.zip``` from the latest GitHub release to ```csgo/``` in your server directory.
  * Check the config file ```csgo/cfg/sourcemod/SimpleKZ/kz.cfg``` is appropriate for your server.
  * Config files for server ConVars are also generated in that directory after starting the plugin.
  * Add a MySQL/SQLite database called ```simplekz``` to ```csgo/addons/sourcemod/configs/databases.cfg``` for storing player preferences, player times and more. This is essential in providing the best player experience this plugin can.
