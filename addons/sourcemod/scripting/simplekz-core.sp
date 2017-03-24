@@ -20,7 +20,7 @@ public Plugin myinfo =
 	name = "Simple KZ Core", 
 	author = "DanZay", 
 	description = "A simple KZ timer plugin.", 
-	version = "0.10.0", 
+	version = "0.10.1", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 

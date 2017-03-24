@@ -1,7 +1,7 @@
 /* 	Simple KZ Local DB Include File
 	Author: DanZay
 	
-	Plugin Version: 0.10.0
+	Plugin Version: 0.10.1
 	Plugin Website: https://github.com/danzayau/SimpleKZ	
 */
 
