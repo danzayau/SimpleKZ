@@ -163,7 +163,7 @@ char sqlite_mapcourses_create[] =
 
 char mysql_mapcourses_create[] = 
 "CREATE TABLE IF NOT EXISTS MapCourses ("
-..."MapCourseID INTEGER UNSIGNED, "
+..."MapCourseID INTEGER UNSIGNED AUTO_INCREMENT, "
 ..."MapID INTEGER UNSIGNED NOT NULL, "
 ..."Course INTEGER UNSIGNED NOT NULL, "
 ..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "

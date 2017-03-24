@@ -64,6 +64,15 @@ char sql_players_searchbyalias[] =
 
 
 
+/*===============================  Map Courses  ===============================*/
+
+char sql_mapcourses_findid[] = 
+"SELECT MapCourseID "
+..."FROM MapCourses "
+..."WHERE MapID=%d AND Course=%d;";
+
+
+
 /*===============================  General  ===============================*/
 
 char sql_getpb[] = 
@@ -164,24 +173,45 @@ char sql_getlowestmaprankpro[] =
 ..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
 ..."WHERE MapCourses.MapID=%d AND MapCourses.Course=%d AND Times.Style=%d AND Times.Teleports=0;";
 
-char sql_getcounttotalmaps[] = 
+char sql_getcount_maincourses[] = 
 "SELECT COUNT(*) "
-..."FROM Maps "
-..."WHERE InRankedPool=1;";
+..."FROM MapCourses "
+..."INNER JOIN Maps ON Maps.MapID=MapCourses.MapID "
+..."WHERE Maps.InRankedPool=1 AND MapCourses.Course=0;";
 
-char sql_getcountmapscompleted[] = 
+char sql_getcount_maincoursescompleted[] = 
 "SELECT COUNT(DISTINCT Times.MapCourseID) "
 ..."FROM Times "
 ..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
 ..."INNER JOIN Maps ON Maps.MapID=MapCourses.MapID "
-..."WHERE Maps.InRankedPool=1 AND Times.PlayerID=%d AND MapCourses.Course=0 AND Times.Style=%d;"; // Doesn't include bonuses.
+..."WHERE Maps.InRankedPool=1 AND MapCourses.Course=0 AND Times.PlayerID=%d AND Times.Style=%d;";
 
-char sql_getcountmapscompletedpro[] = 
+char sql_getcount_maincoursescompletedpro[] = 
 "SELECT COUNT(DISTINCT Times.MapCourseID) "
 ..."FROM Times "
 ..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
 ..."INNER JOIN Maps ON Maps.MapID=MapCourses.MapID "
-..."WHERE Maps.InRankedPool=1 AND Times.PlayerID=%d AND MapCourses.Course=0 AND Times.Style=%d AND Times.Teleports=0;"; // Doesn't include bonuses.
+..."WHERE Maps.InRankedPool=1 AND MapCourses.Course=0 AND Times.PlayerID=%d AND Times.Style=%d AND Times.Teleports=0;";
+
+char sql_getcount_bonuses[] = 
+"SELECT COUNT(*) "
+..."FROM MapCourses "
+..."INNER JOIN Maps ON Maps.MapID=MapCourses.MapID "
+..."WHERE Maps.InRankedPool=1 AND MapCourses.Course>0;";
+
+char sql_getcount_bonusescompleted[] = 
+"SELECT COUNT(DISTINCT Times.MapCourseID) "
+..."FROM Times "
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."INNER JOIN Maps ON Maps.MapID=MapCourses.MapID "
+..."WHERE Maps.InRankedPool=1 AND MapCourses.Course>0 AND Times.PlayerID=%d AND Times.Style=%d;";
+
+char sql_getcount_bonusescompletedpro[] = 
+"SELECT COUNT(DISTINCT Times.MapCourseID) "
+..."FROM Times "
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."INNER JOIN Maps ON Maps.MapID=MapCourses.MapID "
+..."WHERE Maps.InRankedPool=1 AND MapCourses.Course>0 AND Times.PlayerID=%d AND Times.Style=%d AND Times.Teleports=0;";
 
 char sql_gettopplayers_map[] = 
 "SELECT Players.Alias, COUNT(*) AS RecordCount "

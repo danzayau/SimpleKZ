@@ -13,11 +13,17 @@
 		"#format"	"{1:s}"
 		"en"		"{grey}Your search for map '{default}{1}{grey}' returned with no results."
 	}
+	"Main Course Not Found"
+	{
+		// kz_fakemap Main Course isn't in the database.
+		"#format"	"{1:s}"
+		"en"		"{default}{1} {darkblue}Main Course{grey} isn't in the database."
+	}
 	"Bonus Not Found"
 	{
-		// Your search for map 'kz_fakemap' Bonus 1 returned with no results.
+		// kz_fakemap Bonus 1 isn't in the database.
 		"#format"	"{1:s},{2:d}"
-		"en"		"{grey}Your search for map '{default}{1}{grey}' {gold}Bonus {2} {grey}returned with no results."
+		"en"		"{default}{1} {darkblue}Bonus {2}{grey} isn't in the database."
 	}
 	"Invalid Bonus Number"
 	{
@@ -51,19 +57,19 @@
 	{
 		// Bill beat the Bonus 1 MAP RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:t}"
-		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {yellow}MAP RECORD {grey}[{purple}{3}{grey}]!"
+		"en"		"{lime}{1}{grey} beat the {darkblue}Bonus {2} {yellow}MAP RECORD {grey}[{purple}{3}{grey}]!"
 	}
 	"New Bonus Record - Pro"
 	{
 		// Bill beat the PRO RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:t}"
-		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {blue}PRO RECORD {grey}[{purple}{3}{grey}]!"
+		"en"		"{lime}{1}{grey} beat the {darkblue}Bonus {2} {blue}PRO RECORD {grey}[{purple}{3}{grey}]!"
 	}
 	"New Bonus Record - Map and Pro"
 	{
 		// Bill beat the Bonus 1 MAP RECORD and the PRO RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} beat the {gold}Bonus {2} {yellow}MAP RECORD{grey} and the {gold}Bonus {3} {blue}PRO RECORD {grey}[{purple}{4}{grey}]!"
+		"en"		"{lime}{1}{grey} beat the {darkblue}Bonus {2} {yellow}MAP RECORD{grey} and the {darkblue}Bonus {3} {blue}PRO RECORD {grey}[{purple}{4}{grey}]!"
 	}
 	"New PB - First Time"
 	{
@@ -93,25 +99,25 @@
 	{
 		// Bill just beat Bonus 1 for the first time (#5/12) [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just beat {gold}Bonus {2} {grey}for the first time (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} just beat {darkblue}Bonus {2} {grey}for the first time (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
 	}
 	"New Bonus PB - First Time (Pro)"
 	{
 		// Bill just PRO'd Bonus 1 for the first time (#5/12) [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d {gold}Bonus {2} {grey}for the first time (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d {darkblue}Bonus {2} {grey}for the first time (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
 	}
 	"New Bonus PB - Improve"
 	{
 		// Bill just beat their Bonus 1 MAP time by -00:12.34 (#5/12) [Style].
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:d},{6:t}"
-		"en"		"{lime}{1}{grey} just beat their {gold}Bonus {2} {yellow}MAP{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} just beat their {darkblue}Bonus {2} {yellow}MAP{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
 	}
 	"New Bonus PB - Improve (Pro)"
 	{
 		// Bill just beat their Bonus 1 PRO time by -00:12.34 (#5/12) [Style]!
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:d},{6:t}"
-		"en"		"{lime}{1}{grey} just beat their {gold}Bonus {2} {blue}PRO{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} just beat their {darkblue}Bonus {2} {blue}PRO{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
 	}
 	"PB Header"
 	{	
@@ -123,7 +129,7 @@
 	{
 		// Bill on kz_map Bonus 1 [Style]
 		"#format"	"{1:s},{2:s},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} on {default}{2} {gold}Bonus {3} {grey}[{purple}{4}{grey}]"
+		"en"		"{lime}{1}{grey} on {default}{2} {darkblue}Bonus {3} {grey}[{purple}{4}{grey}]"
 	}
 	"PB Time - No Times"
 	{
@@ -161,7 +167,7 @@
 	{
 		// Server WRs on kz_map Bonus 1 [Style]
 		"#format"	"{1:s},{2:d},{3:t}"
-		"en"		"{grey}Records on {default}{1} {gold}Bonus {2} {grey}[{purple}{3}{grey}]"
+		"en"		"{grey}Records on {default}{1} {darkblue}Bonus {2} {grey}[{purple}{3}{grey}]"
 	}
 	"WR No Times"
 	{
@@ -207,9 +213,9 @@
 	}
 	"Map Completion"
 	{
-		// Bill has beaten 12/234 and PRO'd 6/234 ranked maps [Standard].
-		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:d},{6:t}"
-		"en"		"{lime}{1}{grey} has beaten {default}{2}{grey}/{default}{3}{grey} and {blue}PRO{grey}'d {default}{4}{grey}/{default}{5}{default} {grey}ranked maps {grey}[{purple}{6}{grey}]."
+		// Bill has beaten 12/234 and PRO'd 6/234 maps, and has beaten 3/21 and PRO'd 1/21 bonuses [Standard].
+		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:d},{6:d},{7:d},{8:d},{9:d},{10:t}"
+		"en"		"{lime}{1}{grey} has beaten {default}{2}{grey}/{default}{3}{grey} and {blue}PRO{grey}'d {default}{4}{grey}/{default}{5}{grey} maps, and has beaten {default}{6}{grey}/{default}{7}{grey} and {blue}PRO{grey}'d {default}{8}{grey}/{default}{9}{grey} bonuses [{purple}{10}{grey}]."
 	}
 
 	
