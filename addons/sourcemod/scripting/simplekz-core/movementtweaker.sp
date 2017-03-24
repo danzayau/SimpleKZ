@@ -31,6 +31,10 @@ public void OnStopTouchLadder(int client) {
 	gB_HitPerf[client] = false;
 }
 
+public void OnStopNoclipping(int client) {
+	gB_HitPerf[client] = false;
+}
+
 
 
 /*===============================  General Tweak (Called OnPlayerRunCmd)  ===============================*/
