@@ -13,6 +13,12 @@
 		"#format"	"{1:s}"
 		"en"		"{grey}Your search for map '{default}{1}{grey}' returned with no results."
 	}
+	"Bonus Not Found"
+	{
+		// Your search for map 'kz_fakemap' Bonus 1 returned with no results.
+		"#format"	"{1:s},{2:d}"
+		"en"		"{grey}Your search for map '{default}{1}{grey}' {gold}Bonus {2} {grey}returned with no results."
+	}
 	"Invalid Bonus Number"
 	{
 		// 'asdf' is not a valid bonus number.

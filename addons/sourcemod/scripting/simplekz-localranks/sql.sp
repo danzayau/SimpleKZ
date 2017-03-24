@@ -39,7 +39,7 @@ char sql_maps_getname[] =
 ..."FROM Maps "
 ..."WHERE MapID=%d;";
 
-char sql_maps_findid[] = 
+char sql_maps_searchbyname[] = 
 "SELECT MapID, Name "
 ..."FROM Maps "
 ..."WHERE Name LIKE '%%%s%%' "
@@ -55,11 +55,11 @@ char sql_players_getalias[] =
 ..."FROM Players "
 ..."WHERE PlayerID=%d;";
 
-char sql_players_findid[] = 
+char sql_players_searchbyalias[] = 
 "SELECT PlayerID, Alias "
 ..."FROM Players "
 ..."WHERE LOWER(Alias) LIKE '%%%s%%' "
-..."ORDER BY (LOWER(Alias)='%s') DESC, LastSeen DESC "
+..."ORDER BY (LOWER(Alias)='%s') DESC, LastPlayed DESC "
 ..."LIMIT 1;";
 
 
@@ -67,30 +67,32 @@ char sql_players_findid[] =
 /*===============================  General  ===============================*/
 
 char sql_getpb[] = 
-"SELECT RunTime, Teleports, TheoreticalRunTime "
+"SELECT Times.RunTime, Times.Teleports, Times.TheoreticalRunTime "
 ..."FROM Times "
-..."WHERE PlayerID=%d AND MapID=%d AND Course=%d AND Style=%d "
-..."ORDER BY RunTime "
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."WHERE Times.PlayerID=%d AND MapCourses.MapID=%d AND MapCourses.Course=%d AND Times.Style=%d "
+..."ORDER BY Times.RunTime "
 ..."LIMIT %d;";
 
 char sql_getpbpro[] = 
-"SELECT RunTime "
+"SELECT Times.RunTime "
 ..."FROM Times "
-..."WHERE PlayerID=%d AND MapID=%d AND Course=%d AND Style=%d AND Teleports=0 "
-..."ORDER BY RunTime "
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."WHERE Times.PlayerID=%d AND MapCourses.MapID=%d AND MapCourses.Course=%d AND Times.Style=%d AND Times.Teleports=0 "
+..."ORDER BY Times.RunTime "
 ..."LIMIT %d;";
 
-// There's probably a better way to get map top but this seems to work...
 char sql_getmaptop[] = 
 "SELECT Players.Alias, Times.RunTime, Times.Teleports "
 ..."FROM Times "
 ..."INNER JOIN Players ON Players.PlayerID=Times.PlayerID "
 ..."INNER JOIN "
-..."(SELECT MIN(RunTime) AS PBTime, MapID, Course, Style, PlayerID "
+..."(SELECT MIN(Times.RunTime) AS PBTime, Times.MapCourseID, Times.Style, Times.PlayerID "
 ..."FROM Times "
-..."WHERE MapID=%d AND Course=%d AND Style=%d "
-..."GROUP BY MapID, Course, Style, PlayerID) PBs "
-..."ON PBs.PBTime=Times.RunTime AND PBs.MapID=Times.MapID AND PBs.Course=Times.Course AND PBs.Style=Times.Style AND PBs.PlayerID=Times.PlayerID "
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."WHERE MapCourses.MapID=%d AND MapCourses.Course=%d AND Times.Style=%d "
+..."GROUP BY MapCourses.MapID, MapCourses.Course, Times.Style, Times.PlayerID) PBs "
+..."ON PBs.PBTime=Times.RunTime AND PBs.MapCourseID=Times.MapCourseID AND PBs.Style=Times.Style AND PBs.PlayerID=Times.PlayerID "
 ..."ORDER BY Times.RunTime "
 ..."LIMIT %d;";
 
@@ -99,11 +101,12 @@ char sql_getmaptoppro[] =
 ..."FROM Times "
 ..."INNER JOIN Players ON Players.PlayerID=Times.PlayerID "
 ..."INNER JOIN "
-..."(SELECT MIN(RunTime) AS PBTime, MapID, Course, Style, PlayerID "
+..."(SELECT MIN(Times.RunTime) AS PBTime, Times.MapCourseID, Times.Style, Times.PlayerID "
 ..."FROM Times "
-..."WHERE MapID=%d AND Course=%d AND Style=%d AND Teleports=0 "
-..."GROUP BY MapID, Course, Style, PlayerID) PBs "
-..."ON PBs.PBTime=Times.RunTime AND PBs.MapID=Times.MapID AND PBs.Course=Times.Course AND PBs.Style=Times.Style AND PBs.PlayerID=Times.PlayerID "
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."WHERE MapCourses.MapID=%d AND MapCourses.Course=%d AND Times.Style=%d AND Times.Teleports=0 "
+..."GROUP BY MapCourses.MapID, MapCourses.Course, Times.Style, Times.PlayerID) PBs "
+..."ON PBs.PBTime=Times.RunTime AND PBs.MapCourseID=Times.MapCourseID AND PBs.Style=Times.Style AND PBs.PlayerID=Times.PlayerID "
 ..."ORDER BY Times.RunTime "
 ..."LIMIT %d;";
 
@@ -112,47 +115,54 @@ char sql_getmaptoptheoretical[] =
 ..."FROM Times "
 ..."INNER JOIN Players ON Players.PlayerID=Times.PlayerID "
 ..."INNER JOIN "
-..."(SELECT MIN(TheoreticalRunTime) AS PBTime, MapID, Course, Style, PlayerID "
+..."(SELECT MIN(Times.TheoreticalRunTime) AS PBTime, Times.MapCourseID, Times.Style, Times.PlayerID "
 ..."FROM Times "
-..."WHERE MapID=%d AND Course=%d AND Style=%d "
-..."GROUP BY MapID, Course, Style, PlayerID) PBs "
-..."ON PBs.PBTime=Times.TheoreticalRunTime AND PBs.MapID=Times.MapID AND PBs.Course=Times.Course AND PBs.Style=Times.Style AND PBs.PlayerID=Times.PlayerID "
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."WHERE MapCourses.MapID=%d AND MapCourses.Course=%d AND Times.Style=%d "
+..."GROUP BY MapCourses.MapID, MapCourses.Course, Times.Style, Times.PlayerID) PBs "
+..."ON PBs.PBTime=Times.TheoreticalRunTime AND PBs.MapCourseID=Times.MapCourseID AND PBs.Style=Times.Style AND PBs.PlayerID=Times.PlayerID "
 ..."ORDER BY Times.TheoreticalRunTime "
 ..."LIMIT %d;";
 
 char sql_getmaprank[] = 
 "SELECT COUNT(*) "
 ..."FROM "
-..."(SELECT MIN(RunTime) "
+..."(SELECT MIN(Times.RunTime) "
 ..."FROM Times "
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
 ..."WHERE RunTime <= "
-..."(SELECT MIN(RunTime) "
+..."(SELECT MIN(Times.RunTime) "
 ..."FROM Times "
-..."WHERE PlayerID=%d AND MapID=%d AND Course=%d AND Style=%d) "
-..."AND MapID=%d AND Course=%d AND Style=%d "
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."WHERE Times.PlayerID=%d AND MapCourses.MapID=%d AND MapCourses.Course=%d AND Times.Style=%d) "
+..."AND MapCourses.MapID=%d AND MapCourses.Course=%d AND Times.Style=%d "
 ..."GROUP BY PlayerID) AS FasterTimes;";
 
 char sql_getmaprankpro[] = 
 "SELECT COUNT(*) "
 ..."FROM "
-..."(SELECT MIN(RunTime) "
+..."(SELECT MIN(Times.RunTime) "
 ..."FROM Times "
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
 ..."WHERE RunTime <= "
-..."(SELECT MIN(RunTime) "
+..."(SELECT MIN(Times.RunTime) "
 ..."FROM Times "
-..."WHERE PlayerID=%d AND MapID=%d AND Course=%d AND Style=%d AND Teleports=0) "
-..."AND MapID=%d AND Course=%d AND Style=%d AND Teleports=0 "
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."WHERE Times.PlayerID=%d AND MapCourses.MapID=%d AND MapCourses.Course=%d AND Times.Style=%d AND Times.Teleports=0) "
+..."AND MapCourses.MapID=%d AND MapCourses.Course=%d AND Times.Style=%d AND Times.Teleports=0 "
 ..."GROUP BY PlayerID) AS FasterTimes;";
 
 char sql_getlowestmaprank[] = 
-"SELECT COUNT(DISTINCT PlayerID) "
+"SELECT COUNT(DISTINCT Times.PlayerID) "
 ..."FROM Times "
-..."WHERE MapID=%d AND Course=%d AND Style=%d;";
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."WHERE MapCourses.MapID=%d AND MapCourses.Course=%d AND Times.Style=%d;";
 
 char sql_getlowestmaprankpro[] = 
-"SELECT COUNT(DISTINCT PlayerID) "
+"SELECT COUNT(DISTINCT Times.PlayerID) "
 ..."FROM Times "
-..."WHERE MapID=%d AND Course=%d AND Style=%d AND Teleports=0;";
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."WHERE MapCourses.MapID=%d AND MapCourses.Course=%d AND Times.Style=%d AND Times.Teleports=0;";
 
 char sql_getcounttotalmaps[] = 
 "SELECT COUNT(*) "
@@ -160,16 +170,18 @@ char sql_getcounttotalmaps[] =
 ..."WHERE InRankedPool=1;";
 
 char sql_getcountmapscompleted[] = 
-"SELECT COUNT(DISTINCT Times.MapID) "
+"SELECT COUNT(DISTINCT Times.MapCourseID) "
 ..."FROM Times "
-..."INNER JOIN Maps ON Maps.MapID=Times.MapID "
-..."WHERE Maps.InRankedPool=1 AND Times.PlayerID=%d AND Times.Course=0 AND Times.Style=%d;";
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."INNER JOIN Maps ON Maps.MapID=MapCourses.MapID "
+..."WHERE Maps.InRankedPool=1 AND Times.PlayerID=%d AND MapCourses.Course=0 AND Times.Style=%d;"; // Doesn't include bonuses.
 
 char sql_getcountmapscompletedpro[] = 
-"SELECT COUNT(DISTINCT Times.MapID) "
+"SELECT COUNT(DISTINCT Times.MapCourseID) "
 ..."FROM Times "
-..."INNER JOIN Maps ON Maps.MapID=Times.MapID "
-..."WHERE Maps.InRankedPool=1 AND Times.PlayerID=%d AND Times.Course=0 AND Times.Style=%d AND Times.Teleports=0;";
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."INNER JOIN Maps ON Maps.MapID=MapCourses.MapID "
+..."WHERE Maps.InRankedPool=1 AND Times.PlayerID=%d AND MapCourses.Course=0 AND Times.Style=%d AND Times.Teleports=0;"; // Doesn't include bonuses.
 
 char sql_gettopplayers_map[] = 
 "SELECT Players.Alias, COUNT(*) AS RecordCount "
@@ -177,12 +189,13 @@ char sql_gettopplayers_map[] =
 ..."(SELECT Times.PlayerID "
 ..."FROM Times "
 ..."INNER JOIN "
-..."(SELECT Times.MapID, MIN(Times.RunTime) AS RecordTime "
+..."(SELECT Times.MapCourseID, MIN(Times.RunTime) AS RecordTime "
 ..."FROM Times "
-..."INNER JOIN Maps ON Maps.MapID=Times.MapID "
-..."WHERE Maps.InRankedPool=1 AND Times.Course=0 AND Times.Style=%d "
-..."GROUP BY Times.MapID) Records "
-..."ON Times.MapID=Records.MapID AND Times.RunTime=Records.RecordTime) RecordHolders "
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."INNER JOIN Maps ON Maps.MapID=MapCourses.MapID "
+..."WHERE Maps.InRankedPool=1 AND MapCourses.Course=0 AND Times.Style=%d " // Doesn't include bonuses.
+..."GROUP BY Times.MapCourseID) Records "
+..."ON Times.MapCourseID=Records.MapCourseID AND Times.RunTime=Records.RecordTime) RecordHolders "
 ..."INNER JOIN Players ON Players.PlayerID=RecordHolders.PlayerID "
 ..."GROUP BY Players.Alias "
 ..."ORDER BY RecordCount DESC "
@@ -194,12 +207,13 @@ char sql_gettopplayers_pro[] =
 ..."(SELECT Times.PlayerID "
 ..."FROM Times "
 ..."INNER JOIN "
-..."(SELECT Times.MapID, MIN(Times.RunTime) AS RecordTime "
+..."(SELECT Times.MapCourseID, MIN(Times.RunTime) AS RecordTime "
 ..."FROM Times "
-..."INNER JOIN Maps ON Maps.MapID=Times.MapID "
-..."WHERE Maps.InRankedPool=1 AND Times.Course=0 AND Times.Style=%d AND Times.Teleports=0 "
-..."GROUP BY Times.MapID) Records "
-..."ON Times.MapID=Records.MapID AND Times.RunTime=Records.RecordTime) RecordHolders "
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."INNER JOIN Maps ON Maps.MapID=MapCourses.MapID "
+..."WHERE Maps.InRankedPool=1 AND MapCourses.Course=0 AND Times.Style=%d AND Times.Teleports=0 " // Doesn't include bonuses.
+..."GROUP BY Times.MapCourseID) Records "
+..."ON Times.MapCourseID=Records.MapCourseID AND Times.RunTime=Records.RecordTime) RecordHolders "
 ..."INNER JOIN Players ON Players.PlayerID=RecordHolders.PlayerID "
 ..."GROUP BY Players.Alias "
 ..."ORDER BY RecordCount DESC "
@@ -211,12 +225,13 @@ char sql_gettopplayers_theoretical[] =
 ..."(SELECT Times.PlayerID "
 ..."FROM Times "
 ..."INNER JOIN "
-..."(SELECT Times.MapID, MIN(Times.TheoreticalRunTime) AS RecordTime "
+..."(SELECT Times.MapCourseID, MIN(Times.TheoreticalRunTime) AS RecordTime "
 ..."FROM Times "
-..."INNER JOIN Maps ON Maps.MapID=Times.MapID "
-..."WHERE Maps.InRankedPool=1 AND Times.Course=0 AND Times.Style=%d "
-..."GROUP BY Times.MapID) Records "
-..."ON Times.MapID=Records.MapID AND Times.TheoreticalRunTime=Records.RecordTime) RecordHolders "
+..."INNER JOIN MapCourses ON MapCourses.MapCourseID=Times.MapCourseID "
+..."INNER JOIN Maps ON Maps.MapID=MapCourses.MapID "
+..."WHERE Maps.InRankedPool=1 AND MapCourses.Course=0 AND Times.Style=%d " // Doesn't include bonuses.
+..."GROUP BY Times.MapCourseID) Records "
+..."ON Times.MapCourseID=Records.MapCourseID AND Times.TheoreticalRunTime=Records.RecordTime) RecordHolders "
 ..."INNER JOIN Players ON Players.PlayerID=RecordHolders.PlayerID "
 ..."GROUP BY Players.Alias "
 ..."ORDER BY RecordCount DESC "

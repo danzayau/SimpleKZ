@@ -56,6 +56,9 @@ public Action CommandBMapTop(int client, int args) {
 		if (bonus > 0) {
 			DB_OpenMapTop(client, SimpleKZ_GetCurrentMapID(), bonus, view_as<KZStyle>(SimpleKZ_GetOption(client, KZOption_Style)));
 		}
+		else {
+			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
+		}
 	}
 	else if (args >= 2) {
 		// Open specified bonus top for specified map and their current style

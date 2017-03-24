@@ -27,9 +27,13 @@ public void DB_TxnFailure_Generic(Handle db, any data, int numQueries, const cha
 	SetFailState("%T", "Database Transaction Error", LANG_SERVER, error);
 }
 
-/* Used to find a PlayerID from an input string using an already written method */
+/*	Used to search the database for a player name and return their PlayerID and alias
+
+	For SQLTxnSuccess onSuccess:
+	results[0] - 0:PlayerID, 1:Alias
+*/
 void DB_FindPlayer(const char[] playerSearch, SQLTxnSuccess onSuccess, any data = 0, DBPriority priority = DBPrio_Normal) {
-	char query[512], playerEscaped[MAX_NAME_LENGTH * 2 + 1];
+	char query[1024], playerEscaped[MAX_NAME_LENGTH * 2 + 1];
 	SQL_EscapeString(gH_DB, playerSearch, playerEscaped, sizeof(playerEscaped));
 	
 	String_ToLower(playerEscaped, playerEscaped, sizeof(playerEscaped));
@@ -37,29 +41,39 @@ void DB_FindPlayer(const char[] playerSearch, SQLTxnSuccess onSuccess, any data 
 	Transaction txn = SQL_CreateTransaction();
 	
 	// Look for player name and retrieve their PlayerID
-	FormatEx(query, sizeof(query), sql_players_findid, playerEscaped, playerEscaped);
+	FormatEx(query, sizeof(query), sql_players_searchbyalias, playerEscaped, playerEscaped);
 	txn.AddQuery(query);
 	
 	SQL_ExecuteTransaction(gH_DB, txn, onSuccess, DB_TxnFailure_Generic, data, priority);
 }
 
-/* Used to find a MapID from an input string using an already written method */
+/*	Used to search the database for a map name and return its MapID and name
+
+	For SQLTxnSuccess onSuccess:
+	results[0] - 0:MapID, 1:Name
+*/
 void DB_FindMap(const char[] mapSearch, SQLTxnSuccess onSuccess, any data = 0, DBPriority priority = DBPrio_Normal) {
-	char query[512], mapEscaped[129];
+	char query[1024], mapEscaped[129];
 	SQL_EscapeString(gH_DB, mapSearch, mapEscaped, sizeof(mapEscaped));
 	
 	Transaction txn = SQL_CreateTransaction();
 	
 	// Look for map name and retrieve it's MapID
-	FormatEx(query, sizeof(query), sql_maps_findid, mapEscaped, mapEscaped);
+	FormatEx(query, sizeof(query), sql_maps_searchbyname, mapEscaped, mapEscaped);
 	txn.AddQuery(query);
 	
 	SQL_ExecuteTransaction(gH_DB, txn, onSuccess, DB_TxnFailure_Generic, data, priority);
 }
 
-/* Used to find a PlayerID MapID from input strings using an already written method */
+/*	Used to search the database for a player name and return their PlayerID and alias,
+	and search the database for a map name and return its MapID and name
+	
+	For SQLTxnSuccess onSuccess:
+	results[0] - 0:PlayerID, 1:Alias
+	results[1] - 0:MapID, 1:Name
+*/
 void DB_FindPlayerAndMap(const char[] playerSearch, const char[] mapSearch, SQLTxnSuccess onSuccess, any data = 0, DBPriority priority = DBPrio_Normal) {
-	char query[512], mapEscaped[129], playerEscaped[MAX_NAME_LENGTH * 2 + 1];
+	char query[1024], mapEscaped[129], playerEscaped[MAX_NAME_LENGTH * 2 + 1];
 	SQL_EscapeString(gH_DB, playerSearch, playerEscaped, sizeof(playerEscaped));
 	SQL_EscapeString(gH_DB, mapSearch, mapEscaped, sizeof(mapEscaped));
 	
@@ -68,10 +82,10 @@ void DB_FindPlayerAndMap(const char[] playerSearch, const char[] mapSearch, SQLT
 	Transaction txn = SQL_CreateTransaction();
 	
 	// Look for player name and retrieve their PlayerID
-	FormatEx(query, sizeof(query), sql_players_findid, playerEscaped, playerEscaped);
+	FormatEx(query, sizeof(query), sql_players_searchbyalias, playerEscaped, playerEscaped);
 	txn.AddQuery(query);
-	// Look for player name and retrieve their PlayerID
-	FormatEx(query, sizeof(query), sql_players_findid, playerEscaped, playerEscaped);
+	// Look for map name and retrieve it's MapID
+	FormatEx(query, sizeof(query), sql_maps_searchbyname, mapEscaped, mapEscaped);
 	txn.AddQuery(query);
 	
 	SQL_ExecuteTransaction(gH_DB, txn, onSuccess, DB_TxnFailure_Generic, data, priority);
@@ -143,7 +157,7 @@ void DB_ProcessNewTime(int client, int playerID, int mapID, int course, KZStyle 
 		return;
 	}
 	
-	char query[512];
+	char query[1024];
 	
 	DataPack data = CreateDataPack();
 	data.WriteCell(client);
@@ -305,7 +319,7 @@ void DB_PrintPBs(int client, int targetPlayerID, int mapID, int course, KZStyle 
 		return;
 	}
 	
-	char query[512];
+	char query[1024];
 	
 	DataPack data = CreateDataPack();
 	data.WriteCell(client);
@@ -522,7 +536,7 @@ public void DB_TxnSuccess_PrintPBs_FindPlayerAndMap(Handle db, DataPack data, in
 /*===============================  Print Records  ===============================*/
 
 void DB_PrintRecords(int client, int mapID, int course, KZStyle style) {
-	char query[512];
+	char query[1024];
 	
 	DataPack data = CreateDataPack();
 	data.WriteCell(client);
@@ -655,7 +669,7 @@ public void DB_TxnSuccess_PrintRecords_FindMap(Handle db, DataPack data, int num
 /*===============================  Map Top Menu  ===============================*/
 
 void DB_OpenMapTop(int client, int mapID, int course, KZStyle style) {
-	char query[512];
+	char query[1024];
 	
 	DataPack data = CreateDataPack();
 	data.WriteCell(client);
@@ -740,7 +754,7 @@ void DB_OpenMapTop20(int client, int mapID, int course, KZStyle style, KZTimeTyp
 		return;
 	}
 	
-	char query[512];
+	char query[1024];
 	
 	DataPack data = CreateDataPack();
 	data.WriteCell(client);
@@ -926,7 +940,7 @@ void DB_GetCompletion(int client, int targetPlayerID, KZStyle style, bool print)
 		return;
 	}
 	
-	char query[512];
+	char query[1024];
 	
 	DataPack data = CreateDataPack();
 	data.WriteCell(client);

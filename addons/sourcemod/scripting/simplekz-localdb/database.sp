@@ -77,7 +77,7 @@ void DB_SetupClient(KZPlayer player) {
 		return;
 	}
 	
-	char query[512], name[MAX_NAME_LENGTH], nameEscaped[MAX_NAME_LENGTH * 2 + 1], steamID[18], clientIP[16], country[45];
+	char query[1024], name[MAX_NAME_LENGTH], nameEscaped[MAX_NAME_LENGTH * 2 + 1], steamID[18], clientIP[16], country[45];
 	GetClientName(player.id, name, MAX_NAME_LENGTH);
 	SQL_EscapeString(gH_DB, name, nameEscaped, MAX_NAME_LENGTH * 2 + 1);
 	GetClientAuthId(player.id, AuthId_SteamID64, steamID, sizeof(steamID), true);
@@ -145,7 +145,7 @@ void DB_LoadOptions(KZPlayer player) {
 		return;
 	}
 	
-	char query[512];
+	char query[1024];
 	
 	Transaction txn = SQL_CreateTransaction();
 	
@@ -163,7 +163,7 @@ public void DB_TxnSuccess_LoadOptions(Handle db, KZPlayer player, int numQueries
 	
 	else if (SQL_GetRowCount(results[0]) == 0) {
 		// No options found for that PlayerID, so insert those options and then try reload them again
-		char query[512];
+		char query[1024];
 		
 		Transaction txn = SQL_CreateTransaction();
 		
@@ -200,7 +200,7 @@ void DB_SaveOptions(KZPlayer player) {
 		return;
 	}
 	
-	char query[512];
+	char query[1024];
 	
 	Transaction txn = SQL_CreateTransaction();
 	
@@ -235,7 +235,7 @@ void DB_SetupMap() {
 		return;
 	}
 	
-	char query[512];
+	char query[1024];
 	
 	char map[64];
 	GetCurrentMap(map, sizeof(map));
@@ -335,7 +335,7 @@ void DB_StoreTime(KZPlayer player, int course, KZStyle style, float runTime, int
 		return;
 	}
 	
-	char query[512];
+	char query[1024];
 	int playerID = gI_DBPlayerID[player.id];
 	int mapID = SimpleKZ_GetCurrentMapID();
 	int runTimeMS = SimpleKZ_TimeFloatToInt(runTime);
@@ -354,7 +354,7 @@ void DB_StoreTime(KZPlayer player, int course, KZStyle style, float runTime, int
 	Transaction txn = SQL_CreateTransaction();
 	
 	// Save runTime to DB
-	FormatEx(query, sizeof(query), sql_times_insert, playerID, mapID, course, style, runTimeMS, teleportsUsed, theoreticalRunTimeMS);
+	FormatEx(query, sizeof(query), sql_times_insert, playerID, style, runTimeMS, teleportsUsed, theoreticalRunTimeMS, mapID, course);
 	txn.AddQuery(query);
 	
 	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_SaveTime, DB_TxnFailure_Generic, data, DBPrio_Normal);

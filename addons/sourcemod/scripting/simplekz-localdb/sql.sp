@@ -149,51 +149,13 @@ char sql_maps_findid[] =
 
 
 
-/*===============================  Times Table  ===============================*/
-
-char sqlite_times_create[] = 
-"CREATE TABLE IF NOT EXISTS Times ("
-..."TimeID INTEGER, "
-..."PlayerID INTEGER NOT NULL, "
-..."MapID INTEGER NOT NULL, "
-..."Course INTEGER NOT NULL, "
-..."Style INTEGER NOT NULL, "
-..."RunTime INTEGER NOT NULL, "
-..."Teleports INTEGER NOT NULL, "
-..."TheoreticalRunTime INTEGER NOT NULL, "
-..."Created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
-..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
-..."CONSTRAINT FK_Times_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
-
-char mysql_times_create[] = 
-"CREATE TABLE IF NOT EXISTS Times ("
-..."TimeID INTEGER UNSIGNED AUTO_INCREMENT, "
-..."PlayerID INTEGER UNSIGNED NOT NULL, "
-..."MapID INTEGER UNSIGNED NOT NULL, "
-..."Course TINYINT UNSIGNED NOT NULL, "
-..."Style TINYINT UNSIGNED NOT NULL, "
-..."RunTime INTEGER UNSIGNED NOT NULL, "
-..."Teleports SMALLINT UNSIGNED NOT NULL, "
-..."TheoreticalRunTime INTEGER UNSIGNED NOT NULL, "
-..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
-..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
-..."CONSTRAINT FK_Times_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
-
-char sql_times_insert[] = 
-"INSERT INTO Times (PlayerID, MapID, Course, Style, RunTime, Teleports, TheoreticalRunTime) "
-..."VALUES (%d, %d, %d, %d, %d, %d, %d);";
-
-
-
 /*===============================  MapCourses Table  ===============================*/
 
 char sqlite_mapcourses_create[] = 
 "CREATE TABLE IF NOT EXISTS MapCourses ("
 ..."MapCourseID INTEGER, "
-..."MapID INTEGER, "
-..."Course INTEGER, "
+..."MapID INTEGER NOT NULL, "
+..."Course INTEGER NOT NULL, "
 ..."Created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, "
 ..."CONSTRAINT PK_MapCourses PRIMARY KEY (MapCourseID), "
 ..."CONSTRAINT UQ_MapCourses_MapIDCourse UNIQUE (MapID, Course), "
@@ -215,4 +177,42 @@ char sqlite_mapcourses_insert[] =
 
 char mysql_mapcourses_insert[] = 
 "INSERT IGNORE INTO MapCourses (MapID, Course) "
-..."VALUES (%d, %d);"; 
+..."VALUES (%d, %d);";
+
+
+
+/*===============================  Times Table  ===============================*/
+
+char sqlite_times_create[] = 
+"CREATE TABLE IF NOT EXISTS Times ("
+..."TimeID INTEGER, "
+..."PlayerID INTEGER NOT NULL, "
+..."MapCourseID INTEGER NOT NULL, "
+..."Style INTEGER NOT NULL, "
+..."RunTime INTEGER NOT NULL, "
+..."Teleports INTEGER NOT NULL, "
+..."TheoreticalRunTime INTEGER NOT NULL, "
+..."Created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
+..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
+..."CONSTRAINT FK_Times_MapCourseID FOREIGN KEY (MapCourseID) REFERENCES MapCourses (MapCourseID) ON UPDATE CASCADE ON DELETE CASCADE);";
+
+char mysql_times_create[] = 
+"CREATE TABLE IF NOT EXISTS Times ("
+..."TimeID INTEGER UNSIGNED AUTO_INCREMENT, "
+..."PlayerID INTEGER UNSIGNED NOT NULL, "
+..."MapCourseID INTEGER UNSIGNED NOT NULL, "
+..."Style TINYINT UNSIGNED NOT NULL, "
+..."RunTime INTEGER UNSIGNED NOT NULL, "
+..."Teleports SMALLINT UNSIGNED NOT NULL, "
+..."TheoreticalRunTime INTEGER UNSIGNED NOT NULL, "
+..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."CONSTRAINT PK_Times PRIMARY KEY (TimeID), "
+..."CONSTRAINT FK_Times_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players (PlayerID) ON UPDATE CASCADE ON DELETE CASCADE, "
+..."CONSTRAINT FK_Times_MapCourseID FOREIGN KEY (MapCourseID) REFERENCES MapCourses (MapCourseID) ON UPDATE CASCADE ON DELETE CASCADE);";
+
+char sql_times_insert[] = 
+"INSERT INTO Times (PlayerID, MapCourseID, Style, RunTime, Teleports, TheoreticalRunTime) "
+..."SELECT %d, MapCourseID, %d, %d, %d, %d "
+..."FROM MapCourses "
+..."WHERE MapID=%d AND Course=%d;"; 
