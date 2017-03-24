@@ -24,7 +24,12 @@ int GetOption(int client, KZOption option) {
 }
 
 void SetOption(int client, KZOption option, any optionValue) {
+	// Checks if the option actually needs changing before changing it,
+	// and performs actions required to apply those changes.
+	// In most cases, no action is required.
+	
 	bool changedOption = false;
+	
 	switch (option) {
 		case KZOption_Style: {
 			if (g_Style[client] != optionValue) {
@@ -135,6 +140,8 @@ void SetDefaultOptions(int client) {
 }
 
 void IncrementOption(int client, KZOption option) {
+	// Add 1 to the current value of the option
+	// Modulo the result with the total number of that option which can be obtained by using view_as<int>(tag).
 	switch (option) {
 		case KZOption_Style: {
 			SetOption(client, option, (view_as<int>(g_Style[client]) + 1) % view_as<int>(KZStyle));
@@ -183,6 +190,7 @@ void PrintOptionChangeMessage(int client, KZOption option) {
 		return;
 	}
 	
+	// NOTE: Not all options have a message for when they are changed.
 	switch (option) {
 		case KZOption_Style: {
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Switched Style", gC_StylePhrases[g_Style[client]]);

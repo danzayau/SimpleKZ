@@ -28,4 +28,8 @@ void String_ToLower(const char[] input, char[] output, int size) {
 		i++;
 	}
 	output[i] = '\0';
+}
+
+void CompileRegexes() {
+	gRE_BonusStartButton = CompileRegex("^climb_bonus(\\d+)_startbutton$");
 } 

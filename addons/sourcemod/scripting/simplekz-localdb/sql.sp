@@ -183,4 +183,36 @@ char mysql_times_create[] =
 
 char sql_times_insert[] = 
 "INSERT INTO Times (PlayerID, MapID, Course, Style, RunTime, Teleports, TheoreticalRunTime) "
-..."VALUES (%d, %d, %d, %d, %d, %d, %d);"; 
+..."VALUES (%d, %d, %d, %d, %d, %d, %d);";
+
+
+
+/*===============================  MapCourses Table  ===============================*/
+
+char sqlite_mapcourses_create[] = 
+"CREATE TABLE IF NOT EXISTS MapCourses ("
+..."MapCourseID INTEGER, "
+..."MapID INTEGER, "
+..."Course INTEGER, "
+..."Created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."CONSTRAINT PK_MapCourses PRIMARY KEY (MapCourseID), "
+..."CONSTRAINT UQ_MapCourses_MapIDCourse UNIQUE (MapID, Course), "
+..."CONSTRAINT FK_MapCourses_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
+
+char mysql_mapcourses_create[] = 
+"CREATE TABLE IF NOT EXISTS MapCourses ("
+..."MapCourseID INTEGER UNSIGNED, "
+..."MapID INTEGER UNSIGNED NOT NULL, "
+..."Course INTEGER UNSIGNED NOT NULL, "
+..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+..."CONSTRAINT PK_MapCourses PRIMARY KEY (MapCourseID), "
+..."CONSTRAINT UQ_MapCourses_MapIDCourse UNIQUE (MapID, Course), "
+..."CONSTRAINT FK_MapCourses_MapID FOREIGN KEY (MapID) REFERENCES Maps (MapID) ON UPDATE CASCADE ON DELETE CASCADE);";
+
+char sqlite_mapcourses_insert[] = 
+"INSERT OR IGNORE INTO MapCourses (MapID, Course) "
+..."VALUES (%d, %d);";
+
+char mysql_mapcourses_insert[] = 
+"INSERT IGNORE INTO MapCourses (MapID, Course) "
+..."VALUES (%d, %d);"; 

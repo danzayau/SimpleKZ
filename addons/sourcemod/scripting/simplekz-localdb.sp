@@ -1,4 +1,6 @@
 #include <sourcemod>
+#include <sdktools>
+#include <regex>
 
 #include <geoip>
 #include <simplekz>
@@ -32,6 +34,7 @@ int gI_DBCurrentMapID;
 KZPlayer g_KZPlayer[MAXPLAYERS + 1];
 char gC_CurrentMap[64];
 bool gB_LateLoad;
+Regex gRE_BonusStartButton;
 
 
 
@@ -62,10 +65,13 @@ public void OnPluginStart() {
 		SetFailState("This plugin is only for CS:GO.");
 	}
 	
+	// Translations
+	LoadTranslations("simplekz-localdb.phrases");
+	
+	// Setup
 	CreateGlobalForwards();
 	SetupKZMethodmaps();
-	
-	LoadTranslations("simplekz-localdb.phrases");
+	CompileRegexes();
 	
 	DB_SetupDatabase();
 	

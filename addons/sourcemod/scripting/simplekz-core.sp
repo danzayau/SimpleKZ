@@ -254,11 +254,20 @@ public void OnPluginStart() {
 		SetFailState("This plugin is only for CS:GO.");
 	}
 	
+	// Translations
+	LoadTranslations("common.phrases");
+	LoadTranslations("simplekz-core.phrases");
+	
+	// Setup
 	CreateGlobalForwards();
 	RegisterConVars();
 	AutoExecConfig(true, "simplekz-core", "sourcemod/SimpleKZ");
 	RegisterCommands();
 	AddCommandListeners();
+	
+	SetupMovementMethodmaps();
+	CompileRegexes();
+	CreateMenus();
 	
 	// Hooks
 	HookEvent("player_disconnect", OnPlayerDisconnect, EventHookMode_Pre);
@@ -270,15 +279,6 @@ public void OnPluginStart() {
 	AddCommandListener(OnSay, "say");
 	AddCommandListener(OnSay, "say_team");
 	AddNormalSoundHook(view_as<NormalSHook>(OnNormalSound));
-	
-	// Translations
-	LoadTranslations("common.phrases");
-	LoadTranslations("simplekz-core.phrases");
-	
-	// Setup
-	SetupMovementMethodmaps();
-	CreateMenus();
-	CompileRegexes();
 	
 	if (gB_LateLoad) {
 		OnLateLoad();
