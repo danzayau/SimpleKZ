@@ -24,7 +24,7 @@ char mysql_players_create[] =
 ..."Alias VARCHAR(32), "
 ..."Country VARCHAR(45), "
 ..."IP VARCHAR(15), "
-..."LastPlayed TIMESTAMP DEFAULT NULL, "
+..."LastPlayed TIMESTAMP NULL DEFAULT NULL, "
 ..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
 ..."CONSTRAINT PK_Player PRIMARY KEY (PlayerID));";
 
@@ -120,7 +120,7 @@ char mysql_maps_create[] =
 "CREATE TABLE IF NOT EXISTS Maps ("
 ..."MapID INTEGER UNSIGNED AUTO_INCREMENT, "
 ..."Name VARCHAR(32) NOT NULL UNIQUE, "
-..."LastPlayed TIMESTAMP DEFAULT NULL, "
+..."LastPlayed TIMESTAMP NULL DEFAULT NULL, "
 ..."Created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
 ..."CONSTRAINT PK_Maps PRIMARY KEY (MapID));";
 

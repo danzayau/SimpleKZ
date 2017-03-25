@@ -15,15 +15,15 @@
 	}
 	"Main Course Not Found"
 	{
-		// kz_fakemap Main Course isn't in the database.
+		// kz_fakemap Main Course wasn't found.
 		"#format"	"{1:s}"
-		"en"		"{default}{1} {darkblue}Main Course{grey} isn't in the database."
+		"en"		"{default}{1} {darkblue}Main Course{grey} wasn't found."
 	}
 	"Bonus Not Found"
 	{
-		// kz_fakemap Bonus 1 isn't in the database.
+		// kz_fakemap Bonus 1 wasn't found.
 		"#format"	"{1:s},{2:d}"
-		"en"		"{default}{1} {darkblue}Bonus {2}{grey} isn't in the database."
+		"en"		"{default}{1} {darkblue}Bonus {2}{grey} wasn't found."
 	}
 	"Invalid Bonus Number"
 	{

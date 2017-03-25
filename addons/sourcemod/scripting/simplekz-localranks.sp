@@ -15,7 +15,7 @@ public Plugin myinfo =
 	name = "Simple KZ Ranks", 
 	author = "DanZay", 
 	description = "Local ranks module for SimpleKZ.", 
-	version = "0.10.1", 
+	version = "0.10.2", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
