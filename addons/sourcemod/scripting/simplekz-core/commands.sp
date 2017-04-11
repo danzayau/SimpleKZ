@@ -4,7 +4,7 @@
 */
 
 
-void RegisterCommands() {
+void CreateCommands() {
 	RegConsoleCmd("sm_menu", CommandToggleMenu, "[KZ] Toggle the visibility of the teleport menu.");
 	RegConsoleCmd("sm_checkpoint", CommandMakeCheckpoint, "[KZ] Set your checkpoint.");
 	RegConsoleCmd("sm_gocheck", CommandTeleportToCheckpoint, "[KZ] Teleport to your checkpoint.");
@@ -55,7 +55,7 @@ public Action CommandJoinTeam(int client, const char[] command, int argc) {
 /*===============================  Command Handlers  ===============================*/
 
 public Action CommandToggleMenu(int client, int args) {
-	IncrementOption(client, KZOption_ShowingTeleportMenu);
+	IncrementOption(client, KZOption_ShowingTPMenu);
 	return Plugin_Handled;
 }
 

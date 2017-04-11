@@ -13,54 +13,46 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-/* Formatted using SPEdit Syntax Reformatter - https://github.com/JulienKluge/Spedit */
-
-public Plugin myinfo = 
-{
-	name = "Simple KZ Core", 
-	author = "DanZay", 
-	description = "A simple KZ timer plugin.", 
-	version = "0.10.2", 
-	url = "https://github.com/danzayau/SimpleKZ"
-};
-
-
-
-/*===============================  Definitions  ===============================*/
-
 #define TIME_PAUSE_COOLDOWN 1.0
 #define TIME_SPLIT_COOLDOWN 1.0
-#define TIME_BHOP_TRIGGER_DETECTION 0.2
-#define DISTANCE_BUTTON_PRESS_CHECK 40.0
+#define TIME_BHOP_TRIGGER_DETECTION 0.2 // Time after touching trigger_multiple to block checkpoints
+#define DISTANCE_BUTTON_PRESS_CHECK 40.0 // Max distance from saved press position to detect a press
 
-#define SPEED_NORMAL 250.0 // Desired speed when just holding down W and running
-#define SPEED_NO_WEAPON 260.0 // Max speed with no weapon and just holding down W and running
+#define SPEED_NORMAL 250.0
+#define SPEED_NO_WEAPON 260.0
 #define PRESTRAFE_VELMOD_MAX 1.104 // Calculated 276/250
-#define PRESTRAFE_VELMOD_INCREMENT 0.0014
-#define PRESTRAFE_VELMOD_DECREMENT 0.0021
-#define VELOCITY_VERTICAL_NORMAL_JUMP 292.54 // Found by testing until binding resulted in similar jump height to normal
+#define PRESTRAFE_VELMOD_INCREMENT 0.0014 // Per tick when prestrafing
+#define PRESTRAFE_VELMOD_DECREMENT 0.0021 // Per tick when not prestrafing
+#define VELOCITY_VERTICAL_NORMAL_JUMP 292.54 // After one tick after jumping
 #define DUCK_SPEED_MINIMUM 7.0
 
-#define STYLE_DEFAULT_SOUND_START "buttons/button9.wav" // Not precached
-#define STYLE_DEFAULT_SOUND_END "buttons/bell1.wav" // Not precached
+#define STYLE_DEFAULT_SOUND_START "buttons/button9.wav"
+#define STYLE_DEFAULT_SOUND_END "buttons/bell1.wav"
 #define STYLE_DEFAULT_PERF_TICKS 2
-#define STYLE_DEFAULT_PERF_SPEED_CAP 300.0 // Meme
 
-#define STYLE_LEGACY_SOUND_START "buttons/button3.wav" // Not precached
-#define STYLE_LEGACY_SOUND_END "buttons/button3.wav" // Not precached
+#define STYLE_LEGACY_SOUND_START "buttons/button3.wav"
+#define STYLE_LEGACY_SOUND_END "buttons/button3.wav"
 #define STYLE_LEGACY_PERF_TICKS 1
 #define STYLE_LEGACY_PERF_SPEED_CAP 380.0
 #define STYLE_LEGACY_SPEED_PRESTRAFE_MINIMUM 175.0
 
-#define SOUND_TIMER_FORCE_STOP "buttons/button18.wav" // Not precached
-#define SOUND_CHECKPOINT "buttons/blip1.wav" // Not precached
-#define SOUND_TELEPORT "buttons/blip1.wav" // Not precached
+#define SOUND_TIMER_FORCE_STOP "buttons/button18.wav"
+#define SOUND_CHECKPOINT "buttons/blip1.wav"
+#define SOUND_TELEPORT "buttons/blip1.wav"
 
 #define PLAYER_MODEL_ALPHA 100
 
 
 
 /*===============================  Global Variables  ===============================*/
+
+public Plugin myinfo =  {
+	name = "Simple KZ Core", 
+	author = "DanZay", 
+	description = "A simple KZ timer plugin.", 
+	version = "0.11.0-dev", 
+	url = "https://github.com/danzayau/SimpleKZ"
+};
 
 /* CS:GO ConVars */
 ConVar gCV_DisableImmunityAlpha;
@@ -74,9 +66,9 @@ ConVar gCV_PlayerModelCT;
 
 /* Menus */
 Handle gH_PistolMenu[MAXPLAYERS + 1];
-Handle gH_TeleportMenu[MAXPLAYERS + 1];
-bool gB_TeleportMenuIsShowing[MAXPLAYERS + 1];
-Handle gH_OptionsMenu[MAXPLAYERS + 1];
+Menu g_TPMenu[MAXPLAYERS + 1];
+bool gB_TPMenuIsShowing[MAXPLAYERS + 1];
+Menu g_OptionsMenu[MAXPLAYERS + 1];
 bool gB_CameFromOptionsMenu[MAXPLAYERS + 1];
 Handle gH_MovementStyleMenu[MAXPLAYERS + 1];
 
@@ -97,7 +89,7 @@ int gI_CurrentCourse[MAXPLAYERS + 1];
 
 /* Options */
 KZStyle g_Style[MAXPLAYERS + 1];
-KZShowingTeleportMenu g_ShowingTeleportMenu[MAXPLAYERS + 1];
+KZShowingTPMenu g_ShowingTPMenu[MAXPLAYERS + 1];
 KZShowingInfoPanel g_ShowingInfoPanel[MAXPLAYERS + 1];
 KZShowingKeys g_ShowingKeys[MAXPLAYERS + 1];
 KZShowingPlayers g_ShowingPlayers[MAXPLAYERS + 1];
@@ -163,31 +155,32 @@ bool gB_CurrentMapIsKZPro;
 int gI_JustTouchedTrigMulti[MAXPLAYERS + 1];
 
 /* Weapon entity names */
-char gC_WeaponNames[][] = 
-{ "weapon_ak47", "weapon_aug", "weapon_awp", "weapon_bizon", "weapon_deagle", 
+char gC_WeaponNames[][] =  {
+	"weapon_ak47", "weapon_aug", "weapon_awp", "weapon_bizon", "weapon_deagle", 
 	"weapon_decoy", "weapon_elite", "weapon_famas", "weapon_fiveseven", "weapon_flashbang", 
 	"weapon_g3sg1", "weapon_galilar", "weapon_glock", "weapon_hegrenade", "weapon_hkp2000", 
 	"weapon_incgrenade", "weapon_knife", "weapon_m249", "weapon_m4a1", "weapon_mac10", 
 	"weapon_mag7", "weapon_molotov", "weapon_mp7", "weapon_mp9", "weapon_negev", 
 	"weapon_nova", "weapon_p250", "weapon_p90", "weapon_sawedoff", "weapon_scar20", 
 	"weapon_sg556", "weapon_smokegrenade", "weapon_ssg08", "weapon_taser", "weapon_tec9", 
-	"weapon_ump45", "weapon_xm1014" };
+	"weapon_ump45", "weapon_xm1014"
+};
 
 /* Max movement speed of weapons (respective to gC_WeaponNames). */
-int gI_WeaponRunSpeeds[] = 
-{ 215, 220, 200, 240, 230, 
+int gI_WeaponRunSpeeds[] =  {
+	215, 220, 200, 240, 230, 
 	245, 240, 220, 240, 245, 
 	215, 215, 240, 245, 240, 
 	245, 250, 195, 225, 240, 
 	225, 245, 220, 240, 195, 
 	220, 240, 230, 210, 215, 
 	210, 245, 230, 240, 240, 
-	230, 215 };
+	230, 215
+};
 
 /* Pistol Entity Names (entity name | alias | team that buys it) 
 	Respective to the KZPistol enumeration. */
-char gC_Pistols[][][] = 
-{
+char gC_Pistols[][][] =  {
 	{ "weapon_hkp2000", "P2000 / USP-S", "CT" }, 
 	{ "weapon_glock", "Glock-18", "T" }, 
 	{ "weapon_p250", "P250", "EITHER" }, 
@@ -199,23 +192,21 @@ char gC_Pistols[][][] =
 };
 
 /* Radio commands */
-char gC_RadioCommands[][] = 
-{
+char gC_RadioCommands[][] =  {
 	"coverme", "takepoint", "holdpos", "regroup", "followme", "takingfire", "go", 
-	"fallback", "sticktog", "getinpos", "stormfront", "report", "roger", "enemyspot", "needbackup", "sectorclear", 
-	"inposition", "reportingin", "getout", "negative", "enemydown", "compliment", "thanks", "cheer"
+	"fallback", "sticktog", "getinpos", "stormfront", "report", "roger", "enemyspot", 
+	"needbackup", "sectorclear", "inposition", "reportingin", "getout", "negative", 
+	"enemydown", "compliment", "thanks", "cheer"
 };
 
 /* Styles translation phrases for chat messages (respective to KZStyle enum) */
-char gC_StylePhrases[view_as<int>(KZStyle)][] = 
-{
+char gC_StylePhrases[view_as<int>(KZStyle)][] =  {
 	"Style - Standard", 
 	"Style - Legacy"
 };
 
 /* Timer text option phrases */
-char gC_TimerTextOptionPhrases[][] = 
-{
+char gC_TimerTextOptionPhrases[][] =  {
 	"Options Menu - Disabled", 
 	"Options Menu - Top", 
 	"Options Menu - Bottom"
@@ -254,38 +245,25 @@ public void OnPluginStart() {
 		SetFailState("This plugin is only for CS:GO.");
 	}
 	
-	// Translations
 	LoadTranslations("common.phrases");
 	LoadTranslations("simplekz-core.phrases");
 	
-	// Setup
-	CreateGlobalForwards();
-	RegisterConVars();
-	AutoExecConfig(true, "simplekz-core", "sourcemod/SimpleKZ");
-	RegisterCommands();
-	AddCommandListeners();
-	
-	SetupMovementMethodmaps();
-	CompileRegexes();
+	CreateMovementPlayers();
+	CreateRegexes();
 	CreateMenus();
+	CreateGlobalForwards();
+	CreateHooks();
+	CreateConVars();
+	CreateCommands();
+	CreateCommandListeners();
 	
-	// Hooks
-	HookEvent("player_disconnect", OnPlayerDisconnect, EventHookMode_Pre);
-	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Pre);
-	HookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);
-	HookEvent("player_death", OnPlayerDeath, EventHookMode_Pre);
-	HookEvent("round_start", OnRoundStart, EventHookMode_Pre);
-	HookEntityOutput("trigger_multiple", "OnStartTouch", OnTrigMultiStartTouch);
-	AddCommandListener(OnSay, "say");
-	AddCommandListener(OnSay, "say_team");
-	AddNormalSoundHook(view_as<NormalSHook>(OnNormalSound));
+	AutoExecConfig(true, "simplekz-core", "sourcemod/SimpleKZ");
 	
 	if (gB_LateLoad) {
 		OnLateLoad();
 	}
 }
 
-// Handles late loading
 void OnLateLoad() {
 	for (int client = 1; client <= MaxClients; client++) {
 		if (IsClientAuthorized(client) && !IsFakeClient(client)) {
@@ -301,8 +279,7 @@ void OnLateLoad() {
 
 /*===============================  Client Events  ===============================*/
 
-public void OnClientAuthorized(int client, const char[] auth) {
-	// Prepare for client arrival
+public void OnClientConnected(int client) {
 	if (!IsFakeClient(client)) {
 		SetupClient(client);
 	}
@@ -315,8 +292,8 @@ public void OnClientPutInServer(int client) {
 	}
 }
 
-// Print custom disconnection message
 public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) {
+	// Print custom disconnection message
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (IsValidClient(client) && !IsFakeClient(client)) {
 		SetEventBroadcast(event, true);
@@ -329,29 +306,31 @@ public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcas
 public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (!IsFakeClient(client)) {
-		CreateTimer(0.0, CleanHUD, client); // Clean HUD (using a 1 frame timer or else it won't work)
-		SetWeaponVisibility(client); // Hide weapon
-		GivePlayerPistol(client, g_Pistol[client]); // Give player their preferred pistol
-		CloseTeleportMenu(client);
+		CreateTimer(0.0, CleanHUD, client); // Using 1 tick timer or else it won't work
+		UpdateWeaponVisibility(client);
+		UpdatePlayerPistol(client);
+		CloseTPMenu(client);
 	}
+	UpdatePlayerModel(client);
 	SetEntProp(client, Prop_Data, "m_takedamage", 0, 1); // Godmode
-	SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true); // No Block
-	UpdatePlayerModel(GetClientOfUserId(GetEventInt(event, "userid"))); // Change player model to one that doesn't have landing animation
+	SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 2, 4, true); // No player blocking
 	SetEntityRenderMode(client, RENDER_TRANSCOLOR);
 	SetEntityRenderColor(client, _, _, _, PLAYER_MODEL_ALPHA);
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2]) {
-	TimerTick(client);
-	UpdateTeleportMenu(client); // Can be moved to a slower timer
-	UpdateInfoPanel(client); // Can be moved to a slower timer
-	UpdateTimerText(client); // Can be moved to a slower timer
+	UpdateTimer(client);
 	CheckForTimerButtonPress(client);
-	MovementTweakGeneral(g_MovementPlayer[client]);
+	TweakMovementGeneral(g_MovementPlayer[client]);
+	
+	// These don't necessarily need to be updated every tick
+	UpdateTPMenu(client);
+	UpdateInfoPanel(client);
+	UpdateTimerText(client);
 }
 
-// Process player messages including lower casing commands
 public Action OnSay(int client, const char[] command, int argc) {
+	// Process player messages including lower casing commands
 	if (!GetConVarBool(gCV_ChatProcessing)) {
 		return Plugin_Continue;
 	}
@@ -388,15 +367,6 @@ public Action OnSay(int client, const char[] command, int argc) {
 	return Plugin_Handled;
 }
 
-// Force stop timer when they enter noclip
-public void OnStartNoclipping(int client) {
-	if (!IsFakeClient(client) && TimerForceStop(client)) {
-		gB_Paused[client] = false;
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Noclipped)");
-	}
-}
-
-// Force stop timer when a player dies
 public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (!IsFakeClient(client)) {
@@ -406,67 +376,82 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 
 
 
+/*===============================  Movement API Events  ===============================*/
+
+public void OnStartTouchGround(int client) {
+	TweakMovementDuckSlowdown(g_MovementPlayer[client]);
+}
+
+public void OnStopTouchGround(int client, bool jumped, bool ducked, bool landed) {
+	if (jumped) {
+		TweakMovementTakeoffSpeed(g_MovementPlayer[client]);
+		if (g_Style[client] == KZStyle_Standard && ducked) {
+			TweakMovementPerfectCrouchJump(g_MovementPlayer[client]);
+		}
+	}
+	else {
+		gB_HitPerf[client] = false; // Not a jump so not a perf
+	}
+	
+	if (g_Style[client] == KZStyle_Standard) {
+		gF_PrestrafeVelocityModifier[client] = 1.0; // No 'pre b-hopping' in Standard
+	}
+}
+
+public void OnStopTouchLadder(int client) {
+	gB_HitPerf[client] = false;
+}
+
+public void OnStartNoclipping(int client) {
+	if (!IsFakeClient(client)) {
+		gB_Paused[client] = false; // Player forcefully left paused state by noclipping
+		if (TimerForceStop(client)) {
+			CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Noclipped)");
+		}
+	}
+}
+
+public void OnStopNoclipping(int client) {
+	gB_HitPerf[client] = false;
+}
+
+
+
 /*===============================  Miscellaneous Events  ===============================*/
 
 public void OnMapStart() {
 	SetupMap();
-	LoadKZConfig();
-	// Enforce this ConVar to ensure player transparency works
-	SetConVarInt(gCV_DisableImmunityAlpha, 1);
+	ExecuteKZConfig();
+	SetConVarInt(gCV_DisableImmunityAlpha, 1); // Ensures player transparency works
 }
 
-// Stop round from ever ending
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
-	return Plugin_Handled;
+	return Plugin_Handled; // Stop round from ever ending
 }
 
-// Hide other players
 public Action OnSetTransmit(int entity, int client) {
-	if (g_ShowingPlayers[client] == KZShowingPlayers_Disabled && entity != client && entity != GetSpectatedPlayer(client)) {
-		return Plugin_Handled;
+	if (g_ShowingPlayers[client] == KZShowingPlayers_Disabled && entity != client && entity != GetSpectatedClient(client)) {
+		return Plugin_Handled; // Hides other players
 	}
 	return Plugin_Continue;
 }
 
-// Block join team messages
 public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) {
-	SetEventBroadcast(event, true);
+	SetEventBroadcast(event, true); // Block join team messages
 	return Plugin_Continue;
 }
 
-// Prevent sounds
 public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed) {
 	char className[20];
 	GetEntityClassname(entity, className, sizeof(className));
-	// Prevent func_button sounds
 	if (StrEqual(className, "func_button", false)) {
-		return Plugin_Handled;
+		return Plugin_Handled; // No sounds directly from func_button
 	}
 	return Plugin_Continue;
 }
 
-// Force full alltalk on round start, and setup entity hooks
 public void OnRoundStart(Event event, const char[] name, bool dontBroadcast) {
-	SetConVarInt(gCV_FullAlltalk, 1);
+	SetConVarInt(gCV_FullAlltalk, 1); // Force full alltalk
 	TimerForceStopAll();
-	
 	SetupMapEntityHooks();
-}
-
-// Command usage from certain common plugins force stop the player's timer (slap, gravity etc.)
-public Action OnLogAction(Handle source, Identity ident, int client, int target, const char[] message) {
-	if (!IsValidClient(client)) {
-		return Plugin_Continue;
-	}
-	
-	if (ident == Identity_Plugin) {
-		char pluginFilename[PLATFORM_MAX_PATH];
-		GetPluginFilename(source, pluginFilename, sizeof(pluginFilename));
-		if (StrEqual(pluginFilename, "playercommands.smx") || StrEqual(pluginFilename, "funcommands.smx")) {
-			if (TimerForceStop(target)) {
-				CPrintToChat(target, "%t %t", "KZ Prefix", "Time Stopped");
-			}
-		}
-	}
-	return Plugin_Continue;
 } 

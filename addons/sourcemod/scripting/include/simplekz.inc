@@ -153,12 +153,12 @@ methodmap KZPlayer __nullable__ {
 		}
 	}
 	
-	property KZShowingTeleportMenu showingTeleportMenu {
+	property KZShowingTPMenu showingTPMenu {
 		public get() {
-			return view_as<KZShowingTeleportMenu>(SimpleKZ_GetOption(this.id, KZOption_ShowingTeleportMenu));
+			return view_as<KZShowingTPMenu>(SimpleKZ_GetOption(this.id, KZOption_ShowingTPMenu));
 		}
-		public set(KZShowingTeleportMenu value) {
-			SimpleKZ_SetOption(this.id, KZOption_ShowingTeleportMenu, value);
+		public set(KZShowingTPMenu value) {
+			SimpleKZ_SetOption(this.id, KZOption_ShowingTPMenu, value);
 		}
 	}
 	

@@ -27,26 +27,27 @@ void String_ToLower(const char[] input, char[] output, int size) {
 	output[i] = '\0';
 }
 
-void SetupMovementMethodmaps() {
+void CreateMovementPlayers() {
 	for (int client = 1; client <= MaxClients; client++) {
 		g_MovementPlayer[client] = new MovementPlayer(client);
 	}
 }
 
-void CompileRegexes() {
+void CreateRegexes() {
 	gRE_BonusStartButton = CompileRegex("^climb_bonus(\\d+)_startbutton$");
 	gRE_BonusEndButton = CompileRegex("^climb_bonus(\\d+)_endbutton$");
 }
 
-void AddCommandListeners() {
+void CreateCommandListeners() {
+	AddCommandListener(OnSay, "say");
+	AddCommandListener(OnSay, "say_team");
 	AddCommandListener(CommandJoinTeam, "jointeam");
-	// Block radio commands
 	for (int i = 0; i < sizeof(gC_RadioCommands); i++) {
 		AddCommandListener(CommandBlock, gC_RadioCommands[i]);
 	}
 }
 
-void LoadKZConfig() {
+void ExecuteKZConfig() {
 	char kzConfigPath[] = "sourcemod/SimpleKZ/kz.cfg";
 	char kzConfigPathFull[64];
 	FormatEx(kzConfigPathFull, sizeof(kzConfigPathFull), "cfg/%s", kzConfigPath);
@@ -57,6 +58,18 @@ void LoadKZConfig() {
 	else {
 		SetFailState("Failed to load config (cfg/%s not found).", kzConfigPath);
 	}
+}
+
+void CreateHooks() {
+	HookEvent("player_disconnect", OnPlayerDisconnect, EventHookMode_Pre);
+	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Pre);
+	HookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);
+	HookEvent("player_death", OnPlayerDeath, EventHookMode_Pre);
+	HookEvent("round_start", OnRoundStart, EventHookMode_Pre);
+	
+	HookEntityOutput("trigger_multiple", "OnStartTouch", OnTrigMultiStartTouch);
+	
+	AddNormalSoundHook(view_as<NormalSHook>(OnNormalSound));
 }
 
 
@@ -105,7 +118,6 @@ void SetupClient(int client) {
 	UpdatePistolMenu(client);
 	UpdateMeasureMenu(client);
 	MeasureResetPos(client);
-	UpdateOptionsMenu(client);
 	NoBhopBlockCPSetup(client);
 	Call_SimpleKZ_OnClientSetup(client);
 }
@@ -152,7 +164,7 @@ void JoinTeam(int client, int team) {
 			SimpleKZ_ForceStopTimer(client);
 		}
 	}
-	CloseTeleportMenu(client);
+	CloseTPMenu(client);
 }
 
 void SetDrawViewModel(int client, bool drawViewModel) {
@@ -215,6 +227,10 @@ void UpdatePlayerModel(int client) {
 	}
 }
 
+void UpdatePlayerPistol(int client) {
+	GivePlayerPistol(client, g_Pistol[client]);
+}
+
 void GivePlayerPistol(int client, KZPistol pistol) {
 	if (!IsClientInGame(client) || !IsPlayerAlive(client)) {
 		return;
@@ -240,19 +256,19 @@ void GivePlayerPistol(int client, KZPistol pistol) {
 	}
 }
 
-int GetSpectatedPlayer(int client) {
+int GetSpectatedClient(int client) {
 	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
 }
 
 void EmitSoundToClientSpectators(int client, const char[] sound) {
 	for (int i = 1; i <= MaxClients; i++) {
-		if (IsValidClient(i) && GetSpectatedPlayer(i) == client) {
+		if (IsValidClient(i) && GetSpectatedClient(i) == client) {
 			EmitSoundToClient(i, sound);
 		}
 	}
 }
 
-void SetWeaponVisibility(int client) {
+void UpdateWeaponVisibility(int client) {
 	if (g_ShowingWeapon[client] == KZShowingWeapon_Enabled) {
 		SetDrawViewModel(client, true);
 	}
@@ -344,7 +360,7 @@ void UpdateTimerText(int client) {
 		ShowHudText(client, 0, SimpleKZ_FormatTime(gF_CurrentTime[client]));
 	}
 	else {
-		int spectatedPlayer = GetSpectatedPlayer(client);
+		int spectatedPlayer = GetSpectatedClient(client);
 		if (IsValidClient(spectatedPlayer) && gB_TimerRunning[spectatedPlayer]) {
 			ShowHudText(client, 0, SimpleKZ_FormatTime(gF_CurrentTime[spectatedPlayer]));
 		}

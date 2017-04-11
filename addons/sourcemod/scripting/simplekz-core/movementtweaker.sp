@@ -4,42 +4,9 @@
 */
 
 
-/*===============================  Movement API Events  ===============================*/
-
-public void OnStartTouchGround(int client) {
-	MovementTweakDuckSlowdown(g_MovementPlayer[client]);
-}
-
-public void OnStopTouchGround(int client, bool jumped, bool ducked, bool landed) {
-	if (jumped) {
-		MovementTweakTakeoffSpeed(g_MovementPlayer[client]);
-		if (g_Style[client] == KZStyle_Standard && ducked) {
-			MovementTweakPerfectCrouchJump(g_MovementPlayer[client]);
-		}
-	}
-	// Not a jump -> not a perf
-	else {
-		gB_HitPerf[client] = false;
-	}
-	// Reset prestrafe modifier if Standard (this is what enables 'pre b-hopping' in Legacy)
-	if (g_Style[client] == KZStyle_Standard) {
-		gF_PrestrafeVelocityModifier[client] = 1.0;
-	}
-}
-
-public void OnStopTouchLadder(int client) {
-	gB_HitPerf[client] = false;
-}
-
-public void OnStopNoclipping(int client) {
-	gB_HitPerf[client] = false;
-}
-
-
-
 /*===============================  General Tweak (Called OnPlayerRunCmd)  ===============================*/
 
-void MovementTweakGeneral(MovementPlayer player) {
+void TweakMovementGeneral(MovementPlayer player) {
 	if (player.onGround) {
 		player.velocityModifier = PrestrafeVelocityModifier(player) * WeaponVelocityModifier(player);
 	}
@@ -105,7 +72,7 @@ float WeaponVelocityModifier(MovementPlayer player) {
 
 /*===============================  Jump Tweaks  ===============================*/
 
-void MovementTweakTakeoffSpeed(MovementPlayer player) {
+void TweakMovementTakeoffSpeed(MovementPlayer player) {
 	if (HitPerf(player)) {
 		gB_HitPerf[player.id] = true;
 		ApplyTakeoffSpeed(player, CalculateTweakedTakeoffSpeed(player));
@@ -162,7 +129,7 @@ float CalculateTweakedTakeoffSpeed(MovementPlayer player) {
 	return player.speed;
 }
 
-void MovementTweakPerfectCrouchJump(MovementPlayer player) {
+void TweakMovementPerfectCrouchJump(MovementPlayer player) {
 	float newVelocity[3];
 	player.GetVelocity(newVelocity);
 	newVelocity[2] = VELOCITY_VERTICAL_NORMAL_JUMP;
@@ -173,7 +140,7 @@ void MovementTweakPerfectCrouchJump(MovementPlayer player) {
 
 /*===============================  Other Tweaks  ===============================*/
 
-void MovementTweakDuckSlowdown(MovementPlayer player) {
+void TweakMovementDuckSlowdown(MovementPlayer player) {
 	if (player.duckSpeed < DUCK_SPEED_MINIMUM) {
 		player.duckSpeed = DUCK_SPEED_MINIMUM;
 	}

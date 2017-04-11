@@ -16,7 +16,7 @@ void UpdateInfoPanel(int client) {
 			}
 		}
 		else {
-			int spectatedPlayer = GetSpectatedPlayer(player.id);
+			int spectatedPlayer = GetSpectatedClient(player.id);
 			if (IsValidClient(spectatedPlayer)) {
 				PrintHintText(player.id, "%s", GetInfoPanelSpectating(g_MovementPlayer[spectatedPlayer]));
 			}

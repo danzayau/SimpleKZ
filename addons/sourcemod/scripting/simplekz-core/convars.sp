@@ -3,7 +3,7 @@
 	ConVars for server control over features of the plugin.
 */
 
-void RegisterConVars() {
+void CreateConVars() {
 	gCV_DisableImmunityAlpha = FindConVar("sv_disable_immunity_alpha");
 	gCV_FullAlltalk = FindConVar("sv_full_alltalk");
 	

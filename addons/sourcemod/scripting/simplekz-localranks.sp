@@ -8,14 +8,12 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-/* Formatted using SPEdit Syntax Reformatter - https://github.com/JulienKluge/Spedit */
-
 public Plugin myinfo = 
 {
 	name = "Simple KZ Ranks", 
 	author = "DanZay", 
 	description = "Local ranks module for SimpleKZ.", 
-	version = "0.10.2", 
+	version = "0.11.0-dev", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 

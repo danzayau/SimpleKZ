@@ -7,7 +7,7 @@
 int GetOption(int client, KZOption option) {
 	switch (option) {
 		case KZOption_Style:return view_as<int>(g_Style[client]);
-		case KZOption_ShowingTeleportMenu:return view_as<int>(g_ShowingTeleportMenu[client]);
+		case KZOption_ShowingTPMenu:return view_as<int>(g_ShowingTPMenu[client]);
 		case KZOption_ShowingInfoPanel:return view_as<int>(g_ShowingInfoPanel[client]);
 		case KZOption_ShowingKeys:return view_as<int>(g_ShowingKeys[client]);
 		case KZOption_ShowingPlayers:return view_as<int>(g_ShowingPlayers[client]);
@@ -40,11 +40,11 @@ void SetOption(int client, KZOption option, any optionValue) {
 				}
 			}
 		}
-		case KZOption_ShowingTeleportMenu: {
-			if (g_ShowingTeleportMenu[client] != optionValue) {
+		case KZOption_ShowingTPMenu: {
+			if (g_ShowingTPMenu[client] != optionValue) {
 				changedOption = true;
-				g_ShowingTeleportMenu[client] = optionValue;
-				CloseTeleportMenu(client);
+				g_ShowingTPMenu[client] = optionValue;
+				CloseTPMenu(client);
 			}
 		}
 		case KZOption_ShowingInfoPanel: {
@@ -69,7 +69,7 @@ void SetOption(int client, KZOption option, any optionValue) {
 			if (g_ShowingWeapon[client] != optionValue) {
 				changedOption = true;
 				g_ShowingWeapon[client] = optionValue;
-				SetWeaponVisibility(client);
+				UpdateWeaponVisibility(client);
 			}
 		}
 		case KZOption_AutoRestart: {
@@ -88,7 +88,7 @@ void SetOption(int client, KZOption option, any optionValue) {
 			if (g_Pistol[client] != optionValue) {
 				changedOption = true;
 				g_Pistol[client] = optionValue;
-				GivePlayerPistol(client, g_Pistol[client]);
+				UpdatePlayerPistol(client);
 			}
 		}
 		case KZOption_CheckpointMessages: {
@@ -125,7 +125,7 @@ void SetOption(int client, KZOption option, any optionValue) {
 
 void SetDefaultOptions(int client) {
 	SetOption(client, KZOption_Style, view_as<KZStyle>(GetConVarInt(gCV_DefaultStyle)));
-	SetOption(client, KZOption_ShowingTeleportMenu, KZShowingTeleportMenu_Enabled);
+	SetOption(client, KZOption_ShowingTPMenu, KZShowingTPMenu_Enabled);
 	SetOption(client, KZOption_ShowingKeys, KZShowingKeys_Disabled);
 	SetOption(client, KZOption_ShowingPlayers, KZShowingPlayers_Enabled);
 	SetOption(client, KZOption_ShowingWeapon, KZShowingWeapon_Enabled);
@@ -145,8 +145,8 @@ void IncrementOption(int client, KZOption option) {
 		case KZOption_Style: {
 			SetOption(client, option, (view_as<int>(g_Style[client]) + 1) % view_as<int>(KZStyle));
 		}
-		case KZOption_ShowingTeleportMenu: {
-			SetOption(client, option, (view_as<int>(g_ShowingTeleportMenu[client]) + 1) % view_as<int>(KZShowingTeleportMenu));
+		case KZOption_ShowingTPMenu: {
+			SetOption(client, option, (view_as<int>(g_ShowingTPMenu[client]) + 1) % view_as<int>(KZShowingTPMenu));
 		}
 		case KZOption_ShowingInfoPanel: {
 			SetOption(client, option, (view_as<int>(g_ShowingInfoPanel[client]) + 1) % view_as<int>(KZShowingInfoPanel));
@@ -194,12 +194,12 @@ void PrintOptionChangeMessage(int client, KZOption option) {
 		case KZOption_Style: {
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Switched Style", gC_StylePhrases[g_Style[client]]);
 		}
-		case KZOption_ShowingTeleportMenu: {
-			switch (g_ShowingTeleportMenu[client]) {
-				case KZShowingTeleportMenu_Disabled: {
+		case KZOption_ShowingTPMenu: {
+			switch (g_ShowingTPMenu[client]) {
+				case KZShowingTPMenu_Disabled: {
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Menu - Disable");
 				}
-				case KZShowingTeleportMenu_Enabled: {
+				case KZShowingTPMenu_Enabled: {
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Menu - Enable");
 				}
 			}

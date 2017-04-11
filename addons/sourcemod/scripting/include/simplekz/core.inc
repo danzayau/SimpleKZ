@@ -21,7 +21,7 @@ enum KZTimeType {
 
 enum KZOption {
 	KZOption_Style = 0, 
-	KZOption_ShowingTeleportMenu, 
+	KZOption_ShowingTPMenu, 
 	KZOption_ShowingInfoPanel, 
 	KZOption_ShowingKeys, 
 	KZOption_ShowingPlayers, 
@@ -43,9 +43,9 @@ enum KZStyle {
 	KZStyle_Legacy
 }
 
-enum KZShowingTeleportMenu {
-	KZShowingTeleportMenu_Disabled = 0, 
-	KZShowingTeleportMenu_Enabled
+enum KZShowingTPMenu {
+	KZShowingTPMenu_Disabled = 0, 
+	KZShowingTPMenu_Enabled
 }
 
 enum KZShowingInfoPanel {

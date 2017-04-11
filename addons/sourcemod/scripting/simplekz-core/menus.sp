@@ -5,7 +5,7 @@
 
 
 void CreateMenus() {
-	CreateTeleportMenuAll();
+	CreateTPMenuAll();
 	CreateOptionsMenuAll();
 	CreateMovementStyleMenuAll();
 	CreatePistolMenuAll();
@@ -15,27 +15,102 @@ void CreateMenus() {
 
 /*===============================  Teleport Menu  ===============================*/
 
-void CreateTeleportMenuAll() {
+static void CreateTPMenuAll() {
 	for (int client = 1; client <= MaxClients; client++) {
-		CreateTeleportMenu(client);
+		CreateTPMenu(client);
 	}
 }
 
-void CreateTeleportMenu(int client) {
-	gH_TeleportMenu[client] = CreateMenu(MenuHandler_TeleportMenu);
-	SetMenuOptionFlags(gH_TeleportMenu[client], MENUFLAG_NO_SOUND);
-	SetMenuExitButton(gH_TeleportMenu[client], false);
+static void CreateTPMenu(int client) {
+	g_TPMenu[client] = new Menu(MenuHandler_TPMenu);
+	g_TPMenu[client].OptionFlags = MENUFLAG_NO_SOUND;
+	g_TPMenu[client].ExitButton = false;
 }
 
-void UpdateTeleportMenu(int client) {
-	if (GetClientMenu(client) == MenuSource_None && g_ShowingTeleportMenu[client] == KZShowingTeleportMenu_Enabled && !gB_TeleportMenuIsShowing[client] && IsPlayerAlive(client)) {
-		UpdateTeleportMenuItems(client);
-		DisplayMenu(gH_TeleportMenu[client], client, MENU_TIME_FOREVER);
-		gB_TeleportMenuIsShowing[client] = true;
+void UpdateTPMenu(int client) {
+	// Checks that no other menu instead of rudely interrupting it
+	if (GetClientMenu(client) == MenuSource_None
+		 && g_ShowingTPMenu[client] == KZShowingTPMenu_Enabled
+		 && !gB_TPMenuIsShowing[client] && IsPlayerAlive(client)) {
+		UpdateTPMenuItems(client, g_TPMenu[client]);
+		g_TPMenu[client].Display(client, MENU_TIME_FOREVER);
+		gB_TPMenuIsShowing[client] = true;
 	}
 }
 
-public int MenuHandler_TeleportMenu(Menu menu, MenuAction action, int param1, int param2) {
+void CloseTPMenu(int client) {
+	if (gB_TPMenuIsShowing[client]) {
+		CancelClientMenu(client);
+		gB_TPMenuIsShowing[client] = false;
+	}
+}
+
+static void UpdateTPMenuItems(int client, Menu menu) {
+	menu.RemoveAllItems();
+	AddItemsTPMenu(client, menu);
+}
+
+static void AddItemsTPMenu(int client, Menu menu) {
+	AddItemTPMenuCheckpoint(client, menu);
+	AddItemTPMenuTeleport(client, menu);
+	AddItemTPMenuPause(client, menu);
+	AddItemTPMenuStart(client, menu);
+	AddItemTPMenuUndo(client, menu);
+}
+
+static void AddItemTPMenuCheckpoint(int client, Menu menu) {
+	char text[16];
+	FormatEx(text, sizeof(text), "%T", "TP Menu - Checkpoint", client);
+	menu.AddItem("", text, ITEMDRAW_DEFAULT);
+}
+
+static void AddItemTPMenuTeleport(int client, Menu menu) {
+	char text[16];
+	FormatEx(text, sizeof(text), "%T", "TP Menu - Teleport", client);
+	if (gI_CheckpointCount[client] > 0) {
+		menu.AddItem("", text, ITEMDRAW_DEFAULT);
+	}
+	else {
+		menu.AddItem("", text, ITEMDRAW_DISABLED);
+	}
+}
+
+static void AddItemTPMenuUndo(int client, Menu menu) {
+	char text[16];
+	FormatEx(text, sizeof(text), "%T", "TP Menu - Undo TP", client);
+	if (gI_TeleportsUsed[client] > 0 && gB_LastTeleportOnGround[client]) {
+		menu.AddItem("", text, ITEMDRAW_DEFAULT);
+	}
+	else {
+		menu.AddItem("", text, ITEMDRAW_DISABLED);
+	}
+}
+
+static void AddItemTPMenuPause(int client, Menu menu) {
+	char text[16];
+	if (!gB_Paused[client]) {
+		FormatEx(text, sizeof(text), "%T", "TP Menu - Pause", client);
+		menu.AddItem("", text, ITEMDRAW_DEFAULT);
+	}
+	else {
+		FormatEx(text, sizeof(text), "%T", "TP Menu - Resume", client);
+		menu.AddItem("", text, ITEMDRAW_DEFAULT);
+	}
+}
+
+static void AddItemTPMenuStart(int client, Menu menu) {
+	char text[16];
+	if (gB_HasStartedThisMap[client]) {
+		FormatEx(text, sizeof(text), "%T", "TP Menu - Restart", client);
+		menu.AddItem("", text, ITEMDRAW_DEFAULT);
+	}
+	else {
+		FormatEx(text, sizeof(text), "%T", "TP Menu - Respawn", client);
+		menu.AddItem("", text, ITEMDRAW_DEFAULT);
+	}
+}
+
+public int MenuHandler_TPMenu(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
 		switch (param2) {
 			case 0:MakeCheckpoint(param1);
@@ -46,80 +121,7 @@ public int MenuHandler_TeleportMenu(Menu menu, MenuAction action, int param1, in
 		}
 	}
 	else if (action == MenuAction_Cancel) {
-		gB_TeleportMenuIsShowing[param1] = false;
-	}
-}
-
-void CloseTeleportMenu(int client) {
-	// Closing the teleport menu makes it refresh
-	if (gB_TeleportMenuIsShowing[client]) {
-		CancelClientMenu(client);
-		gB_TeleportMenuIsShowing[client] = false;
-	}
-}
-
-void TeleportAddItems(int client) {
-	TeleportAddItemCheckpoint(client);
-	TeleportAddItemTeleport(client);
-	TeleportAddItemPause(client);
-	TeleportAddItemStart(client);
-	TeleportAddItemUndo(client);
-}
-
-void UpdateTeleportMenuItems(int client) {
-	RemoveAllMenuItems(gH_TeleportMenu[client]);
-	TeleportAddItems(client);
-}
-
-void TeleportAddItemCheckpoint(int client) {
-	char text[16];
-	FormatEx(text, sizeof(text), "%T", "TP Menu - Checkpoint", client);
-	AddMenuItem(gH_TeleportMenu[client], "", text);
-}
-
-void TeleportAddItemTeleport(int client) {
-	char text[16];
-	FormatEx(text, sizeof(text), "%T", "TP Menu - Teleport", client);
-	if (gI_CheckpointCount[client] > 0) {
-		AddMenuItem(gH_TeleportMenu[client], "", text);
-	}
-	else {
-		AddMenuItem(gH_TeleportMenu[client], "", text, ITEMDRAW_DISABLED);
-	}
-}
-
-void TeleportAddItemUndo(int client) {
-	char text[16];
-	FormatEx(text, sizeof(text), "%T", "TP Menu - Undo TP", client);
-	if (gI_TeleportsUsed[client] > 0 && gB_LastTeleportOnGround[client]) {
-		AddMenuItem(gH_TeleportMenu[client], "", text);
-	}
-	else {
-		AddMenuItem(gH_TeleportMenu[client], "", text, ITEMDRAW_DISABLED);
-	}
-}
-
-void TeleportAddItemPause(int client) {
-	char text[16];
-	if (!gB_Paused[client]) {
-		FormatEx(text, sizeof(text), "%T", "TP Menu - Pause", client);
-		AddMenuItem(gH_TeleportMenu[client], "", text);
-	}
-	else {
-		FormatEx(text, sizeof(text), "%T", "TP Menu - Resume", client);
-		AddMenuItem(gH_TeleportMenu[client], "", text);
-	}
-}
-
-void TeleportAddItemStart(int client) {
-	char text[16];
-	if (gB_HasStartedThisMap[client]) {
-		FormatEx(text, sizeof(text), "%T", "TP Menu - Restart", client);
-		AddMenuItem(gH_TeleportMenu[client], "", text);
-	}
-	else {
-		FormatEx(text, sizeof(text), "%T", "TP Menu - Respawn", client);
-		AddMenuItem(gH_TeleportMenu[client], "", text);
+		gB_TPMenuIsShowing[param1] = false;
 	}
 }
 
@@ -133,34 +135,34 @@ void CreateOptionsMenuAll() {
 	}
 }
 
-void CreateOptionsMenu(int client) {
-	gH_OptionsMenu[client] = CreateMenu(MenuHandler_Options);
-	SetMenuPagination(gH_OptionsMenu[client], 6);
+static void CreateOptionsMenu(int client) {
+	g_OptionsMenu[client] = new Menu(MenuHandler_Options);
+	g_OptionsMenu[client].Pagination = 6;
 }
 
 void DisplayOptionsMenu(int client, int atItem = 0) {
-	UpdateOptionsMenu(client);
-	DisplayMenuAtItem(gH_OptionsMenu[client], client, atItem, MENU_TIME_FOREVER);
+	UpdateOptionsMenu(client, g_OptionsMenu[client]);
+	g_OptionsMenu[client].DisplayAt(client, atItem, MENU_TIME_FOREVER);
 }
 
-void UpdateOptionsMenu(int client) {
-	SetMenuTitle(gH_OptionsMenu[client], "%T", "Options Menu - Title", client);
-	RemoveAllMenuItems(gH_OptionsMenu[client]);
-	OptionsAddToggle(client, g_ShowingTeleportMenu[client], "Options Menu - Teleport Menu");
-	OptionsAddToggle(client, g_ShowingInfoPanel[client], "Options Menu - Info Panel");
-	OptionsAddToggle(client, g_ShowingPlayers[client], "Options Menu - Show Players");
-	OptionsAddToggle(client, g_ShowingWeapon[client], "Options Menu - Show Weapon");
-	OptionsAddToggle(client, g_AutoRestart[client], "Options Menu - Auto Restart");
-	OptionsAddPistol(client);
-	OptionsAddToggle(client, g_SlayOnEnd[client], "Options Menu - Slay On End");
-	OptionsAddToggle(client, g_ShowingKeys[client], "Options Menu - Show Keys");
-	OptionsAddToggle(client, g_CheckpointMessages[client], "Options Menu - Checkpoint Messages");
-	OptionsAddToggle(client, g_CheckpointSounds[client], "Options Menu - Checkpoint Sounds");
-	OptionsAddToggle(client, g_TeleportSounds[client], "Options Menu - Teleport Sounds");
-	OptionsAddTimerText(client);
+static void UpdateOptionsMenu(int client, Menu menu) {
+	menu.SetTitle("%T", "Options Menu - Title", client);
+	menu.RemoveAllItems();
+	OptionsAddToggle(client, menu, g_ShowingTPMenu[client], "Options Menu - Teleport Menu");
+	OptionsAddToggle(client, menu, g_ShowingInfoPanel[client], "Options Menu - Info Panel");
+	OptionsAddToggle(client, menu, g_ShowingPlayers[client], "Options Menu - Show Players");
+	OptionsAddToggle(client, menu, g_ShowingWeapon[client], "Options Menu - Show Weapon");
+	OptionsAddToggle(client, menu, g_AutoRestart[client], "Options Menu - Auto Restart");
+	OptionsAddPistol(client, menu);
+	OptionsAddToggle(client, menu, g_SlayOnEnd[client], "Options Menu - Slay On End");
+	OptionsAddToggle(client, menu, g_ShowingKeys[client], "Options Menu - Show Keys");
+	OptionsAddToggle(client, menu, g_CheckpointMessages[client], "Options Menu - Checkpoint Messages");
+	OptionsAddToggle(client, menu, g_CheckpointSounds[client], "Options Menu - Checkpoint Sounds");
+	OptionsAddToggle(client, menu, g_TeleportSounds[client], "Options Menu - Teleport Sounds");
+	OptionsAddTimerText(client, menu);
 }
 
-void OptionsAddToggle(int client, any optionValue, const char[] optionPhrase) {
+static void OptionsAddToggle(int client, Menu menu, any optionValue, const char[] optionPhrase) {
 	char text[32];
 	if (view_as<int>(optionValue) == 0) {
 		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Disabled", client);
@@ -168,25 +170,26 @@ void OptionsAddToggle(int client, any optionValue, const char[] optionPhrase) {
 	else {
 		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Enabled", client);
 	}
-	AddMenuItem(gH_OptionsMenu[client], "", text);
+	
+	menu.AddItem("", text);
 }
 
-void OptionsAddPistol(int client) {
+static void OptionsAddPistol(int client, Menu menu) {
 	char text[32];
 	FormatEx(text, sizeof(text), "%T - %s", "Options Menu - Pistol", client, gC_Pistols[g_Pistol[client]][1]);
-	AddMenuItem(gH_OptionsMenu[client], "", text);
+	menu.AddItem("", text);
 }
 
-void OptionsAddTimerText(int client) {
+static void OptionsAddTimerText(int client, Menu menu) {
 	char text[32];
 	FormatEx(text, sizeof(text), "%T - %T", "Options Menu - Timer Text", client, gC_TimerTextOptionPhrases[g_TimerText[client]], client);
-	AddMenuItem(gH_OptionsMenu[client], "", text);
+	menu.AddItem("", text);
 }
 
 public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int param2) {
 	if (action == MenuAction_Select) {
 		switch (param2) {
-			case 0:IncrementOption(param1, KZOption_ShowingTeleportMenu);
+			case 0:IncrementOption(param1, KZOption_ShowingTPMenu);
 			case 1:IncrementOption(param1, KZOption_ShowingInfoPanel);
 			case 2:IncrementOption(param1, KZOption_ShowingPlayers);
 			case 3:IncrementOption(param1, KZOption_ShowingWeapon);

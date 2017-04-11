@@ -6,7 +6,7 @@
 
 /*===============================  General  ===============================*/
 
-void TimerTick(int client) {
+void UpdateTimer(int client) {
 	if (IsPlayerAlive(client) && gB_TimerRunning[client] && !gB_Paused[client]) {
 		gF_CurrentTime[client] += GetTickInterval();
 	}
@@ -52,7 +52,7 @@ void TimerStart(int client, int course) {
 	g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
 	PlayTimerStartSound(client);
 	Call_SimpleKZ_OnTimerStart(client);
-	CloseTeleportMenu(client);
+	CloseTPMenu(client);
 }
 
 void TimerEnd(int client, int course) {
@@ -64,7 +64,7 @@ void TimerEnd(int client, int course) {
 		}
 		PlayTimerEndSound(client);
 		Call_SimpleKZ_OnTimerEnd(client);
-		CloseTeleportMenu(client);
+		CloseTPMenu(client);
 	}
 }
 
@@ -73,7 +73,7 @@ bool TimerForceStop(int client) {
 		PlayTimerForceStopSound(client);
 		gB_TimerRunning[client] = false;
 		Call_SimpleKZ_OnTimerForceStop(client);
-		CloseTeleportMenu(client);
+		CloseTPMenu(client);
 		return true;
 	}
 	return false;
@@ -135,7 +135,7 @@ void TeleportToStart(int client) {
 	else {
 		CS_RespawnPlayer(client);
 	}
-	CloseTeleportMenu(client);
+	CloseTPMenu(client);
 }
 
 void MakeCheckpoint(int client) {
@@ -160,7 +160,7 @@ void MakeCheckpoint(int client) {
 			EmitSoundToClient(client, SOUND_TELEPORT);
 		}
 	}
-	CloseTeleportMenu(client);
+	CloseTPMenu(client);
 }
 
 void TeleportToCheckpoint(int client) {
@@ -177,7 +177,7 @@ void TeleportToCheckpoint(int client) {
 			EmitSoundToClient(client, SOUND_TELEPORT);
 		}
 	}
-	CloseTeleportMenu(client);
+	CloseTPMenu(client);
 }
 
 void UndoTeleport(int client) {
@@ -194,7 +194,7 @@ void UndoTeleport(int client) {
 			EmitSoundToClient(client, SOUND_TELEPORT);
 		}
 	}
-	CloseTeleportMenu(client);
+	CloseTPMenu(client);
 }
 
 void Pause(int client) {
@@ -220,7 +220,7 @@ void Pause(int client) {
 		FreezePlayer(client);
 		Call_SimpleKZ_OnPlayerPause(client);
 	}
-	CloseTeleportMenu(client);
+	CloseTPMenu(client);
 }
 
 void Resume(int client) {
@@ -240,7 +240,7 @@ void Resume(int client) {
 		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
 		Call_SimpleKZ_OnPlayerResume(client);
 	}
-	CloseTeleportMenu(client);
+	CloseTPMenu(client);
 }
 
 void TogglePause(int client) {
