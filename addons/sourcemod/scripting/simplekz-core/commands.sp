@@ -1,10 +1,11 @@
-/*	commands.sp
-	
-	Commands for player use.
+/*   
+    Commands
+    
+    Commands for player use.
 */
 
-
-void CreateCommands() {
+void CreateCommands()
+{
 	RegConsoleCmd("sm_menu", CommandToggleMenu, "[KZ] Toggle the visibility of the teleport menu.");
 	RegConsoleCmd("sm_checkpoint", CommandMakeCheckpoint, "[KZ] Set your checkpoint.");
 	RegConsoleCmd("sm_gocheck", CommandTeleportToCheckpoint, "[KZ] Teleport to your checkpoint.");
@@ -37,12 +38,14 @@ void CreateCommands() {
 
 /*===============================  Command Listener Handlers  ===============================*/
 
-public Action CommandBlock(int client, const char[] command, int argc) {
+public Action CommandBlock(int client, const char[] command, int argc)
+{
 	return Plugin_Handled;
 }
 
 // Allow unlimited team changes
-public Action CommandJoinTeam(int client, const char[] command, int argc) {
+public Action CommandJoinTeam(int client, const char[] command, int argc)
+{
 	char teamString[4];
 	GetCmdArgString(teamString, sizeof(teamString));
 	int team = StringToInt(teamString);
@@ -54,70 +57,87 @@ public Action CommandJoinTeam(int client, const char[] command, int argc) {
 
 /*===============================  Command Handlers  ===============================*/
 
-public Action CommandToggleMenu(int client, int args) {
+public Action CommandToggleMenu(int client, int args)
+{
 	IncrementOption(client, KZOption_ShowingTPMenu);
 	return Plugin_Handled;
 }
 
-public Action CommandMakeCheckpoint(int client, int args) {
+public Action CommandMakeCheckpoint(int client, int args)
+{
 	MakeCheckpoint(client);
 	return Plugin_Handled;
 }
 
-public Action CommandTeleportToCheckpoint(int client, int args) {
+public Action CommandTeleportToCheckpoint(int client, int args)
+{
 	TeleportToCheckpoint(client);
 	return Plugin_Handled;
 }
 
-public Action CommandUndoTeleport(int client, int args) {
+public Action CommandUndoTeleport(int client, int args)
+{
 	UndoTeleport(client);
 	return Plugin_Handled;
 }
 
-public Action CommandTeleportToStart(int client, int args) {
+public Action CommandTeleportToStart(int client, int args)
+{
 	TeleportToStart(client);
 	return Plugin_Handled;
 }
 
-public Action CommandTogglePause(int client, int args) {
+public Action CommandTogglePause(int client, int args)
+{
 	TogglePause(client);
 	return Plugin_Handled;
 }
 
-public Action CommandStopTimer(int client, int args) {
-	if (TimerForceStop(client)) {
+public Action CommandStopTimer(int client, int args)
+{
+	if (TimerForceStop(client))
+	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped");
 	}
 	return Plugin_Handled;
 }
 
-public Action CommandStopsound(int client, int args) {
+public Action CommandStopsound(int client, int args)
+{
 	ClientCommand(client, "snd_playsounds Music.StopAllExceptMusic");
 	CPrintToChat(client, "%t %t", "KZ Prefix", "Stopped Sounds");
 	return Plugin_Handled;
 }
 
-public Action CommandGoto(int client, int args) {
+public Action CommandGoto(int client, int args)
+{
 	// If no arguments, respond with error message
-	if (args < 1) {
+	if (args < 1)
+	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Failure (Didn't Specify Player)");
 	}
 	// Otherwise try to teleport to the player
-	else {
+	else
+	{
 		char specifiedPlayer[MAX_NAME_LENGTH];
 		GetCmdArg(1, specifiedPlayer, sizeof(specifiedPlayer));
 		
 		int target = FindTarget(client, specifiedPlayer, false, false);
-		if (target != -1) {
-			if (target == client) {
+		if (target != -1)
+		{
+			if (target == client)
+			{
 				CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Failure (Not Yourself)");
 			}
-			else if (!IsPlayerAlive(target)) {
+			else if (!IsPlayerAlive(target))
+			{
 				CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Failure (Dead)");
 			}
-			else {
+			else
+			{
 				GotoPlayer(client, target);
-				if (gB_TimerRunning[client]) {
+				if (gB_TimerRunning[client])
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Goto)");
 				}
 				SimpleKZ_ForceStopTimer(client);
@@ -127,25 +147,32 @@ public Action CommandGoto(int client, int args) {
 	return Plugin_Handled;
 }
 
-public Action CommandSpec(int client, int args) {
+public Action CommandSpec(int client, int args)
+{
 	// If no arguments, just join spectators
-	if (args < 1) {
+	if (args < 1)
+	{
 		JoinTeam(client, CS_TEAM_SPECTATOR);
 	}
 	// Otherwise try to spectate the player
-	else {
+	else
+	{
 		char specifiedPlayer[MAX_NAME_LENGTH];
 		GetCmdArg(1, specifiedPlayer, sizeof(specifiedPlayer));
 		
 		int target = FindTarget(client, specifiedPlayer, false, false);
-		if (target != -1) {
-			if (target == client) {
+		if (target != -1)
+		{
+			if (target == client)
+			{
 				CPrintToChat(client, "%t %t", "KZ Prefix", "Spectate Failure (Not Yourself)");
 			}
-			else if (!IsPlayerAlive(target)) {
+			else if (!IsPlayerAlive(target))
+			{
 				CPrintToChat(client, "%t %t", "KZ Prefix", "Spectate Failure (Dead)");
 			}
-			else {
+			else
+			{
 				JoinTeam(client, CS_TEAM_SPECTATOR);
 				SetEntProp(client, Prop_Send, "m_iObserverMode", 4);
 				SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", target);
@@ -155,62 +182,74 @@ public Action CommandSpec(int client, int args) {
 	return Plugin_Handled;
 }
 
-public Action CommandOptions(int client, int args) {
+public Action CommandOptions(int client, int args)
+{
 	DisplayOptionsMenu(client);
 	return Plugin_Handled;
 }
 
-public Action CommandToggleShowPlayers(int client, int args) {
+public Action CommandToggleShowPlayers(int client, int args)
+{
 	IncrementOption(client, KZOption_ShowingPlayers);
 	return Plugin_Handled;
 }
 
-public Action CommandToggleInfoPanel(int client, int args) {
+public Action CommandToggleInfoPanel(int client, int args)
+{
 	IncrementOption(client, KZOption_ShowingInfoPanel);
 	return Plugin_Handled;
 }
 
-public Action CommandToggleShowWeapon(int client, int args) {
+public Action CommandToggleShowWeapon(int client, int args)
+{
 	IncrementOption(client, KZOption_ShowingWeapon);
 	return Plugin_Handled;
 }
 
-public Action CommandMeasureMenu(int client, int args) {
+public Action CommandMeasureMenu(int client, int args)
+{
 	DisplayMeasureMenu(client);
 	return Plugin_Handled;
 }
 
-public Action CommandPistolMenu(int client, int args) {
+public Action CommandPistolMenu(int client, int args)
+{
 	DisplayPistolMenu(client);
 	return Plugin_Handled;
 }
 
-public Action CommandToggleNoclip(int client, int args) {
+public Action CommandToggleNoclip(int client, int args)
+{
 	ToggleNoclip(client);
 	return Plugin_Handled;
 }
 
-public Action CommandEnableNoclip(int client, int args) {
+public Action CommandEnableNoclip(int client, int args)
+{
 	g_MovementPlayer[client].moveType = MOVETYPE_NOCLIP;
 	return Plugin_Handled;
 }
 
-public Action CommandDisableNoclip(int client, int args) {
+public Action CommandDisableNoclip(int client, int args)
+{
 	g_MovementPlayer[client].moveType = MOVETYPE_WALK;
 	return Plugin_Handled;
 }
 
-public Action CommandStyle(int client, int args) {
-	DisplayMovementStyleMenu(client);
+public Action CommandStyle(int client, int args)
+{
+	DisplayStyleMenu(client);
 	return Plugin_Handled;
 }
 
-public Action CommandStandard(int client, int args) {
+public Action CommandStandard(int client, int args)
+{
 	SetOption(client, KZOption_Style, KZStyle_Standard);
 	return Plugin_Handled;
 }
 
-public Action CommandLegacy(int client, int args) {
+public Action CommandLegacy(int client, int args)
+{
 	SetOption(client, KZOption_Style, KZStyle_Legacy);
 	return Plugin_Handled;
 } 

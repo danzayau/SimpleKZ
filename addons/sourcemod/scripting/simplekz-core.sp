@@ -13,6 +13,10 @@
 #pragma newdecls required
 #pragma semicolon 1
 
+
+
+/*===============================  Definitions  ===============================*/
+
 #define TIME_PAUSE_COOLDOWN 1.0
 #define TIME_SPLIT_COOLDOWN 1.0
 #define TIME_BHOP_TRIGGER_DETECTION 0.2 // Time after touching trigger_multiple to block checkpoints
@@ -65,12 +69,13 @@ ConVar gCV_PlayerModelT;
 ConVar gCV_PlayerModelCT;
 
 /* Menus */
-Handle gH_PistolMenu[MAXPLAYERS + 1];
-Menu g_TPMenu[MAXPLAYERS + 1];
-bool gB_TPMenuIsShowing[MAXPLAYERS + 1];
+Menu gH_MeasureMenu[MAXPLAYERS + 1];
 Menu g_OptionsMenu[MAXPLAYERS + 1];
 bool gB_CameFromOptionsMenu[MAXPLAYERS + 1];
-Handle gH_MovementStyleMenu[MAXPLAYERS + 1];
+Menu g_PistolMenu[MAXPLAYERS + 1];
+Menu g_StyleMenu[MAXPLAYERS + 1];
+Menu g_TPMenu[MAXPLAYERS + 1];
+bool gB_TPMenuIsShowing[MAXPLAYERS + 1];
 
 /* Movement Tweaker */
 MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
@@ -141,7 +146,6 @@ float gF_SavedOrigin[MAXPLAYERS + 1][3];
 float gF_SavedAngles[MAXPLAYERS + 1][3];
 
 /* Measure */
-Handle gH_MeasureMenu[MAXPLAYERS + 1];
 int gI_GlowSprite;
 bool gB_MeasurePosSet[MAXPLAYERS + 1][2];
 float gF_MeasurePos[MAXPLAYERS + 1][2][3];
@@ -155,7 +159,8 @@ bool gB_CurrentMapIsKZPro;
 int gI_JustTouchedTrigMulti[MAXPLAYERS + 1];
 
 /* Weapon entity names */
-char gC_WeaponNames[][] =  {
+char gC_WeaponNames[][] = 
+{
 	"weapon_ak47", "weapon_aug", "weapon_awp", "weapon_bizon", "weapon_deagle", 
 	"weapon_decoy", "weapon_elite", "weapon_famas", "weapon_fiveseven", "weapon_flashbang", 
 	"weapon_g3sg1", "weapon_galilar", "weapon_glock", "weapon_hegrenade", "weapon_hkp2000", 
@@ -167,7 +172,8 @@ char gC_WeaponNames[][] =  {
 };
 
 /* Max movement speed of weapons (respective to gC_WeaponNames). */
-int gI_WeaponRunSpeeds[] =  {
+int gI_WeaponRunSpeeds[] = 
+{
 	215, 220, 200, 240, 230, 
 	245, 240, 220, 240, 245, 
 	215, 215, 240, 245, 240, 
@@ -180,7 +186,8 @@ int gI_WeaponRunSpeeds[] =  {
 
 /* Pistol Entity Names (entity name | alias | team that buys it) 
 	Respective to the KZPistol enumeration. */
-char gC_Pistols[][][] =  {
+char gC_Pistols[][][] = 
+{
 	{ "weapon_hkp2000", "P2000 / USP-S", "CT" }, 
 	{ "weapon_glock", "Glock-18", "T" }, 
 	{ "weapon_p250", "P250", "EITHER" }, 
@@ -192,7 +199,8 @@ char gC_Pistols[][][] =  {
 };
 
 /* Radio commands */
-char gC_RadioCommands[][] =  {
+char gC_RadioCommands[][] = 
+{
 	"coverme", "takepoint", "holdpos", "regroup", "followme", "takingfire", "go", 
 	"fallback", "sticktog", "getinpos", "stormfront", "report", "roger", "enemyspot", 
 	"needbackup", "sectorclear", "inposition", "reportingin", "getout", "negative", 
@@ -200,13 +208,15 @@ char gC_RadioCommands[][] =  {
 };
 
 /* Styles translation phrases for chat messages (respective to KZStyle enum) */
-char gC_StylePhrases[view_as<int>(KZStyle)][] =  {
+char gC_StylePhrases[view_as<int>(KZStyle)][] = 
+{
 	"Style - Standard", 
 	"Style - Legacy"
 };
 
 /* Timer text option phrases */
-char gC_TimerTextOptionPhrases[][] =  {
+char gC_TimerTextOptionPhrases[][] = 
+{
 	"Options Menu - Disabled", 
 	"Options Menu - Top", 
 	"Options Menu - Bottom"
@@ -217,10 +227,10 @@ char gC_TimerTextOptionPhrases[][] =  {
 /*===============================  Includes  ===============================*/
 
 #include "simplekz-core/api.sp"
-#include "simplekz-core/convars.sp"
 #include "simplekz-core/commands.sp"
-#include "simplekz-core/infopanel.sp"
-#include "simplekz-core/mappingapi.sp"
+#include "simplekz-core/convars.sp"
+#include "simplekz-core/hud.sp"
+#include "simplekz-core/mapping_api.sp"
 #include "simplekz-core/menus.sp"
 #include "simplekz-core/misc.sp"
 #include "simplekz-core/movementtweaker.sp"
@@ -231,17 +241,20 @@ char gC_TimerTextOptionPhrases[][] =  {
 
 /*===============================  Plugin Events  ===============================*/
 
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
 	CreateNatives();
 	RegPluginLibrary("simplekz-core");
 	gB_LateLoad = late;
 	return APLRes_Success;
 }
 
-public void OnPluginStart() {
+public void OnPluginStart()
+{
 	// Check if game is CS:GO
 	EngineVersion gameEngine = GetEngineVersion();
-	if (gameEngine != Engine_CSGO) {
+	if (gameEngine != Engine_CSGO)
+	{
 		SetFailState("This plugin is only for CS:GO.");
 	}
 	
@@ -259,17 +272,22 @@ public void OnPluginStart() {
 	
 	AutoExecConfig(true, "simplekz-core", "sourcemod/SimpleKZ");
 	
-	if (gB_LateLoad) {
+	if (gB_LateLoad)
+	{
 		OnLateLoad();
 	}
 }
 
-void OnLateLoad() {
-	for (int client = 1; client <= MaxClients; client++) {
-		if (IsClientAuthorized(client) && !IsFakeClient(client)) {
-			SetupClient(client);
+void OnLateLoad()
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientConnected(client))
+		{
+			OnClientConnected(client);
 		}
-		if (IsClientInGame(client)) {
+		if (IsClientInGame(client))
+		{
 			OnClientPutInServer(client);
 		}
 	}
@@ -279,23 +297,29 @@ void OnLateLoad() {
 
 /*===============================  Client Events  ===============================*/
 
-public void OnClientConnected(int client) {
-	if (!IsFakeClient(client)) {
+public void OnClientConnected(int client)
+{
+	if (!IsFakeClient(client))
+	{
 		SetupClient(client);
 	}
 }
 
-public void OnClientPutInServer(int client) {
-	if (!IsFakeClient(client)) {
+public void OnClientPutInServer(int client)
+{
+	if (!IsFakeClient(client))
+	{
 		SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
 		PrintConnectMessage(client);
 	}
 }
 
-public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) {
+public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
+{
 	// Print custom disconnection message
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (IsValidClient(client) && !IsFakeClient(client)) {
+	if (IsValidClient(client) && !IsFakeClient(client))
+	{
 		SetEventBroadcast(event, true);
 		char reason[64];
 		GetEventString(event, "reason", reason, sizeof(reason));
@@ -303,9 +327,11 @@ public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcas
 	}
 }
 
-public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
+public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+{
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (!IsFakeClient(client)) {
+	if (!IsFakeClient(client))
+	{
 		CreateTimer(0.0, CleanHUD, client); // Using 1 tick timer or else it won't work
 		UpdateWeaponVisibility(client);
 		UpdatePlayerPistol(client);
@@ -318,7 +344,8 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
 	SetEntityRenderColor(client, _, _, _, PLAYER_MODEL_ALPHA);
 }
 
-public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2]) {
+public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
+{
 	UpdateTimer(client);
 	CheckForTimerButtonPress(client);
 	TweakMovementGeneral(g_MovementPlayer[client]);
@@ -329,13 +356,16 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	UpdateTimerText(client);
 }
 
-public Action OnSay(int client, const char[] command, int argc) {
+public Action OnSay(int client, const char[] command, int argc)
+{
 	// Process player messages including lower casing commands
-	if (!GetConVarBool(gCV_ChatProcessing)) {
+	if (!GetConVarBool(gCV_ChatProcessing))
+	{
 		return Plugin_Continue;
 	}
 	
-	if (BaseComm_IsClientGagged(client)) {
+	if (BaseComm_IsClientGagged(client))
+	{
 		return Plugin_Handled;
 	}
 	
@@ -344,8 +374,10 @@ public Action OnSay(int client, const char[] command, int argc) {
 	StripQuotes(message);
 	
 	// Change to lower case (potential) command messages
-	if ((message[0] == '/' || message[0] == '!') && IsCharUpper(message[1])) {
-		for (int i = 1; i <= strlen(message); i++) {
+	if ((message[0] == '/' || message[0] == '!') && IsCharUpper(message[1]))
+	{
+		for (int i = 1; i <= strlen(message); i++)
+		{
 			message[i] = CharToLower(message[i]);
 		}
 		FakeClientCommand(client, "say %s", message);
@@ -353,23 +385,28 @@ public Action OnSay(int client, const char[] command, int argc) {
 	}
 	
 	// Don't print the message if it is a chat trigger, or starts with @, or is empty
-	if (IsChatTrigger() || message[0] == '@' || !message[0]) {
+	if (IsChatTrigger() || message[0] == '@' || !message[0])
+	{
 		return Plugin_Handled;
 	}
 	
 	// Print the message to chat
-	if (GetClientTeam(client) == CS_TEAM_SPECTATOR) {
+	if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
+	{
 		CPrintToChatAll("{bluegrey}%N{default} : %s", client, message);
 	}
-	else {
+	else
+	{
 		CPrintToChatAll("{lime}%N{default} : %s", client, message);
 	}
 	return Plugin_Handled;
 }
 
-public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
+public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
+{
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (!IsFakeClient(client)) {
+	if (!IsFakeClient(client))
+	{
 		TimerForceStop(client);
 	}
 }
@@ -378,40 +415,51 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 
 /*===============================  Movement API Events  ===============================*/
 
-public void OnStartTouchGround(int client) {
+public void OnStartTouchGround(int client)
+{
 	TweakMovementDuckSlowdown(g_MovementPlayer[client]);
 }
 
-public void OnStopTouchGround(int client, bool jumped, bool ducked, bool landed) {
-	if (jumped) {
+public void OnStopTouchGround(int client, bool jumped, bool ducked, bool landed)
+{
+	if (jumped)
+	{
 		TweakMovementTakeoffSpeed(g_MovementPlayer[client]);
-		if (g_Style[client] == KZStyle_Standard && ducked) {
+		if (g_Style[client] == KZStyle_Standard && ducked)
+		{
 			TweakMovementPerfectCrouchJump(g_MovementPlayer[client]);
 		}
 	}
-	else {
+	else
+	{
 		gB_HitPerf[client] = false; // Not a jump so not a perf
 	}
 	
-	if (g_Style[client] == KZStyle_Standard) {
+	if (g_Style[client] == KZStyle_Standard)
+	{
 		gF_PrestrafeVelocityModifier[client] = 1.0; // No 'pre b-hopping' in Standard
 	}
 }
 
-public void OnStopTouchLadder(int client) {
+public void OnStopTouchLadder(int client)
+{
 	gB_HitPerf[client] = false;
 }
 
-public void OnStartNoclipping(int client) {
-	if (!IsFakeClient(client)) {
+public void OnStartNoclipping(int client)
+{
+	if (!IsFakeClient(client))
+	{
 		gB_Paused[client] = false; // Player forcefully left paused state by noclipping
-		if (TimerForceStop(client)) {
+		if (TimerForceStop(client))
+		{
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Noclipped)");
 		}
 	}
 }
 
-public void OnStopNoclipping(int client) {
+public void OnStopNoclipping(int client)
+{
 	gB_HitPerf[client] = false;
 }
 
@@ -419,38 +467,46 @@ public void OnStopNoclipping(int client) {
 
 /*===============================  Miscellaneous Events  ===============================*/
 
-public void OnMapStart() {
+public void OnMapStart()
+{
 	SetupMap();
 	ExecuteKZConfig();
 	SetConVarInt(gCV_DisableImmunityAlpha, 1); // Ensures player transparency works
 }
 
-public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
+public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
+{
 	return Plugin_Handled; // Stop round from ever ending
 }
 
-public Action OnSetTransmit(int entity, int client) {
-	if (g_ShowingPlayers[client] == KZShowingPlayers_Disabled && entity != client && entity != GetSpectatedClient(client)) {
+public Action OnSetTransmit(int entity, int client)
+{
+	if (g_ShowingPlayers[client] == KZShowingPlayers_Disabled && entity != client && entity != GetSpectatedClient(client))
+	{
 		return Plugin_Handled; // Hides other players
 	}
 	return Plugin_Continue;
 }
 
-public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) {
+public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast)
+{
 	SetEventBroadcast(event, true); // Block join team messages
 	return Plugin_Continue;
 }
 
-public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed) {
+public Action OnNormalSound(int[] clients, int &numClients, char[] sample, int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed)
+{
 	char className[20];
 	GetEntityClassname(entity, className, sizeof(className));
-	if (StrEqual(className, "func_button", false)) {
+	if (StrEqual(className, "func_button", false))
+	{
 		return Plugin_Handled; // No sounds directly from func_button
 	}
 	return Plugin_Continue;
 }
 
-public void OnRoundStart(Event event, const char[] name, bool dontBroadcast) {
+public void OnRoundStart(Event event, const char[] name, bool dontBroadcast)
+{
 	SetConVarInt(gCV_FullAlltalk, 1); // Force full alltalk
 	TimerForceStopAll();
 	SetupMapEntityHooks();

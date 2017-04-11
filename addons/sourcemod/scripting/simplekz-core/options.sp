@@ -1,11 +1,13 @@
-/*	options.sp
-	
-	Player options.
+/*    
+    Options
+    
+    SimpleKZ Player Options
 */
 
-
-int GetOption(int client, KZOption option) {
-	switch (option) {
+int GetOption(int client, KZOption option)
+{
+	switch (option)
+	{
 		case KZOption_Style:return view_as<int>(g_Style[client]);
 		case KZOption_ShowingTPMenu:return view_as<int>(g_ShowingTPMenu[client]);
 		case KZOption_ShowingInfoPanel:return view_as<int>(g_ShowingInfoPanel[client]);
@@ -23,107 +25,138 @@ int GetOption(int client, KZOption option) {
 	return -1;
 }
 
-void SetOption(int client, KZOption option, any optionValue) {
+void SetOption(int client, KZOption option, any optionValue)
+{
 	// Checks if the option actually needs changing before changing it,
 	// and performs actions required to apply those changes.
 	// In most cases, no action is required.
 	
 	bool changedOption = false;
 	
-	switch (option) {
-		case KZOption_Style: {
-			if (g_Style[client] != optionValue) {
+	switch (option)
+	{
+		case KZOption_Style:
+		{
+			if (g_Style[client] != optionValue)
+			{
 				changedOption = true;
 				g_Style[client] = optionValue;
-				if (TimerForceStop(client)) {
+				if (TimerForceStop(client))
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Changed Style)");
 				}
 			}
 		}
-		case KZOption_ShowingTPMenu: {
-			if (g_ShowingTPMenu[client] != optionValue) {
+		case KZOption_ShowingTPMenu:
+		{
+			if (g_ShowingTPMenu[client] != optionValue)
+			{
 				changedOption = true;
 				g_ShowingTPMenu[client] = optionValue;
 				CloseTPMenu(client);
 			}
 		}
-		case KZOption_ShowingInfoPanel: {
-			if (g_ShowingInfoPanel[client] != optionValue) {
+		case KZOption_ShowingInfoPanel:
+		{
+			if (g_ShowingInfoPanel[client] != optionValue)
+			{
 				changedOption = true;
 				g_ShowingInfoPanel[client] = optionValue;
 			}
 		}
-		case KZOption_ShowingKeys: {
-			if (g_ShowingKeys[client] != optionValue) {
+		case KZOption_ShowingKeys:
+		{
+			if (g_ShowingKeys[client] != optionValue)
+			{
 				changedOption = true;
 				g_ShowingKeys[client] = optionValue;
 			}
 		}
-		case KZOption_ShowingPlayers: {
-			if (g_ShowingPlayers[client] != optionValue) {
+		case KZOption_ShowingPlayers:
+		{
+			if (g_ShowingPlayers[client] != optionValue)
+			{
 				changedOption = true;
 				g_ShowingPlayers[client] = optionValue;
 			}
 		}
-		case KZOption_ShowingWeapon: {
-			if (g_ShowingWeapon[client] != optionValue) {
+		case KZOption_ShowingWeapon:
+		{
+			if (g_ShowingWeapon[client] != optionValue)
+			{
 				changedOption = true;
 				g_ShowingWeapon[client] = optionValue;
 				UpdateWeaponVisibility(client);
 			}
 		}
-		case KZOption_AutoRestart: {
-			if (g_AutoRestart[client] != optionValue) {
+		case KZOption_AutoRestart:
+		{
+			if (g_AutoRestart[client] != optionValue)
+			{
 				changedOption = true;
 				g_AutoRestart[client] = optionValue;
 			}
 		}
-		case KZOption_SlayOnEnd: {
-			if (g_SlayOnEnd[client] != optionValue) {
+		case KZOption_SlayOnEnd:
+		{
+			if (g_SlayOnEnd[client] != optionValue)
+			{
 				changedOption = true;
 				g_SlayOnEnd[client] = optionValue;
 			}
 		}
-		case KZOption_Pistol: {
-			if (g_Pistol[client] != optionValue) {
+		case KZOption_Pistol:
+		{
+			if (g_Pistol[client] != optionValue)
+			{
 				changedOption = true;
 				g_Pistol[client] = optionValue;
 				UpdatePlayerPistol(client);
 			}
 		}
-		case KZOption_CheckpointMessages: {
-			if (g_CheckpointMessages[client] != optionValue) {
+		case KZOption_CheckpointMessages:
+		{
+			if (g_CheckpointMessages[client] != optionValue)
+			{
 				changedOption = true;
 				g_CheckpointMessages[client] = optionValue;
 			}
 		}
-		case KZOption_CheckpointSounds: {
-			if (g_CheckpointSounds[client] != optionValue) {
+		case KZOption_CheckpointSounds:
+		{
+			if (g_CheckpointSounds[client] != optionValue)
+			{
 				changedOption = true;
 				g_CheckpointSounds[client] = optionValue;
 			}
 		}
-		case KZOption_TeleportSounds: {
-			if (g_TeleportSounds[client] != optionValue) {
+		case KZOption_TeleportSounds:
+		{
+			if (g_TeleportSounds[client] != optionValue)
+			{
 				changedOption = true;
 				g_TeleportSounds[client] = optionValue;
 			}
 		}
-		case KZOption_TimerText: {
-			if (g_TimerText[client] != optionValue) {
+		case KZOption_TimerText:
+		{
+			if (g_TimerText[client] != optionValue)
+			{
 				changedOption = true;
 				g_TimerText[client] = optionValue;
 			}
 		}
 	}
 	
-	if (changedOption) {
+	if (changedOption)
+	{
 		PrintOptionChangeMessage(client, option);
 		Call_SimpleKZ_OnChangeOption(client, option, optionValue);
 	}
 }
 
-void SetDefaultOptions(int client) {
+void SetDefaultOptions(int client)
+{
 	SetOption(client, KZOption_Style, view_as<KZStyle>(GetConVarInt(gCV_DefaultStyle)));
 	SetOption(client, KZOption_ShowingTPMenu, KZShowingTPMenu_Enabled);
 	SetOption(client, KZOption_ShowingKeys, KZShowingKeys_Disabled);
@@ -138,158 +171,177 @@ void SetDefaultOptions(int client) {
 	SetOption(client, KZOption_TimerText, KZTimerText_Disabled);
 }
 
-void IncrementOption(int client, KZOption option) {
+void IncrementOption(int client, KZOption option)
+{
 	// Add 1 to the current value of the option
 	// Modulo the result with the total number of that option which can be obtained by using view_as<int>(tag).
-	switch (option) {
-		case KZOption_Style: {
-			SetOption(client, option, (view_as<int>(g_Style[client]) + 1) % view_as<int>(KZStyle));
-		}
-		case KZOption_ShowingTPMenu: {
-			SetOption(client, option, (view_as<int>(g_ShowingTPMenu[client]) + 1) % view_as<int>(KZShowingTPMenu));
-		}
-		case KZOption_ShowingInfoPanel: {
-			SetOption(client, option, (view_as<int>(g_ShowingInfoPanel[client]) + 1) % view_as<int>(KZShowingInfoPanel));
-		}
-		case KZOption_ShowingKeys: {
-			SetOption(client, option, (view_as<int>(g_ShowingKeys[client]) + 1) % view_as<int>(KZShowingKeys));
-		}
-		case KZOption_ShowingPlayers: {
-			SetOption(client, option, (view_as<int>(g_ShowingPlayers[client]) + 1) % view_as<int>(KZShowingPlayers));
-		}
-		case KZOption_ShowingWeapon: {
-			SetOption(client, option, (view_as<int>(g_ShowingWeapon[client]) + 1) % view_as<int>(KZShowingWeapon));
-		}
-		case KZOption_AutoRestart: {
-			SetOption(client, option, (view_as<int>(g_AutoRestart[client]) + 1) % view_as<int>(KZAutoRestart));
-		}
-		case KZOption_SlayOnEnd: {
-			SetOption(client, option, (view_as<int>(g_SlayOnEnd[client]) + 1) % view_as<int>(KZSlayOnEnd));
-		}
-		case KZOption_Pistol: {
-			SetOption(client, option, (view_as<int>(g_Pistol[client]) + 1) % view_as<int>(KZPistol));
-		}
-		case KZOption_CheckpointMessages: {
-			SetOption(client, option, (view_as<int>(g_CheckpointMessages[client]) + 1) % view_as<int>(KZCheckpointMessages));
-		}
-		case KZOption_CheckpointSounds: {
-			SetOption(client, option, (view_as<int>(g_CheckpointSounds[client]) + 1) % view_as<int>(KZCheckpointSounds));
-		}
-		case KZOption_TeleportSounds: {
-			SetOption(client, option, (view_as<int>(g_TeleportSounds[client]) + 1) % view_as<int>(KZTeleportSounds));
-		}
-		case KZOption_TimerText: {
-			SetOption(client, option, (view_as<int>(g_TimerText[client]) + 1) % view_as<int>(KZTimerText));
-		}
+	switch (option)
+	{
+		case KZOption_Style:SetOption(client, option, (view_as<int>(g_Style[client]) + 1) % view_as<int>(KZStyle));
+		case KZOption_ShowingTPMenu:SetOption(client, option, (view_as<int>(g_ShowingTPMenu[client]) + 1) % view_as<int>(KZShowingTPMenu));
+		case KZOption_ShowingInfoPanel:SetOption(client, option, (view_as<int>(g_ShowingInfoPanel[client]) + 1) % view_as<int>(KZShowingInfoPanel));
+		case KZOption_ShowingKeys:SetOption(client, option, (view_as<int>(g_ShowingKeys[client]) + 1) % view_as<int>(KZShowingKeys));
+		case KZOption_ShowingPlayers:SetOption(client, option, (view_as<int>(g_ShowingPlayers[client]) + 1) % view_as<int>(KZShowingPlayers));
+		case KZOption_ShowingWeapon:SetOption(client, option, (view_as<int>(g_ShowingWeapon[client]) + 1) % view_as<int>(KZShowingWeapon));
+		case KZOption_AutoRestart:SetOption(client, option, (view_as<int>(g_AutoRestart[client]) + 1) % view_as<int>(KZAutoRestart));
+		case KZOption_SlayOnEnd:SetOption(client, option, (view_as<int>(g_SlayOnEnd[client]) + 1) % view_as<int>(KZSlayOnEnd));
+		case KZOption_Pistol:SetOption(client, option, (view_as<int>(g_Pistol[client]) + 1) % view_as<int>(KZPistol));
+		case KZOption_CheckpointMessages:SetOption(client, option, (view_as<int>(g_CheckpointMessages[client]) + 1) % view_as<int>(KZCheckpointMessages));
+		case KZOption_CheckpointSounds:SetOption(client, option, (view_as<int>(g_CheckpointSounds[client]) + 1) % view_as<int>(KZCheckpointSounds));
+		case KZOption_TeleportSounds:SetOption(client, option, (view_as<int>(g_TeleportSounds[client]) + 1) % view_as<int>(KZTeleportSounds));
+		case KZOption_TimerText:SetOption(client, option, (view_as<int>(g_TimerText[client]) + 1) % view_as<int>(KZTimerText));
 	}
 }
 
-void PrintOptionChangeMessage(int client, KZOption option) {
-	if (!IsClientInGame(client)) {
+static void PrintOptionChangeMessage(int client, KZOption option) {
+	if (!IsClientInGame(client))
+	{
 		return;
 	}
 	
 	// NOTE: Not all options have a message for when they are changed.
-	switch (option) {
-		case KZOption_Style: {
+	switch (option)
+	{
+		case KZOption_Style:
+		{
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Switched Style", gC_StylePhrases[g_Style[client]]);
 		}
-		case KZOption_ShowingTPMenu: {
-			switch (g_ShowingTPMenu[client]) {
-				case KZShowingTPMenu_Disabled: {
+		case KZOption_ShowingTPMenu:
+		{
+			switch (g_ShowingTPMenu[client])
+			{
+				case KZShowingTPMenu_Disabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Menu - Disable");
 				}
-				case KZShowingTPMenu_Enabled: {
+				case KZShowingTPMenu_Enabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Menu - Enable");
 				}
 			}
 		}
-		case KZOption_ShowingInfoPanel: {
-			switch (g_ShowingInfoPanel[client]) {
-				case KZShowingInfoPanel_Disabled: {
+		case KZOption_ShowingInfoPanel:
+		{
+			switch (g_ShowingInfoPanel[client])
+			{
+				case KZShowingInfoPanel_Disabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Info Panel - Disable");
 				}
-				case KZShowingInfoPanel_Enabled: {
+				case KZShowingInfoPanel_Enabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Info Panel - Enable");
 				}
 			}
 		}
-		case KZOption_ShowingKeys: {
-			switch (g_ShowingKeys[client]) {
-				case KZShowingKeys_Disabled: {
+		case KZOption_ShowingKeys:
+		{
+			switch (g_ShowingKeys[client])
+			{
+				case KZShowingKeys_Disabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Keys - Disable");
 				}
-				case KZShowingKeys_Enabled: {
+				case KZShowingKeys_Enabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Keys - Enable");
 				}
 			}
 		}
-		case KZOption_ShowingPlayers: {
-			switch (g_ShowingPlayers[client]) {
-				case KZShowingPlayers_Disabled: {
+		case KZOption_ShowingPlayers:
+		{
+			switch (g_ShowingPlayers[client])
+			{
+				case KZShowingPlayers_Disabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Players - Disable");
 				}
-				case KZShowingPlayers_Enabled: {
+				case KZShowingPlayers_Enabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Players - Enable");
 				}
 			}
 		}
-		case KZOption_ShowingWeapon: {
-			switch (g_ShowingPlayers[client]) {
-				case KZShowingPlayers_Disabled: {
+		case KZOption_ShowingWeapon:
+		{
+			switch (g_ShowingPlayers[client])
+			{
+				case KZShowingPlayers_Disabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Weapon - Disable");
 				}
-				case KZShowingPlayers_Enabled: {
+				case KZShowingPlayers_Enabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Weapon - Enable");
 				}
 			}
 		}
-		case KZOption_AutoRestart: {
-			switch (g_AutoRestart[client]) {
-				case KZAutoRestart_Disabled: {
+		case KZOption_AutoRestart:
+		{
+			switch (g_AutoRestart[client])
+			{
+				case KZAutoRestart_Disabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Auto Restart - Disable");
 				}
-				case KZAutoRestart_Enabled: {
+				case KZAutoRestart_Enabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Auto Restart - Enable");
 				}
 			}
 		}
-		case KZOption_SlayOnEnd: {
-			switch (g_SlayOnEnd[client]) {
-				case KZSlayOnEnd_Disabled: {
+		case KZOption_SlayOnEnd:
+		{
+			switch (g_SlayOnEnd[client])
+			{
+				case KZSlayOnEnd_Disabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Slay On End - Disable");
 				}
-				case KZSlayOnEnd_Enabled: {
+				case KZSlayOnEnd_Enabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Slay On End - Enable");
 				}
 			}
 		}
-		case KZOption_CheckpointMessages: {
-			switch (g_CheckpointMessages[client]) {
-				case KZSlayOnEnd_Disabled: {
+		case KZOption_CheckpointMessages:
+		{
+			switch (g_CheckpointMessages[client])
+			{
+				case KZSlayOnEnd_Disabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Checkpoint Messages - Disable");
 				}
-				case KZSlayOnEnd_Enabled: {
+				case KZSlayOnEnd_Enabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Checkpoint Messages - Enable");
 				}
 			}
 		}
-		case KZOption_CheckpointSounds: {
-			switch (g_CheckpointSounds[client]) {
-				case KZCheckpointMessages_Disabled: {
+		case KZOption_CheckpointSounds:
+		{
+			switch (g_CheckpointSounds[client])
+			{
+				case KZCheckpointMessages_Disabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Checkpoint Sounds - Disable");
 				}
-				case KZCheckpointMessages_Enabled: {
+				case KZCheckpointMessages_Enabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Checkpoint Sounds - Enable");
 				}
 			}
 		}
-		case KZOption_TeleportSounds: {
-			switch (g_TeleportSounds[client]) {
-				case KZTeleportSounds_Disabled: {
+		case KZOption_TeleportSounds:
+		{
+			switch (g_TeleportSounds[client])
+			{
+				case KZTeleportSounds_Disabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Sounds - Disable");
 				}
-				case KZTeleportSounds_Enabled: {
+				case KZTeleportSounds_Enabled:
+				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Sounds - Enable");
 				}
 			}
