@@ -1,8 +1,7 @@
-/* 	Simple KZ Local Ranks Include File
-	Author: DanZay
+/* 	
+	Simple KZ Local Ranks Include File
 	
-	Plugin Version: 0.11.0
-	Plugin Website: https://github.com/danzayau/SimpleKZ	
+	Website: https://github.com/danzayau/SimpleKZ	
 */
 
 #if defined _simplekz_localranks_included_
@@ -10,7 +9,6 @@
 #endif
 #define _simplekz_localranks_included_
 
-#include <simplekz/core>
 
 
 /*===============================  Enumerations  ===============================*/
@@ -29,7 +27,7 @@ enum KZRecordType {
  * Called when the player sets a record.
  *
  * @param client			Client entity index.
- * @param mapID 			MapID from SimpleKZ Core's "Maps" database table.
+ * @param mapID 			MapID from the "Maps" database table.
  * @param course			Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
  * @param style				The movement style of the new record.
  * @param recordType		Type of record (see KZRecordType enumeration).
@@ -42,7 +40,7 @@ forward void SKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, K
  * Called when the player beats their personal best time (not called for theoretical times).
  *
  * @param client			Client entity index.
- * @param mapID 			MapID from SimpleKZ Core's "Maps" database table.
+ * @param mapID 			MapID from the "Maps" database table.
  * @param course			Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
  * @param style				The movement style of the new PB.
  * @param timeType			The type of run (see TimeType enumeration).

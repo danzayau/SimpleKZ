@@ -1,44 +1,58 @@
 /*	
 	Global Variables
 	
-	The many SimpleKZ Core global variables.
+	Declarations of the many, many global variables.
 */
 
-/* CS:GO ConVars */
+
+/* General */
+KZPlayer g_KZPlayer[MAXPLAYERS + 1];
+bool gB_LateLoad;
+
+// Styles translation phrases for chat messages (respective to KZStyle enum)
+char gC_StylePhrases[view_as<int>(KZStyle)][] = 
+{
+	"Style - Standard", 
+	"Style - Legacy"
+};
+
+
+/* Forwards */
+Handle gH_OnChangeOption;
+Handle gH_OnPerfectBunnyhop;
+Handle gH_OnTimerStart;
+Handle gH_OnTimerEnd;
+Handle gH_OnTimerForceStop;
+Handle gH_OnPlayerPause;
+Handle gH_OnPlayerResume;
+
+
+/* ConVars */
 ConVar gCV_DisableImmunityAlpha;
 ConVar gCV_FullAlltalk;
-
-/* Plugin ConVars */
 ConVar gCV_ChatProcessing;
 ConVar gCV_DefaultStyle;
 ConVar gCV_PlayerModelT;
 ConVar gCV_PlayerModelCT;
 
-/* Movement Tweak */
-MovementPlayer g_MovementPlayer[MAXPLAYERS + 1];
-float gF_PrestrafeVelocityModifier[MAXPLAYERS + 1];
-bool gB_HitPerf[MAXPLAYERS + 1];
-char gC_PlayerModelT[256];
-char gC_PlayerModelCT[256];
+
+/* Mapping API */
+bool gB_CurrentMapIsKZPro;
+
 
 /* Timer */
 bool gB_TimerRunning[MAXPLAYERS + 1];
 float gF_CurrentTime[MAXPLAYERS + 1];
+int gI_CurrentCourse[MAXPLAYERS + 1];
+int gI_LastCourseStarted[MAXPLAYERS + 1];
+int gI_LastCourseEnded[MAXPLAYERS + 1];
+
+
+/* Pause */
 bool gB_Paused[MAXPLAYERS + 1];
 float gF_LastResumeTime[MAXPLAYERS + 1];
 bool gB_HasResumedInThisRun[MAXPLAYERS + 1];
-int gI_CurrentCourse[MAXPLAYERS + 1];
 
-/* Button Press Checking */
-int gI_OldButtons[MAXPLAYERS + 1];
-Regex gRE_BonusStartButton;
-Regex gRE_BonusEndButton;
-bool gB_HasStartedThisMap[MAXPLAYERS + 1];
-bool gB_HasEndedThisMap[MAXPLAYERS + 1];
-float gF_StartButtonOrigin[MAXPLAYERS + 1][3];
-float gF_EndButtonOrigin[MAXPLAYERS + 1][3];
-int gI_LastCourseStarted[MAXPLAYERS + 1];
-int gI_LastCourseEnded[MAXPLAYERS + 1];
 
 /* Wasted Time */
 float gF_LastCheckpointTime[MAXPLAYERS + 1];
@@ -50,31 +64,24 @@ float gF_LastTeleportToStartTime[MAXPLAYERS + 1];
 float gF_LastTeleportToStartWastedTime[MAXPLAYERS + 1];
 float gF_WastedTime[MAXPLAYERS + 1];
 
-/* Saved Positions and Angles */
-float gF_StartOrigin[MAXPLAYERS + 1][3];
-float gF_StartAngles[MAXPLAYERS + 1][3];
-int gI_CheckpointCount[MAXPLAYERS + 1];
-int gI_TeleportsUsed[MAXPLAYERS + 1];
-float gF_CheckpointOrigin[MAXPLAYERS + 1][3];
-float gF_CheckpointAngles[MAXPLAYERS + 1][3];
-bool gB_LastTeleportOnGround[MAXPLAYERS + 1];
-float gF_UndoOrigin[MAXPLAYERS + 1][3];
-float gF_UndoAngle[MAXPLAYERS + 1][3];
-float gF_PauseAngles[MAXPLAYERS + 1][3];
-
-/* Position Restoration */
-bool gB_HasSavedPosition[MAXPLAYERS + 1];
-float gF_SavedOrigin[MAXPLAYERS + 1][3];
-float gF_SavedAngles[MAXPLAYERS + 1][3];
 
 /* Menus */
 Menu gH_MeasureMenu[MAXPLAYERS + 1];
-Menu g_OptionsMenu[MAXPLAYERS + 1];
-bool gB_CameFromOptionsMenu[MAXPLAYERS + 1];
 Menu g_PistolMenu[MAXPLAYERS + 1];
 Menu g_StyleMenu[MAXPLAYERS + 1];
 Menu g_TPMenu[MAXPLAYERS + 1];
 bool gB_TPMenuIsShowing[MAXPLAYERS + 1];
+Menu g_OptionsMenu[MAXPLAYERS + 1];
+bool gB_CameFromOptionsMenu[MAXPLAYERS + 1];
+
+// Timer text option menu phrases
+char gC_TimerTextOptionPhrases[][] = 
+{
+	"Options Menu - Disabled", 
+	"Options Menu - Top", 
+	"Options Menu - Bottom"
+};
+
 
 /* Options */
 KZStyle g_Style[MAXPLAYERS + 1];
@@ -91,6 +98,41 @@ KZCheckpointSounds g_CheckpointSounds[MAXPLAYERS + 1];
 KZTeleportSounds g_TeleportSounds[MAXPLAYERS + 1];
 KZTimerText g_TimerText[MAXPLAYERS + 1];
 
+
+/* Button Press */
+int gI_OldButtons[MAXPLAYERS + 1];
+Regex gRE_BonusStartButton;
+Regex gRE_BonusEndButton;
+bool gB_HasStartedThisMap[MAXPLAYERS + 1];
+bool gB_HasEndedThisMap[MAXPLAYERS + 1];
+float gF_StartButtonOrigin[MAXPLAYERS + 1][3];
+float gF_EndButtonOrigin[MAXPLAYERS + 1][3];
+
+
+/* Player Model */
+char gC_PlayerModelT[256];
+char gC_PlayerModelCT[256];
+
+
+/* Teleports (and Checkpoints) */
+float gF_StartOrigin[MAXPLAYERS + 1][3];
+float gF_StartAngles[MAXPLAYERS + 1][3];
+int gI_CheckpointCount[MAXPLAYERS + 1];
+int gI_TeleportsUsed[MAXPLAYERS + 1];
+float gF_CheckpointOrigin[MAXPLAYERS + 1][3];
+float gF_CheckpointAngles[MAXPLAYERS + 1][3];
+bool gB_LastTeleportOnGround[MAXPLAYERS + 1];
+float gF_UndoOrigin[MAXPLAYERS + 1][3];
+float gF_UndoAngle[MAXPLAYERS + 1][3];
+float gF_PauseAngles[MAXPLAYERS + 1][3];
+
+
+/* Position Restoration */
+bool gB_HasSavedPosition[MAXPLAYERS + 1];
+float gF_SavedOrigin[MAXPLAYERS + 1][3];
+float gF_SavedAngles[MAXPLAYERS + 1][3];
+
+
 /* Measure */
 int gI_GlowSprite;
 bool gB_MeasurePosSet[MAXPLAYERS + 1][2];
@@ -98,16 +140,12 @@ float gF_MeasurePos[MAXPLAYERS + 1][2][3];
 Handle gH_P2PRed[MAXPLAYERS + 1];
 Handle gH_P2PGreen[MAXPLAYERS + 1];
 
-/* Mapping API */
-bool gB_CurrentMapIsKZPro;
 
-/* No CP On Bhop */
+/* No Checkpoints On Bunnyhop Blocks */
 int gI_JustTouchedTrigMulti[MAXPLAYERS + 1];
 
-/* Other */
-bool gB_LateLoad;
 
-/* Radio Commands */
+/* Block Radio */
 char gC_RadioCommands[][] = 
 {
 	"coverme", "takepoint", "holdpos", "regroup", "followme", "takingfire", "go", 
@@ -116,7 +154,11 @@ char gC_RadioCommands[][] =
 	"enemydown", "compliment", "thanks", "cheer"
 };
 
-/* Weapon entity names */
+
+/* Movement Tweak */
+float gF_PrestrafeVelocityModifier[MAXPLAYERS + 1];
+bool gB_HitPerf[MAXPLAYERS + 1];
+
 char gC_WeaponNames[][] = 
 {
 	"weapon_ak47", "weapon_aug", "weapon_awp", "weapon_bizon", "weapon_deagle", 
@@ -129,8 +171,8 @@ char gC_WeaponNames[][] =
 	"weapon_ump45", "weapon_xm1014"
 };
 
-/* Max movement speed of weapons (respective to gC_WeaponNames). */
-int gI_WeaponRunSpeeds[] = 
+// Max movement speed of weapons (respective to gC_WeaponNames)
+int gI_WeaponRunSpeeds[sizeof(gC_WeaponNames)] = 
 {
 	215, 220, 200, 240, 230, 
 	245, 240, 220, 240, 245, 
@@ -142,8 +184,10 @@ int gI_WeaponRunSpeeds[] =
 	230, 215
 };
 
-/* Pistol Entity Names (entity name | alias | team that buys it) 
-	Respective to the KZPistol enumeration. */
+
+/* Pistol */
+// Pistol Entity Names (entity name | alias | team that buys it) 
+// Respective to the KZPistol enumeration. */
 char gC_Pistols[][][] = 
 {
 	{ "weapon_hkp2000", "P2000 / USP-S", "CT" }, 
@@ -154,19 +198,4 @@ char gC_Pistols[][][] =
 	{ "weapon_cz75a", "CZ75-Auto", "EITHER" }, 
 	{ "weapon_fiveseven", "Five-SeveN", "CT" }, 
 	{ "weapon_tec9", "Tec-9", "T" }
-};
-
-/* Styles translation phrases for chat messages (respective to KZStyle enum) */
-char gC_StylePhrases[view_as<int>(KZStyle)][] = 
-{
-	"Style - Standard", 
-	"Style - Legacy"
-};
-
-/* Timer text option phrases */
-char gC_TimerTextOptionPhrases[][] = 
-{
-	"Options Menu - Disabled", 
-	"Options Menu - Top", 
-	"Options Menu - Bottom"
 }; 

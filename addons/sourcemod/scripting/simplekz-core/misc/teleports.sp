@@ -46,7 +46,7 @@ void MakeCheckpoint(int client)
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Dead)");
 	}
-	else if (!g_MovementPlayer[client].onGround)
+	else if (!g_KZPlayer[client].onGround)
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Midair)");
 	}
@@ -58,8 +58,8 @@ void MakeCheckpoint(int client)
 	{
 		gI_CheckpointCount[client]++;
 		gF_LastCheckpointTime[client] = gF_CurrentTime[client];
-		g_MovementPlayer[client].GetOrigin(gF_CheckpointOrigin[client]);
-		g_MovementPlayer[client].GetEyeAngles(gF_CheckpointAngles[client]);
+		g_KZPlayer[client].GetOrigin(gF_CheckpointOrigin[client]);
+		g_KZPlayer[client].GetEyeAngles(gF_CheckpointAngles[client]);
 		if (g_CheckpointMessages[client] == KZCheckpointMessages_Enabled)
 		{
 			CPrintToChat(client, "%t %t", "KZ Prefix", "Make Checkpoint");
@@ -114,4 +114,33 @@ void UndoTeleport(int client)
 		}
 	}
 	CloseTPMenu(client);
+}
+
+
+
+/*===============================  Static Functions  ===============================*/
+
+// Teleports the player (intended for destination on ground).
+// Handles important stuff like storing postion for undo.
+static void DoTeleport(int client, float destination[3], float eyeAngles[3])
+{
+	// Store old variables here to avoid incorrect behaviour when teleporting to undo position
+	float oldOrigin[3], oldAngles[3];
+	g_KZPlayer[client].GetOrigin(oldOrigin);
+	g_KZPlayer[client].GetEyeAngles(oldAngles);
+	
+	TeleportEntity(client, destination, eyeAngles, view_as<float>( { 0.0, 0.0, -50.0 } ));
+	CreateTimer(0.0, Timer_ZeroVelocity, client); // Prevent booster exploits
+	gI_TeleportsUsed[client]++;
+	// Store position for undo
+	if (g_KZPlayer[client].onGround)
+	{
+		gB_LastTeleportOnGround[client] = true;
+		gF_UndoOrigin[client] = oldOrigin;
+		gF_UndoAngle[client] = oldAngles;
+	}
+	else
+	{
+		gB_LastTeleportOnGround[client] = false;
+	}
 } 

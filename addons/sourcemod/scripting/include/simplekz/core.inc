@@ -1,8 +1,7 @@
-/* 	Simple KZ Core Include File
-	Author: DanZay
+/* 	
+	Simple KZ Core Include File
 	
-	Plugin Version: 0.11.0
-	Plugin Website: https://github.com/danzayau/SimpleKZ	
+	Website: https://github.com/danzayau/SimpleKZ	
 */
 
 #if defined _simplekz_core_included_
@@ -11,15 +10,18 @@
 #define _simplekz_core_included_
 
 
+
 /*===============================  Enumerations  ===============================*/
 
-enum KZTimeType {
+enum KZTimeType
+{
 	KZTimeType_Normal = 0, 
 	KZTimeType_Pro, 
 	KZTimeType_Theoretical
 }
 
-enum KZOption {
+enum KZOption
+{
 	KZOption_Style = 0, 
 	KZOption_ShowingTPMenu, 
 	KZOption_ShowingInfoPanel, 
@@ -38,47 +40,56 @@ enum KZOption {
 /*	Each option has it's own enumeration to specify the meaning of its value,
 	and so it's a bit easier to add more option values. */
 
-enum KZStyle {
+enum KZStyle
+{
 	KZStyle_Standard = 0, 
 	KZStyle_Legacy
 }
 
-enum KZShowingTPMenu {
+enum KZShowingTPMenu
+{
 	KZShowingTPMenu_Disabled = 0, 
 	KZShowingTPMenu_Enabled
 }
 
-enum KZShowingInfoPanel {
+enum KZShowingInfoPanel
+{
 	KZShowingInfoPanel_Disabled = 0, 
 	KZShowingInfoPanel_Enabled
 }
 
-enum KZShowingKeys {
+enum KZShowingKeys
+{
 	KZShowingKeys_Disabled = 0, 
 	KZShowingKeys_Enabled
 }
 
-enum KZShowingPlayers {
+enum KZShowingPlayers
+{
 	KZShowingPlayers_Disabled = 0, 
 	KZShowingPlayers_Enabled
 }
 
-enum KZShowingWeapon {
+enum KZShowingWeapon
+{
 	KZShowingWeapon_Disabled = 0, 
 	KZShowingWeapon_Enabled
 }
 
-enum KZAutoRestart {
+enum KZAutoRestart
+{
 	KZAutoRestart_Disabled = 0, 
 	KZAutoRestart_Enabled
 }
 
-enum KZSlayOnEnd {
+enum KZSlayOnEnd
+{
 	KZSlayOnEnd_Disabled = 0, 
 	KZSlayOnEnd_Enabled
 }
 
-enum KZPistol {
+enum KZPistol
+{
 	KZPistol_USP = 0, 
 	KZPistol_Glock, 
 	KZPistol_P250, 
@@ -89,22 +100,26 @@ enum KZPistol {
 	KZPistol_Tec9
 }
 
-enum KZCheckpointMessages {
+enum KZCheckpointMessages
+{
 	KZCheckpointMessages_Disabled = 0, 
 	KZCheckpointMessages_Enabled
 }
 
-enum KZCheckpointSounds {
+enum KZCheckpointSounds
+{
 	KZCheckpointSounds_Disabled = 0, 
 	KZCheckpointSounds_Enabled
 }
 
-enum KZTeleportSounds {
+enum KZTeleportSounds
+{
 	KZTeleportSounds_Disabled = 0, 
 	KZTeleportSounds_Enabled
 }
 
-enum KZTimerText {
+enum KZTimerText
+{
 	KZTimerText_Disabled = 0, 
 	KZTimerText_Top, 
 	KZTimerText_Bottom
@@ -113,15 +128,6 @@ enum KZTimerText {
 
 
 /*===============================  Forwards  ===============================*/
-
-/**
- * Called when the SimpleKZ Core has set up the client after authorization.
- * At this point, many variables relating to the client (e.g. options) have been set.
- *
- * @param client			Client entity index.
- * @noreturn
- */
-forward void SKZ_OnClientSetup(int client);
 
 /**
  * Called when the player changes an option.

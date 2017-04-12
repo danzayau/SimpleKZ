@@ -1,8 +1,7 @@
-/* 	Simple KZ Official Include File
-	Author: DanZay
-	
-	Plugin Version: 0.11.0
-	Plugin Website: https://github.com/danzayau/SimpleKZ	
+/* 	
+	Simple KZ Official Include File
+
+	Website: https://github.com/danzayau/SimpleKZ	
 */
 
 #if defined _simplekz_included_
@@ -10,6 +9,7 @@
 #endif
 #define _simplekz_included_
 
+#include <movement>
 #include <simplekz/core>
 #include <simplekz/localdb>
 #include <simplekz/localranks>
@@ -57,7 +57,7 @@ stock char[] SKZ_FormatTime(float time)
  */
 stock bool IsValidClient(int client)
 {
-	return 1 <= client && client <= MaxClients && IsClientInGame(client);
+	return client >= 1 && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && !IsClientSourceTV(client);
 }
 
 /**
@@ -111,13 +111,17 @@ stock void FakePrecacheSound(const char[] relativeSoundPath)
 
 /*===============================  Methodmap  ===============================*/
 
-methodmap KZPlayer __nullable__ {
-	public KZPlayer(int id) {
+methodmap KZPlayer < MovementPlayer
+{
+	public KZPlayer(int id)
+	{
 		return view_as<KZPlayer>(id);
 	}
 	
-	property int id {
-		public get() {
+	property int id
+	{
+		public get()
+		{
 			return view_as<int>(this);
 		}
 	}
@@ -125,79 +129,101 @@ methodmap KZPlayer __nullable__ {
 	
 	/*===============================  Timer Functions  ===============================*/
 	
-	public void StartTimer(int course) {
+	public void StartTimer(int course)
+	{
 		SKZ_StartTimer(this.id, course);
 	}
 	
-	public void EndTimer(int course) {
+	public void EndTimer(int course)
+	{
 		SKZ_EndTimer(this.id, course);
 	}
 	
-	public bool ForceStopTimer() {
+	public bool ForceStopTimer()
+	{
 		return SKZ_ForceStopTimer(this.id);
 	}
 	
-	public void TeleportToStart() {
+	public void TeleportToStart()
+	{
 		SKZ_TeleportToStart(this.id);
 	}
 	
-	public void TeleportToCheckpoint() {
+	public void TeleportToCheckpoint()
+	{
 		SKZ_TeleportToCheckpoint(this.id);
 	}
 	
-	public void UndoTeleport() {
+	public void UndoTeleport()
+	{
 		SKZ_UndoTeleport(this.id);
 	}
 	
-	public void Pause() {
+	public void Pause()
+	{
 		SKZ_Pause(this.id);
 	}
 	
-	public void Resume() {
+	public void Resume()
+	{
 		SKZ_Resume(this.id);
 	}
 	
-	public void TogglePause() {
+	public void TogglePause()
+	{
 		SKZ_TogglePause(this.id);
 	}
 	
 	
 	/*===============================  Timer Properties  ===============================*/
 	
-	property bool timerRunning {
-		public get() {
+	property bool timerRunning
+	{
+		public get()
+		{
 			return SKZ_GetTimerRunning(this.id);
 		}
 	}
 	
-	property int currentCourse {
-		public get() {
+	property int currentCourse
+	{
+		public get()
+		{
 			return SKZ_GetCurrentCourse(this.id);
 		}
 	}
 	
-	property bool paused {
-		public get() {
+	property bool paused
+	{
+		public get()
+		{
 			return SKZ_GetCurrentCourse(this.id);
 		}
-		public set(bool pause) {
-			if (pause) {
+		public set(bool pause)
+		{
+			if (pause)
+			{
 				this.Pause();
 			}
-			else {
+			else
+			{
 				this.Resume();
 			}
 		}
 	}
 	
-	property float currentTime {
-		public get() {
+	property float currentTime
+	{
+		public get()
+		{
 			return SKZ_GetCurrentTime(this.id);
 		}
 	}
 	
-	property int checkpointCount {
-		public get() {
+	property int checkpointCount
+	{
+		public get()
+		{
 			return SKZ_GetCheckpointCount(this.id);
 		}
 	}
@@ -205,119 +231,158 @@ methodmap KZPlayer __nullable__ {
 	
 	/*===============================  Options Properties  ===============================*/
 	
-	property KZStyle style {
-		public get() {
+	property KZStyle style
+	{
+		public get()
+		{
 			return view_as<KZStyle>(SKZ_GetOption(this.id, KZOption_Style));
 		}
-		public set(KZStyle value) {
+		public set(KZStyle value)
+		{
 			SKZ_SetOption(this.id, KZOption_Style, value);
 		}
 	}
 	
-	property KZShowingTPMenu showingTPMenu {
-		public get() {
+	property KZShowingTPMenu showingTPMenu
+	{
+		public get()
+		{
 			return view_as<KZShowingTPMenu>(SKZ_GetOption(this.id, KZOption_ShowingTPMenu));
 		}
-		public set(KZShowingTPMenu value) {
+		public set(KZShowingTPMenu value)
+		{
 			SKZ_SetOption(this.id, KZOption_ShowingTPMenu, value);
 		}
 	}
 	
-	property KZShowingInfoPanel showingInfoPanel {
-		public get() {
+	property KZShowingInfoPanel showingInfoPanel
+	{
+		public get()
+		{
 			return view_as<KZShowingInfoPanel>(SKZ_GetOption(this.id, KZOption_ShowingInfoPanel));
 		}
-		public set(KZShowingInfoPanel value) {
+		public set(KZShowingInfoPanel value)
+		{
 			SKZ_SetOption(this.id, KZOption_ShowingInfoPanel, value);
 		}
 	}
 	
-	property KZShowingKeys showingKeys {
-		public get() {
+	property KZShowingKeys showingKeys
+	{
+		public get()
+		{
 			return view_as<KZShowingKeys>(SKZ_GetOption(this.id, KZOption_ShowingKeys));
 		}
-		public set(KZShowingKeys value) {
+		public set(KZShowingKeys value)
+		{
 			SKZ_SetOption(this.id, KZOption_ShowingKeys, value);
 		}
 	}
 	
-	property KZShowingPlayers showingPlayers {
-		public get() {
+	property KZShowingPlayers showingPlayers
+	{
+		public get()
+		{
 			return view_as<KZShowingPlayers>(SKZ_GetOption(this.id, KZOption_ShowingPlayers));
 		}
-		public set(KZShowingPlayers value) {
+		public set(KZShowingPlayers value)
+		{
 			SKZ_SetOption(this.id, KZOption_ShowingPlayers, value);
 		}
 	}
 	
-	property KZShowingWeapon showingWeapon {
-		public get() {
+	property KZShowingWeapon showingWeapon
+	{
+		public get()
+		{
 			return view_as<KZShowingWeapon>(SKZ_GetOption(this.id, KZOption_ShowingWeapon));
 		}
-		public set(KZShowingWeapon value) {
+		public set(KZShowingWeapon value)
+		{
 			SKZ_SetOption(this.id, KZOption_ShowingWeapon, value);
 		}
 	}
 	
-	property KZAutoRestart autoRestart {
-		public get() {
+	property KZAutoRestart autoRestart
+	{
+		public get()
+		{
 			return view_as<KZAutoRestart>(SKZ_GetOption(this.id, KZOption_AutoRestart));
 		}
-		public set(KZAutoRestart value) {
+		public set(KZAutoRestart value)
+		{
 			SKZ_SetOption(this.id, KZOption_AutoRestart, value);
 		}
 	}
 	
-	property KZSlayOnEnd slayOnEnd {
-		public get() {
+	property KZSlayOnEnd slayOnEnd
+	{
+		public get()
+		{
 			return view_as<KZSlayOnEnd>(SKZ_GetOption(this.id, KZOption_SlayOnEnd));
 		}
-		public set(KZSlayOnEnd value) {
+		public set(KZSlayOnEnd value)
+		{
 			SKZ_SetOption(this.id, KZOption_SlayOnEnd, value);
 		}
 	}
 	
-	property KZPistol pistol {
-		public get() {
+	property KZPistol pistol
+	{
+		public get()
+		{
 			return view_as<KZPistol>(SKZ_GetOption(this.id, KZOption_Pistol));
 		}
-		public set(KZPistol value) {
+		public set(KZPistol value)
+		{
 			SKZ_SetOption(this.id, KZOption_Pistol, value);
 		}
 	}
 	
-	property KZCheckpointMessages checkpointMessages {
-		public get() {
+	property KZCheckpointMessages checkpointMessages
+	{
+		public get()
+		{
 			return view_as<KZCheckpointMessages>(SKZ_GetOption(this.id, KZOption_CheckpointMessages));
 		}
-		public set(KZCheckpointMessages value) {
+		public set(KZCheckpointMessages value)
+		{
 			SKZ_SetOption(this.id, KZOption_CheckpointMessages, value);
 		}
 	}
 	
-	property KZCheckpointSounds checkpointSounds {
-		public get() {
+	property KZCheckpointSounds checkpointSounds
+	{
+		public get()
+		{
 			return view_as<KZCheckpointSounds>(SKZ_GetOption(this.id, KZOption_CheckpointSounds));
 		}
-		public set(KZCheckpointSounds value) {
+		public set(KZCheckpointSounds value)
+		{
 			SKZ_SetOption(this.id, KZOption_CheckpointSounds, value);
 		}
 	}
 	
-	property KZTeleportSounds teleportSounds {
-		public get() {
+	property KZTeleportSounds teleportSounds
+	{
+		public get()
+		{
 			return view_as<KZTeleportSounds>(SKZ_GetOption(this.id, KZOption_TeleportSounds));
 		}
-		public set(KZTeleportSounds value) {
+		public set(KZTeleportSounds value)
+		{
 			SKZ_SetOption(this.id, KZOption_TeleportSounds, value);
 		}
 	}
 	
-	property KZTimerText timerText {
-		public get() {
+	property KZTimerText timerText
+	{
+		public get()
+		{
 			return view_as<KZTimerText>(SKZ_GetOption(this.id, KZOption_TimerText));
 		}
-		public set(KZTimerText value) {
+		public set(KZTimerText value)
+		{
 			SKZ_SetOption(this.id, KZOption_TimerText, value);
 		}
 	}
@@ -325,14 +390,18 @@ methodmap KZPlayer __nullable__ {
 	
 	/*===============================  Other Properties  ===============================*/
 	
-	property bool hitPerf {
-		public get() {
+	property bool hitPerf
+	{
+		public get()
+		{
 			return SKZ_GetHitPerf(this.id);
 		}
 	}
 	
-	property int db_playerID {
-		public get() {
+	property int db_playerID
+	{
+		public get()
+		{
 			return SKZ_GetPlayerID(this.id);
 		}
 	}

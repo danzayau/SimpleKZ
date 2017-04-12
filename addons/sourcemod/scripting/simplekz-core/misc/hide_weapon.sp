@@ -7,6 +7,11 @@
 // Updates viewmodel visiblity depending on what the player has set their option to.
 void HideWeaponUpdate(int client)
 {
+	if (!IsValidClient(client))
+	{
+		return;
+	}
+	
 	if (g_ShowingWeapon[client] == KZShowingWeapon_Enabled)
 	{
 		SetDrawViewModel(client, true);

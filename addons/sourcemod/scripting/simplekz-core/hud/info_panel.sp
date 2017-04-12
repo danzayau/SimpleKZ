@@ -17,7 +17,7 @@ void InfoPanelUpdate(int client)
 		return;
 	}
 	
-	MovementPlayer player = g_MovementPlayer[client];
+	KZPlayer player = g_KZPlayer[client];
 	if (IsPlayerAlive(player.id))
 	{
 		if (g_ShowingKeys[player.id] == KZShowingKeys_Enabled)
@@ -34,7 +34,7 @@ void InfoPanelUpdate(int client)
 		int spectatedPlayer = GetSpectatedClient(player.id);
 		if (IsValidClient(spectatedPlayer))
 		{
-			PrintHintText(player.id, "%s", GetInfoPanelSpectating(g_MovementPlayer[spectatedPlayer]));
+			PrintHintText(player.id, "%s", GetInfoPanelSpectating(g_KZPlayer[spectatedPlayer]));
 		}
 	}
 }
@@ -43,7 +43,7 @@ void InfoPanelUpdate(int client)
 
 /*===============================  Static Functions  ===============================*/
 
-static char[] GetInfoPanel(MovementPlayer player)
+static char[] GetInfoPanel(KZPlayer player)
 {
 	char infoPanelText[256];
 	FormatEx(infoPanelText, sizeof(infoPanelText), 
@@ -55,7 +55,7 @@ static char[] GetInfoPanel(MovementPlayer player)
 	return infoPanelText;
 }
 
-static char[] GetInfoPanelWithKeys(MovementPlayer player)
+static char[] GetInfoPanelWithKeys(KZPlayer player)
 {
 	char infoPanelText[320];
 	FormatEx(infoPanelText, sizeof(infoPanelText), 
@@ -68,7 +68,7 @@ static char[] GetInfoPanelWithKeys(MovementPlayer player)
 	return infoPanelText;
 }
 
-static char[] GetInfoPanelSpectating(MovementPlayer player)
+static char[] GetInfoPanelSpectating(KZPlayer player)
 {
 	char infoPanelText[368];
 	FormatEx(infoPanelText, sizeof(infoPanelText), 
@@ -82,7 +82,7 @@ static char[] GetInfoPanelSpectating(MovementPlayer player)
 	return infoPanelText;
 }
 
-static char[] GetTimeString(MovementPlayer player)
+static char[] GetTimeString(KZPlayer player)
 {
 	char timeString[64];
 	if (gB_TimerRunning[player.id])
@@ -115,7 +115,7 @@ static char[] GetTimeString(MovementPlayer player)
 	return timeString;
 }
 
-static char[] GetPausedString(MovementPlayer player)
+static char[] GetPausedString(KZPlayer player)
 {
 	char pausedString[64];
 	if (gB_Paused[player.id])
@@ -131,7 +131,7 @@ static char[] GetPausedString(MovementPlayer player)
 	return pausedString;
 }
 
-static char[] GetStyleString(MovementPlayer player)
+static char[] GetStyleString(KZPlayer player)
 {
 	char styleString[48];
 	FormatEx(styleString, sizeof(styleString), 
@@ -140,7 +140,7 @@ static char[] GetStyleString(MovementPlayer player)
 	return styleString;
 }
 
-static char[] GetSpeedString(MovementPlayer player)
+static char[] GetSpeedString(KZPlayer player)
 {
 	char speedString[64];
 	if (!gB_Paused[player.id])
@@ -167,7 +167,7 @@ static char[] GetSpeedString(MovementPlayer player)
 	return speedString;
 }
 
-static char[] GetTakeoffString(MovementPlayer player)
+static char[] GetTakeoffString(KZPlayer player)
 {
 	char takeoffString[64];
 	if (!gB_Paused[player.id] && !player.onGround && !player.onLadder && !player.noclipping)
@@ -192,7 +192,7 @@ static char[] GetTakeoffString(MovementPlayer player)
 	return takeoffString;
 }
 
-static char[] GetKeysString(MovementPlayer player)
+static char[] GetKeysString(KZPlayer player)
 {
 	char keysString[64];
 	FormatEx(keysString, sizeof(keysString), 
@@ -207,7 +207,7 @@ static char[] GetKeysString(MovementPlayer player)
 	return keysString;
 }
 
-static int GetWString(MovementPlayer player)
+static int GetWString(KZPlayer player)
 {
 	if (player.buttons & IN_FORWARD)
 	{
@@ -216,7 +216,7 @@ static int GetWString(MovementPlayer player)
 	return '_';
 }
 
-static int GetAString(MovementPlayer player)
+static int GetAString(KZPlayer player)
 {
 	if (player.buttons & IN_MOVELEFT)
 	{
@@ -225,7 +225,7 @@ static int GetAString(MovementPlayer player)
 	return '_';
 }
 
-static int GetSString(MovementPlayer player)
+static int GetSString(KZPlayer player)
 {
 	if (player.buttons & IN_BACK)
 	{
@@ -234,7 +234,7 @@ static int GetSString(MovementPlayer player)
 	return '_';
 }
 
-static int GetDString(MovementPlayer player)
+static int GetDString(KZPlayer player)
 {
 	if (player.buttons & IN_MOVERIGHT)
 	{
@@ -243,7 +243,7 @@ static int GetDString(MovementPlayer player)
 	return '_';
 }
 
-static int GetCrouchString(MovementPlayer player)
+static int GetCrouchString(KZPlayer player)
 {
 	if (player.buttons & IN_DUCK)
 	{
@@ -252,7 +252,7 @@ static int GetCrouchString(MovementPlayer player)
 	return '_';
 }
 
-static int GetJumpString(MovementPlayer player)
+static int GetJumpString(KZPlayer player)
 {
 	if (player.buttons & IN_JUMP)
 	{

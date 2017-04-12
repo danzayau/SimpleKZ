@@ -6,7 +6,7 @@
 	Credits to DaFox (https://forums.alliedmods.net/showthread.php?t=88830?t=88830)
 */
 
-void MeasurePrecacheModels()
+void MeasureOnMapStart()
 {
 	gI_GlowSprite = PrecacheModel("materials/sprites/bluelaser1.vmt", true);
 }

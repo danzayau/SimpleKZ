@@ -405,13 +405,4 @@
 	{
 		"en"		"Timer text"
 	}
-	
-	
-	// Server/Admin Messages ////////////////////////////////////////////////////////////
-	"Failed to Open File"
-	{
-		// There was a problem opening file: cfg/sourcemod/SimpleKZ/mappool.txt.
-		"#format"	"{1:s}"
-		"en"		"{grey}There was a problem opening file: {default}{1}{grey}."
-	}
 }

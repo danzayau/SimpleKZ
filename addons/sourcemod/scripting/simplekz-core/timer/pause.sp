@@ -33,8 +33,8 @@ void Pause(int client)
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Just Resumed)");
 	}
 	// Can't pause in the air if timer is running and player is moving
-	else if (gB_TimerRunning[client] && !g_MovementPlayer[client].onGround
-		 && !(g_MovementPlayer[client].speed == 0 && g_MovementPlayer[client].verticalVelocity == 0))
+	else if (gB_TimerRunning[client] && !g_KZPlayer[client].onGround
+		 && !(g_KZPlayer[client].speed == 0 && g_KZPlayer[client].verticalVelocity == 0))
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Midair)");
 	}
@@ -43,7 +43,7 @@ void Pause(int client)
 		gB_Paused[client] = true;
 		if (gB_TimerRunning[client])
 		{
-			g_MovementPlayer[client].GetEyeAngles(gF_PauseAngles[client]);
+			g_KZPlayer[client].GetEyeAngles(gF_PauseAngles[client]);
 		}
 		FreezePlayer(client);
 		Call_SKZ_OnPlayerPause(client);
@@ -68,9 +68,9 @@ void Resume(int client)
 		{
 			gB_HasResumedInThisRun[client] = true;
 			gF_LastResumeTime[client] = gF_CurrentTime[client];
-			g_MovementPlayer[client].SetEyeAngles(gF_PauseAngles[client]);
+			g_KZPlayer[client].SetEyeAngles(gF_PauseAngles[client]);
 		}
-		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
+		g_KZPlayer[client].moveType = MOVETYPE_WALK;
 		Call_SKZ_OnPlayerResume(client);
 	}
 	CloseTPMenu(client);
@@ -79,8 +79,4 @@ void Resume(int client)
 void PauseOnStartNoclipping(int client)
 {
 	gB_Paused[client] = false; // Player forcefully left paused state by noclipping
-	if (TimerForceStop(client))
-	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Noclipped)");
-	}
 } 

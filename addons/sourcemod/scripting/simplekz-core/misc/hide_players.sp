@@ -5,7 +5,7 @@
 */
 
 // Sets up an SDKHook_SetTransmit hook on clients.
-void HidePlayersSetupClient(int client)
+void HidePlayersOnClientPutInServer(int client)
 {
 	SDKHook(client, SDKHook_SetTransmit, OnSetTransmitClient);
 }

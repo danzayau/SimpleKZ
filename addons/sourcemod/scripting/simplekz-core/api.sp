@@ -6,18 +6,8 @@
 
 /*===============================  Forwards  ===============================*/
 
-Handle gH_OnClientSetup;
-Handle gH_OnChangeOption;
-Handle gH_OnPerfectBunnyhop;
-Handle gH_OnTimerStart;
-Handle gH_OnTimerEnd;
-Handle gH_OnTimerForceStop;
-Handle gH_OnPlayerPause;
-Handle gH_OnPlayerResume;
-
 void CreateGlobalForwards()
 {
-	gH_OnClientSetup = CreateGlobalForward("SKZ_OnClientSetup", ET_Ignore, Param_Cell);
 	gH_OnChangeOption = CreateGlobalForward("SKZ_OnChangeOption", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	gH_OnPerfectBunnyhop = CreateGlobalForward("SKZ_OnPerfectBunnyhop", ET_Ignore, Param_Cell);
 	gH_OnTimerStart = CreateGlobalForward("SKZ_OnTimerStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
@@ -25,13 +15,6 @@ void CreateGlobalForwards()
 	gH_OnTimerForceStop = CreateGlobalForward("SKZ_OnTimerForceStop", ET_Ignore, Param_Cell);
 	gH_OnPlayerPause = CreateGlobalForward("SKZ_OnTimerPause", ET_Ignore, Param_Cell);
 	gH_OnPlayerResume = CreateGlobalForward("SKZ_OnTimerResume", ET_Ignore, Param_Cell);
-}
-
-void Call_SKZ_OnClientSetup(int client)
-{
-	Call_StartForward(gH_OnClientSetup);
-	Call_PushCell(client);
-	Call_Finish();
 }
 
 void Call_SKZ_OnChangeOption(int client, KZOption option, any optionValue)
@@ -140,12 +123,12 @@ public int Native_EndTimer(Handle plugin, int numParams)
 
 public int Native_ForceStopTimer(Handle plugin, int numParams)
 {
-	return view_as<int>(TimerForceStop(GetNativeCell(1)));
+	return view_as<int>(TimerForceStopNative(GetNativeCell(1)));
 }
 
 public int Native_ForceStopTimerAll(Handle plugin, int numParams)
 {
-	TimerForceStopAll();
+	TimerForceStopAllNative();
 }
 
 public int Native_GetTimerRunning(Handle plugin, int numParams)

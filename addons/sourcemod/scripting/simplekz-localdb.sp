@@ -1,12 +1,13 @@
 #include <sourcemod>
 #include <sdktools>
 #include <regex>
-
 #include <geoip>
 #include <simplekz>
 
 #pragma newdecls required
 #pragma semicolon 1
+
+
 
 public Plugin myinfo = 
 {
@@ -17,110 +18,133 @@ public Plugin myinfo =
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
+Handle gH_SKZ_OnDatabaseConnect;
+Handle gH_SKZ_OnRetrievePlayerID;
+Handle gH_SKZ_OnRetrieveCurrentMapID;
+Handle gH_SKZ_OnStoreTimeInDB;
 
-
-/*===============================  Global Variables  ===============================*/
-
-/* Database */
-Database gH_DB;
-bool gB_ConnectedToDB;
-DatabaseType g_DBType;
-int gI_DBPlayerID[MAXPLAYERS + 1];
-int gI_DBCurrentMapID;
-
-/* Other */
 KZPlayer g_KZPlayer[MAXPLAYERS + 1];
-char gC_CurrentMap[64];
 bool gB_LateLoad;
 Regex gRE_BonusStartButton;
 
+Database gH_DB = null;
+DatabaseType g_DBType = DatabaseType_None;
+int gI_DBPlayerID[MAXPLAYERS + 1];
+int gI_DBCurrentMapID;
 
 
-/*===============================  Includes  ===============================*/
-
-/* Global variable includes */
-#include "simplekz-localdb/sql.sp"
 
 #include "simplekz-localdb/api.sp"
 #include "simplekz-localdb/database.sp"
-#include "simplekz-localdb/misc.sp"
 
 
 
-/*===============================  Plugin Events  ===============================*/
+/*===============================  Plugin Forwards  ===============================*/
 
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
 	CreateNatives();
 	RegPluginLibrary("simplekz-localdb");
 	gB_LateLoad = late;
 	return APLRes_Success;
 }
 
-public void OnPluginStart() {
-	// Check if game is CS:GO
-	EngineVersion gameEngine = GetEngineVersion();
-	if (gameEngine != Engine_CSGO) {
+public void OnPluginStart()
+{
+	if (GetEngineVersion() != Engine_CSGO)
+	{
 		SetFailState("This plugin is only for CS:GO.");
 	}
 	
-	// Translations
-	LoadTranslations("simplekz-localdb.phrases");
-	
-	// Setup
+	CreateKZPlayers();
 	CreateGlobalForwards();
-	SetupKZMethodmaps();
-	CompileRegexes();
+	CreateRegexes();
 	
 	DB_SetupDatabase();
 	
-	if (gB_LateLoad) {
+	if (gB_LateLoad)
+	{
 		OnLateLoad();
 	}
 }
 
-public void OnAllPluginsLoaded() {
-	if (!LibraryExists("simplekz-core")) {
-		SetFailState("This plugin requires the SimpleKZ Core plugin.");
-	}
-}
-
-public void OnLibraryAdded(const char[] name) {
-	// Send database info if dependent plugins load late
-	if (StrEqual(name, "simplekz-localranks")) {
-		if (gB_ConnectedToDB) {
-			Call_SKZ_OnDatabaseConnect();
-		}
-	}
-}
-
-// Handles late loading
-void OnLateLoad() {
-	for (int client = 1; client <= MaxClients; client++) {
-		if (IsClientAuthorized(client) && !IsFakeClient(client)) {
+void OnLateLoad()
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientAuthorized(client))
+		{
 			DB_SetupClient(g_KZPlayer[client]);
 		}
 	}
 }
 
+public void OnAllPluginsLoaded()
+{
+	if (!LibraryExists("simplekz-core"))
+	{
+		SetFailState("This plugin requires the SimpleKZ Core plugin.");
+	}
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual("simplekz-core", name))
+	{
+		SetFailState("This plugin requires the SimpleKZ Core plugin.");
+	}
+}
 
 
-/*===============================  Other Events  ===============================*/
 
-public void SKZ_OnClientSetup(int client) {
+/*===============================  Other Forwards  ===============================*/
+
+public void OnClientAuthorized(int client)
+{
 	DB_SetupClient(g_KZPlayer[client]);
 }
 
-public void OnClientDisconnect(int client) {
-	if (!IsFakeClient(client)) {
+public void OnClientDisconnect(int client)
+{
+	if (!IsFakeClient(client))
+	{
 		DB_SaveOptions(g_KZPlayer[client]);
 	}
 }
 
-public void OnMapStart() {
-	GetMapName();
+public void OnMapStart()
+{
 	DB_SetupMap();
 }
 
-public void SKZ_OnTimerEnd(int client, int course, KZStyle style, float time, int teleportsUsed, float theoreticalTime) {
-	DB_StoreTime(g_KZPlayer[client], course, style, time, teleportsUsed, theoreticalTime);
+public void SKZ_OnTimerEnd(int client, int course, KZStyle style, float time, int teleportsUsed, float theoreticalTime)
+{
+	DB_SaveTime(g_KZPlayer[client], course, style, time, teleportsUsed, theoreticalTime);
+}
+
+public void SKZ_OnRetrieveCurrentMapID(int mapID)
+{
+	DB_SetupMapCourses();
+}
+
+public void SKZ_OnRetrievePlayerID(int client, int playerID)
+{
+	DB_LoadOptions(g_KZPlayer[client]);
+}
+
+
+
+/*===============================  Functions  ===============================*/
+
+void CreateKZPlayers()
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		g_KZPlayer[client] = new KZPlayer(client);
+	}
+}
+
+void CreateRegexes()
+{
+	gRE_BonusStartButton = CompileRegex("^climb_bonus(\\d+)_startbutton$");
 } 

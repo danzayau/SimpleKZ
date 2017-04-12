@@ -21,7 +21,7 @@ bool JustTouchedBhopBlock(int client)
 {
 	// If just touched trigger_multiple and landed within 0.2 seconds ago
 	if ((gI_JustTouchedTrigMulti[client] > 0)
-		 && (GetGameTickCount() - g_MovementPlayer[client].landingTick) < (TIME_BHOP_TRIGGER_DETECTION / GetTickInterval()))
+		 && (GetGameTickCount() - g_KZPlayer[client].landingTick) < (TIME_BHOP_TRIGGER_DETECTION / GetTickInterval()))
 	{
 		return true;
 	}

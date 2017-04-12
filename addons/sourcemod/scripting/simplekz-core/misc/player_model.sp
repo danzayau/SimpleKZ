@@ -24,10 +24,7 @@ void PlayerModelUpdate(int client)
 void PlayerModelOnMapStart()
 {
 	SetConVarInt(gCV_DisableImmunityAlpha, 1); // Ensures player transparency works	
-}
-
-void PlayerModelPrecacheModels()
-{
+	
 	GetConVarString(gCV_PlayerModelT, gC_PlayerModelT, sizeof(gC_PlayerModelT));
 	GetConVarString(gCV_PlayerModelCT, gC_PlayerModelCT, sizeof(gC_PlayerModelCT));
 	

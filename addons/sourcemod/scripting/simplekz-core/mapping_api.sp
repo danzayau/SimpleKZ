@@ -29,7 +29,7 @@ public void OnStartButtonPress(const char[] name, int caller, int activator, flo
 		return;
 	}
 	
-	g_MovementPlayer[activator].GetOrigin(gF_StartButtonOrigin[activator]);
+	g_KZPlayer[activator].GetOrigin(gF_StartButtonOrigin[activator]);
 	TimerStart(activator, 0);
 }
 
@@ -40,7 +40,7 @@ public void OnEndButtonPress(const char[] name, int caller, int activator, float
 		return;
 	}
 	
-	g_MovementPlayer[activator].GetOrigin(gF_EndButtonOrigin[activator]);
+	g_KZPlayer[activator].GetOrigin(gF_EndButtonOrigin[activator]);
 	TimerEnd(activator, 0);
 }
 

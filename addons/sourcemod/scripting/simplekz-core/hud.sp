@@ -1,5 +1,7 @@
 /*
 	HUD
+	
+	Anything that affects the HUD.
 */
 
 #include "simplekz-core/hud/hide_csgo_hud.sp"

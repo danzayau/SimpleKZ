@@ -64,7 +64,7 @@ void JoinTeamAddCommandListeners()
 }
 
 // Force sv_full_alltalk 1 - it likes to set itself to 0, so it's hooked to round_start event
-void ForceFullAllTalkOnRoundStart()
+void ForceAllTalkOnRoundStart()
 {
 	SetConVarInt(gCV_FullAlltalk, 1);
 } 

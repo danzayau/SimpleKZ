@@ -1,8 +1,7 @@
-/* 	Simple KZ Local DB Include File
-	Author: DanZay
+/* 	
+	Simple KZ Local DB Include File
 	
-	Plugin Version: 0.11.0
-	Plugin Website: https://github.com/danzayau/SimpleKZ	
+	Website: https://github.com/danzayau/SimpleKZ	
 */
 
 #if defined _simplekz_localdb_included_
@@ -11,9 +10,11 @@
 #define _simplekz_localdb_included_
 
 
+
 /*===============================  Enumerations  ===============================*/
 
-enum DatabaseType {
+enum DatabaseType
+{
 	DatabaseType_None = -1, 
 	DatabaseType_MySQL, 
 	DatabaseType_SQLite
@@ -29,7 +30,8 @@ enum DatabaseType {
  * @param time				Time in seconds.
  * @return					Number of milliseconds.
  */
-stock int SKZ_TimeFloatToInt(float time) {
+stock int SKZ_TimeFloatToInt(float time)
+{
 	return RoundFloat(time * 1000.0);
 }
 
@@ -39,7 +41,8 @@ stock int SKZ_TimeFloatToInt(float time) {
  * @param time				Time in milliseconds.
  * @return					Number of seconds.
  */
-stock float SKZ_TimeIntToFloat(int time) {
+stock float SKZ_TimeIntToFloat(int time)
+{
 	return time / 1000.0;
 }
 
@@ -54,13 +57,13 @@ stock float SKZ_TimeIntToFloat(int time) {
  * @param DBType			Database type (see DatabaseType enumeration)
  * @noreturn
  */
-forward void SKZ_OnDatabaseConnect(Database database, DatabaseType DBType);
+forward void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType);
 
 /**
- * Called when simplekz-localdb retrieves a client's PlayerID from SimpleKZ Core's "Players" database table.
+ * Called when simplekz-localdb retrieves a client's PlayerID from the "Players" database table.
  *
  * @param client			The name of the map (without prefixes e.g. workshop/).
- * @param playerID			PlayerID from SimpleKZ Core's "Players" database table.
+ * @param playerID			PlayerID from the "Players" database table.
  * @noreturn
  */
 forward void SKZ_OnRetrievePlayerID(int client, int playerID);
@@ -68,7 +71,7 @@ forward void SKZ_OnRetrievePlayerID(int client, int playerID);
 /**
  * Called when simplekz-localdb retrieves the current map's MapID from the "Maps" database table.
  *
- * @param mapID				MapID from SimpleKZ Core's "Maps" database table.
+ * @param mapID				MapID from the "Maps" database table.
  * @noreturn
  */
 forward void SKZ_OnRetrieveCurrentMapID(int mapID);
@@ -77,8 +80,8 @@ forward void SKZ_OnRetrieveCurrentMapID(int mapID);
  * Called when simplekz-localdb successfully saves a player's time to the database.
  *
  * @param client				Client entity index.
- * @param playerID				PlayerID from SimpleKZ Core's "Players" database table.
- * @param mapID					MapID from SimpleKZ Core's "Maps" database table.
+ * @param playerID				PlayerID from the "Players" database table.
+ * @param mapID					MapID from the "Maps" database table.
  * @param course				Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
  * @param style					The movement style of the player.
  * @param runTimeMS				Player's end time (milliseconds).
@@ -93,16 +96,31 @@ forward void SKZ_OnSaveTimeToDB(int playerID, int mapID, int course, KZStyle sty
 /*===============================  Natives  ===============================*/
 
 /**
- * Gets the client's PlayerID as retrieved from SimpleKZ Core's "Players" database table.
+ * Gets the client's PlayerID as retrieved from the "Players" database table.
  * This is accurate after SKZ_OnRetrievePlayerID is called after the client is authorised.
  *
  * @param client			Client entity index.
- * @return					PlayerID from SimpleKZ Core's "Players" database table.
+ * @return					PlayerID from the "Players" database table.
  */
 native int SKZ_GetPlayerID(int client);
 
 /**
- * Gets the current map's MapID as retrieved from SimpleKZ Core's "Maps" database table.
+ * Returns the SimpleKZ local database handle.
+ *
+ * @param database			Handle to store the database on.
+ * @noreturn
+ */
+native void SKZ_GetDB(Database &database);
+
+/**
+ * Returns the type of the local database.
+ *
+ * @return					The type of the local database.
+ */
+native DatabaseType SKZ_GetDBType();
+
+/**
+ * Gets the current map's MapID as retrieved from the "Maps" database table.
  * This is accurate after SKZ_OnRetrieveCurrentMapID is called after the map is started.
  *
  * @return					MapID from SimpleKZ Ranks' "Maps" database table.

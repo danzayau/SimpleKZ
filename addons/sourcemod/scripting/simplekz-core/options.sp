@@ -7,18 +7,19 @@
 // Set's all the player's option to default.
 void OptionsSetupClient(int client)
 {
-	SetOption(client, KZOption_Style, view_as<KZStyle>(GetConVarInt(gCV_DefaultStyle)));
-	SetOption(client, KZOption_ShowingTPMenu, KZShowingTPMenu_Enabled);
-	SetOption(client, KZOption_ShowingKeys, KZShowingKeys_Disabled);
-	SetOption(client, KZOption_ShowingPlayers, KZShowingPlayers_Enabled);
-	SetOption(client, KZOption_ShowingWeapon, KZShowingWeapon_Enabled);
-	SetOption(client, KZOption_AutoRestart, KZAutoRestart_Disabled);
-	SetOption(client, KZOption_SlayOnEnd, KZSlayOnEnd_Disabled);
-	SetOption(client, KZOption_Pistol, KZPistol_USP);
-	SetOption(client, KZOption_CheckpointMessages, KZCheckpointMessages_Disabled);
-	SetOption(client, KZOption_CheckpointSounds, KZCheckpointSounds_Disabled);
-	SetOption(client, KZOption_TeleportSounds, KZTeleportSounds_Disabled);
-	SetOption(client, KZOption_TimerText, KZTimerText_Disabled);
+	g_Style[client] = view_as<KZStyle>(GetConVarInt(gCV_DefaultStyle));
+	g_ShowingTPMenu[client] = KZShowingTPMenu_Enabled;
+	g_ShowingInfoPanel[client] = KZShowingInfoPanel_Disabled;
+	g_ShowingKeys[client] = KZShowingKeys_Disabled;
+	g_ShowingPlayers[client] = KZShowingPlayers_Enabled;
+	g_ShowingWeapon[client] = KZShowingWeapon_Enabled;
+	g_AutoRestart[client] = KZAutoRestart_Disabled;
+	g_SlayOnEnd[client] = KZSlayOnEnd_Disabled;
+	g_Pistol[client] = KZPistol_USP;
+	g_CheckpointMessages[client] = KZCheckpointMessages_Disabled;
+	g_CheckpointSounds[client] = KZCheckpointSounds_Enabled;
+	g_TeleportSounds[client] = KZTeleportSounds_Disabled;
+	g_TimerText[client] = KZTimerText_Top;
 }
 
 // Returns the option value. Note: Returns an int, so you may need to use view_as<enum>().
@@ -60,10 +61,7 @@ void SetOption(int client, KZOption option, any optionValue)
 			{
 				changedOption = true;
 				g_Style[client] = optionValue;
-				if (TimerForceStop(client))
-				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Changed Style)");
-				}
+				TimerForceStopOnChangeStyle(client);
 			}
 		}
 		case KZOption_ShowingTPMenu:
@@ -273,13 +271,13 @@ static void PrintOptionChangeMessage(int client, KZOption option) {
 		}
 		case KZOption_ShowingWeapon:
 		{
-			switch (g_ShowingPlayers[client])
+			switch (g_ShowingWeapon[client])
 			{
-				case KZShowingPlayers_Disabled:
+				case KZShowingWeapon_Disabled:
 				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Weapon - Disable");
 				}
-				case KZShowingPlayers_Enabled:
+				case KZShowingWeapon_Enabled:
 				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Weapon - Enable");
 				}

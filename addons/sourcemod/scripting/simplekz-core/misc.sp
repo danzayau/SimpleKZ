@@ -1,7 +1,7 @@
 /*
 	Miscellaneous
 	
-	Miscellaneous functions.
+	Miscellaneous features.
 */
 
 /*===============================  Includes  ===============================*/
@@ -12,53 +12,26 @@
 #include "simplekz-core/misc/god_mode.sp"
 #include "simplekz-core/misc/hide_players.sp"
 #include "simplekz-core/misc/hide_weapon.sp"
-#include "simplekz-core/misc/mapping_api.sp"
 #include "simplekz-core/misc/measure.sp"
 #include "simplekz-core/misc/no_cp_on_bhop.sp"
-#include "simplekz-core/misc/options.sp"
 #include "simplekz-core/misc/pistol.sp"
 #include "simplekz-core/misc/player_collision.sp"
 #include "simplekz-core/misc/player_model.sp"
 #include "simplekz-core/misc/stop_sounds.sp"
-#include "simplekz-core/misc/teleport.sp"
+#include "simplekz-core/misc/teleports.sp"
 #include "simplekz-core/misc/other.sp"
 
 
 
 /*===============================  Helper Functions  ===============================*/
 
-// Teleports the player (intended for destination on ground).
-// Handles important stuff like storing postion for undo.
-void DoTeleport(int client, float destination[3], float eyeAngles[3])
-{
-	// Store old variables here to avoid incorrect behaviour when teleporting to undo position
-	float oldOrigin[3], oldAngles[3];
-	g_MovementPlayer[client].GetOrigin(oldOrigin);
-	g_MovementPlayer[client].GetEyeAngles(oldAngles);
-	
-	TeleportEntity(client, destination, eyeAngles, view_as<float>( { 0.0, 0.0, -50.0 } ));
-	CreateTimer(0.0, Timer_ZeroVelocity, client); // Prevent booster exploits
-	gI_TeleportsUsed[client]++;
-	// Store position for undo
-	if (g_MovementPlayer[client].onGround)
-	{
-		gB_LastTeleportOnGround[client] = true;
-		gF_UndoOrigin[client] = oldOrigin;
-		gF_UndoAngle[client] = oldAngles;
-	}
-	else
-	{
-		gB_LastTeleportOnGround[client] = false;
-	}
-}
-
 // Switches the players team. Handles important stuff like saving and restoring their position.
 void JoinTeam(int client, int team)
 {
 	if (team == CS_TEAM_SPECTATOR)
 	{
-		g_MovementPlayer[client].GetOrigin(gF_SavedOrigin[client]);
-		g_MovementPlayer[client].GetEyeAngles(gF_SavedAngles[client]);
+		g_KZPlayer[client].GetOrigin(gF_SavedOrigin[client]);
+		g_KZPlayer[client].GetEyeAngles(gF_SavedAngles[client]);
 		gB_HasSavedPosition[client] = true;
 		if (gB_TimerRunning[client])
 		{
@@ -128,13 +101,13 @@ void ToggleNoclip(int client)
 		return;
 	}
 	
-	if (g_MovementPlayer[client].moveType != MOVETYPE_NOCLIP)
+	if (g_KZPlayer[client].moveType != MOVETYPE_NOCLIP)
 	{
-		g_MovementPlayer[client].moveType = MOVETYPE_NOCLIP;
+		g_KZPlayer[client].moveType = MOVETYPE_NOCLIP;
 	}
 	else
 	{
-		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
+		g_KZPlayer[client].moveType = MOVETYPE_WALK;
 	}
 }
 
@@ -149,8 +122,8 @@ void GotoPlayer(int client, int target)
 	float targetOrigin[3];
 	float targetAngles[3];
 	
-	g_MovementPlayer[target].GetOrigin(targetOrigin);
-	g_MovementPlayer[target].GetEyeAngles(targetAngles);
+	g_KZPlayer[target].GetOrigin(targetOrigin);
+	g_KZPlayer[target].GetEyeAngles(targetAngles);
 	
 	// Leave spectators if necessary
 	if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
@@ -169,8 +142,8 @@ void GotoPlayer(int client, int target)
 // Stops the player and prevents them from moving.
 void FreezePlayer(int client)
 {
-	g_MovementPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
-	g_MovementPlayer[client].moveType = MOVETYPE_NONE;
+	g_KZPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
+	g_KZPlayer[client].moveType = MOVETYPE_NONE;
 }
 
 
@@ -192,8 +165,8 @@ public Action Timer_ZeroVelocity(Handle timer, int client)
 {
 	if (IsValidClient(client))
 	{
-		g_MovementPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
-		g_MovementPlayer[client].SetBaseVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
+		g_KZPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
+		g_KZPlayer[client].SetBaseVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
 	}
 	return Plugin_Continue;
 }

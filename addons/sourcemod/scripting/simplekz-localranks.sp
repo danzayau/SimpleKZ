@@ -1,76 +1,58 @@
 #include <sourcemod>
 #include <sdktools>
 #include <cstrike>
-
 #include <colorvariables>
 #include <simplekz>
 
 #pragma newdecls required
 #pragma semicolon 1
 
+
+
 public Plugin myinfo = 
 {
-	name = "Simple KZ Ranks", 
+	name = "Simple KZ Local Ranks", 
 	author = "DanZay", 
 	description = "Local ranks module for SimpleKZ.", 
 	version = "0.11.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
+Handle gH_SKZ_OnNewRecord;
+Handle gH_SKZ_OnNewPersonalBest;
 
+bool gB_LateLoad;
 
-/*===============================  Definitions  ===============================*/
-
-#define FILE_PATH_MAPPOOL "cfg/sourcemod/SimpleKZ/mappool.cfg"
-
-// TO-DO: Replace with sound config
-#define FULL_SOUNDPATH_BEAT_RECORD "sound/SimpleKZ/beatrecord1.mp3"
-#define REL_SOUNDPATH_BEAT_RECORD "*/SimpleKZ/beatrecord1.mp3"
-#define FULL_SOUNDPATH_BEAT_MAP "sound/SimpleKZ/beatmap1.mp3"
-#define REL_SOUNDPATH_BEAT_MAP "*/SimpleKZ/beatmap1.mp3"
-
-
-
-/*===============================  Global Variables  ===============================*/
-
-/* Database */
 Database gH_DB = null;
-bool gB_ConnectedToDB = false;
 DatabaseType g_DBType = DatabaseType_None;
 
-/* Menus */
-Handle gH_MapTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-Handle gH_MapTopSubMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+Menu gH_MapTopMenu[MAXPLAYERS + 1];
+Menu gH_MapTopSubMenu[MAXPLAYERS + 1];
 char gC_MapTopMapName[MAXPLAYERS + 1][64];
 int gI_MapTopMapID[MAXPLAYERS + 1];
 int gI_MapTopCourse[MAXPLAYERS + 1];
 KZStyle g_MapTopStyle[MAXPLAYERS + 1];
-Handle gH_PlayerTopMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-Handle gH_PlayerTopSubMenu[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+
+Menu gH_PlayerTopMenu[MAXPLAYERS + 1];
+Menu gH_PlayerTopSubMenu[MAXPLAYERS + 1];
 KZStyle g_PlayerTopStyle[MAXPLAYERS + 1];
 
-/* Other */
-bool gB_LateLoad;
-
-/* Styles translation phrases for chat messages (respective to KZStyle enum) */
+// Styles translation phrases for chat messages (respective to KZStyle enum)
 char gC_StylePhrases[view_as<int>(KZStyle)][] = 
-{ "Style - Standard", 
+{
+	"Style - Standard", 
 	"Style - Legacy"
 };
 
-/* Time type translation phrases for chat messages (respective to KZTimeType enum) */
+// Time type translation phrases for chat messages (respective to KZTimeType enum)
 char gC_TimeTypePhrases[view_as<int>(KZTimeType)][] = 
-{ "Time Type - Normal", 
+{
+	"Time Type - Normal", 
 	"Time Type - Pro", 
 	"Time Type - Theoretical"
 };
 
 
-
-/*===============================  Includes  ===============================*/
-
-/* Global variable includes */
-#include "simplekz-localranks/sql.sp"
 
 #include "simplekz-localranks/api.sp"
 #include "simplekz-localranks/commands.sp"
@@ -80,104 +62,106 @@ char gC_TimeTypePhrases[view_as<int>(KZTimeType)][] =
 
 
 
-/*===============================  Plugin Events  ===============================*/
+/*===============================  Plugin Forwards  ===============================*/
 
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
 	RegPluginLibrary("simplekz-localranks");
 	gB_LateLoad = late;
 	return APLRes_Success;
 }
 
-public void OnPluginStart() {
-	// Check if game is CS:GO
-	EngineVersion gameEngine = GetEngineVersion();
-	if (gameEngine != Engine_CSGO) {
+public void OnPluginStart()
+{
+	if (GetEngineVersion() != Engine_CSGO)
+	{
 		SetFailState("This plugin is only for CS:GO.");
 	}
 	
-	CreateGlobalForwards();
-	RegisterCommands();
-	
-	// Translations
 	LoadTranslations("simplekz-core.phrases");
-	LoadTranslations("simplekz-localdb.phrases");
 	LoadTranslations("simplekz-localranks.phrases");
 	
 	CreateMenus();
+	CreateGlobalForwards();
+	CreateCommands();
 	
-	if (gB_LateLoad) {
+	if (gB_LateLoad)
+	{
 		OnLateLoad();
 	}
 }
 
-public void OnAllPluginsLoaded() {
-	if (!LibraryExists("simplekz-core")) {
+public void OnLateLoad()
+{
+	SKZ_GetDB(gH_DB);
+	g_DBType = SKZ_GetDBType();
+}
+
+public void OnAllPluginsLoaded()
+{
+	if (!LibraryExists("simplekz-core"))
+	{
 		SetFailState("This plugin requires the SimpleKZ Core plugin.");
 	}
+	else if (!LibraryExists("simplekz-localdb"))
+	{
+		SetFailState("This plugin requires the SimpleKZ Local DB plugin.");
+	}
 }
 
-// Handles late loading
-void OnLateLoad() {
-	for (int client = 1; client <= MaxClients; client++) {
-		if (IsClientAuthorized(client) && !IsFakeClient(client)) {
-			SetupClient(client);
-		}
-		if (IsClientInGame(client)) {
-			OnClientPutInServer(client);
-		}
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual("simplekz-core", name))
+	{
+		SetFailState("This plugin requires the SimpleKZ Core plugin.");
+	}
+	else if (StrEqual("simplekz-localdb", name))
+	{
+		SetFailState("This plugin requires the SimpleKZ Local DB plugin.");
 	}
 }
 
 
 
-/*===============================  Client and Map Events  ===============================*/
+/*===============================  SimpleKZ Forwards  ===============================*/
 
-public void OnClientAuthorized(int client, const char[] auth) {
-	// Prepare for client arrival
-	if (!IsFakeClient(client)) {
-		SetupClient(client);
-	}
-}
-
-public void OnClientPutInServer(int client) {
-	if (!IsFakeClient(client)) {
-		UpdateCompletionMVPStars(client);
-	}
-}
-
-public void OnMapStart() {
-	// Add files to download table
-	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_RECORD);
-	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_MAP);
-	
-	// Precache stuff
-	FakePrecacheSound(REL_SOUNDPATH_BEAT_RECORD);
-	FakePrecacheSound(REL_SOUNDPATH_BEAT_MAP);
-}
-
-
-
-/*===============================  SimpleKZ Events  ===============================*/
-
-public void SKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
-	gB_ConnectedToDB = true;
+public void SKZ_OnDatabaseConnect(Database database, DatabaseType DBType)
+{
 	gH_DB = database;
 	g_DBType = DBType;
 	DB_CreateTables();
+	UpdateCompetionMVPStarsAll();
 }
 
-public void SKZ_OnStoreTimeInDB(int client, int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS) {
+public void SKZ_OnStoreTimeInDB(int client, int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS)
+{
 	DB_ProcessNewTime(client, playerID, mapID, course, style, runTimeMS, teleportsUsed);
 }
 
-public void SKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime) {
-	if (mapID == SKZ_GetCurrentMapID()) {
+public void SKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime)
+{
+	if (mapID == SKZ_GetCurrentMapID())
+	{
 		AnnounceNewRecord(client, course, style, recordType);
 	}
 }
 
-public void SKZ_OnNewPersonalBest(int client, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
-	if (mapID == SKZ_GetCurrentMapID() && rank != 1) {
+public void SKZ_OnNewPersonalBest(int client, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank)
+{
+	if (mapID == SKZ_GetCurrentMapID() && rank != 1)
+	{
 		AnnounceNewPersonalBest(client, course, style, timeType, firstTime, improvement, rank, maxRank);
 	}
+}
+
+
+
+/*===============================  Other Forwards  ===============================*/
+
+public void OnMapStart()
+{
+	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_RECORD);
+	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_MAP);
+	FakePrecacheSound(REL_SOUNDPATH_BEAT_RECORD);
+	FakePrecacheSound(REL_SOUNDPATH_BEAT_MAP);
 } 

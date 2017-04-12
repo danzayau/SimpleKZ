@@ -4,7 +4,7 @@
 	Hides elements of the CS:GO HUD.
 */
 
-void HideCSGOHud(int client)
+void HideCSGOHUD(int client)
 {
 	if (IsFakeClient(client))
 	{

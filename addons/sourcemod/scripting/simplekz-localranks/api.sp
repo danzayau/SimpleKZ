@@ -1,20 +1,20 @@
-/*	api.sp
-
-	Simple KZ Ranks API.
+/*
+	API
+	
+	Simple KZ Local Ranks API.
 */
 
 
 /*===============================  Forwards  ===============================*/
 
-Handle gH_SKZ_OnNewRecord;
-Handle gH_SKZ_OnNewPersonalBest;
-
-void CreateGlobalForwards() {
-	gH_SKZ_OnNewRecord = CreateGlobalForward("SKZ_OnNewRecord", ET_Event, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Float);
-	gH_SKZ_OnNewPersonalBest = CreateGlobalForward("SKZ_OnNewPersonalBest", ET_Event, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Float, Param_Float, Param_Cell, Param_Cell);
+void CreateGlobalForwards()
+{
+	gH_SKZ_OnNewRecord = CreateGlobalForward("SKZ_OnNewRecord", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Float);
+	gH_SKZ_OnNewPersonalBest = CreateGlobalForward("SKZ_OnNewPersonalBest", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Float, Param_Float, Param_Cell, Param_Cell);
 }
 
-void Call_SKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime) {
+void Call_SKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime)
+{
 	Call_StartForward(gH_SKZ_OnNewRecord);
 	Call_PushCell(client);
 	Call_PushCell(mapID);
@@ -25,7 +25,8 @@ void Call_SKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, KZRe
 	Call_Finish();
 }
 
-void Call_SKZ_OnNewPersonalBest(int client, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
+void Call_SKZ_OnNewPersonalBest(int client, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank)
+{
 	Call_StartForward(gH_SKZ_OnNewPersonalBest);
 	Call_PushCell(client);
 	Call_PushCell(mapID);

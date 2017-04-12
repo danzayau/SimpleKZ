@@ -1,7 +1,7 @@
 /*
 	Commands
 	
-	Commands for player use.
+	Commands for player and admin use.
 */
 
 void CreateCommands()
@@ -95,7 +95,7 @@ public Action CommandTogglePause(int client, int args)
 
 public Action CommandStopTimer(int client, int args)
 {
-	if (TimerForceStop(client))
+	if (TimerForceStopCommand(client))
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped");
 	}
@@ -225,13 +225,13 @@ public Action CommandToggleNoclip(int client, int args)
 
 public Action CommandEnableNoclip(int client, int args)
 {
-	g_MovementPlayer[client].moveType = MOVETYPE_NOCLIP;
+	g_KZPlayer[client].moveType = MOVETYPE_NOCLIP;
 	return Plugin_Handled;
 }
 
 public Action CommandDisableNoclip(int client, int args)
 {
-	g_MovementPlayer[client].moveType = MOVETYPE_WALK;
+	g_KZPlayer[client].moveType = MOVETYPE_WALK;
 	return Plugin_Handled;
 }
 
