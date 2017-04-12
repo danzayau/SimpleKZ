@@ -4,7 +4,6 @@
 	Simple KZ Local Ranks API.
 */
 
-
 /*===============================  Forwards  ===============================*/
 
 void CreateGlobalForwards()

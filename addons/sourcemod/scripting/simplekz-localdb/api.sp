@@ -4,7 +4,6 @@
 	Simple KZ Local DB API.
 */
 
-
 /*===============================  Forwards  ===============================*/
 
 void CreateGlobalForwards()

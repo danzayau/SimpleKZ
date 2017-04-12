@@ -18,6 +18,8 @@ public Plugin myinfo =
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
+
+
 Handle gH_SKZ_OnNewRecord;
 Handle gH_SKZ_OnNewPersonalBest;
 
@@ -54,11 +56,25 @@ char gC_TimeTypePhrases[view_as<int>(KZTimeType)][] =
 
 
 
+#include "simplekz-localranks/database/sql.sp"
+
 #include "simplekz-localranks/api.sp"
 #include "simplekz-localranks/commands.sp"
 #include "simplekz-localranks/database.sp"
-#include "simplekz-localranks/menus.sp"
 #include "simplekz-localranks/misc.sp"
+
+#include "simplekz-localranks/database/create_tables.sp"
+#include "simplekz-localranks/database/get_completion.sp"
+#include "simplekz-localranks/database/open_maptop.sp"
+#include "simplekz-localranks/database/open_maptop20.sp"
+#include "simplekz-localranks/database/open_playertop20.sp"
+#include "simplekz-localranks/database/print_pbs.sp"
+#include "simplekz-localranks/database/print_records.sp"
+#include "simplekz-localranks/database/process_new_time.sp"
+#include "simplekz-localranks/database/update_ranked_map_pool.sp"
+
+#include "simplekz-localranks/menus/maptop.sp"
+#include "simplekz-localranks/menus/playertop.sp"
 
 
 
@@ -164,4 +180,14 @@ public void OnMapStart()
 	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_MAP);
 	FakePrecacheSound(REL_SOUNDPATH_BEAT_RECORD);
 	FakePrecacheSound(REL_SOUNDPATH_BEAT_MAP);
+}
+
+
+
+/*===============================  Functions  ===============================*/
+
+void CreateMenus()
+{
+	CreateMapTopMenuAll();
+	CreatePlayerTopMenuAll();
 } 

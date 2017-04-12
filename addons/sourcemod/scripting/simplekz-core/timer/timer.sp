@@ -1,12 +1,8 @@
 /*
 	Timer
 	
-	Timer and checkpoint/teleport system.
+	Used to record how long the player takes to complete map courses.
 */
-
-#include "simplekz-core/timer/force_stop.sp"
-#include "simplekz-core/timer/pause.sp"
-#include "simplekz-core/timer/wasted_time.sp"
 
 #define STYLE_DEFAULT_SOUND_START "buttons/button9.wav"
 #define STYLE_DEFAULT_SOUND_END "buttons/bell1.wav"

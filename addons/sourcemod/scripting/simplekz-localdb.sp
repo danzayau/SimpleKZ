@@ -18,6 +18,8 @@ public Plugin myinfo =
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
+
+
 Handle gH_SKZ_OnDatabaseConnect;
 Handle gH_SKZ_OnRetrievePlayerID;
 Handle gH_SKZ_OnRetrieveCurrentMapID;
@@ -36,6 +38,16 @@ int gI_DBCurrentMapID;
 
 #include "simplekz-localdb/api.sp"
 #include "simplekz-localdb/database.sp"
+
+#include "simplekz-localdb/database/sql.sp"
+#include "simplekz-localdb/database/create_tables.sp"
+#include "simplekz-localdb/database/load_options.sp"
+#include "simplekz-localdb/database/save_options.sp"
+#include "simplekz-localdb/database/save_time.sp"
+#include "simplekz-localdb/database/setup_client.sp"
+#include "simplekz-localdb/database/setup_database.sp"
+#include "simplekz-localdb/database/setup_map.sp"
+#include "simplekz-localdb/database/setup_map_courses.sp"
 
 
 

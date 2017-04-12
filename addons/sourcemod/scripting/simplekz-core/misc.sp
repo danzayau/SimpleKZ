@@ -1,27 +1,8 @@
 /*
 	Miscellaneous
 	
-	Miscellaneous features.
+	Miscellaneous functions.
 */
-
-/*===============================  Includes  ===============================*/
-
-#include "simplekz-core/misc/block_radio.sp"
-#include "simplekz-core/misc/button_press.sp"
-#include "simplekz-core/misc/chat_processing.sp"
-#include "simplekz-core/misc/god_mode.sp"
-#include "simplekz-core/misc/hide_players.sp"
-#include "simplekz-core/misc/hide_weapon.sp"
-#include "simplekz-core/misc/measure.sp"
-#include "simplekz-core/misc/no_cp_on_bhop.sp"
-#include "simplekz-core/misc/pistol.sp"
-#include "simplekz-core/misc/player_collision.sp"
-#include "simplekz-core/misc/player_model.sp"
-#include "simplekz-core/misc/stop_sounds.sp"
-#include "simplekz-core/misc/teleports.sp"
-#include "simplekz-core/misc/other.sp"
-
-
 
 /*===============================  Helper Functions  ===============================*/
 

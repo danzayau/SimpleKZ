@@ -4,7 +4,6 @@
 	Commands for player and admin use.
 */
 
-
 void CreateCommands()
 {
 	RegConsoleCmd("sm_top", CommandTop, "[KZ] Opens a menu showing the top record holders.");

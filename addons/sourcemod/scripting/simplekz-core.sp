@@ -25,16 +25,44 @@ public Plugin myinfo =
 
 
 #include "simplekz-core/global_variables.sp"
+
 #include "simplekz-core/api.sp"
 #include "simplekz-core/commands.sp"
 #include "simplekz-core/convars.sp"
-#include "simplekz-core/hud.sp"
 #include "simplekz-core/mapping_api.sp"
-#include "simplekz-core/menus.sp"
 #include "simplekz-core/misc.sp"
 #include "simplekz-core/movement_tweak.sp"
 #include "simplekz-core/options.sp"
-#include "simplekz-core/timer.sp"
+
+#include "simplekz-core/timer/timer.sp"
+#include "simplekz-core/timer/force_stop.sp"
+#include "simplekz-core/timer/pause.sp"
+#include "simplekz-core/timer/wasted_time.sp"
+
+#include "simplekz-core/hud/hide_csgo_hud.sp"
+#include "simplekz-core/hud/info_panel.sp"
+#include "simplekz-core/hud/timer_text.sp"
+
+#include "simplekz-core/menus/measure.sp"
+#include "simplekz-core/menus/options.sp"
+#include "simplekz-core/menus/pistol.sp"
+#include "simplekz-core/menus/style.sp"
+#include "simplekz-core/menus/tp.sp"
+
+#include "simplekz-core/misc/block_radio.sp"
+#include "simplekz-core/misc/button_press.sp"
+#include "simplekz-core/misc/chat_processing.sp"
+#include "simplekz-core/misc/god_mode.sp"
+#include "simplekz-core/misc/hide_players.sp"
+#include "simplekz-core/misc/hide_weapon.sp"
+#include "simplekz-core/misc/measure.sp"
+#include "simplekz-core/misc/no_cp_on_bhop.sp"
+#include "simplekz-core/misc/pistol.sp"
+#include "simplekz-core/misc/player_collision.sp"
+#include "simplekz-core/misc/player_model.sp"
+#include "simplekz-core/misc/stop_sounds.sp"
+#include "simplekz-core/misc/teleports.sp"
+#include "simplekz-core/misc/other.sp"
 
 
 
@@ -218,6 +246,15 @@ void CreateKZPlayers()
 void CreateRegexes()
 {
 	MappingAPICreateRegexes();
+}
+
+void CreateMenus()
+{
+	CreateTPMenuAll();
+	CreateOptionsMenuAll();
+	CreateStyleMenuAll();
+	CreatePistolMenuAll();
+	CreateMeasureMenuAll();
 }
 
 void CreateHooks()

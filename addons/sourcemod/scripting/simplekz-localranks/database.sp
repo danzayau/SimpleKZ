@@ -1,19 +1,8 @@
 /*
 	Database
 	
-	Database interaction.
+	Database helper functions and callbacks.
 */
-
-#include "simplekz-localranks/database/sql.sp"
-#include "simplekz-localranks/database/create_tables.sp"
-#include "simplekz-localranks/database/get_completion.sp"
-#include "simplekz-localranks/database/open_maptop.sp"
-#include "simplekz-localranks/database/open_maptop20.sp"
-#include "simplekz-localranks/database/open_playertop20.sp"
-#include "simplekz-localranks/database/print_pbs.sp"
-#include "simplekz-localranks/database/print_records.sp"
-#include "simplekz-localranks/database/process_new_time.sp"
-#include "simplekz-localranks/database/update_ranked_map_pool.sp"
 
 /* Error report callback for failed transactions */
 public void DB_TxnFailure_Generic(Handle db, any data, int numQueries, const char[] error, int failIndex, any[] queryData)
