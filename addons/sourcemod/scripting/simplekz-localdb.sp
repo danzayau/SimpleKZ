@@ -13,7 +13,7 @@ public Plugin myinfo =
 	name = "Simple KZ Local DB", 
 	author = "DanZay", 
 	description = "Local database module for SimpleKZ.", 
-	version = "0.11.0-dev", 
+	version = "0.11.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -88,7 +88,7 @@ public void OnLibraryAdded(const char[] name) {
 	// Send database info if dependent plugins load late
 	if (StrEqual(name, "simplekz-localranks")) {
 		if (gB_ConnectedToDB) {
-			Call_SimpleKZ_OnDatabaseConnect();
+			Call_SKZ_OnDatabaseConnect();
 		}
 	}
 }
@@ -106,7 +106,7 @@ void OnLateLoad() {
 
 /*===============================  Other Events  ===============================*/
 
-public void SimpleKZ_OnClientSetup(int client) {
+public void SKZ_OnClientSetup(int client) {
 	DB_SetupClient(g_KZPlayer[client]);
 }
 
@@ -121,6 +121,6 @@ public void OnMapStart() {
 	DB_SetupMap();
 }
 
-public void SimpleKZ_OnTimerEnd(int client, int course, KZStyle style, float time, int teleportsUsed, float theoreticalTime) {
+public void SKZ_OnTimerEnd(int client, int course, KZStyle style, float time, int teleportsUsed, float theoreticalTime) {
 	DB_StoreTime(g_KZPlayer[client], course, style, time, teleportsUsed, theoreticalTime);
 } 

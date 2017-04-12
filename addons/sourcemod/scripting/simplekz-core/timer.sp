@@ -1,17 +1,20 @@
-/*   
-    Timer
-    
-    Timer and checkpoint/teleport system.
+/*
+	Timer
+	
+	Timer and checkpoint/teleport system.
 */
 
-#include "simplekz-core/timer/button_press.sp"
-#include "simplekz-core/timer/no_bhop_cp.sp"
+/*===============================  Includes  ===============================*/
+
 #include "simplekz-core/timer/pause.sp"
-#include "simplekz-core/timer/teleporting.sp"
 #include "simplekz-core/timer/wasted_time.sp"
 #include "simplekz-core/timer/misc.sp"
 
-void SetupTimer(int client)
+
+
+/*===============================  General  ===============================*/
+
+void TimerSetupClient(int client)
 {
 	gB_TimerRunning[client] = false;
 	gB_Paused[client] = false;
@@ -19,7 +22,7 @@ void SetupTimer(int client)
 	TimerReset(client);
 }
 
-void UpdateTimer(int client)
+void TimerUpdate(int client)
 {
 	if (IsPlayerAlive(client) && gB_TimerRunning[client] && !gB_Paused[client])
 	{
@@ -62,7 +65,7 @@ void TimerStart(int client, int course)
 	g_MovementPlayer[client].GetOrigin(gF_StartOrigin[client]);
 	g_MovementPlayer[client].GetEyeAngles(gF_StartAngles[client]);
 	PlayTimerStartSound(client);
-	Call_SimpleKZ_OnTimerStart(client);
+	Call_SKZ_OnTimerStart(client);
 	CloseTPMenu(client);
 }
 
@@ -74,10 +77,10 @@ void TimerEnd(int client, int course)
 		PrintEndTimeString(client);
 		if (g_SlayOnEnd[client] == KZSlayOnEnd_Enabled)
 		{
-			CreateTimer(3.0, SlayPlayer, client);
+			CreateTimer(3.0, Timer_SlayPlayer, client);
 		}
 		PlayTimerEndSound(client);
-		Call_SimpleKZ_OnTimerEnd(client);
+		Call_SKZ_OnTimerEnd(client);
 		CloseTPMenu(client);
 	}
 }
@@ -88,7 +91,7 @@ bool TimerForceStop(int client)
 	{
 		PlayTimerForceStopSound(client);
 		gB_TimerRunning[client] = false;
-		Call_SimpleKZ_OnTimerForceStop(client);
+		Call_SKZ_OnTimerForceStop(client);
 		CloseTPMenu(client);
 		return true;
 	}

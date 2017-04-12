@@ -1,7 +1,7 @@
 /* 	Simple KZ Local DB Include File
 	Author: DanZay
 	
-	Plugin Version: 0.10.2
+	Plugin Version: 0.11.0
 	Plugin Website: https://github.com/danzayau/SimpleKZ	
 */
 
@@ -29,7 +29,7 @@ enum DatabaseType {
  * @param time				Time in seconds.
  * @return					Number of milliseconds.
  */
-stock int SimpleKZ_TimeFloatToInt(float time) {
+stock int SKZ_TimeFloatToInt(float time) {
 	return RoundFloat(time * 1000.0);
 }
 
@@ -39,7 +39,7 @@ stock int SimpleKZ_TimeFloatToInt(float time) {
  * @param time				Time in milliseconds.
  * @return					Number of seconds.
  */
-stock float SimpleKZ_TimeIntToFloat(int time) {
+stock float SKZ_TimeIntToFloat(int time) {
 	return time / 1000.0;
 }
 
@@ -54,7 +54,7 @@ stock float SimpleKZ_TimeIntToFloat(int time) {
  * @param DBType			Database type (see DatabaseType enumeration)
  * @noreturn
  */
-forward void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType);
+forward void SKZ_OnDatabaseConnect(Database database, DatabaseType DBType);
 
 /**
  * Called when simplekz-localdb retrieves a client's PlayerID from SimpleKZ Core's "Players" database table.
@@ -63,7 +63,7 @@ forward void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType);
  * @param playerID			PlayerID from SimpleKZ Core's "Players" database table.
  * @noreturn
  */
-forward void SimpleKZ_OnRetrievePlayerID(int client, int playerID);
+forward void SKZ_OnRetrievePlayerID(int client, int playerID);
 
 /**
  * Called when simplekz-localdb retrieves the current map's MapID from the "Maps" database table.
@@ -71,7 +71,7 @@ forward void SimpleKZ_OnRetrievePlayerID(int client, int playerID);
  * @param mapID				MapID from SimpleKZ Core's "Maps" database table.
  * @noreturn
  */
-forward void SimpleKZ_OnRetrieveCurrentMapID(int mapID);
+forward void SKZ_OnRetrieveCurrentMapID(int mapID);
 
 /**
  * Called when simplekz-localdb successfully saves a player's time to the database.
@@ -86,7 +86,7 @@ forward void SimpleKZ_OnRetrieveCurrentMapID(int mapID);
  * @param theoreticalRunTimeMS	Theoretical end time without using teleports (milliseconds).
  * @noreturn
  */
-forward void SimpleKZ_OnSaveTimeToDB(int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS);
+forward void SKZ_OnSaveTimeToDB(int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS);
 
 
 
@@ -94,17 +94,17 @@ forward void SimpleKZ_OnSaveTimeToDB(int playerID, int mapID, int course, KZStyl
 
 /**
  * Gets the client's PlayerID as retrieved from SimpleKZ Core's "Players" database table.
- * This is accurate after SimpleKZ_OnRetrievePlayerID is called after the client is authorised.
+ * This is accurate after SKZ_OnRetrievePlayerID is called after the client is authorised.
  *
  * @param client			Client entity index.
  * @return					PlayerID from SimpleKZ Core's "Players" database table.
  */
-native int SimpleKZ_GetPlayerID(int client);
+native int SKZ_GetPlayerID(int client);
 
 /**
  * Gets the current map's MapID as retrieved from SimpleKZ Core's "Maps" database table.
- * This is accurate after SimpleKZ_OnRetrieveCurrentMapID is called after the map is started.
+ * This is accurate after SKZ_OnRetrieveCurrentMapID is called after the map is started.
  *
  * @return					MapID from SimpleKZ Ranks' "Maps" database table.
  */
-native int SimpleKZ_GetCurrentMapID(); 
+native int SKZ_GetCurrentMapID(); 

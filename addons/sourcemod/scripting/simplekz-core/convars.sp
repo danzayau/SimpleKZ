@@ -1,7 +1,7 @@
-/*    
-    ConVars
-    
-    ConVars for server control over features of the plugin.
+/*
+	ConVars
+	
+	ConVars for server control over features of the plugin.
 */
 
 void CreateConVars()

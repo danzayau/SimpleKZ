@@ -1,7 +1,7 @@
-/*    
-    Pistol Menu
-    
-    Lets players view and set options.
+/*
+	Pistol Menu
+	
+	Lets players view and set options.
 */
 
 void CreateOptionsMenuAll()
@@ -12,11 +12,15 @@ void CreateOptionsMenuAll()
 	}
 }
 
-static void CreateOptionsMenu(int client)
+void DisplayOptionsMenu(int client, int atItem = 0)
 {
-	g_OptionsMenu[client] = new Menu(MenuHandler_Options);
-	g_OptionsMenu[client].Pagination = 6;
+	UpdateOptionsMenu(client, g_OptionsMenu[client]);
+	g_OptionsMenu[client].DisplayAt(client, atItem, MENU_TIME_FOREVER);
 }
+
+
+
+/*===============================  Public Callbacks  ===============================*/
 
 public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int param2)
 {
@@ -24,22 +28,22 @@ public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int par
 	{
 		switch (param2)
 		{
-			case 0:IncrementOption(param1, KZOption_ShowingTPMenu);
-			case 1:IncrementOption(param1, KZOption_ShowingInfoPanel);
-			case 2:IncrementOption(param1, KZOption_ShowingPlayers);
-			case 3:IncrementOption(param1, KZOption_ShowingWeapon);
-			case 4:IncrementOption(param1, KZOption_AutoRestart);
+			case 0:CycleOption(param1, KZOption_ShowingTPMenu);
+			case 1:CycleOption(param1, KZOption_ShowingInfoPanel);
+			case 2:CycleOption(param1, KZOption_ShowingPlayers);
+			case 3:CycleOption(param1, KZOption_ShowingWeapon);
+			case 4:CycleOption(param1, KZOption_AutoRestart);
 			case 5:
 			{
 				gB_CameFromOptionsMenu[param1] = true;
 				DisplayPistolMenu(param1);
 			}
-			case 6:IncrementOption(param1, KZOption_SlayOnEnd);
-			case 7:IncrementOption(param1, KZOption_ShowingKeys);
-			case 8:IncrementOption(param1, KZOption_CheckpointMessages);
-			case 9:IncrementOption(param1, KZOption_CheckpointSounds);
-			case 10:IncrementOption(param1, KZOption_TeleportSounds);
-			case 11:IncrementOption(param1, KZOption_TimerText);
+			case 6:CycleOption(param1, KZOption_SlayOnEnd);
+			case 7:CycleOption(param1, KZOption_ShowingKeys);
+			case 8:CycleOption(param1, KZOption_CheckpointMessages);
+			case 9:CycleOption(param1, KZOption_CheckpointSounds);
+			case 10:CycleOption(param1, KZOption_TeleportSounds);
+			case 11:CycleOption(param1, KZOption_TimerText);
 		}
 		if (param2 != 5)
 		{
@@ -49,10 +53,14 @@ public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int par
 	}
 }
 
-void DisplayOptionsMenu(int client, int atItem = 0)
+
+
+/*===============================  Static Functions  ===============================*/
+
+static void CreateOptionsMenu(int client)
 {
-	UpdateOptionsMenu(client, g_OptionsMenu[client]);
-	g_OptionsMenu[client].DisplayAt(client, atItem, MENU_TIME_FOREVER);
+	g_OptionsMenu[client] = new Menu(MenuHandler_Options);
+	g_OptionsMenu[client].Pagination = 6;
 }
 
 static void UpdateOptionsMenu(int client, Menu menu)

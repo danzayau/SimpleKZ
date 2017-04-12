@@ -1,7 +1,7 @@
-/*    
-    Teleport Menu
-    
-    Lets players easily use teleport functionality.
+/*
+	Teleport Menu
+	
+	Lets players easily use teleport functionality.
 */
 
 void CreateTPMenuAll()
@@ -12,12 +12,36 @@ void CreateTPMenuAll()
 	}
 }
 
-static void CreateTPMenu(int client)
+void TPMenuUpdate(int client)
 {
-	g_TPMenu[client] = new Menu(MenuHandler_TPMenu);
-	g_TPMenu[client].OptionFlags = MENUFLAG_NO_SOUND;
-	g_TPMenu[client].ExitButton = false;
+	if (IsFakeClient(client))
+	{
+		return;
+	}
+	
+	// Checks that no other menu instead of rudely interrupting it
+	if (GetClientMenu(client) == MenuSource_None
+		 && g_ShowingTPMenu[client] == KZShowingTPMenu_Enabled
+		 && !gB_TPMenuIsShowing[client] && IsPlayerAlive(client))
+	{
+		TPMenuUpdateItems(client, g_TPMenu[client]);
+		g_TPMenu[client].Display(client, MENU_TIME_FOREVER);
+		gB_TPMenuIsShowing[client] = true;
+	}
 }
+
+void CloseTPMenu(int client)
+{
+	if (gB_TPMenuIsShowing[client])
+	{
+		CancelClientMenu(client);
+		gB_TPMenuIsShowing[client] = false;
+	}
+}
+
+
+
+/*===============================  Public Callbacks  ===============================*/
 
 public int MenuHandler_TPMenu(Menu menu, MenuAction action, int param1, int param2)
 {
@@ -38,29 +62,18 @@ public int MenuHandler_TPMenu(Menu menu, MenuAction action, int param1, int para
 	}
 }
 
-void UpdateTPMenu(int client)
+
+
+/*===============================  Static Functions  ===============================*/
+
+static void CreateTPMenu(int client)
 {
-	// Checks that no other menu instead of rudely interrupting it
-	if (GetClientMenu(client) == MenuSource_None
-		 && g_ShowingTPMenu[client] == KZShowingTPMenu_Enabled
-		 && !gB_TPMenuIsShowing[client] && IsPlayerAlive(client))
-	{
-		UpdateTPMenuItems(client, g_TPMenu[client]);
-		g_TPMenu[client].Display(client, MENU_TIME_FOREVER);
-		gB_TPMenuIsShowing[client] = true;
-	}
+	g_TPMenu[client] = new Menu(MenuHandler_TPMenu);
+	g_TPMenu[client].OptionFlags = MENUFLAG_NO_SOUND;
+	g_TPMenu[client].ExitButton = false;
 }
 
-void CloseTPMenu(int client)
-{
-	if (gB_TPMenuIsShowing[client])
-	{
-		CancelClientMenu(client);
-		gB_TPMenuIsShowing[client] = false;
-	}
-}
-
-static void UpdateTPMenuItems(int client, Menu menu)
+static void TPMenuUpdateItems(int client, Menu menu)
 {
 	menu.RemoveAllItems();
 	AddItemsTPMenu(client, menu);

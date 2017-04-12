@@ -1,20 +1,77 @@
-/*    
-    Movement Tweaker
-    
-    Implementation of plugin-based movement mechanics and styles.
+/*
+	Movement Tweak
+	
+	Plugin-based movement mechanics and styles.
 */
 
-/*===============================  General Tweak (Called OnPlayerRunCmd)  ===============================*/
+#define SPEED_NORMAL 250.0
+#define SPEED_NO_WEAPON 260.0
+#define PRESTRAFE_VELMOD_MAX 1.104 // Calculated 276/250
+#define PRESTRAFE_VELMOD_INCREMENT 0.0014 // Per tick when prestrafing
+#define PRESTRAFE_VELMOD_DECREMENT 0.0021 // Per tick when not prestrafing
+#define VELOCITY_VERTICAL_NORMAL_JUMP 292.54 // After one tick after jumping
+#define DUCK_SPEED_MINIMUM 7.0
 
-void TweakMovementGeneral(MovementPlayer player)
+#define STYLE_DEFAULT_PERF_TICKS 2
+
+#define STYLE_LEGACY_PERF_TICKS 1
+#define STYLE_LEGACY_PERF_SPEED_CAP 380.0
+#define STYLE_LEGACY_SPEED_PRESTRAFE_MINIMUM 175.0
+
+void MovementTweakOnPlayerRunCmd(int client)
 {
-	if (player.onGround)
+	if (g_MovementPlayer[client].onGround)
 	{
-		player.velocityModifier = PrestrafeVelocityModifier(player) * WeaponVelocityModifier(player);
+		MovementTweakVelocityModifier(g_MovementPlayer[client]);
 	}
 }
 
-float PrestrafeVelocityModifier(MovementPlayer player)
+void MovementTweakOnStartTouchGround(int client)
+{
+	MovementTweakDuckSlowdown(g_MovementPlayer[client]);
+}
+
+void MovementTweakOnStopTouchGround(int client, bool jumped, bool ducked)
+{
+	if (jumped)
+	{
+		MovementTweakTakeoffSpeed(g_MovementPlayer[client]);
+		if (g_Style[client] == KZStyle_Standard && ducked)
+		{
+			MovementTweakPerfectCrouchJump(g_MovementPlayer[client]);
+		}
+	}
+	else
+	{
+		gB_HitPerf[client] = false; // Not a jump so not a perf
+	}
+	
+	if (g_Style[client] == KZStyle_Standard)
+	{
+		gF_PrestrafeVelocityModifier[client] = 1.0; // No 'pre b-hopping' in Standard
+	}
+}
+
+void MovementTweakOnStopTouchLadder(int client)
+{
+	gB_HitPerf[client] = false;
+}
+
+void MovementTweakOnStopNoclipping(int client)
+{
+	gB_HitPerf[client] = false;
+}
+
+
+
+/*===============================  General Tweak  ===============================*/
+
+static void MovementTweakVelocityModifier(MovementPlayer player)
+{
+	player.velocityModifier = PrestrafeVelocityModifier(player) * WeaponVelocityModifier(player);
+}
+
+static float PrestrafeVelocityModifier(MovementPlayer player)
 {
 	// Note: Still trying to get Legacy prestrafe to feel like it does in KZTimer
 	if (g_Style[player.id] == KZStyle_Legacy && player.speed < STYLE_LEGACY_SPEED_PRESTRAFE_MINIMUM)
@@ -45,7 +102,7 @@ float PrestrafeVelocityModifier(MovementPlayer player)
 	return gF_PrestrafeVelocityModifier[player.id];
 }
 
-bool CheckIfValidPrestrafeKeys(MovementPlayer player)
+static bool CheckIfValidPrestrafeKeys(MovementPlayer player)
 {
 	switch (g_Style[player.id])
 	{
@@ -64,7 +121,7 @@ bool CheckIfValidPrestrafeKeys(MovementPlayer player)
 	return false;
 }
 
-float WeaponVelocityModifier(MovementPlayer player)
+static float WeaponVelocityModifier(MovementPlayer player)
 {
 	// Universal Weapon Speed
 	int weaponEnt = GetEntPropEnt(player.id, Prop_Data, "m_hActiveWeapon");
@@ -88,13 +145,13 @@ float WeaponVelocityModifier(MovementPlayer player)
 
 /*===============================  Jump Tweaks  ===============================*/
 
-void TweakMovementTakeoffSpeed(MovementPlayer player)
+static void MovementTweakTakeoffSpeed(MovementPlayer player)
 {
 	if (HitPerf(player))
 	{
 		gB_HitPerf[player.id] = true;
 		ApplyTakeoffSpeed(player, CalculateTweakedTakeoffSpeed(player));
-		Call_SimpleKZ_OnPerfectBunnyhop(player.id);
+		Call_SKZ_OnPerfectBunnyhop(player.id);
 	}
 	else
 	{
@@ -102,7 +159,7 @@ void TweakMovementTakeoffSpeed(MovementPlayer player)
 	}
 }
 
-bool HitPerf(MovementPlayer player)
+static bool HitPerf(MovementPlayer player)
 {
 	switch (g_Style[player.id])
 	{
@@ -118,7 +175,7 @@ bool HitPerf(MovementPlayer player)
 	return player.jumpTick - player.landingTick <= 1;
 }
 
-float ApplyTakeoffSpeed(MovementPlayer player, float speed)
+static float ApplyTakeoffSpeed(MovementPlayer player, float speed)
 {
 	float oldVelocity[3], landingVelocity[3], baseVelocity[3];
 	player.GetVelocity(oldVelocity);
@@ -137,7 +194,7 @@ float ApplyTakeoffSpeed(MovementPlayer player, float speed)
 	player.takeoffSpeed = speed;
 }
 
-float CalculateTweakedTakeoffSpeed(MovementPlayer player)
+static float CalculateTweakedTakeoffSpeed(MovementPlayer player)
 {
 	switch (g_Style[player.id])
 	{
@@ -159,7 +216,7 @@ float CalculateTweakedTakeoffSpeed(MovementPlayer player)
 	return player.speed;
 }
 
-void TweakMovementPerfectCrouchJump(MovementPlayer player)
+static void MovementTweakPerfectCrouchJump(MovementPlayer player)
 {
 	float newVelocity[3];
 	player.GetVelocity(newVelocity);
@@ -171,7 +228,7 @@ void TweakMovementPerfectCrouchJump(MovementPlayer player)
 
 /*===============================  Other Tweaks  ===============================*/
 
-void TweakMovementDuckSlowdown(MovementPlayer player)
+static void MovementTweakDuckSlowdown(MovementPlayer player)
 {
 	if (player.duckSpeed < DUCK_SPEED_MINIMUM)
 	{

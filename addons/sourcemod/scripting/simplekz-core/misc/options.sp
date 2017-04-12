@@ -1,9 +1,27 @@
-/*    
-    Options
-    
-    SimpleKZ Player Options
+/*
+	Options
+	
+	Player options to customise their experience.
 */
 
+// Set's all the player's option to default.
+void OptionsSetupClient(int client)
+{
+	SetOption(client, KZOption_Style, view_as<KZStyle>(GetConVarInt(gCV_DefaultStyle)));
+	SetOption(client, KZOption_ShowingTPMenu, KZShowingTPMenu_Enabled);
+	SetOption(client, KZOption_ShowingKeys, KZShowingKeys_Disabled);
+	SetOption(client, KZOption_ShowingPlayers, KZShowingPlayers_Enabled);
+	SetOption(client, KZOption_ShowingWeapon, KZShowingWeapon_Enabled);
+	SetOption(client, KZOption_AutoRestart, KZAutoRestart_Disabled);
+	SetOption(client, KZOption_SlayOnEnd, KZSlayOnEnd_Disabled);
+	SetOption(client, KZOption_Pistol, KZPistol_USP);
+	SetOption(client, KZOption_CheckpointMessages, KZCheckpointMessages_Disabled);
+	SetOption(client, KZOption_CheckpointSounds, KZCheckpointSounds_Disabled);
+	SetOption(client, KZOption_TeleportSounds, KZTeleportSounds_Disabled);
+	SetOption(client, KZOption_TimerText, KZTimerText_Disabled);
+}
+
+// Returns the option value. Note: Returns an int, so you may need to use view_as<enum>().
 int GetOption(int client, KZOption option)
 {
 	switch (option)
@@ -25,6 +43,7 @@ int GetOption(int client, KZOption option)
 	return -1;
 }
 
+// Sets the specified option of the client to the provided value (use the enumerations!)
 void SetOption(int client, KZOption option, any optionValue)
 {
 	// Checks if the option actually needs changing before changing it,
@@ -86,7 +105,7 @@ void SetOption(int client, KZOption option, any optionValue)
 			{
 				changedOption = true;
 				g_ShowingWeapon[client] = optionValue;
-				UpdateWeaponVisibility(client);
+				HideWeaponUpdate(client);
 			}
 		}
 		case KZOption_AutoRestart:
@@ -111,7 +130,7 @@ void SetOption(int client, KZOption option, any optionValue)
 			{
 				changedOption = true;
 				g_Pistol[client] = optionValue;
-				UpdatePlayerPistol(client);
+				PistolUpdate(client);
 			}
 		}
 		case KZOption_CheckpointMessages:
@@ -151,27 +170,12 @@ void SetOption(int client, KZOption option, any optionValue)
 	if (changedOption)
 	{
 		PrintOptionChangeMessage(client, option);
-		Call_SimpleKZ_OnChangeOption(client, option, optionValue);
+		Call_SKZ_OnChangeOption(client, option, optionValue);
 	}
 }
 
-void SetDefaultOptions(int client)
-{
-	SetOption(client, KZOption_Style, view_as<KZStyle>(GetConVarInt(gCV_DefaultStyle)));
-	SetOption(client, KZOption_ShowingTPMenu, KZShowingTPMenu_Enabled);
-	SetOption(client, KZOption_ShowingKeys, KZShowingKeys_Disabled);
-	SetOption(client, KZOption_ShowingPlayers, KZShowingPlayers_Enabled);
-	SetOption(client, KZOption_ShowingWeapon, KZShowingWeapon_Enabled);
-	SetOption(client, KZOption_AutoRestart, KZAutoRestart_Disabled);
-	SetOption(client, KZOption_SlayOnEnd, KZSlayOnEnd_Disabled);
-	SetOption(client, KZOption_Pistol, KZPistol_USP);
-	SetOption(client, KZOption_CheckpointMessages, KZCheckpointMessages_Disabled);
-	SetOption(client, KZOption_CheckpointSounds, KZCheckpointSounds_Disabled);
-	SetOption(client, KZOption_TeleportSounds, KZTeleportSounds_Disabled);
-	SetOption(client, KZOption_TimerText, KZTimerText_Disabled);
-}
-
-void IncrementOption(int client, KZOption option)
+// Steps through an option's possible settings.
+void CycleOption(int client, KZOption option)
 {
 	// Add 1 to the current value of the option
 	// Modulo the result with the total number of that option which can be obtained by using view_as<int>(tag).
@@ -193,6 +197,11 @@ void IncrementOption(int client, KZOption option)
 	}
 }
 
+
+
+/*===============================  Static Functions  ===============================*/
+
+// Prints a specific message when an option is changed.
 static void PrintOptionChangeMessage(int client, KZOption option) {
 	if (!IsClientInGame(client))
 	{

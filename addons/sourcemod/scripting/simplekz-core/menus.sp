@@ -1,6 +1,8 @@
-/*	
-    Menus
+/*
+	Menus
 */
+
+/*===============================  Includes  ===============================*/
 
 #include "simplekz-core/menus/measure.sp"
 #include "simplekz-core/menus/options.sp"

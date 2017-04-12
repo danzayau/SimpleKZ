@@ -1,8 +1,16 @@
-/*    
-    Miscellaneous
-    
-    Miscellaneous timer related functions.
+/*	
+	Miscellaneous
+	
+	Miscellaneous timer related functions.
 */
+
+#define SOUND_TIMER_FORCE_STOP "buttons/button18.wav"
+
+#define STYLE_DEFAULT_SOUND_START "buttons/button9.wav"
+#define STYLE_DEFAULT_SOUND_END "buttons/bell1.wav"
+
+#define STYLE_LEGACY_SOUND_START "buttons/button3.wav"
+#define STYLE_LEGACY_SOUND_END "buttons/button3.wav"
 
 void PrintEndTimeString(int client)
 {
@@ -13,14 +21,14 @@ void PrintEndTimeString(int client)
 			case KZTimeType_Normal:
 			{
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map", 
-					client, SimpleKZ_FormatTime(gF_CurrentTime[client]), 
-					gI_TeleportsUsed[client], SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
+					client, SKZ_FormatTime(gF_CurrentTime[client]), 
+					gI_TeleportsUsed[client], SKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
 			}
 			case KZTimeType_Pro:
 			{
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map (Pro)", 
-					client, SimpleKZ_FormatTime(gF_CurrentTime[client]), 
+					client, SKZ_FormatTime(gF_CurrentTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
 			}
 		}
@@ -32,14 +40,14 @@ void PrintEndTimeString(int client)
 			case KZTimeType_Normal:
 			{
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus", 
-					client, gI_CurrentCourse[client], SimpleKZ_FormatTime(gF_CurrentTime[client]), 
-					gI_TeleportsUsed[client], SimpleKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
+					client, gI_CurrentCourse[client], SKZ_FormatTime(gF_CurrentTime[client]), 
+					gI_TeleportsUsed[client], SKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
 			}
 			case KZTimeType_Pro:
 			{
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus (Pro)", 
-					client, gI_CurrentCourse[client], SimpleKZ_FormatTime(gF_CurrentTime[client]), 
+					client, gI_CurrentCourse[client], SKZ_FormatTime(gF_CurrentTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
 			}
 		}

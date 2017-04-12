@@ -1,7 +1,7 @@
 /* 	Simple KZ Local Ranks Include File
 	Author: DanZay
 	
-	Plugin Version: 0.10.2
+	Plugin Version: 0.11.0
 	Plugin Website: https://github.com/danzayau/SimpleKZ	
 */
 
@@ -36,7 +36,7 @@ enum KZRecordType {
  * @param runTime			The run time of the record.
  * @noreturn
  */
-forward void SimpleKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime);
+forward void SKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime);
 
 /**
  * Called when the player beats their personal best time (not called for theoretical times).
@@ -53,4 +53,4 @@ forward void SimpleKZ_OnNewRecord(int client, int mapID, int course, KZStyle sty
  * @param maxRank			The number of players with times on the map.
  * @noreturn
  */
-forward void SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank); 
+forward void SKZ_OnNewPersonalBest(int client, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank); 

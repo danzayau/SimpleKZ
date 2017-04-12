@@ -34,7 +34,7 @@ void DB_SetupDatabase() {
 	gB_ConnectedToDB = true;
 	DB_CreateTables();
 	
-	Call_SimpleKZ_OnDatabaseConnect();
+	Call_SKZ_OnDatabaseConnect();
 }
 
 void DB_CreateTables() {
@@ -121,13 +121,13 @@ public void DB_TxnSuccess_SetupClient(Handle db, KZPlayer player, int numQueries
 		case DatabaseType_SQLite: {
 			if (SQL_FetchRow(results[2])) {
 				gI_DBPlayerID[player.id] = SQL_FetchInt(results[2], 0);
-				Call_SimpleKZ_OnRetrievePlayerID(player.id);
+				Call_SKZ_OnRetrievePlayerID(player.id);
 			}
 		}
 		case DatabaseType_MySQL: {
 			if (SQL_FetchRow(results[1])) {
 				gI_DBPlayerID[player.id] = SQL_FetchInt(results[1], 0);
-				Call_SimpleKZ_OnRetrievePlayerID(player.id);
+				Call_SKZ_OnRetrievePlayerID(player.id);
 			}
 		}
 	}
@@ -168,7 +168,7 @@ public void DB_TxnSuccess_LoadOptions(Handle db, KZPlayer player, int numQueries
 		Transaction txn = SQL_CreateTransaction();
 		
 		// Insert options
-		FormatEx(query, sizeof(query), sql_options_insert, player.db_playerID, SimpleKZ_GetDefaultStyle());
+		FormatEx(query, sizeof(query), sql_options_insert, player.db_playerID, SKZ_GetDefaultStyle());
 		txn.AddQuery(query);
 		
 		SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_InsertOptions, DB_TxnFailure_Generic, player, DBPrio_High);
@@ -176,7 +176,7 @@ public void DB_TxnSuccess_LoadOptions(Handle db, KZPlayer player, int numQueries
 	
 	else if (SQL_FetchRow(results[0])) {
 		player.style = view_as<KZStyle>(SQL_FetchInt(results[0], 0));
-		player.showingTeleportMenu = view_as<KZShowingTeleportMenu>(SQL_FetchInt(results[0], 1));
+		player.showingTPMenu = view_as<KZShowingTPMenu>(SQL_FetchInt(results[0], 1));
 		player.showingInfoPanel = view_as<KZShowingInfoPanel>(SQL_FetchInt(results[0], 2));
 		player.showingKeys = view_as<KZShowingKeys>(SQL_FetchInt(results[0], 3));
 		player.showingPlayers = view_as<KZShowingPlayers>(SQL_FetchInt(results[0], 4));
@@ -208,7 +208,7 @@ void DB_SaveOptions(KZPlayer player) {
 	FormatEx(query, sizeof(query), 
 		sql_options_update, 
 		player.style, 
-		player.showingTeleportMenu, 
+		player.showingTPMenu, 
 		player.showingInfoPanel, 
 		player.showingKeys, 
 		player.showingPlayers, 
@@ -275,13 +275,13 @@ public void DB_TxnSuccess_SetupMap(Handle db, any data, int numQueries, Handle[]
 		case DatabaseType_SQLite: {
 			if (SQL_FetchRow(results[2])) {
 				gI_DBCurrentMapID = SQL_FetchInt(results[2], 0);
-				Call_SimpleKZ_OnRetrieveCurrentMapID();
+				Call_SKZ_OnRetrieveCurrentMapID();
 			}
 		}
 		case DatabaseType_MySQL: {
 			if (SQL_FetchRow(results[1])) {
 				gI_DBCurrentMapID = SQL_FetchInt(results[1], 0);
-				Call_SimpleKZ_OnRetrieveCurrentMapID();
+				Call_SKZ_OnRetrieveCurrentMapID();
 			}
 		}
 	}
@@ -337,9 +337,9 @@ void DB_StoreTime(KZPlayer player, int course, KZStyle style, float runTime, int
 	
 	char query[1024];
 	int playerID = gI_DBPlayerID[player.id];
-	int mapID = SimpleKZ_GetCurrentMapID();
-	int runTimeMS = SimpleKZ_TimeFloatToInt(runTime);
-	int theoreticalRunTimeMS = SimpleKZ_TimeFloatToInt(theoreticalRunTime);
+	int mapID = SKZ_GetCurrentMapID();
+	int runTimeMS = SKZ_TimeFloatToInt(runTime);
+	int theoreticalRunTimeMS = SKZ_TimeFloatToInt(theoreticalRunTime);
 	
 	DataPack data = CreateDataPack();
 	data.WriteCell(player.id);
@@ -372,5 +372,5 @@ public void DB_TxnSuccess_SaveTime(Handle db, DataPack data, int numQueries, Han
 	int theoreticalTimeMS = data.ReadCell();
 	CloseHandle(data);
 	
-	Call_SimpleKZ_OnStoreTimeInDB(client, playerID, mapID, course, style, runTimeMS, teleportsUsed, theoreticalTimeMS);
+	Call_SKZ_OnStoreTimeInDB(client, playerID, mapID, course, style, runTimeMS, teleportsUsed, theoreticalTimeMS);
 } 

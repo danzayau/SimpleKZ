@@ -1,7 +1,7 @@
-/*   
-    Commands
-    
-    Commands for player use.
+/*
+	Commands
+	
+	Commands for player use.
 */
 
 void CreateCommands()
@@ -59,7 +59,7 @@ public Action CommandJoinTeam(int client, const char[] command, int argc)
 
 public Action CommandToggleMenu(int client, int args)
 {
-	IncrementOption(client, KZOption_ShowingTPMenu);
+	CycleOption(client, KZOption_ShowingTPMenu);
 	return Plugin_Handled;
 }
 
@@ -104,8 +104,7 @@ public Action CommandStopTimer(int client, int args)
 
 public Action CommandStopsound(int client, int args)
 {
-	ClientCommand(client, "snd_playsounds Music.StopAllExceptMusic");
-	CPrintToChat(client, "%t %t", "KZ Prefix", "Stopped Sounds");
+	StopSounds(client);
 	return Plugin_Handled;
 }
 
@@ -140,7 +139,7 @@ public Action CommandGoto(int client, int args)
 				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Goto)");
 				}
-				SimpleKZ_ForceStopTimer(client);
+				SKZ_ForceStopTimer(client);
 			}
 		}
 	}
@@ -190,19 +189,19 @@ public Action CommandOptions(int client, int args)
 
 public Action CommandToggleShowPlayers(int client, int args)
 {
-	IncrementOption(client, KZOption_ShowingPlayers);
+	CycleOption(client, KZOption_ShowingPlayers);
 	return Plugin_Handled;
 }
 
 public Action CommandToggleInfoPanel(int client, int args)
 {
-	IncrementOption(client, KZOption_ShowingInfoPanel);
+	CycleOption(client, KZOption_ShowingInfoPanel);
 	return Plugin_Handled;
 }
 
 public Action CommandToggleShowWeapon(int client, int args)
 {
-	IncrementOption(client, KZOption_ShowingWeapon);
+	CycleOption(client, KZOption_ShowingWeapon);
 	return Plugin_Handled;
 }
 

@@ -1,11 +1,16 @@
-/*    
-    Timer Text
-    
-    Uses ShowHudText to show current run time somewhere on the screen.
+/*
+	Timer Text
+	
+	Uses ShowHudText to show current run time somewhere on the screen.
 */
 
-void UpdateTimerText(int client)
+void TimerTextUpdate(int client)
 {
+	if (IsFakeClient(client))
+	{
+		return;
+	}
+	
 	if (g_TimerText[client] == KZTimerText_Disabled)
 	{
 		return;
@@ -29,14 +34,14 @@ void UpdateTimerText(int client)
 	
 	if (IsPlayerAlive(client) && gB_TimerRunning[client])
 	{
-		ShowHudText(client, 0, SimpleKZ_FormatTime(gF_CurrentTime[client]));
+		ShowHudText(client, 0, SKZ_FormatTime(gF_CurrentTime[client]));
 	}
 	else
 	{
 		int spectatedPlayer = GetSpectatedClient(client);
 		if (IsValidClient(spectatedPlayer) && gB_TimerRunning[spectatedPlayer])
 		{
-			ShowHudText(client, 0, SimpleKZ_FormatTime(gF_CurrentTime[spectatedPlayer]));
+			ShowHudText(client, 0, SKZ_FormatTime(gF_CurrentTime[spectatedPlayer]));
 		}
 	}
 } 

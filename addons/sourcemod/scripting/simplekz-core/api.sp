@@ -1,69 +1,67 @@
-/*   
-    API
-    
-    Simple KZ Core API.
+/*
+	API
+	
+	Simple KZ Core API.
 */
 
 /*===============================  Forwards  ===============================*/
 
-Handle gH_Forward_SimpleKZ_OnClientSetup;
-Handle gH_Forward_SimpleKZ_OnChangeOption;
-Handle gH_Forward_SimpleKZ_OnPerfectBunnyhop;
-Handle gH_Forward_SimpleKZ_OnTimerStart;
-Handle gH_Forward_SimpleKZ_OnTimerEnd;
-Handle gH_Forward_SimpleKZ_OnTimerForceStop;
-Handle gH_Forward_SimpleKZ_OnPlayerPause;
-Handle gH_Forward_SimpleKZ_OnPlayerResume;
-Handle gH_Forward_SimpleKZ_OnPlayerTeleport;
+Handle gH_OnClientSetup;
+Handle gH_OnChangeOption;
+Handle gH_OnPerfectBunnyhop;
+Handle gH_OnTimerStart;
+Handle gH_OnTimerEnd;
+Handle gH_OnTimerForceStop;
+Handle gH_OnPlayerPause;
+Handle gH_OnPlayerResume;
 
 void CreateGlobalForwards()
 {
-	gH_Forward_SimpleKZ_OnClientSetup = CreateGlobalForward("SimpleKZ_OnClientSetup", ET_Event, Param_Cell);
-	gH_Forward_SimpleKZ_OnChangeOption = CreateGlobalForward("SimpleKZ_OnChangeOption", ET_Event, Param_Cell, Param_Cell, Param_Cell);
-	gH_Forward_SimpleKZ_OnPerfectBunnyhop = CreateGlobalForward("SimpleKZ_OnPerfectBunnyhop", ET_Event, Param_Cell);
-	gH_Forward_SimpleKZ_OnTimerStart = CreateGlobalForward("SimpleKZ_OnTimerStart", ET_Event, Param_Cell, Param_Cell, Param_Cell);
-	gH_Forward_SimpleKZ_OnTimerEnd = CreateGlobalForward("SimpleKZ_OnTimerEnd", ET_Event, Param_Cell, Param_Cell, Param_Cell, Param_Float, Param_Cell, Param_Float);
-	gH_Forward_SimpleKZ_OnTimerForceStop = CreateGlobalForward("SimpleKZ_OnTimerForceStop", ET_Event, Param_Cell);
-	gH_Forward_SimpleKZ_OnPlayerPause = CreateGlobalForward("SimpleKZ_OnTimerPause", ET_Event, Param_Cell);
-	gH_Forward_SimpleKZ_OnPlayerResume = CreateGlobalForward("SimpleKZ_OnTimerResume", ET_Event, Param_Cell);
-	gH_Forward_SimpleKZ_OnPlayerTeleport = CreateGlobalForward("SimpleKZ_OnTimerTeleport", ET_Event, Param_Cell);
+	gH_OnClientSetup = CreateGlobalForward("SKZ_OnClientSetup", ET_Ignore, Param_Cell);
+	gH_OnChangeOption = CreateGlobalForward("SKZ_OnChangeOption", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
+	gH_OnPerfectBunnyhop = CreateGlobalForward("SKZ_OnPerfectBunnyhop", ET_Ignore, Param_Cell);
+	gH_OnTimerStart = CreateGlobalForward("SKZ_OnTimerStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
+	gH_OnTimerEnd = CreateGlobalForward("SKZ_OnTimerEnd", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Float, Param_Cell, Param_Float);
+	gH_OnTimerForceStop = CreateGlobalForward("SKZ_OnTimerForceStop", ET_Ignore, Param_Cell);
+	gH_OnPlayerPause = CreateGlobalForward("SKZ_OnTimerPause", ET_Ignore, Param_Cell);
+	gH_OnPlayerResume = CreateGlobalForward("SKZ_OnTimerResume", ET_Ignore, Param_Cell);
 }
 
-void Call_SimpleKZ_OnClientSetup(int client)
+void Call_SKZ_OnClientSetup(int client)
 {
-	Call_StartForward(gH_Forward_SimpleKZ_OnClientSetup);
+	Call_StartForward(gH_OnClientSetup);
 	Call_PushCell(client);
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnChangeOption(int client, KZOption option, any optionValue)
+void Call_SKZ_OnChangeOption(int client, KZOption option, any optionValue)
 {
-	Call_StartForward(gH_Forward_SimpleKZ_OnChangeOption);
+	Call_StartForward(gH_OnChangeOption);
 	Call_PushCell(client);
 	Call_PushCell(option);
 	Call_PushCell(optionValue);
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnPerfectBunnyhop(int client)
+void Call_SKZ_OnPerfectBunnyhop(int client)
 {
-	Call_StartForward(gH_Forward_SimpleKZ_OnPerfectBunnyhop);
+	Call_StartForward(gH_OnPerfectBunnyhop);
 	Call_PushCell(client);
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnTimerStart(int client)
+void Call_SKZ_OnTimerStart(int client)
 {
-	Call_StartForward(gH_Forward_SimpleKZ_OnTimerStart);
+	Call_StartForward(gH_OnTimerStart);
 	Call_PushCell(client);
 	Call_PushCell(gI_CurrentCourse[client]);
 	Call_PushCell(g_Style[client]);
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnTimerEnd(int client)
+void Call_SKZ_OnTimerEnd(int client)
 {
-	Call_StartForward(gH_Forward_SimpleKZ_OnTimerEnd);
+	Call_StartForward(gH_OnTimerEnd);
 	Call_PushCell(client);
 	Call_PushCell(gI_CurrentCourse[client]);
 	Call_PushCell(g_Style[client]);
@@ -73,30 +71,23 @@ void Call_SimpleKZ_OnTimerEnd(int client)
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnTimerForceStop(int client)
+void Call_SKZ_OnTimerForceStop(int client)
 {
-	Call_StartForward(gH_Forward_SimpleKZ_OnTimerForceStop);
+	Call_StartForward(gH_OnTimerForceStop);
 	Call_PushCell(client);
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnPlayerPause(int client)
+void Call_SKZ_OnPlayerPause(int client)
 {
-	Call_StartForward(gH_Forward_SimpleKZ_OnPlayerPause);
+	Call_StartForward(gH_OnPlayerPause);
 	Call_PushCell(client);
 	Call_Finish();
 }
 
-void Call_SimpleKZ_OnPlayerResume(int client)
+void Call_SKZ_OnPlayerResume(int client)
 {
-	Call_StartForward(gH_Forward_SimpleKZ_OnPlayerResume);
-	Call_PushCell(client);
-	Call_Finish();
-}
-
-void Call_SimpleKZ_OnPlayerTeleport(int client)
-{
-	Call_StartForward(gH_Forward_SimpleKZ_OnPlayerTeleport);
+	Call_StartForward(gH_OnPlayerResume);
 	Call_PushCell(client);
 	Call_Finish();
 }
@@ -107,29 +98,29 @@ void Call_SimpleKZ_OnPlayerTeleport(int client)
 
 void CreateNatives()
 {
-	CreateNative("SimpleKZ_GetHitPerf", Native_GetHitPerf);
+	CreateNative("SKZ_GetHitPerf", Native_GetHitPerf);
 	
-	CreateNative("SimpleKZ_StartTimer", Native_StartTimer);
-	CreateNative("SimpleKZ_EndTimer", Native_EndTimer);
-	CreateNative("SimpleKZ_ForceStopTimer", Native_ForceStopTimer);
-	CreateNative("SimpleKZ_ForceStopTimerAll", Native_ForceStopTimerAll);
-	CreateNative("SimpleKZ_GetTimerRunning", Native_GetTimerRunning);
-	CreateNative("SimpleKZ_GetCurrentCourse", Native_GetCurrentCourse);
-	CreateNative("SimpleKZ_GetPaused", Native_GetPaused);
-	CreateNative("SimpleKZ_GetCurrentTime", Native_GetCurrentTime);
-	CreateNative("SimpleKZ_GetCheckpointCount", Native_GetCheckpointCount);
+	CreateNative("SKZ_StartTimer", Native_StartTimer);
+	CreateNative("SKZ_EndTimer", Native_EndTimer);
+	CreateNative("SKZ_ForceStopTimer", Native_ForceStopTimer);
+	CreateNative("SKZ_ForceStopTimerAll", Native_ForceStopTimerAll);
+	CreateNative("SKZ_GetTimerRunning", Native_GetTimerRunning);
+	CreateNative("SKZ_GetCurrentCourse", Native_GetCurrentCourse);
+	CreateNative("SKZ_GetPaused", Native_GetPaused);
+	CreateNative("SKZ_GetCurrentTime", Native_GetCurrentTime);
+	CreateNative("SKZ_GetCheckpointCount", Native_GetCheckpointCount);
 	
-	CreateNative("SimpleKZ_TeleportToStart", Native_TeleportToStart);
-	CreateNative("SimpleKZ_MakeCheckpoint", Native_MakeCheckpoint);
-	CreateNative("SimpleKZ_TeleportToCheckpoint", Native_TeleportToCheckpoint);
-	CreateNative("SimpleKZ_UndoTeleport", Native_UndoTeleport);
-	CreateNative("SimpleKZ_Pause", Native_Pause);
-	CreateNative("SimpleKZ_Resume", Native_Resume);
-	CreateNative("SimpleKZ_TogglePause", Native_TogglePause);
+	CreateNative("SKZ_TeleportToStart", Native_TeleportToStart);
+	CreateNative("SKZ_MakeCheckpoint", Native_MakeCheckpoint);
+	CreateNative("SKZ_TeleportToCheckpoint", Native_TeleportToCheckpoint);
+	CreateNative("SKZ_UndoTeleport", Native_UndoTeleport);
+	CreateNative("SKZ_Pause", Native_Pause);
+	CreateNative("SKZ_Resume", Native_Resume);
+	CreateNative("SKZ_TogglePause", Native_TogglePause);
 	
-	CreateNative("SimpleKZ_GetDefaultStyle", Native_GetDefaultStyle);
-	CreateNative("SimpleKZ_GetOption", Native_GetOption);
-	CreateNative("SimpleKZ_SetOption", Native_SetOption);
+	CreateNative("SKZ_GetDefaultStyle", Native_GetDefaultStyle);
+	CreateNative("SKZ_GetOption", Native_GetOption);
+	CreateNative("SKZ_SetOption", Native_SetOption);
 }
 
 public int Native_GetHitPerf(Handle plugin, int numParams)

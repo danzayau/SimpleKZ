@@ -1,7 +1,7 @@
 /* 	Simple KZ Official Include File
 	Author: DanZay
 	
-	Plugin Version: 0.10.2
+	Plugin Version: 0.11.0
 	Plugin Website: https://github.com/danzayau/SimpleKZ	
 */
 
@@ -21,10 +21,11 @@
 /**
  * Presents a time float (seconds) as a string e.g. 01:23.45 or 01:23:34.56.
  *
- * @param time				Time in seconds.
- * @return					Formatted time.
+ * @param time				Time in seconds
+ * @return					Formatted time
  */
-stock char[] SimpleKZ_FormatTime(float time) {
+stock char[] SKZ_FormatTime(float time)
+{
 	char formattedTime[12];
 	
 	int roundedTime = RoundFloat(time * 100); // Time rounded to number of centiseconds
@@ -37,13 +38,73 @@ stock char[] SimpleKZ_FormatTime(float time) {
 	roundedTime = (roundedTime - minutes) / 60;
 	int hours = roundedTime;
 	
-	if (hours == 0) {
+	if (hours == 0)
+	{
 		FormatEx(formattedTime, sizeof(formattedTime), "%02d:%02d.%02d", minutes, seconds, centiseconds);
 	}
-	else {
+	else
+	{
 		FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d:%02d.%02d", hours, minutes, seconds, centiseconds);
 	}
 	return formattedTime;
+}
+
+/**
+ * Checks if the client is a valid client entity index, and if they are in-game.
+ *
+ * @param client			Entity index
+ * @return					True if the client is valid
+ */
+stock bool IsValidClient(int client)
+{
+	return 1 <= client && client <= MaxClients && IsClientInGame(client);
+}
+
+/**
+ * Returns the max of two float values.
+ *
+ * @param value1			First value
+ * @param value2			Second value
+ * @return					The greater of the two values, or their value if they are equal
+ */
+stock float FloatMax(float value1, float value2)
+{
+	if (value1 >= value2)
+	{
+		return value1;
+	}
+	return value2;
+}
+
+/**
+ * Outputs the string in all lower case.
+ *
+ * @param input				Input string
+ * @param output			Output buffer
+ * @param size				Maximum size of output
+ * @noreturn
+ */
+stock void String_ToLower(const char[] input, char[] output, int size)
+{
+	size--;
+	int i = 0;
+	while (input[i] != '\0' && i < size)
+	{
+		output[i] = CharToLower(input[i]);
+		i++;
+	}
+	output[i] = '\0';
+}
+
+/**
+ * Precaches a sound file.
+ *
+ * @param relativeSoundpath	Relative sound path (starts with *)
+ * @noreturn
+ */
+stock void FakePrecacheSound(const char[] relativeSoundPath)
+{
+	AddToStringTable(FindStringTable("soundprecache"), relativeSoundPath);
 }
 
 
@@ -65,39 +126,39 @@ methodmap KZPlayer __nullable__ {
 	/*===============================  Timer Functions  ===============================*/
 	
 	public void StartTimer(int course) {
-		SimpleKZ_StartTimer(this.id, course);
+		SKZ_StartTimer(this.id, course);
 	}
 	
 	public void EndTimer(int course) {
-		SimpleKZ_EndTimer(this.id, course);
+		SKZ_EndTimer(this.id, course);
 	}
 	
 	public bool ForceStopTimer() {
-		return SimpleKZ_ForceStopTimer(this.id);
+		return SKZ_ForceStopTimer(this.id);
 	}
 	
 	public void TeleportToStart() {
-		SimpleKZ_TeleportToStart(this.id);
+		SKZ_TeleportToStart(this.id);
 	}
 	
 	public void TeleportToCheckpoint() {
-		SimpleKZ_TeleportToCheckpoint(this.id);
+		SKZ_TeleportToCheckpoint(this.id);
 	}
 	
 	public void UndoTeleport() {
-		SimpleKZ_UndoTeleport(this.id);
+		SKZ_UndoTeleport(this.id);
 	}
 	
 	public void Pause() {
-		SimpleKZ_Pause(this.id);
+		SKZ_Pause(this.id);
 	}
 	
 	public void Resume() {
-		SimpleKZ_Resume(this.id);
+		SKZ_Resume(this.id);
 	}
 	
 	public void TogglePause() {
-		SimpleKZ_TogglePause(this.id);
+		SKZ_TogglePause(this.id);
 	}
 	
 	
@@ -105,19 +166,19 @@ methodmap KZPlayer __nullable__ {
 	
 	property bool timerRunning {
 		public get() {
-			return SimpleKZ_GetTimerRunning(this.id);
+			return SKZ_GetTimerRunning(this.id);
 		}
 	}
 	
 	property int currentCourse {
 		public get() {
-			return SimpleKZ_GetCurrentCourse(this.id);
+			return SKZ_GetCurrentCourse(this.id);
 		}
 	}
 	
 	property bool paused {
 		public get() {
-			return SimpleKZ_GetCurrentCourse(this.id);
+			return SKZ_GetCurrentCourse(this.id);
 		}
 		public set(bool pause) {
 			if (pause) {
@@ -131,13 +192,13 @@ methodmap KZPlayer __nullable__ {
 	
 	property float currentTime {
 		public get() {
-			return SimpleKZ_GetCurrentTime(this.id);
+			return SKZ_GetCurrentTime(this.id);
 		}
 	}
 	
 	property int checkpointCount {
 		public get() {
-			return SimpleKZ_GetCheckpointCount(this.id);
+			return SKZ_GetCheckpointCount(this.id);
 		}
 	}
 	
@@ -146,118 +207,118 @@ methodmap KZPlayer __nullable__ {
 	
 	property KZStyle style {
 		public get() {
-			return view_as<KZStyle>(SimpleKZ_GetOption(this.id, KZOption_Style));
+			return view_as<KZStyle>(SKZ_GetOption(this.id, KZOption_Style));
 		}
 		public set(KZStyle value) {
-			SimpleKZ_SetOption(this.id, KZOption_Style, value);
+			SKZ_SetOption(this.id, KZOption_Style, value);
 		}
 	}
 	
 	property KZShowingTPMenu showingTPMenu {
 		public get() {
-			return view_as<KZShowingTPMenu>(SimpleKZ_GetOption(this.id, KZOption_ShowingTPMenu));
+			return view_as<KZShowingTPMenu>(SKZ_GetOption(this.id, KZOption_ShowingTPMenu));
 		}
 		public set(KZShowingTPMenu value) {
-			SimpleKZ_SetOption(this.id, KZOption_ShowingTPMenu, value);
+			SKZ_SetOption(this.id, KZOption_ShowingTPMenu, value);
 		}
 	}
 	
 	property KZShowingInfoPanel showingInfoPanel {
 		public get() {
-			return view_as<KZShowingInfoPanel>(SimpleKZ_GetOption(this.id, KZOption_ShowingInfoPanel));
+			return view_as<KZShowingInfoPanel>(SKZ_GetOption(this.id, KZOption_ShowingInfoPanel));
 		}
 		public set(KZShowingInfoPanel value) {
-			SimpleKZ_SetOption(this.id, KZOption_ShowingInfoPanel, value);
+			SKZ_SetOption(this.id, KZOption_ShowingInfoPanel, value);
 		}
 	}
 	
 	property KZShowingKeys showingKeys {
 		public get() {
-			return view_as<KZShowingKeys>(SimpleKZ_GetOption(this.id, KZOption_ShowingKeys));
+			return view_as<KZShowingKeys>(SKZ_GetOption(this.id, KZOption_ShowingKeys));
 		}
 		public set(KZShowingKeys value) {
-			SimpleKZ_SetOption(this.id, KZOption_ShowingKeys, value);
+			SKZ_SetOption(this.id, KZOption_ShowingKeys, value);
 		}
 	}
 	
 	property KZShowingPlayers showingPlayers {
 		public get() {
-			return view_as<KZShowingPlayers>(SimpleKZ_GetOption(this.id, KZOption_ShowingPlayers));
+			return view_as<KZShowingPlayers>(SKZ_GetOption(this.id, KZOption_ShowingPlayers));
 		}
 		public set(KZShowingPlayers value) {
-			SimpleKZ_SetOption(this.id, KZOption_ShowingPlayers, value);
+			SKZ_SetOption(this.id, KZOption_ShowingPlayers, value);
 		}
 	}
 	
 	property KZShowingWeapon showingWeapon {
 		public get() {
-			return view_as<KZShowingWeapon>(SimpleKZ_GetOption(this.id, KZOption_ShowingWeapon));
+			return view_as<KZShowingWeapon>(SKZ_GetOption(this.id, KZOption_ShowingWeapon));
 		}
 		public set(KZShowingWeapon value) {
-			SimpleKZ_SetOption(this.id, KZOption_ShowingWeapon, value);
+			SKZ_SetOption(this.id, KZOption_ShowingWeapon, value);
 		}
 	}
 	
 	property KZAutoRestart autoRestart {
 		public get() {
-			return view_as<KZAutoRestart>(SimpleKZ_GetOption(this.id, KZOption_AutoRestart));
+			return view_as<KZAutoRestart>(SKZ_GetOption(this.id, KZOption_AutoRestart));
 		}
 		public set(KZAutoRestart value) {
-			SimpleKZ_SetOption(this.id, KZOption_AutoRestart, value);
+			SKZ_SetOption(this.id, KZOption_AutoRestart, value);
 		}
 	}
 	
 	property KZSlayOnEnd slayOnEnd {
 		public get() {
-			return view_as<KZSlayOnEnd>(SimpleKZ_GetOption(this.id, KZOption_SlayOnEnd));
+			return view_as<KZSlayOnEnd>(SKZ_GetOption(this.id, KZOption_SlayOnEnd));
 		}
 		public set(KZSlayOnEnd value) {
-			SimpleKZ_SetOption(this.id, KZOption_SlayOnEnd, value);
+			SKZ_SetOption(this.id, KZOption_SlayOnEnd, value);
 		}
 	}
 	
 	property KZPistol pistol {
 		public get() {
-			return view_as<KZPistol>(SimpleKZ_GetOption(this.id, KZOption_Pistol));
+			return view_as<KZPistol>(SKZ_GetOption(this.id, KZOption_Pistol));
 		}
 		public set(KZPistol value) {
-			SimpleKZ_SetOption(this.id, KZOption_Pistol, value);
+			SKZ_SetOption(this.id, KZOption_Pistol, value);
 		}
 	}
 	
 	property KZCheckpointMessages checkpointMessages {
 		public get() {
-			return view_as<KZCheckpointMessages>(SimpleKZ_GetOption(this.id, KZOption_CheckpointMessages));
+			return view_as<KZCheckpointMessages>(SKZ_GetOption(this.id, KZOption_CheckpointMessages));
 		}
 		public set(KZCheckpointMessages value) {
-			SimpleKZ_SetOption(this.id, KZOption_CheckpointMessages, value);
+			SKZ_SetOption(this.id, KZOption_CheckpointMessages, value);
 		}
 	}
 	
 	property KZCheckpointSounds checkpointSounds {
 		public get() {
-			return view_as<KZCheckpointSounds>(SimpleKZ_GetOption(this.id, KZOption_CheckpointSounds));
+			return view_as<KZCheckpointSounds>(SKZ_GetOption(this.id, KZOption_CheckpointSounds));
 		}
 		public set(KZCheckpointSounds value) {
-			SimpleKZ_SetOption(this.id, KZOption_CheckpointSounds, value);
+			SKZ_SetOption(this.id, KZOption_CheckpointSounds, value);
 		}
 	}
 	
 	property KZTeleportSounds teleportSounds {
 		public get() {
-			return view_as<KZTeleportSounds>(SimpleKZ_GetOption(this.id, KZOption_TeleportSounds));
+			return view_as<KZTeleportSounds>(SKZ_GetOption(this.id, KZOption_TeleportSounds));
 		}
 		public set(KZTeleportSounds value) {
-			SimpleKZ_SetOption(this.id, KZOption_TeleportSounds, value);
+			SKZ_SetOption(this.id, KZOption_TeleportSounds, value);
 		}
 	}
 	
 	property KZTimerText timerText {
 		public get() {
-			return view_as<KZTimerText>(SimpleKZ_GetOption(this.id, KZOption_TimerText));
+			return view_as<KZTimerText>(SKZ_GetOption(this.id, KZOption_TimerText));
 		}
 		public set(KZTimerText value) {
-			SimpleKZ_SetOption(this.id, KZOption_TimerText, value);
+			SKZ_SetOption(this.id, KZOption_TimerText, value);
 		}
 	}
 	
@@ -266,13 +327,13 @@ methodmap KZPlayer __nullable__ {
 	
 	property bool hitPerf {
 		public get() {
-			return SimpleKZ_GetHitPerf(this.id);
+			return SKZ_GetHitPerf(this.id);
 		}
 	}
 	
 	property int db_playerID {
 		public get() {
-			return SimpleKZ_GetPlayerID(this.id);
+			return SKZ_GetPlayerID(this.id);
 		}
 	}
 } 

@@ -1,10 +1,13 @@
-/*    
-    Button Press
-    
-    Start and end button press detection.
+/*	
+	Button Press
+	
+	Start and end button press detection. Lets players press buttons without looking.
 */
 
-void CheckForTimerButtonPress(int client)
+#define DISTANCE_BUTTON_PRESS_CHECK 40.0 // Max distance from saved press position to detect a press
+
+// Detects and handles if the player has tried to press a start of end button.
+void ButtonPressCheck(int client)
 {
 	// If just pressed +use button
 	if (!(gI_OldButtons[client] & IN_USE) && GetClientButtons(client) & IN_USE)

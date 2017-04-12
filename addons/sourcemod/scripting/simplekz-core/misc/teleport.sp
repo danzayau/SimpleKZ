@@ -1,33 +1,11 @@
-/*    
-    Teleporting
-    
-    Checkpoints and teleporting functionality.
+/*	
+	Teleporting
+	
+	Checkpoints and teleporting functionality.
 */
 
-void TimerDoTeleport(int client, float destination[3], float eyeAngles[3])
-{
-	// Store old variables here to avoid incorrect behaviour when teleporting to undo position
-	float oldOrigin[3], oldAngles[3];
-	g_MovementPlayer[client].GetOrigin(oldOrigin);
-	g_MovementPlayer[client].GetEyeAngles(oldAngles);
-	
-	TeleportEntity(client, destination, eyeAngles, view_as<float>( { 0.0, 0.0, -50.0 } ));
-	CreateTimer(0.0, ZeroVelocity, client); // Prevent booster exploits
-	gI_TeleportsUsed[client]++;
-	// Store position for undo
-	if (g_MovementPlayer[client].onGround)
-	{
-		gB_LastTeleportOnGround[client] = true;
-		gF_UndoOrigin[client] = oldOrigin;
-		gF_UndoAngle[client] = oldAngles;
-	}
-	else
-	{
-		gB_LastTeleportOnGround[client] = false;
-	}
-	
-	Call_SimpleKZ_OnPlayerTeleport(client);
-}
+#define SOUND_CHECKPOINT "buttons/blip1.wav"
+#define SOUND_TELEPORT "buttons/blip1.wav"
 
 void TeleportToStart(int client)
 {
@@ -49,7 +27,7 @@ void TeleportToStart(int client)
 			gB_TimerRunning[client] = false;
 		}
 		AddWastedTimeTeleportToStart(client);
-		TimerDoTeleport(client, gF_StartOrigin[client], gF_StartAngles[client]);
+		DoTeleport(client, gF_StartOrigin[client], gF_StartAngles[client]);
 		if (g_AutoRestart[client] == KZAutoRestart_Enabled)
 		{
 			TimerStart(client, gI_LastCourseStarted[client]);
@@ -107,7 +85,7 @@ void TeleportToCheckpoint(int client)
 	else
 	{
 		AddWastedTimeTeleportToCheckpoint(client);
-		TimerDoTeleport(client, gF_CheckpointOrigin[client], gF_CheckpointAngles[client]);
+		DoTeleport(client, gF_CheckpointOrigin[client], gF_CheckpointAngles[client]);
 		if (g_TeleportSounds[client] == KZTeleportSounds_Enabled)
 		{
 			EmitSoundToClient(client, SOUND_TELEPORT);
@@ -129,7 +107,7 @@ void UndoTeleport(int client)
 	else
 	{
 		AddWastedTimeUndoTeleport(client);
-		TimerDoTeleport(client, gF_UndoOrigin[client], gF_UndoAngle[client]);
+		DoTeleport(client, gF_UndoOrigin[client], gF_UndoAngle[client]);
 		if (g_TeleportSounds[client])
 		{
 			EmitSoundToClient(client, SOUND_TELEPORT);

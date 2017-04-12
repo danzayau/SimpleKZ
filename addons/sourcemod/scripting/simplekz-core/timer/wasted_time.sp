@@ -1,7 +1,7 @@
-/*    
-    Wasted Time
-    
-    Keep track of time wasted when teleporting back to checkpoints.
+/*	
+	Wasted Time
+	
+	Keep track of time wasted when teleporting back to checkpoints.
 */
 
 void AddWastedTimeTeleportToStart(int client)
@@ -52,6 +52,10 @@ void AddWastedTimeUndoTeleport(int client)
 	gF_LastUndoWastedTime[client] = addedWastedTime;
 	gF_LastUndoTime[client] = gF_CurrentTime[client];
 }
+
+
+
+/*===============================  Static Functions  ===============================*/
 
 static bool UndoWasLatestTeleport(int client)
 {

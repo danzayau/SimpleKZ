@@ -4,27 +4,6 @@
 */
 
 
-/*===============================  General  ===============================*/
-
-bool IsValidClient(int client) {
-	return 1 <= client && client <= MaxClients && IsClientInGame(client);
-}
-
-void String_ToLower(const char[] input, char[] output, int size) {
-	size--;
-	int i = 0;
-	while (input[i] != '\0' && i < size) {
-		output[i] = CharToLower(input[i]);
-		i++;
-	}
-	output[i] = '\0';
-}
-
-void FakePrecacheSound(const char[] relativeSoundPath) {
-	AddToStringTable(FindStringTable("soundprecache"), relativeSoundPath);
-}
-
-
 
 /*===============================  Client  ===============================*/
 
@@ -46,7 +25,7 @@ void EmitSoundToClientSpectators(int client, const char[] sound) {
 
 void UpdateCompletionMVPStars(int client) {
 	// Sets the player's MVP stars as the percentage PRO completion on the server's default style
-	DB_GetCompletion(client, client, SimpleKZ_GetDefaultStyle(), false);
+	DB_GetCompletion(client, client, SKZ_GetDefaultStyle(), false);
 }
 
 
@@ -94,7 +73,7 @@ void AnnounceNewPersonalBest(int client, int course, KZStyle style, KZTimeType t
 					CPrintToChat(client, " %t", "New PB - First Time", client, rank, maxRank, gC_StylePhrases[style]);
 				}
 				else {
-					CPrintToChat(client, " %t", "New PB - Improve", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
+					CPrintToChat(client, " %t", "New PB - Improve", client, SKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
 				}
 			}
 			case KZTimeType_Pro: {
@@ -105,7 +84,7 @@ void AnnounceNewPersonalBest(int client, int course, KZStyle style, KZTimeType t
 					EmitSoundToClientSpectators(client, REL_SOUNDPATH_BEAT_MAP);
 				}
 				else {
-					CPrintToChatAll(" %t", "New PB - Improve (Pro)", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
+					CPrintToChatAll(" %t", "New PB - Improve (Pro)", client, SKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
 				}
 			}
 		}
@@ -118,7 +97,7 @@ void AnnounceNewPersonalBest(int client, int course, KZStyle style, KZTimeType t
 					CPrintToChat(client, " %t", "New PB - First Time", client, rank, maxRank, gC_StylePhrases[style]);
 				}
 				else {
-					CPrintToChat(client, " %t", "New PB - Improve", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
+					CPrintToChat(client, " %t", "New PB - Improve", client, SKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
 				}
 			}
 			case KZTimeType_Pro: {
@@ -128,7 +107,7 @@ void AnnounceNewPersonalBest(int client, int course, KZStyle style, KZTimeType t
 					EmitSoundToClientSpectators(client, REL_SOUNDPATH_BEAT_MAP);
 				}
 				else {
-					CPrintToChatAll(" %t", "New PB - Improve (Pro)", client, SimpleKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
+					CPrintToChatAll(" %t", "New PB - Improve (Pro)", client, SKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
 				}
 			}
 		}

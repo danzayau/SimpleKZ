@@ -1,35 +1,47 @@
-/*    
-    Information Panel
-    
-    Centre information panel (hint text).
+/*
+	Information Panel
+	
+	Centre information panel (hint text).
 */
 
-void UpdateInfoPanel(int client)
+// Generates and prints a new info panel for the player, if it's enabled.
+void InfoPanelUpdate(int client)
 {
-	if (g_ShowingInfoPanel[client] == KZShowingInfoPanel_Enabled)
+	if (IsFakeClient(client))
 	{
-		MovementPlayer player = g_MovementPlayer[client];
-		if (IsPlayerAlive(player.id))
+		return;
+	}
+	
+	if (g_ShowingInfoPanel[client] != KZShowingInfoPanel_Enabled)
+	{
+		return;
+	}
+	
+	MovementPlayer player = g_MovementPlayer[client];
+	if (IsPlayerAlive(player.id))
+	{
+		if (g_ShowingKeys[player.id] == KZShowingKeys_Enabled)
 		{
-			if (g_ShowingKeys[player.id] == KZShowingKeys_Enabled)
-			{
-				PrintHintText(player.id, "%s", GetInfoPanelWithKeys(player));
-			}
-			else
-			{
-				PrintHintText(player.id, "%s", GetInfoPanel(player));
-			}
+			PrintHintText(player.id, "%s", GetInfoPanelWithKeys(player));
 		}
 		else
 		{
-			int spectatedPlayer = GetSpectatedClient(player.id);
-			if (IsValidClient(spectatedPlayer))
-			{
-				PrintHintText(player.id, "%s", GetInfoPanelSpectating(g_MovementPlayer[spectatedPlayer]));
-			}
+			PrintHintText(player.id, "%s", GetInfoPanel(player));
+		}
+	}
+	else
+	{
+		int spectatedPlayer = GetSpectatedClient(player.id);
+		if (IsValidClient(spectatedPlayer))
+		{
+			PrintHintText(player.id, "%s", GetInfoPanelSpectating(g_MovementPlayer[spectatedPlayer]));
 		}
 	}
 }
+
+
+
+/*===============================  Static Functions  ===============================*/
 
 static char[] GetInfoPanel(MovementPlayer player)
 {
@@ -82,14 +94,14 @@ static char[] GetTimeString(MovementPlayer player)
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#ffdd99'>%s</font>", 
 					"Info Panel Text - Time", player.id, 
-					SimpleKZ_FormatTime(gF_CurrentTime[player.id]));
+					SKZ_FormatTime(gF_CurrentTime[player.id]));
 			}
 			case KZTimeType_Pro:
 			{
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#6699ff'>%s</font>", 
 					"Info Panel Text - Time", player.id, 
-					SimpleKZ_FormatTime(gF_CurrentTime[player.id]));
+					SKZ_FormatTime(gF_CurrentTime[player.id]));
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 /* 	Simple KZ Core Include File
 	Author: DanZay
 	
-	Plugin Version: 0.10.2
+	Plugin Version: 0.11.0
 	Plugin Website: https://github.com/danzayau/SimpleKZ	
 */
 
@@ -121,7 +121,7 @@ enum KZTimerText {
  * @param client			Client entity index.
  * @noreturn
  */
-forward void SimpleKZ_OnClientSetup(int client);
+forward void SKZ_OnClientSetup(int client);
 
 /**
  * Called when the player changes an option.
@@ -131,7 +131,7 @@ forward void SimpleKZ_OnClientSetup(int client);
  * @param newValue			The new value of the option.
  * @noreturn
  */
-forward void SimpleKZ_OnChangeOption(int client, KZOption option, any newValue);
+forward void SKZ_OnChangeOption(int client, KZOption option, any newValue);
 
 /**
  * Called when the player hits a plugin-based perfect b-hop.
@@ -139,7 +139,7 @@ forward void SimpleKZ_OnChangeOption(int client, KZOption option, any newValue);
  * @param client			Client entity index.
  * @noreturn
  */
-forward void SimpleKZ_OnPlayerPerfectBunnyhop(int client);
+forward void SKZ_OnPlayerPerfectBunnyhop(int client);
 
 /**
  * Called when the player starts their timer.
@@ -149,7 +149,7 @@ forward void SimpleKZ_OnPlayerPerfectBunnyhop(int client);
  * @param style				The movement style of the player.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerStart(int client, int course, KZStyle style);
+forward void SKZ_OnTimerStart(int client, int course, KZStyle style);
 
 /**
  * Called when the player ends their timer.
@@ -162,7 +162,7 @@ forward void SimpleKZ_OnTimerStart(int client, int course, KZStyle style);
  * @param theoreticalTime	Theoretical end time without using teleports.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerEnd(int client, int course, KZStyle style, float time, int teleportsUsed, float theoreticalTime);
+forward void SKZ_OnTimerEnd(int client, int course, KZStyle style, float time, int teleportsUsed, float theoreticalTime);
 
 /**
  * Called when the player's timer has been force stopped (without finishing the map).
@@ -170,7 +170,7 @@ forward void SimpleKZ_OnTimerEnd(int client, int course, KZStyle style, float ti
  * @param client			Client entity index.
  * @noreturn
  */
-forward void SimpleKZ_OnTimerForceStop(int client);
+forward void SKZ_OnTimerForceStop(int client);
 
 /**
  * Called when the player pauses.
@@ -178,7 +178,7 @@ forward void SimpleKZ_OnTimerForceStop(int client);
  * @param client			Client entity index.
  * @noreturn
  */
-forward void SimpleKZ_OnPlayerPause(int client);
+forward void SKZ_OnPlayerPause(int client);
 
 /**
  * Called when the player resumes.
@@ -186,15 +186,7 @@ forward void SimpleKZ_OnPlayerPause(int client);
  * @param client			Client entity index.
  * @noreturn
  */
-forward void SimpleKZ_OnPlayerResume(int client);
-
-/**
- * Called when the player is teleported due to a SimpleKZ timer command.
- *
- * @param client			Client entity index.
- * @noreturn
- */
-forward void SimpleKZ_OnPlayerTeleport(int client);
+forward void SKZ_OnPlayerResume(int client);
 
 
 
@@ -206,7 +198,7 @@ forward void SimpleKZ_OnPlayerTeleport(int client);
  * @param client			Client entity index.
  * @return					whether or not the player's latest jump was a perfect b-hop.
  */
-native bool SimpleKZ_GetHitPerf(int client);
+native bool SKZ_GetHitPerf(int client);
 
 /**
  * Starts the player's timer for a course on the current map.
@@ -215,7 +207,7 @@ native bool SimpleKZ_GetHitPerf(int client);
  * @param course    		Course number (0 = main, 1+ = bonus).
  * @noreturn
  */
-native void SimpleKZ_StartTimer(int client, int course);
+native void SKZ_StartTimer(int client, int course);
 
 /**
  * Ends the player's timer for a course on the current map.
@@ -225,7 +217,7 @@ native void SimpleKZ_StartTimer(int client, int course);
  * @param course    		Course number (0 = main, 1+ = bonus).
  * @noreturn
  */
-native void SimpleKZ_EndTimer(int client, int course);
+native void SKZ_EndTimer(int client, int course);
 
 /**
  * Forces the player's timer to stop.
@@ -234,7 +226,7 @@ native void SimpleKZ_EndTimer(int client, int course);
  * @param client    		Client entity index.
  * @return					Whether or not the player's timer was stopped.
  */
-native bool SimpleKZ_ForceStopTimer(int client);
+native bool SKZ_ForceStopTimer(int client);
 
 /**
  * Forces all players' timers to stop.
@@ -243,7 +235,7 @@ native bool SimpleKZ_ForceStopTimer(int client);
  * @param client    		Client entity index.
  * @noreturn
  */
-native void SimpleKZ_ForceStopTimerAll(int client);
+native void SKZ_ForceStopTimerAll(int client);
 
 /**
  * Gets whether or not the player's timer is running i.e. isn't 'stopped' (regardless of paused state).
@@ -251,7 +243,7 @@ native void SimpleKZ_ForceStopTimerAll(int client);
  * @param client    		Client entity index.
  * @return					Whether or not the player's timer is running.
  */
-native bool SimpleKZ_GetTimerRunning(int client);
+native bool SKZ_GetTimerRunning(int client);
 
 /**
  * Gets what course the player is currently running.
@@ -259,7 +251,7 @@ native bool SimpleKZ_GetTimerRunning(int client);
  * @param client    		Client entity index.
  * @return					Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
  */
-native bool SimpleKZ_GetCurrentCourse(int client);
+native bool SKZ_GetCurrentCourse(int client);
 
 /**
  * Gets whether or not the player is paused.
@@ -267,7 +259,7 @@ native bool SimpleKZ_GetCurrentCourse(int client);
  * @param client    		Client entity index.
  * @return					Whether or not the player is paused.
  */
-native bool SimpleKZ_GetPaused(int client);
+native bool SKZ_GetPaused(int client);
 
 /**
  * Gets the player's current run time.
@@ -276,7 +268,7 @@ native bool SimpleKZ_GetPaused(int client);
  * @param client    		Client entity index.
  * @return					The player's current run time.
  */
-native float SimpleKZ_GetCurrentTime(int client);
+native float SKZ_GetCurrentTime(int client);
 
 /**
  * Gets the player's current checkpoint count.
@@ -285,7 +277,7 @@ native float SimpleKZ_GetCurrentTime(int client);
  * @param client    		Client entity index.
  * @return					The player's current checkpoint count.
  */
-native int SimpleKZ_GetCheckpointCount(int client);
+native int SKZ_GetCheckpointCount(int client);
 
 /**
  * Teleports the player to their start position or else respawns them.
@@ -293,7 +285,7 @@ native int SimpleKZ_GetCheckpointCount(int client);
  * @param client    		Client entity index.
  * @noreturn
  */
-native void SimpleKZ_TeleportToStart(int client);
+native void SKZ_TeleportToStart(int client);
 
 /**
  * Tries to set a new checkpoint at the player's current position.
@@ -301,7 +293,7 @@ native void SimpleKZ_TeleportToStart(int client);
  * @param client    		Client entity index.
  * @noreturn
  */
-native void SimpleKZ_MakeCheckpoint(int client);
+native void SKZ_MakeCheckpoint(int client);
 
 /**
  * Teleports the player to their latest checkpoint.
@@ -309,7 +301,7 @@ native void SimpleKZ_MakeCheckpoint(int client);
  * @param client    		Client entity index.
  * @noreturn
  */
-native void SimpleKZ_TeleportToCheckpoint(int client);
+native void SKZ_TeleportToCheckpoint(int client);
 
 /**
  * Undoes the player's last teleport by teleporting them back.
@@ -317,7 +309,7 @@ native void SimpleKZ_TeleportToCheckpoint(int client);
  * @param client    		Client entity index.
  * @noreturn
  */
-native void SimpleKZ_UndoTeleport(int client);
+native void SKZ_UndoTeleport(int client);
 
 /**
  * Tries to pause the player's timer (pausing freezes the player if they aren't on a time).
@@ -325,7 +317,7 @@ native void SimpleKZ_UndoTeleport(int client);
  * @param client    		Client entity index.
  * @noreturn
  */
-native void SimpleKZ_Pause(int client);
+native void SKZ_Pause(int client);
 
 /**
  * Resumes the player's timer.
@@ -333,7 +325,7 @@ native void SimpleKZ_Pause(int client);
  * @param client    		Client entity index.
  * @noreturn
  */
-native void SimpleKZ_Resume(int client);
+native void SKZ_Resume(int client);
 
 /**
  * Toggles the paused state of the player.
@@ -341,14 +333,14 @@ native void SimpleKZ_Resume(int client);
  * @param client    		Client entity index.
  * @noreturn
  */
-native void SimpleKZ_TogglePause(int client);
+native void SKZ_TogglePause(int client);
 
 /**
  * Gets the default movement style as set by convar kz_default_style.
  *
  * @return					The default movement style (see KZStyle enumeration).
  */
-native KZStyle SimpleKZ_GetDefaultStyle();
+native KZStyle SKZ_GetDefaultStyle();
 
 /**
  * Gets the current value of a player's option. Note that this
@@ -359,7 +351,7 @@ native KZStyle SimpleKZ_GetDefaultStyle();
  * @param option			The SimpleKZ option (see KZOption enumeration).
  * @return					The current value of a player's option.
  */
-native int SimpleKZ_GetOption(int client, KZOption option);
+native int SKZ_GetOption(int client, KZOption option);
 
 /**
  * Sets the player's option value.
@@ -369,4 +361,4 @@ native int SimpleKZ_GetOption(int client, KZOption option);
  * @param optionValue		What to set the player's option to.
  * @noreturn
  */
-native void SimpleKZ_SetOption(int client, KZOption option, any optionValue); 
+native void SKZ_SetOption(int client, KZOption option, any optionValue); 

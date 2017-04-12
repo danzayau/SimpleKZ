@@ -1,27 +1,33 @@
-/*    
-    Pistol Menu
-    
-    Lets players pick and be given a pistol.
+/*
+	Pistol Menu
+	
+	Lets players pick and be given a pistol.
 */
 
 void CreatePistolMenuAll()
 {
-	for (int client = 1; client <= MaxClients; client++) {
+	for (int client = 1; client <= MaxClients; client++)
+	{
 		CreatePistolMenu(client);
 	}
 }
 
-static void CreatePistolMenu(int client)
+void DisplayPistolMenu(int client)
 {
-	g_PistolMenu[client] = new Menu(MenuHandler_Pistol);
+	UpdatePistolMenu(client, g_PistolMenu[client]);
+	g_PistolMenu[client].Display(client, MENU_TIME_FOREVER);
 }
+
+
+
+/*===============================  Public Callbacks  ===============================*/
 
 public int MenuHandler_Pistol(Menu menu, MenuAction action, int param1, int param2)
 {
 	if (action == MenuAction_Select)
 	{
 		g_Pistol[param1] = view_as<KZPistol>(param2);
-		GivePlayerPistol(param1, view_as<KZPistol>(param2));
+		PistolUpdate(param1);
 		DisplayPistolMenu(param1);
 	}
 	else if (action == MenuAction_Cancel && gB_CameFromOptionsMenu[param1])
@@ -31,10 +37,13 @@ public int MenuHandler_Pistol(Menu menu, MenuAction action, int param1, int para
 	}
 }
 
-void DisplayPistolMenu(int client)
+
+
+/*===============================  Static Functions  ===============================*/
+
+static void CreatePistolMenu(int client)
 {
-	UpdatePistolMenu(client, g_PistolMenu[client]);
-	g_PistolMenu[client].Display(client, MENU_TIME_FOREVER);
+	g_PistolMenu[client] = new Menu(MenuHandler_Pistol);
 }
 
 static void UpdatePistolMenu(int client, Menu menu)

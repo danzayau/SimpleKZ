@@ -207,11 +207,11 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 	CloseHandle(data);
 	
 	// Client is no longer valid so don't continue
-	if (!IsValidClient(client) || playerID != SimpleKZ_GetPlayerID(client)) {
+	if (!IsValidClient(client) || playerID != SKZ_GetPlayerID(client)) {
 		return;
 	}
 	
-	float runTime = SimpleKZ_TimeIntToFloat(runTimeMS);
+	float runTime = SKZ_TimeIntToFloat(runTimeMS);
 	
 	bool newPB = false;
 	bool firstTime = false;
@@ -232,7 +232,7 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 			newPB = true;
 			// Time they just beat is second row
 			SQL_FetchRow(results[0]);
-			improvement = SimpleKZ_TimeIntToFloat(SQL_FetchInt(results[0], 0) - runTimeMS);
+			improvement = SKZ_TimeIntToFloat(SQL_FetchInt(results[0], 0) - runTimeMS);
 		}
 	}
 	else {  // Only 1 row (the time they just got) so this is their first time
@@ -257,7 +257,7 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 				newPBPro = true;
 				// Time they just beat is second row
 				SQL_FetchRow(results[3]);
-				improvementPro = SimpleKZ_TimeIntToFloat(SQL_FetchInt(results[3], 0) - runTimeMS);
+				improvementPro = SKZ_TimeIntToFloat(SQL_FetchInt(results[3], 0) - runTimeMS);
 			}
 		}
 		else {  // Only 1 row (the time they just got)
@@ -276,31 +276,31 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 	// Call OnNewPersonalBest forward (KZTimeType_Normal)
 	if (newPB) {
 		if (firstTime) {
-			Call_SimpleKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Normal, true, runTime, -1.0, rank, maxRank);
+			Call_SKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Normal, true, runTime, -1.0, rank, maxRank);
 		}
 		else {
-			Call_SimpleKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Normal, false, runTime, improvement, rank, maxRank);
+			Call_SKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Normal, false, runTime, improvement, rank, maxRank);
 		}
 	}
 	// Call OnNewPersonalBest forward (KZTimeType_Pro)
 	if (newPBPro) {
 		if (firstTimePro) {
-			Call_SimpleKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Pro, true, runTime, -1.0, rankPro, maxRankPro);
+			Call_SKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Pro, true, runTime, -1.0, rankPro, maxRankPro);
 		}
 		else {
-			Call_SimpleKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Pro, false, runTime, improvementPro, rankPro, maxRankPro);
+			Call_SKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Pro, false, runTime, improvementPro, rankPro, maxRankPro);
 		}
 	}
 	
 	// Call OnNewRecord forward
 	if ((newPB && rank == 1) && !(newPBPro && rankPro == 1)) {
-		Call_SimpleKZ_OnNewRecord(client, mapID, course, style, KZRecordType_Map, runTime);
+		Call_SKZ_OnNewRecord(client, mapID, course, style, KZRecordType_Map, runTime);
 	}
 	else if (!(newPB && rank == 1) && (newPBPro && rankPro == 1)) {
-		Call_SimpleKZ_OnNewRecord(client, mapID, course, style, KZRecordType_Pro, runTime);
+		Call_SKZ_OnNewRecord(client, mapID, course, style, KZRecordType_Pro, runTime);
 	}
 	else if ((newPB && rank == 1) && (newPBPro && rankPro == 1)) {
-		Call_SimpleKZ_OnNewRecord(client, mapID, course, style, KZRecordType_MapAndPro, runTime);
+		Call_SKZ_OnNewRecord(client, mapID, course, style, KZRecordType_MapAndPro, runTime);
 	}
 	
 	// Update PRO Completion [Standard] percentage in scoreboard
@@ -410,9 +410,9 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	if (SQL_GetRowCount(results[3]) > 0) {
 		hasPB = true;
 		if (SQL_FetchRow(results[3])) {
-			runTime = SimpleKZ_TimeIntToFloat(SQL_FetchInt(results[3], 0));
+			runTime = SKZ_TimeIntToFloat(SQL_FetchInt(results[3], 0));
 			teleportsUsed = SQL_FetchInt(results[3], 1);
-			theoreticalRunTime = SimpleKZ_TimeIntToFloat(SQL_FetchInt(results[3], 2));
+			theoreticalRunTime = SKZ_TimeIntToFloat(SQL_FetchInt(results[3], 2));
 		}
 		if (SQL_FetchRow(results[4])) {
 			rank = SQL_FetchInt(results[4], 0);
@@ -425,7 +425,7 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	if (SQL_GetRowCount(results[6]) > 0) {
 		hasPBPro = true;
 		if (SQL_FetchRow(results[6])) {
-			runTimePro = SimpleKZ_TimeIntToFloat(SQL_FetchInt(results[6], 0));
+			runTimePro = SKZ_TimeIntToFloat(SQL_FetchInt(results[6], 0));
 		}
 		if (SQL_FetchRow(results[7])) {
 			rankPro = SQL_FetchInt(results[7], 0);
@@ -448,15 +448,15 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 		CPrintToChat(client, "  %t", "PB Time - No Times");
 	}
 	else if (!hasPBPro) {
-		CPrintToChat(client, "  %t", "PB Time - Map", SimpleKZ_FormatTime(runTime), rank, maxRank, teleportsUsed, SimpleKZ_FormatTime(theoreticalRunTime));
+		CPrintToChat(client, "  %t", "PB Time - Map", SKZ_FormatTime(runTime), rank, maxRank, teleportsUsed, SKZ_FormatTime(theoreticalRunTime));
 		CPrintToChat(client, "  %t", "PB Time - No Pro Time");
 	}
 	else if (teleportsUsed == 0) {  // Their MAP PB has 0 teleports, and is therefore also their PRO PB
-		CPrintToChat(client, "  %t", "PB Time - Map (Pro)", SimpleKZ_FormatTime(runTime), rank, maxRank, rankPro, maxRankPro);
+		CPrintToChat(client, "  %t", "PB Time - Map (Pro)", SKZ_FormatTime(runTime), rank, maxRank, rankPro, maxRankPro);
 	}
 	else {
-		CPrintToChat(client, "  %t", "PB Time - Map", SimpleKZ_FormatTime(runTime), rank, maxRank, teleportsUsed, SimpleKZ_FormatTime(theoreticalRunTime));
-		CPrintToChat(client, "  %t", "PB Time - Pro", SimpleKZ_FormatTime(runTimePro), rankPro, maxRankPro);
+		CPrintToChat(client, "  %t", "PB Time - Map", SKZ_FormatTime(runTime), rank, maxRank, teleportsUsed, SKZ_FormatTime(theoreticalRunTime));
+		CPrintToChat(client, "  %t", "PB Time - Pro", SKZ_FormatTime(runTimePro), rankPro, maxRankPro);
 	}
 }
 
@@ -618,7 +618,7 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 		mapHasRecord = true;
 		if (SQL_FetchRow(results[2])) {
 			SQL_FetchString(results[2], 0, recordHolder, sizeof(recordHolder));
-			runTime = SimpleKZ_TimeIntToFloat(SQL_FetchInt(results[2], 1));
+			runTime = SKZ_TimeIntToFloat(SQL_FetchInt(results[2], 1));
 			teleportsUsed = SQL_FetchInt(results[2], 2);
 		}
 	}
@@ -627,7 +627,7 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 		mapHasRecordPro = true;
 		if (SQL_FetchRow(results[3])) {
 			SQL_FetchString(results[3], 0, recordHolderPro, sizeof(recordHolderPro));
-			runTimePro = SimpleKZ_TimeIntToFloat(SQL_FetchInt(results[3], 1));
+			runTimePro = SKZ_TimeIntToFloat(SQL_FetchInt(results[3], 1));
 		}
 	}
 	
@@ -644,15 +644,15 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 		CPrintToChat(client, "  %t", "WR No Times");
 	}
 	else if (!mapHasRecordPro) {
-		CPrintToChat(client, "  %t", "WR Time - Map", SimpleKZ_FormatTime(runTime), teleportsUsed, recordHolder);
+		CPrintToChat(client, "  %t", "WR Time - Map", SKZ_FormatTime(runTime), teleportsUsed, recordHolder);
 		CPrintToChat(client, "  %t", "WR Time - No Pro Time");
 	}
 	else if (teleportsUsed == 0) {
-		CPrintToChat(client, "  %t", "WR Time - Map (Pro)", SimpleKZ_FormatTime(runTimePro), recordHolderPro);
+		CPrintToChat(client, "  %t", "WR Time - Map (Pro)", SKZ_FormatTime(runTimePro), recordHolderPro);
 	}
 	else {
-		CPrintToChat(client, "  %t", "WR Time - Map", SimpleKZ_FormatTime(runTime), teleportsUsed, recordHolder);
-		CPrintToChat(client, "  %t", "WR Time - Pro", SimpleKZ_FormatTime(runTimePro), recordHolderPro);
+		CPrintToChat(client, "  %t", "WR Time - Map", SKZ_FormatTime(runTime), teleportsUsed, recordHolder);
+		CPrintToChat(client, "  %t", "WR Time - Pro", SKZ_FormatTime(runTimePro), recordHolderPro);
 	}
 }
 
@@ -884,21 +884,21 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 	while (SQL_FetchRow(results[2])) {
 		rank++;
 		SQL_FetchString(results[2], 0, playerName, sizeof(playerName));
-		runTime = SimpleKZ_TimeIntToFloat(SQL_FetchInt(results[2], 1));
+		runTime = SKZ_TimeIntToFloat(SQL_FetchInt(results[2], 1));
 		switch (timeType) {
 			case KZTimeType_Normal: {
 				teleports = SQL_FetchInt(results[2], 2);
 				FormatEx(newMenuItem, sizeof(newMenuItem), "#%-2d   %11s  %d TP      %s", 
-					rank, SimpleKZ_FormatTime(runTime), teleports, playerName);
+					rank, SKZ_FormatTime(runTime), teleports, playerName);
 			}
 			case KZTimeType_Pro: {
 				FormatEx(newMenuItem, sizeof(newMenuItem), "#%-2d   %11s   %s", 
-					rank, SimpleKZ_FormatTime(runTime), playerName);
+					rank, SKZ_FormatTime(runTime), playerName);
 			}
 			case KZTimeType_Theoretical: {
 				teleports = SQL_FetchInt(results[2], 2);
 				FormatEx(newMenuItem, sizeof(newMenuItem), "#%-2d   %11s  %d TP      %s", 
-					rank, SimpleKZ_FormatTime(runTime), teleports, playerName);
+					rank, SKZ_FormatTime(runTime), teleports, playerName);
 			}
 		}
 		AddMenuItem(gH_MapTopSubMenu[client], "", newMenuItem, ITEMDRAW_DISABLED);
@@ -1093,7 +1093,7 @@ public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries
 		}
 	}
 	// Set scoreboard MVP stars to percentage PRO completion of server's default style
-	if (totalMainCourses + totalBonuses != 0 && targetPlayerID == SimpleKZ_GetPlayerID(client) && style == SimpleKZ_GetDefaultStyle()) {
+	if (totalMainCourses + totalBonuses != 0 && targetPlayerID == SKZ_GetPlayerID(client) && style == SKZ_GetDefaultStyle()) {
 		CS_SetMVPCount(client, RoundToFloor(float(completionsPro + bonusCompletionsPro) / float(totalMainCourses + totalBonuses) * 100.0));
 	}
 }

@@ -20,16 +20,6 @@ void GetMapName() {
 	String_ToLower(gC_CurrentMap, gC_CurrentMap, sizeof(gC_CurrentMap));
 }
 
-void String_ToLower(const char[] input, char[] output, int size) {
-	size--;
-	int i = 0;
-	while (input[i] != '\0' && i < size) {
-		output[i] = CharToLower(input[i]);
-		i++;
-	}
-	output[i] = '\0';
-}
-
 void CompileRegexes() {
 	gRE_BonusStartButton = CompileRegex("^climb_bonus(\\d+)_startbutton$");
 } 

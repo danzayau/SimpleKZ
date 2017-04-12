@@ -1,7 +1,7 @@
-/*    
-    Style Menu
-    
-    Lets players pick their movement style.
+/*
+	Style Menu
+	
+	Lets players pick their movement style.
 */
 
 void CreateStyleMenuAll()
@@ -12,10 +12,16 @@ void CreateStyleMenuAll()
 	}
 }
 
-static void CreateStyleMenu(int client)
+void DisplayStyleMenu(int client)
 {
-	g_StyleMenu[client] = new Menu(MenuHandler_MovementStyle);
+	g_StyleMenu[client].SetTitle("%T", "Style Menu - Title", client);
+	AddItemsStyleMenu(client, g_StyleMenu[client]);
+	g_StyleMenu[client].Display(client, MENU_TIME_FOREVER);
 }
+
+
+
+/*===============================  Public Callbacks  ===============================*/
 
 public int MenuHandler_MovementStyle(Menu menu, MenuAction action, int param1, int param2)
 {
@@ -29,11 +35,13 @@ public int MenuHandler_MovementStyle(Menu menu, MenuAction action, int param1, i
 	}
 }
 
-void DisplayStyleMenu(int client)
+
+
+/*===============================  Static Functions  ===============================*/
+
+static void CreateStyleMenu(int client)
 {
-	g_StyleMenu[client].SetTitle("%T", "Style Menu - Title", client);
-	AddItemsStyleMenu(client, g_StyleMenu[client]);
-	g_StyleMenu[client].Display(client, MENU_TIME_FOREVER);
+	g_StyleMenu[client] = new Menu(MenuHandler_MovementStyle);
 }
 
 static void AddItemsStyleMenu(int client, Menu menu)

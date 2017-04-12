@@ -13,7 +13,7 @@ public Plugin myinfo =
 	name = "Simple KZ Ranks", 
 	author = "DanZay", 
 	description = "Local ranks module for SimpleKZ.", 
-	version = "0.11.0-dev", 
+	version = "0.11.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -159,25 +159,25 @@ public void OnMapStart() {
 
 /*===============================  SimpleKZ Events  ===============================*/
 
-public void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
+public void SKZ_OnDatabaseConnect(Database database, DatabaseType DBType) {
 	gB_ConnectedToDB = true;
 	gH_DB = database;
 	g_DBType = DBType;
 	DB_CreateTables();
 }
 
-public void SimpleKZ_OnStoreTimeInDB(int client, int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS) {
+public void SKZ_OnStoreTimeInDB(int client, int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS) {
 	DB_ProcessNewTime(client, playerID, mapID, course, style, runTimeMS, teleportsUsed);
 }
 
-public void SimpleKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime) {
-	if (mapID == SimpleKZ_GetCurrentMapID()) {
+public void SKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime) {
+	if (mapID == SKZ_GetCurrentMapID()) {
 		AnnounceNewRecord(client, course, style, recordType);
 	}
 }
 
-public void SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
-	if (mapID == SimpleKZ_GetCurrentMapID() && rank != 1) {
+public void SKZ_OnNewPersonalBest(int client, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank) {
+	if (mapID == SKZ_GetCurrentMapID() && rank != 1) {
 		AnnounceNewPersonalBest(client, course, style, timeType, firstTime, improvement, rank, maxRank);
 	}
 } 

@@ -1,8 +1,10 @@
-/*    
-    Pause
-    
-    Pausing and resuming functionality.
+/*	
+	Pause
+	
+	Pausing and resuming functionality.
 */
+
+#define TIME_PAUSE_COOLDOWN 1.0
 
 void TogglePause(int client)
 {
@@ -44,7 +46,7 @@ void Pause(int client)
 			g_MovementPlayer[client].GetEyeAngles(gF_PauseAngles[client]);
 		}
 		FreezePlayer(client);
-		Call_SimpleKZ_OnPlayerPause(client);
+		Call_SKZ_OnPlayerPause(client);
 	}
 	CloseTPMenu(client);
 }
@@ -69,7 +71,16 @@ void Resume(int client)
 			g_MovementPlayer[client].SetEyeAngles(gF_PauseAngles[client]);
 		}
 		g_MovementPlayer[client].moveType = MOVETYPE_WALK;
-		Call_SimpleKZ_OnPlayerResume(client);
+		Call_SKZ_OnPlayerResume(client);
 	}
 	CloseTPMenu(client);
+}
+
+void PauseOnStartNoclipping(int client)
+{
+	gB_Paused[client] = false; // Player forcefully left paused state by noclipping
+	if (TimerForceStop(client))
+	{
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Noclipped)");
+	}
 } 
