@@ -145,13 +145,14 @@ public Action Timer_SlayPlayer(Handle timer, int client)
 	return Plugin_Continue;
 }
 
-// Removes all velocity from the player.
-public Action Timer_ZeroVelocity(Handle timer, int client)
+// Removes booster stuff from the player.
+public Action Timer_RemoveBoosts(Handle timer, int client)
 {
 	if (IsValidClient(client))
 	{
 		g_KZPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
 		g_KZPlayer[client].SetBaseVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
+		SetEntityGravity(client, 1.0);
 	}
 	return Plugin_Continue;
 }
