@@ -36,10 +36,6 @@ ConVar gCV_PlayerModelT;
 ConVar gCV_PlayerModelCT;
 
 
-/* Mapping API */
-bool gB_CurrentMapIsKZPro;
-
-
 /* Timer */
 bool gB_TimerRunning[MAXPLAYERS + 1];
 float gF_CurrentTime[MAXPLAYERS + 1];
@@ -63,6 +59,13 @@ float gF_LastUndoWastedTime[MAXPLAYERS + 1];
 float gF_LastTeleportToStartTime[MAXPLAYERS + 1];
 float gF_LastTeleportToStartWastedTime[MAXPLAYERS + 1];
 float gF_WastedTime[MAXPLAYERS + 1];
+
+
+/* Map API */
+bool gB_CurrentMapIsKZPro;
+Regex gRE_BonusStartButton;
+Regex gRE_BonusEndButton;
+int gI_JustTouchedTrigMulti[MAXPLAYERS + 1];
 
 
 /* Menus */
@@ -101,8 +104,6 @@ KZTimerText g_TimerText[MAXPLAYERS + 1];
 
 /* Button Press */
 int gI_OldButtons[MAXPLAYERS + 1];
-Regex gRE_BonusStartButton;
-Regex gRE_BonusEndButton;
 bool gB_HasStartedThisMap[MAXPLAYERS + 1];
 bool gB_HasEndedThisMap[MAXPLAYERS + 1];
 float gF_StartButtonOrigin[MAXPLAYERS + 1][3];
@@ -139,10 +140,6 @@ bool gB_MeasurePosSet[MAXPLAYERS + 1][2];
 float gF_MeasurePos[MAXPLAYERS + 1][2][3];
 Handle gH_P2PRed[MAXPLAYERS + 1];
 Handle gH_P2PGreen[MAXPLAYERS + 1];
-
-
-/* No Checkpoints On Bunnyhop Blocks */
-int gI_JustTouchedTrigMulti[MAXPLAYERS + 1];
 
 
 /* Block Radio */

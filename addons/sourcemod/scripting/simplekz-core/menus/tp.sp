@@ -4,7 +4,7 @@
 	Lets players easily use teleport functionality.
 */
 
-void CreateTPMenuAll()
+void TPMenuCreateMenus()
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
@@ -14,12 +14,22 @@ void CreateTPMenuAll()
 
 void TPMenuUpdate(int client)
 {
+	if (gB_TPMenuIsShowing[client])
+	{
+		CancelClientMenu(client);
+		gB_TPMenuIsShowing[client] = false;
+	}
+}
+
+// Re-opens the menu if it's been closed.
+void TPMenuTryDisplay(int client)
+{
 	if (IsFakeClient(client))
 	{
 		return;
 	}
 	
-	// Checks that no other menu instead of rudely interrupting it
+	// Checks that no other menu is open instead of rudely interrupting it
 	if (GetClientMenu(client) == MenuSource_None
 		 && g_ShowingTPMenu[client] == KZShowingTPMenu_Enabled
 		 && !gB_TPMenuIsShowing[client] && IsPlayerAlive(client))
@@ -27,15 +37,6 @@ void TPMenuUpdate(int client)
 		TPMenuUpdateItems(client, g_TPMenu[client]);
 		g_TPMenu[client].Display(client, MENU_TIME_FOREVER);
 		gB_TPMenuIsShowing[client] = true;
-	}
-}
-
-void CloseTPMenu(int client)
-{
-	if (gB_TPMenuIsShowing[client])
-	{
-		CancelClientMenu(client);
-		gB_TPMenuIsShowing[client] = false;
 	}
 }
 

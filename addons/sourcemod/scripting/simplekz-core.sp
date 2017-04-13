@@ -29,7 +29,6 @@ public Plugin myinfo =
 #include "simplekz-core/api.sp"
 #include "simplekz-core/commands.sp"
 #include "simplekz-core/convars.sp"
-#include "simplekz-core/mapping_api.sp"
 #include "simplekz-core/misc.sp"
 #include "simplekz-core/movement_tweak.sp"
 #include "simplekz-core/options.sp"
@@ -38,6 +37,10 @@ public Plugin myinfo =
 #include "simplekz-core/timer/force_stop.sp"
 #include "simplekz-core/timer/pause.sp"
 #include "simplekz-core/timer/wasted_time.sp"
+
+#include "simplekz-core/map/buttons.sp"
+#include "simplekz-core/map/bhop_triggers.sp"
+#include "simplekz-core/map/kzpro.sp"
 
 #include "simplekz-core/hud/hide_csgo_hud.sp"
 #include "simplekz-core/hud/info_panel.sp"
@@ -56,7 +59,6 @@ public Plugin myinfo =
 #include "simplekz-core/misc/hide_players.sp"
 #include "simplekz-core/misc/hide_weapon.sp"
 #include "simplekz-core/misc/measure.sp"
-#include "simplekz-core/misc/no_cp_on_bhop.sp"
 #include "simplekz-core/misc/pistol.sp"
 #include "simplekz-core/misc/player_collision.sp"
 #include "simplekz-core/misc/player_model.sp"
@@ -122,7 +124,7 @@ public void OnClientConnected(int client)
 {
 	OptionsSetupClient(client);
 	TimerSetupClient(client);
-	NoBhopCPSetupClient(client);
+	BhopTriggersSetupClient(client);
 }
 
 public void OnClientPutInServer(int client)
@@ -135,9 +137,9 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	TimerOnPlayerRunCmd(client);
 	MovementTweakOnPlayerRunCmd(client);
 	ButtonPressOnPlayerRunCmd(client);
-	TPMenuUpdate(client);
 	InfoPanelUpdate(client);
 	TimerTextUpdate(client);
+	TPMenuTryDisplay(client);
 }
 
 public Action OnClientSayCommand(int client, const char[] command, const char[] sArgs) {
@@ -153,7 +155,7 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) //
 	PlayerModelUpdate(client);
 	GodModeUpdate(client);
 	PlayerCollisionUpdate(client);
-	CloseTPMenu(client);
+	TPMenuUpdate(client);
 }
 
 public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) // player_death hook
@@ -172,9 +174,15 @@ public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcas
 	PrintDisconnectMessage(event);
 }
 
+public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) // player_team hook
+{
+	SetEventBroadcast(event, true); // Block join team messages
+	return Plugin_Continue;
+}
 
 
-/*===============================  Movement API Forwads  ===============================*/
+
+/*===============================  Movement API Forwards  ===============================*/
 
 public void OnStartTouchGround(int client)
 {
@@ -211,6 +219,7 @@ public void OnMapStart()
 	MeasureOnMapStart();
 	PlayerModelOnMapStart();
 	KZConfigOnMapStart();
+	KZProOnMapStart();
 }
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
@@ -218,17 +227,16 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	return Plugin_Handled; // Stop round from ever ending
 }
 
-public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) // player_team hook
-{
-	SetEventBroadcast(event, true); // Block join team messages
-	return Plugin_Continue;
-}
-
 public void OnRoundStart(Event event, const char[] name, bool dontBroadcast) // round_start hook
 {
 	ForceAllTalkOnRoundStart();
 	TimerForceStopOnRoundStart();
-	MappingAPIUpdate();
+	MapButtonsUpdate();
+}
+
+public void OnTrigMultiTouch(const char[] name, int caller, int activator, float delay)
+{
+	BhopTriggersOnTrigMultiTouch(activator);
 }
 
 
@@ -245,16 +253,16 @@ void CreateKZPlayers()
 
 void CreateRegexes()
 {
-	MappingAPICreateRegexes();
+	MapButtonsCreateRegexes();
 }
 
 void CreateMenus()
 {
-	CreateTPMenuAll();
-	CreateOptionsMenuAll();
-	CreateStyleMenuAll();
-	CreatePistolMenuAll();
-	CreateMeasureMenuAll();
+	TPMenuCreateMenus();
+	OptionsMenuCreateMenus();
+	StyleMenuCreateMenus();
+	PistolMenuCreateMenus();
+	MeasureMenuCreateMenus();
 }
 
 void CreateHooks()
@@ -263,10 +271,10 @@ void CreateHooks()
 	HookEvent("player_death", OnPlayerDeath, EventHookMode_Pre);
 	HookEvent("player_connect", OnPlayerConnect, EventHookMode_Pre);
 	HookEvent("player_disconnect", OnPlayerDisconnect, EventHookMode_Pre);
-	HookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);
 	HookEvent("round_start", OnRoundStart, EventHookMode_Pre);
+	HookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);
+	HookEntityOutput("trigger_multiple", "OnStartTouch", OnTrigMultiTouch);
 	StopSoundsCreateHooks();
-	NoBhopCPCreateHooks();
 }
 
 void CreateCommandListeners()

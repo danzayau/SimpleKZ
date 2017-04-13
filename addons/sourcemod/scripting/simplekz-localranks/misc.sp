@@ -31,18 +31,18 @@ void EmitSoundToClientSpectators(int client, const char[] sound)
 }
 
 // Sets the player's MVP stars as the percentage PRO completion on the server's default style
-void UpdateCompletionMVPStars(int client)
+void CompletionMVPStarsUpdate(int client)
 {
 	DB_GetCompletion(client, SKZ_GetPlayerID(client), SKZ_GetDefaultStyle(), false);
 }
 
-void UpdateCompetionMVPStarsAll()
+void CompletionMVPStarsUpdateAll()
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client) && !IsFakeClient(client))
 		{
-			UpdateCompletionMVPStars(client);
+			CompletionMVPStarsUpdate(client);
 		}
 	}
 }
@@ -117,7 +117,7 @@ void AnnounceNewPersonalBest(int client, int course, KZStyle style, KZTimeType t
 				if (firstTime)
 				{
 					CPrintToChatAll(" %t", "New PB - First Time (Pro)", client, rank, maxRank, gC_StylePhrases[style]);
-					UpdateCompletionMVPStars(client);
+					CompletionMVPStarsUpdate(client);
 					EmitSoundToClient(client, REL_SOUNDPATH_BEAT_MAP);
 					EmitSoundToClientSpectators(client, REL_SOUNDPATH_BEAT_MAP);
 				}

@@ -40,7 +40,7 @@ void JoinTeam(int client, int team)
 			SKZ_ForceStopTimer(client);
 		}
 	}
-	CloseTPMenu(client);
+	TPMenuUpdate(client);
 }
 
 // Returns the player's current run type depending on how many teleports they've used.

@@ -2,6 +2,8 @@
 	Database - Open Player Top 20
 	
 	Opens the menu with top 20 record holders for the time type and given style.
+	See also:
+		menus/playertop.sp
 */
 
 void DB_OpenPlayerTop20(int client, KZTimeType timeType, KZStyle style)
@@ -58,7 +60,7 @@ public void DB_TxnSuccess_OpenPlayerTop20(Handle db, DataPack data, int numQueri
 			case KZTimeType_Pro:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times (Pro)");
 			case KZTimeType_Theoretical:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times");
 		}
-		DisplayPlayerTopMenu(client);
+		PlayerTopMenuDisplay(client);
 		return;
 	}
 	

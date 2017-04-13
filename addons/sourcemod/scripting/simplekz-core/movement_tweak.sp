@@ -129,8 +129,10 @@ static float WeaponVelocityModifier(KZPlayer player)
 	{
 		char weaponName[64];
 		GetEntityClassname(weaponEnt, weaponName, sizeof(weaponName)); // What weapon the client is holding.
+		
 		// Get weapon speed and work out how much to scale the modifier.
-		for (int weaponID = 0; weaponID < sizeof(gC_WeaponNames); weaponID++)
+		int numberOfWeapons = sizeof(gC_WeaponNames);
+		for (int weaponID = 0; weaponID < numberOfWeapons; weaponID++)
 		{
 			if (StrEqual(weaponName, gC_WeaponNames[weaponID]))
 			{

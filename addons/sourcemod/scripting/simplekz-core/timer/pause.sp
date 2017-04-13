@@ -48,7 +48,7 @@ void Pause(int client)
 		FreezePlayer(client);
 		Call_SKZ_OnPlayerPause(client);
 	}
-	CloseTPMenu(client);
+	TPMenuUpdate(client);
 }
 
 void Resume(int client)
@@ -73,7 +73,7 @@ void Resume(int client)
 		g_KZPlayer[client].moveType = MOVETYPE_WALK;
 		Call_SKZ_OnPlayerResume(client);
 	}
-	CloseTPMenu(client);
+	TPMenuUpdate(client);
 }
 
 void PauseOnStartNoclipping(int client)

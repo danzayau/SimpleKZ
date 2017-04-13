@@ -125,18 +125,6 @@ public void OnAllPluginsLoaded()
 	}
 }
 
-public void OnLibraryRemoved(const char[] name)
-{
-	if (StrEqual("simplekz-core", name))
-	{
-		SetFailState("This plugin requires the SimpleKZ Core plugin.");
-	}
-	else if (StrEqual("simplekz-localdb", name))
-	{
-		SetFailState("This plugin requires the SimpleKZ Local DB plugin.");
-	}
-}
-
 
 
 /*===============================  SimpleKZ Forwards  ===============================*/
@@ -146,7 +134,7 @@ public void SKZ_OnDatabaseConnect(Database database, DatabaseType DBType)
 	gH_DB = database;
 	g_DBType = DBType;
 	DB_CreateTables();
-	UpdateCompetionMVPStarsAll();
+	CompletionMVPStarsUpdateAll();
 }
 
 public void SKZ_OnStoreTimeInDB(int client, int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS)
@@ -188,6 +176,6 @@ public void OnMapStart()
 
 void CreateMenus()
 {
-	CreateMapTopMenuAll();
-	CreatePlayerTopMenuAll();
+	MapTopMenuCreateMenus();
+	PlayerTopMenuCreateMenus();
 } 

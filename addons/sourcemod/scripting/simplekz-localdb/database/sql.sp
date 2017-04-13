@@ -1,7 +1,7 @@
 /*	
 	SQL
 	
-	SQL statement templates for database.
+	SQL query templates.
 */
 
 

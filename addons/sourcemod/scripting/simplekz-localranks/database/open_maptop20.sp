@@ -2,6 +2,8 @@
 	Database - Open Map Top 20
 	
 	Opens the menu with the top 20 times for the map course and given style.
+	See also:
+		menus/maptop.sp
 */
 
 void DB_OpenMapTop20(int client, int mapID, int course, KZStyle style, KZTimeType timeType)
@@ -78,7 +80,7 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 			case KZTimeType_Pro:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times (Pro)");
 			case KZTimeType_Theoretical:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times");
 		}
-		DisplayMapTopMenu(client);
+		MapTopMenuDisplay(client);
 		return;
 	}
 	

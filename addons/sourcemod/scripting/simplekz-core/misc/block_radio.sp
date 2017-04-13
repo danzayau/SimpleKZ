@@ -6,7 +6,8 @@
 
 void BlockRadioAddCommandListeners()
 {
-	for (int i = 0; i < sizeof(gC_RadioCommands); i++)
+	int numberOfRadioCommands = sizeof(gC_RadioCommands);
+	for (int i = 0; i < numberOfRadioCommands; i++)
 	{
 		AddCommandListener(CommandBlock, gC_RadioCommands[i]);
 	}

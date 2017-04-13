@@ -2,6 +2,8 @@
 	Database - Open Map Top
 	
 	Opens the map top menu for the map course and given style.
+	See also:
+		menus/maptop.sp
 */
 
 void DB_OpenMapTop(int client, int mapID, int course, KZStyle style)
@@ -62,7 +64,7 @@ public void DB_TxnSuccess_OpenMapTopMenu(Handle db, DataPack data, int numQuerie
 	gI_MapTopMapID[client] = mapID;
 	gI_MapTopCourse[client] = course;
 	g_MapTopStyle[client] = style;
-	DisplayMapTopMenu(client);
+	MapTopMenuDisplay(client);
 }
 
 void DB_OpenMapTop_FindMap(int client, const char[] mapSearch, int course, KZStyle style)

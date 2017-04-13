@@ -1,23 +1,18 @@
 /*
-	No Bunnyhop Checkpoint
+	Bunnyhop Trigger Detection
 	
-	Detects when players are on bunnyhop blocks.
+	Detects when players are on bunnyhop triggers and shouldn't be allowed to checkpoint.
 */
 
 #define TIME_BHOP_TRIGGER_DETECTION 0.2 // Time after touching trigger_multiple to block checkpoints
 
-void NoBhopCPSetupClient(int client)
+void BhopTriggersSetupClient(int client)
 {
 	gI_JustTouchedTrigMulti[client] = 0;
 }
 
-void NoBhopCPCreateHooks()
-{
-	HookEntityOutput("trigger_multiple", "OnStartTouch", OnTrigMultiStartTouch);
-}
-
 // Returns if the plugin thinks the player just touched a b-hop block trigger.
-bool JustTouchedBhopBlock(int client)
+bool BhopTriggersJustTouched(int client)
 {
 	// If just touched trigger_multiple and landed within 0.2 seconds ago
 	if ((gI_JustTouchedTrigMulti[client] > 0)
@@ -28,11 +23,7 @@ bool JustTouchedBhopBlock(int client)
 	return false;
 }
 
-
-
-/*===============================  Public Callbacks  ===============================*/
-
-public void OnTrigMultiStartTouch(const char[] name, int caller, int activator, float delay)
+void BhopTriggersOnTrigMultiTouch(int activator)
 {
 	if (IsValidClient(activator))
 	{
@@ -40,6 +31,10 @@ public void OnTrigMultiStartTouch(const char[] name, int caller, int activator, 
 		CreateTimer(TIME_BHOP_TRIGGER_DETECTION, TrigMultiStartTouchDelayed, activator);
 	}
 }
+
+
+
+/*===============================  Public Callbacks  ===============================*/
 
 public Action TrigMultiStartTouchDelayed(Handle timer, int client)
 {

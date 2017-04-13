@@ -15,7 +15,7 @@ void CreateCommands()
 	RegConsoleCmd("sm_pause", CommandTogglePause, "[KZ] Toggle pausing your timer and stopping you in your position.");
 	RegConsoleCmd("sm_resume", CommandTogglePause, "[KZ] Toggle pausing your timer and stopping you in your position.");
 	RegConsoleCmd("sm_stop", CommandStopTimer, "[KZ] Stop your timer.");
-	RegConsoleCmd("sm_stopsound", CommandStopsound, "[KZ] Stop all sounds e.g. map soundscapes (music).");
+	RegConsoleCmd("sm_stopsound", CommandStopSound, "[KZ] Stop all sounds e.g. map soundscapes (music).");
 	RegConsoleCmd("sm_goto", CommandGoto, "[KZ] Teleport to another player. Usage: !goto <player>");
 	RegConsoleCmd("sm_spec", CommandSpec, "[KZ] Spectate another player. Usage: !spec <player>");
 	RegConsoleCmd("sm_options", CommandOptions, "[KZ] Open up the options menu.");
@@ -102,7 +102,7 @@ public Action CommandStopTimer(int client, int args)
 	return Plugin_Handled;
 }
 
-public Action CommandStopsound(int client, int args)
+public Action CommandStopSound(int client, int args)
 {
 	StopSounds(client);
 	return Plugin_Handled;
@@ -183,7 +183,7 @@ public Action CommandSpec(int client, int args)
 
 public Action CommandOptions(int client, int args)
 {
-	DisplayOptionsMenu(client);
+	OptionsMenuDisplay(client);
 	return Plugin_Handled;
 }
 
@@ -207,13 +207,13 @@ public Action CommandToggleShowWeapon(int client, int args)
 
 public Action CommandMeasureMenu(int client, int args)
 {
-	DisplayMeasureMenu(client);
+	MeasureMenuDisplay(client);
 	return Plugin_Handled;
 }
 
 public Action CommandPistolMenu(int client, int args)
 {
-	DisplayPistolMenu(client);
+	PistolMenuDisplay(client);
 	return Plugin_Handled;
 }
 
@@ -237,7 +237,7 @@ public Action CommandDisableNoclip(int client, int args)
 
 public Action CommandStyle(int client, int args)
 {
-	DisplayStyleMenu(client);
+	StyleMenuDisplay(client);
 	return Plugin_Handled;
 }
 

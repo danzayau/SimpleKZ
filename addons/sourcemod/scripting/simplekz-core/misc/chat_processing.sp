@@ -21,7 +21,8 @@ Action ChatProcessingOnClientSayCommand(int client, const char[] message)
 	if ((message[0] == '/' || message[0] == '!') && IsCharUpper(message[1]))
 	{
 		char newMessage[128];
-		for (int i = 0; i <= strlen(message); i++)
+		int length = strlen(message);
+		for (int i = 0; i <= length; i++)
 		{
 			newMessage[i] = CharToLower(message[i]);
 		}

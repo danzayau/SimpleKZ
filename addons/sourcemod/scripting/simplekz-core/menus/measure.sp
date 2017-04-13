@@ -6,18 +6,18 @@
 	Credits to DaFox (https://forums.alliedmods.net/showthread.php?t=88830?t=88830)
 */
 
-void CreateMeasureMenuAll()
+void MeasureMenuCreateMenus()
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		CreateMeasureMenu(client);
+		MeasureMenuCreate(client);
 	}
 }
 
-void DisplayMeasureMenu(int client)
+void MeasureMenuDisplay(int client)
 {
 	MeasureResetPos(client);
-	UpdateMeasureMenu(client, gH_MeasureMenu[client]);
+	MeasureMenuUpdate(client, gH_MeasureMenu[client]);
 	gH_MeasureMenu[client].Display(client, MENU_TIME_FOREVER);
 }
 
@@ -66,12 +66,12 @@ public int MenuHandler_Measure(Handle menu, MenuAction action, int param1, int p
 
 /*===============================  Static Functions  ===============================*/
 
-static void CreateMeasureMenu(int client)
+static void MeasureMenuCreate(int client)
 {
 	gH_MeasureMenu[client] = new Menu(MenuHandler_Measure);
 }
 
-static void UpdateMeasureMenu(int client, Menu menu)
+static void MeasureMenuUpdate(int client, Menu menu)
 {
 	menu.SetTitle("%T", "Measure Menu - Title", client);
 	

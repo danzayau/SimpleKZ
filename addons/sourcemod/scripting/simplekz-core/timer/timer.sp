@@ -43,7 +43,7 @@ void TimerStart(int client, int course)
 	g_KZPlayer[client].GetEyeAngles(gF_StartAngles[client]);
 	PlayTimerStartSound(client);
 	Call_SKZ_OnTimerStart(client);
-	CloseTPMenu(client);
+	TPMenuUpdate(client);
 }
 
 // Tries to end the player's timer for the specified course.
@@ -60,7 +60,7 @@ void TimerEnd(int client, int course)
 		}
 		PlayTimerEndSound(client);
 		Call_SKZ_OnTimerEnd(client);
-		CloseTPMenu(client);
+		TPMenuUpdate(client);
 	}
 }
 

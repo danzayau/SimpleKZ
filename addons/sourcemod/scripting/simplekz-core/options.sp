@@ -70,7 +70,7 @@ void SetOption(int client, KZOption option, any optionValue)
 			{
 				changedOption = true;
 				g_ShowingTPMenu[client] = optionValue;
-				CloseTPMenu(client);
+				TPMenuUpdate(client);
 			}
 		}
 		case KZOption_ShowingInfoPanel:

@@ -7,16 +7,16 @@
 		database/open_maptop20.sp
 */
 
-void CreateMapTopMenuAll()
+void MapTopMenuCreateMenus()
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		CreateMapTopMenu(client);
-		CreateMapTopSubMenu(client);
+		MapTopMenuCreate(client);
+		MapTopSubMenuCreate(client);
 	}
 }
 
-void DisplayMapTopMenu(int client)
+void MapTopMenuDisplay(int client)
 {
 	if (gI_MapTopCourse[client] == 0)
 	{
@@ -28,7 +28,7 @@ void DisplayMapTopMenu(int client)
 		gH_MapTopMenu[client].SetTitle("%T", "Map Top Menu - Title (Bonus)", client, 
 			gC_MapTopMapName[client], gC_StylePhrases[g_MapTopStyle[client]]);
 	}
-	AddItemsMapTopMenu(client, gH_MapTopMenu[client]);
+	MapTopMenuAddItems(client, gH_MapTopMenu[client]);
 	gH_MapTopMenu[client].Display(client, MENU_TIME_FOREVER);
 }
 
@@ -48,7 +48,7 @@ public int MenuHandler_MapTopSubmenu(Menu menu, MenuAction action, int param1, i
 {
 	if (action == MenuAction_Cancel && param2 == MenuCancel_Exit)
 	{
-		DisplayMapTopMenu(param1);
+		MapTopMenuDisplay(param1);
 	}
 }
 
@@ -56,18 +56,18 @@ public int MenuHandler_MapTopSubmenu(Menu menu, MenuAction action, int param1, i
 
 /*===============================  Static Functions  ===============================*/
 
-static void CreateMapTopMenu(int client)
+static void MapTopMenuCreate(int client)
 {
 	gH_MapTopMenu[client] = new Menu(MenuHandler_MapTop);
 }
 
-static void CreateMapTopSubMenu(int client)
+static void MapTopSubMenuCreate(int client)
 {
 	gH_MapTopSubMenu[client] = new Menu(MenuHandler_MapTopSubmenu);
 	gH_MapTopSubMenu[client].Pagination = 5;
 }
 
-static void AddItemsMapTopMenu(int client, Menu menu)
+static void MapTopMenuAddItems(int client, Menu menu)
 {
 	char text[32];
 	menu.RemoveAllItems();

@@ -4,18 +4,18 @@
 	Lets players pick and be given a pistol.
 */
 
-void CreatePistolMenuAll()
+void PistolMenuCreateMenus()
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		CreatePistolMenu(client);
+		PistolMenuCreate(client);
 	}
 }
 
-void DisplayPistolMenu(int client)
+void PistolMenuDisplay(int client, int atItem = 0)
 {
-	UpdatePistolMenu(client, g_PistolMenu[client]);
-	g_PistolMenu[client].Display(client, MENU_TIME_FOREVER);
+	PistolMenuUpdate(client, g_PistolMenu[client]);
+	g_PistolMenu[client].DisplayAt(client, atItem, MENU_TIME_FOREVER);
 }
 
 
@@ -28,12 +28,12 @@ public int MenuHandler_Pistol(Menu menu, MenuAction action, int param1, int para
 	{
 		g_Pistol[param1] = view_as<KZPistol>(param2);
 		PistolUpdate(param1);
-		DisplayPistolMenu(param1);
+		PistolMenuDisplay(param1); // Re-open
 	}
 	else if (action == MenuAction_Cancel && gB_CameFromOptionsMenu[param1])
 	{
 		gB_CameFromOptionsMenu[param1] = false;
-		DisplayOptionsMenu(param1);
+		OptionsMenuDisplay(param1);
 	}
 }
 
@@ -41,16 +41,18 @@ public int MenuHandler_Pistol(Menu menu, MenuAction action, int param1, int para
 
 /*===============================  Static Functions  ===============================*/
 
-static void CreatePistolMenu(int client)
+static void PistolMenuCreate(int client)
 {
 	g_PistolMenu[client] = new Menu(MenuHandler_Pistol);
 }
 
-static void UpdatePistolMenu(int client, Menu menu)
+static void PistolMenuUpdate(int client, Menu menu)
 {
 	menu.SetTitle("%T", "Pistol Menu - Title", client);
 	menu.RemoveAllItems();
-	for (int pistol = 0; pistol < sizeof(gC_Pistols); pistol++) {
+	
+	int numberOfPistols = sizeof(gC_Pistols);
+	for (int pistol = 0; pistol < numberOfPistols; pistol++) {
 		menu.AddItem("", gC_Pistols[pistol][1]);
 	}
 } 

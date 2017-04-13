@@ -56,10 +56,10 @@ static bool TimerForceStop(int client)
 {
 	if (gB_TimerRunning[client])
 	{
-		PlayTimerForceStopSound(client);
+		TimerForceStopPlaySound(client);
 		gB_TimerRunning[client] = false;
 		Call_SKZ_OnTimerForceStop(client);
-		CloseTPMenu(client);
+		TPMenuUpdate(client);
 		return true;
 	}
 	return false;
@@ -77,7 +77,7 @@ static void TimerForceStopAll()
 	}
 }
 
-static void PlayTimerForceStopSound(int client)
+static void TimerForceStopPlaySound(int client)
 {
 	EmitSoundToClient(client, SOUND_TIMER_FORCE_STOP);
 	EmitSoundToClientSpectators(client, SOUND_TIMER_FORCE_STOP);

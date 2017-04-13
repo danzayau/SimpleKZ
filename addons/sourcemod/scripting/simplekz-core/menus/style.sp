@@ -4,18 +4,18 @@
 	Lets players pick their movement style.
 */
 
-void CreateStyleMenuAll()
+void StyleMenuCreateMenus()
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		CreateStyleMenu(client);
+		StyleMenuCreate(client);
 	}
 }
 
-void DisplayStyleMenu(int client)
+void StyleMenuDisplay(int client)
 {
 	g_StyleMenu[client].SetTitle("%T", "Style Menu - Title", client);
-	AddItemsStyleMenu(client, g_StyleMenu[client]);
+	StyleMenuAddItems(client, g_StyleMenu[client]);
 	g_StyleMenu[client].Display(client, MENU_TIME_FOREVER);
 }
 
@@ -39,16 +39,18 @@ public int MenuHandler_MovementStyle(Menu menu, MenuAction action, int param1, i
 
 /*===============================  Static Functions  ===============================*/
 
-static void CreateStyleMenu(int client)
+static void StyleMenuCreate(int client)
 {
 	g_StyleMenu[client] = new Menu(MenuHandler_MovementStyle);
 }
 
-static void AddItemsStyleMenu(int client, Menu menu)
+static void StyleMenuAddItems(int client, Menu menu)
 {
 	char text[32];
 	menu.RemoveAllItems();
-	for (int style = 0; style < view_as<int>(KZStyle); style++)
+	
+	int numberOfStyles = view_as<int>(KZStyle);
+	for (int style = 0; style < numberOfStyles; style++)
 	{
 		FormatEx(text, sizeof(text), "%T", gC_StylePhrases[style], client);
 		menu.AddItem("", text, ITEMDRAW_DEFAULT);

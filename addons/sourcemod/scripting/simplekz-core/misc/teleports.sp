@@ -27,7 +27,7 @@ void TeleportToStart(int client)
 			gB_TimerRunning[client] = false;
 		}
 		AddWastedTimeTeleportToStart(client);
-		DoTeleport(client, gF_StartOrigin[client], gF_StartAngles[client]);
+		TeleportDo(client, gF_StartOrigin[client], gF_StartAngles[client]);
 		if (g_AutoRestart[client] == KZAutoRestart_Enabled)
 		{
 			TimerStart(client, gI_LastCourseStarted[client]);
@@ -37,7 +37,7 @@ void TeleportToStart(int client)
 	{
 		CS_RespawnPlayer(client);
 	}
-	CloseTPMenu(client);
+	TPMenuUpdate(client);
 }
 
 void MakeCheckpoint(int client)
@@ -50,7 +50,7 @@ void MakeCheckpoint(int client)
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Midair)");
 	}
-	else if (JustTouchedBhopBlock(client))
+	else if (BhopTriggersJustTouched(client))
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Just Landed)");
 	}
@@ -69,7 +69,7 @@ void MakeCheckpoint(int client)
 			EmitSoundToClient(client, SOUND_TELEPORT);
 		}
 	}
-	CloseTPMenu(client);
+	TPMenuUpdate(client);
 }
 
 void TeleportToCheckpoint(int client)
@@ -85,13 +85,13 @@ void TeleportToCheckpoint(int client)
 	else
 	{
 		AddWastedTimeTeleportToCheckpoint(client);
-		DoTeleport(client, gF_CheckpointOrigin[client], gF_CheckpointAngles[client]);
+		TeleportDo(client, gF_CheckpointOrigin[client], gF_CheckpointAngles[client]);
 		if (g_TeleportSounds[client] == KZTeleportSounds_Enabled)
 		{
 			EmitSoundToClient(client, SOUND_TELEPORT);
 		}
 	}
-	CloseTPMenu(client);
+	TPMenuUpdate(client);
 }
 
 void UndoTeleport(int client)
@@ -107,13 +107,13 @@ void UndoTeleport(int client)
 	else
 	{
 		AddWastedTimeUndoTeleport(client);
-		DoTeleport(client, gF_UndoOrigin[client], gF_UndoAngle[client]);
+		TeleportDo(client, gF_UndoOrigin[client], gF_UndoAngle[client]);
 		if (g_TeleportSounds[client])
 		{
 			EmitSoundToClient(client, SOUND_TELEPORT);
 		}
 	}
-	CloseTPMenu(client);
+	TPMenuUpdate(client);
 }
 
 
@@ -122,7 +122,7 @@ void UndoTeleport(int client)
 
 // Teleports the player (intended for destination on ground).
 // Handles important stuff like storing postion for undo.
-static void DoTeleport(int client, float destination[3], float eyeAngles[3])
+static void TeleportDo(int client, float destination[3], float eyeAngles[3])
 {
 	// Store old variables here to avoid incorrect behaviour when teleporting to undo position
 	float oldOrigin[3], oldAngles[3];

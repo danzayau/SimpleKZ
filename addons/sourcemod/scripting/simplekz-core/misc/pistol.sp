@@ -7,14 +7,14 @@
 // Gives the player the pistol specified by their pistol option.
 void PistolUpdate(int client)
 {
-	GivePlayerPistol(client, g_Pistol[client]);
+	PistolGive(client, g_Pistol[client]);
 }
 
 
 
 /*===============================  Static Functions  ===============================*/
 
-static void GivePlayerPistol(int client, KZPistol pistol)
+static void PistolGive(int client, KZPistol pistol)
 {
 	if (!IsClientInGame(client) || !IsPlayerAlive(client))
 	{

@@ -27,7 +27,7 @@ public Action CommandTop(int client, int args)
 {
 	// Open player top for the player's selected style
 	g_PlayerTopStyle[client] = view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style));
-	DisplayPlayerTopMenu(client);
+	PlayerTopMenuDisplay(client);
 	return Plugin_Handled;
 }
 

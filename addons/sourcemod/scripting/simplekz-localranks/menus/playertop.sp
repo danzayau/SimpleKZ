@@ -6,19 +6,19 @@
 		database/open_playertop20.sp
 */
 
-void CreatePlayerTopMenuAll()
+void PlayerTopMenuCreateMenus()
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		CreatePlayerTopMenu(client);
-		CreatePlayerTopSubMenu(client);
+		PlayerTopMenuCreate(client);
+		PlayerTopSubMenuCreate(client);
 	}
 }
 
-void DisplayPlayerTopMenu(int client)
+void PlayerTopMenuDisplay(int client)
 {
 	gH_PlayerTopMenu[client].SetTitle("%T", "Player Top Menu - Title", client, gC_StylePhrases[g_PlayerTopStyle[client]]);
-	AddItemsPlayerTopMenu(client, gH_PlayerTopMenu[client]);
+	PlayerTopMenuAddItems(client, gH_PlayerTopMenu[client]);
 	gH_PlayerTopMenu[client].Display(client, MENU_TIME_FOREVER);
 }
 
@@ -37,7 +37,7 @@ public int MenuHandler_PlayerTop(Menu menu, MenuAction action, int param1, int p
 public int MenuHandler_PlayerTopSubmenu(Menu menu, MenuAction action, int param1, int param2)
 {
 	if (action == MenuAction_Cancel && param2 == MenuCancel_Exit) {
-		DisplayPlayerTopMenu(param1);
+		PlayerTopMenuDisplay(param1);
 	}
 }
 
@@ -45,18 +45,18 @@ public int MenuHandler_PlayerTopSubmenu(Menu menu, MenuAction action, int param1
 
 /*===============================  Static Functions  ===============================*/
 
-static void CreatePlayerTopMenu(int client)
+static void PlayerTopMenuCreate(int client)
 {
 	gH_PlayerTopMenu[client] = new Menu(MenuHandler_PlayerTop);
 }
 
-static void CreatePlayerTopSubMenu(int client)
+static void PlayerTopSubMenuCreate(int client)
 {
 	gH_PlayerTopSubMenu[client] = new Menu(MenuHandler_PlayerTopSubmenu);
 	gH_PlayerTopSubMenu[client].Pagination = 5;
 }
 
-static void AddItemsPlayerTopMenu(int client, Menu menu)
+static void PlayerTopMenuAddItems(int client, Menu menu)
 {
 	char text[32];
 	menu.RemoveAllItems();
