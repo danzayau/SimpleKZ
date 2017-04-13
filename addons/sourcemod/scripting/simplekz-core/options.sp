@@ -47,10 +47,6 @@ int GetOption(int client, KZOption option)
 // Sets the specified option of the client to the provided value (use the enumerations!)
 void SetOption(int client, KZOption option, any optionValue)
 {
-	// Checks if the option actually needs changing before changing it,
-	// and performs actions required to apply those changes.
-	// In most cases, no action is required.
-	
 	bool changedOption = false;
 	
 	switch (option)
@@ -61,7 +57,6 @@ void SetOption(int client, KZOption option, any optionValue)
 			{
 				changedOption = true;
 				g_Style[client] = optionValue;
-				TimerForceStopOnChangeStyle(client);
 			}
 		}
 		case KZOption_ShowingTPMenu:
@@ -70,7 +65,6 @@ void SetOption(int client, KZOption option, any optionValue)
 			{
 				changedOption = true;
 				g_ShowingTPMenu[client] = optionValue;
-				TPMenuUpdate(client);
 			}
 		}
 		case KZOption_ShowingInfoPanel:
@@ -103,7 +97,6 @@ void SetOption(int client, KZOption option, any optionValue)
 			{
 				changedOption = true;
 				g_ShowingWeapon[client] = optionValue;
-				HideWeaponUpdate(client);
 			}
 		}
 		case KZOption_AutoRestart:
@@ -128,7 +121,6 @@ void SetOption(int client, KZOption option, any optionValue)
 			{
 				changedOption = true;
 				g_Pistol[client] = optionValue;
-				PistolUpdate(client);
 			}
 		}
 		case KZOption_CheckpointMessages:

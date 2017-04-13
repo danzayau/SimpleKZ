@@ -200,6 +200,17 @@ public void SKZ_OnUndoTeleport(int client)
 	WastedTimeOnUndoTeleport(client);
 }
 
+public void SKZ_OnChangeOption(int client, KZOption option, any newValue)
+{
+	switch (option)
+	{
+		case KZOption_Style:TimerForceStopOnChangeStyle(client);
+		case KZOption_ShowingTPMenu:TPMenuUpdate(client);
+		case KZOption_ShowingWeapon:HideWeaponUpdate(client);
+		case KZOption_Pistol:PistolUpdate(client);
+	}
+}
+
 
 
 /*===============================  Movement API Forwards  ===============================*/
