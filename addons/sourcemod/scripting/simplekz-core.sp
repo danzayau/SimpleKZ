@@ -139,7 +139,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	ButtonPressOnPlayerRunCmd(client);
 	InfoPanelUpdate(client);
 	TimerTextUpdate(client);
-	TPMenuTryDisplay(client);
+	TPMenuDisplay(client);
 }
 
 public Action OnClientSayCommand(int client, const char[] command, const char[] sArgs) {
@@ -178,6 +178,26 @@ public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcas
 {
 	SetEventBroadcast(event, true); // Block join team messages
 	return Plugin_Continue;
+}
+
+
+
+/*===============================  SimpleKZ Forwards  ===============================*/
+
+public void SKZ_OnTeleportToStart(int client)
+{
+	TimerForceStopOnTeleportToStart(client);
+	WastedTimeOnTeleportToStart(client);
+}
+
+public void SKZ_OnTeleportToCheckpoint(int client)
+{
+	WastedTimeOnTeleportToCheckpoint(client);
+}
+
+public void SKZ_OnUndoTeleport(int client)
+{
+	WastedTimeOnUndoTeleport(client);
 }
 
 

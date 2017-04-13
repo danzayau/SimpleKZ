@@ -32,6 +32,14 @@ void TimerForceStopOnChangeStyle(int client) // Called from options.sp (SetOptio
 	}
 }
 
+void TimerForceStopOnTeleportToStart(int client)
+{
+	if (gB_CurrentMapIsKZPro)
+	{
+		TimerForceStop(client);
+	}
+}
+
 bool TimerForceStopCommand(int client) // sm_stop command
 {
 	return TimerForceStop(client);

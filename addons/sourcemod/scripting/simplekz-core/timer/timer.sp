@@ -42,26 +42,28 @@ void TimerStart(int client, int course)
 	g_KZPlayer[client].GetOrigin(gF_StartOrigin[client]);
 	g_KZPlayer[client].GetEyeAngles(gF_StartAngles[client]);
 	PlayTimerStartSound(client);
+	
 	Call_SKZ_OnTimerStart(client);
-	TPMenuUpdate(client);
 }
 
 // Tries to end the player's timer for the specified course.
 // It won't do anything if the player's isn't on a time on that course.
 void TimerEnd(int client, int course)
 {
-	if (gB_TimerRunning[client] && course == gI_CurrentCourse[client])
+	if (!gB_TimerRunning[client] || course != gI_CurrentCourse[client])
 	{
-		gB_TimerRunning[client] = false;
-		PrintEndTimeString(client);
-		if (g_SlayOnEnd[client] == KZSlayOnEnd_Enabled)
-		{
-			CreateTimer(3.0, Timer_SlayPlayer, client);
-		}
-		PlayTimerEndSound(client);
-		Call_SKZ_OnTimerEnd(client);
-		TPMenuUpdate(client);
+		return;
 	}
+	
+	gB_TimerRunning[client] = false;
+	PrintEndTimeString(client);
+	if (g_SlayOnEnd[client] == KZSlayOnEnd_Enabled)
+	{
+		CreateTimer(3.0, Timer_SlayPlayer, client);
+	}
+	PlayTimerEndSound(client);
+	
+	Call_SKZ_OnTimerEnd(client);
 }
 
 

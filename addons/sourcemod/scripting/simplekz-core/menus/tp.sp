@@ -21,8 +21,8 @@ void TPMenuUpdate(int client)
 	}
 }
 
-// Re-opens the menu if it's been closed.
-void TPMenuTryDisplay(int client)
+// Re-opens the TP menu if it's been closed.
+void TPMenuDisplay(int client)
 {
 	if (IsFakeClient(client))
 	{
@@ -56,6 +56,7 @@ public int MenuHandler_TPMenu(Menu menu, MenuAction action, int param1, int para
 			case 3:TeleportToStart(param1);
 			case 4:UndoTeleport(param1);
 		}
+		gB_TPMenuIsShowing[param1] = false;
 	}
 	else if (action == MenuAction_Cancel)
 	{

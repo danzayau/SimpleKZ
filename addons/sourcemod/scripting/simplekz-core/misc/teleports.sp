@@ -1,5 +1,5 @@
 /*	
-	Teleporting
+	Teleports
 	
 	Checkpoints and teleporting functionality.
 */
@@ -9,24 +9,16 @@
 
 void TeleportToStart(int client)
 {
-	// Leave spectators if necessary
 	if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
 	{
 		CS_SwitchTeam(client, CS_TEAM_CT);
 	}
 	if (gB_HasStartedThisMap[client])
 	{
-		// Respawn the player if necessary
 		if (!IsPlayerAlive(client))
 		{
 			CS_RespawnPlayer(client);
 		}
-		// Stop the timer if on a kzpro_ map
-		if (gB_CurrentMapIsKZPro)
-		{
-			gB_TimerRunning[client] = false;
-		}
-		AddWastedTimeTeleportToStart(client);
 		TeleportDo(client, gF_StartOrigin[client], gF_StartAngles[client]);
 		if (g_AutoRestart[client] == KZAutoRestart_Enabled)
 		{
@@ -37,7 +29,8 @@ void TeleportToStart(int client)
 	{
 		CS_RespawnPlayer(client);
 	}
-	TPMenuUpdate(client);
+	
+	Call_SKZ_OnTeleportToStart(client);
 }
 
 void MakeCheckpoint(int client)
@@ -45,31 +38,33 @@ void MakeCheckpoint(int client)
 	if (!IsPlayerAlive(client))
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Dead)");
+		return;
 	}
-	else if (!g_KZPlayer[client].onGround)
+	if (!g_KZPlayer[client].onGround)
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Midair)");
+		return;
 	}
-	else if (BhopTriggersJustTouched(client))
+	if (BhopTriggersJustTouched(client))
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Just Landed)");
+		return;
 	}
-	else
+	
+	gI_CheckpointCount[client]++;
+	gF_LastCheckpointTime[client] = gF_CurrentTime[client];
+	g_KZPlayer[client].GetOrigin(gF_CheckpointOrigin[client]);
+	g_KZPlayer[client].GetEyeAngles(gF_CheckpointAngles[client]);
+	
+	Call_SKZ_OnMakeCheckpoint(client);
+	if (g_CheckpointSounds[client] == KZCheckpointSounds_Enabled)
 	{
-		gI_CheckpointCount[client]++;
-		gF_LastCheckpointTime[client] = gF_CurrentTime[client];
-		g_KZPlayer[client].GetOrigin(gF_CheckpointOrigin[client]);
-		g_KZPlayer[client].GetEyeAngles(gF_CheckpointAngles[client]);
-		if (g_CheckpointMessages[client] == KZCheckpointMessages_Enabled)
-		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Make Checkpoint");
-		}
-		if (g_CheckpointSounds[client] == KZCheckpointSounds_Enabled)
-		{
-			EmitSoundToClient(client, SOUND_TELEPORT);
-		}
+		EmitSoundToClient(client, SOUND_TELEPORT);
 	}
-	TPMenuUpdate(client);
+	if (g_CheckpointMessages[client] == KZCheckpointMessages_Enabled)
+	{
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Make Checkpoint");
+	}
 }
 
 void TeleportToCheckpoint(int client)
@@ -78,20 +73,15 @@ void TeleportToCheckpoint(int client)
 	{
 		return;
 	}
-	else if (gB_CurrentMapIsKZPro && gB_TimerRunning[client])
+	if (gB_CurrentMapIsKZPro && gB_TimerRunning[client])
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Teleport (Map)");
+		return;
 	}
-	else
-	{
-		AddWastedTimeTeleportToCheckpoint(client);
-		TeleportDo(client, gF_CheckpointOrigin[client], gF_CheckpointAngles[client]);
-		if (g_TeleportSounds[client] == KZTeleportSounds_Enabled)
-		{
-			EmitSoundToClient(client, SOUND_TELEPORT);
-		}
-	}
-	TPMenuUpdate(client);
+	
+	TeleportDo(client, gF_CheckpointOrigin[client], gF_CheckpointAngles[client]);
+	
+	Call_SKZ_OnTeleportToCheckpoint(client);
 }
 
 void UndoTeleport(int client)
@@ -100,20 +90,15 @@ void UndoTeleport(int client)
 	{
 		return;
 	}
-	else if (!gB_LastTeleportOnGround[client])
+	if (!gB_LastTeleportOnGround[client])
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Undo (TP Was Midair)");
+		return;
 	}
-	else
-	{
-		AddWastedTimeUndoTeleport(client);
-		TeleportDo(client, gF_UndoOrigin[client], gF_UndoAngle[client]);
-		if (g_TeleportSounds[client])
-		{
-			EmitSoundToClient(client, SOUND_TELEPORT);
-		}
-	}
-	TPMenuUpdate(client);
+	
+	TeleportDo(client, gF_UndoOrigin[client], gF_UndoAngle[client]);
+	
+	Call_SKZ_OnUndoTeleport(client);
 }
 
 
@@ -129,7 +114,10 @@ static void TeleportDo(int client, float destination[3], float eyeAngles[3])
 	g_KZPlayer[client].GetOrigin(oldOrigin);
 	g_KZPlayer[client].GetEyeAngles(oldAngles);
 	
-	TeleportEntity(client, destination, eyeAngles, view_as<float>( { 0.0, 0.0, -50.0 } ));
+	g_KZPlayer[client].SetOrigin(destination);
+	g_KZPlayer[client].SetEyeAngles(eyeAngles);
+	g_KZPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, -50.0 } ));
+	
 	CreateTimer(0.0, Timer_ZeroVelocity, client); // Prevent booster exploits
 	gI_TeleportsUsed[client]++;
 	// Store position for undo
@@ -142,5 +130,10 @@ static void TeleportDo(int client, float destination[3], float eyeAngles[3])
 	else
 	{
 		gB_LastTeleportOnGround[client] = false;
+	}
+	
+	if (g_TeleportSounds[client])
+	{
+		EmitSoundToClient(client, SOUND_TELEPORT);
 	}
 } 

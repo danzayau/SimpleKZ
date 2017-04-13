@@ -18,13 +18,17 @@ char gC_StylePhrases[view_as<int>(KZStyle)][] =
 
 
 /* Forwards */
-Handle gH_OnChangeOption;
-Handle gH_OnPerfectBunnyhop;
 Handle gH_OnTimerStart;
 Handle gH_OnTimerEnd;
 Handle gH_OnTimerForceStop;
-Handle gH_OnPlayerPause;
-Handle gH_OnPlayerResume;
+Handle gH_OnPause;
+Handle gH_OnResume;
+Handle gH_OnTeleportToStart;
+Handle gH_OnMakeCheckpoint;
+Handle gH_OnTeleportToCheckpoint;
+Handle gH_OnUndoTeleport;
+Handle gH_OnChangeOption;
+Handle gH_OnPerfectBunnyhop;
 
 
 /* ConVars */

@@ -4,8 +4,7 @@
 	Keep track of time wasted when teleporting back to checkpoints.
 */
 
-// Called in misc/teleports.sp
-void AddWastedTimeTeleportToStart(int client)
+void WastedTimeOnTeleportToStart(int client)
 {
 	float addedWastedTime = 0.0;
 	addedWastedTime = gF_CurrentTime[client] - gF_WastedTime[client];
@@ -14,8 +13,7 @@ void AddWastedTimeTeleportToStart(int client)
 	gF_LastTeleportToStartTime[client] = gF_CurrentTime[client];
 }
 
-// Called in misc/teleports.sp
-void AddWastedTimeTeleportToCheckpoint(int client)
+void WastedTimeOnTeleportToCheckpoint(int client)
 {
 	float addedWastedTime = 0.0;
 	if (TeleportToStartWasLatestTeleport(client))
@@ -32,8 +30,7 @@ void AddWastedTimeTeleportToCheckpoint(int client)
 	gF_LastGoCheckTime[client] = gF_CurrentTime[client];
 }
 
-// Called in misc/teleports.sp
-void AddWastedTimeUndoTeleport(int client)
+void WastedTimeOnUndoTeleport(int client)
 {
 	float addedWastedTime = 0.0;
 	if (TeleportToStartWasLatestTeleport(client))

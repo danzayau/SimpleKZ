@@ -130,24 +130,6 @@ enum KZTimerText
 /*===============================  Forwards  ===============================*/
 
 /**
- * Called when the player changes an option.
- *
- * @param client			Client entity index.
- * @param option			The option that was changed
- * @param newValue			The new value of the option.
- * @noreturn
- */
-forward void SKZ_OnChangeOption(int client, KZOption option, any newValue);
-
-/**
- * Called when the player hits a plugin-based perfect b-hop.
- *
- * @param client			Client entity index.
- * @noreturn
- */
-forward void SKZ_OnPlayerPerfectBunnyhop(int client);
-
-/**
  * Called when the player starts their timer.
  *
  * @param client			Client entity index.
@@ -184,7 +166,7 @@ forward void SKZ_OnTimerForceStop(int client);
  * @param client			Client entity index.
  * @noreturn
  */
-forward void SKZ_OnPlayerPause(int client);
+forward void SKZ_OnPause(int client);
 
 /**
  * Called when the player resumes.
@@ -192,7 +174,57 @@ forward void SKZ_OnPlayerPause(int client);
  * @param client			Client entity index.
  * @noreturn
  */
-forward void SKZ_OnPlayerResume(int client);
+forward void SKZ_OnResume(int client);
+
+/**
+ * Called when the player teleports to start.
+ *
+ * @param client			Client entity index.
+ * @noreturn
+ */
+forward void SKZ_OnTeleportToStart(int client);
+
+/**
+ * Called when the player makes a checkpoint.
+ *
+ * @param client			Client entity index.
+ * @noreturn
+ */
+forward void SKZ_OnCheckpoint(int client);
+
+/**
+ * Called when the player teleports to their checkpoint.
+ *
+ * @param client			Client entity index.
+ * @noreturn
+ */
+forward void SKZ_OnTeleportToCheckpoint(int client);
+
+/**
+ * Called when the player undos teleport.
+ *
+ * @param client			Client entity index.
+ * @noreturn
+ */
+forward void SKZ_OnUndoTeleport(int client);
+
+/**
+ * Called when the player changes an option.
+ *
+ * @param client			Client entity index.
+ * @param option			The option that was changed
+ * @param newValue			The new value of the option.
+ * @noreturn
+ */
+forward void SKZ_OnChangeOption(int client, KZOption option, any newValue);
+
+/**
+ * Called when the player hits a plugin-based perfect b-hop.
+ *
+ * @param client			Client entity index.
+ * @noreturn
+ */
+forward void SKZ_OnPerfectBunnyhop(int client);
 
 
 

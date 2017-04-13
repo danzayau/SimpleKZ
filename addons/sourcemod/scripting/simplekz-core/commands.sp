@@ -66,30 +66,42 @@ public Action CommandToggleMenu(int client, int args)
 public Action CommandMakeCheckpoint(int client, int args)
 {
 	MakeCheckpoint(client);
+	TPMenuUpdate(client);
 	return Plugin_Handled;
 }
 
 public Action CommandTeleportToCheckpoint(int client, int args)
 {
 	TeleportToCheckpoint(client);
+	TPMenuUpdate(client);
 	return Plugin_Handled;
 }
 
 public Action CommandUndoTeleport(int client, int args)
 {
 	UndoTeleport(client);
+	TPMenuUpdate(client);
 	return Plugin_Handled;
 }
 
 public Action CommandTeleportToStart(int client, int args)
 {
 	TeleportToStart(client);
+	TPMenuUpdate(client);
 	return Plugin_Handled;
 }
 
 public Action CommandTogglePause(int client, int args)
 {
-	TogglePause(client);
+	if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
+	{
+		JoinTeam(client, CS_TEAM_CT);
+	}
+	else
+	{
+		TogglePause(client);
+	}
+	TPMenuUpdate(client);
 	return Plugin_Handled;
 }
 

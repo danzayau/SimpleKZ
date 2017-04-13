@@ -8,29 +8,17 @@
 
 void CreateGlobalForwards()
 {
-	gH_OnChangeOption = CreateGlobalForward("SKZ_OnChangeOption", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
-	gH_OnPerfectBunnyhop = CreateGlobalForward("SKZ_OnPerfectBunnyhop", ET_Ignore, Param_Cell);
 	gH_OnTimerStart = CreateGlobalForward("SKZ_OnTimerStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	gH_OnTimerEnd = CreateGlobalForward("SKZ_OnTimerEnd", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Float, Param_Cell, Param_Float);
 	gH_OnTimerForceStop = CreateGlobalForward("SKZ_OnTimerForceStop", ET_Ignore, Param_Cell);
-	gH_OnPlayerPause = CreateGlobalForward("SKZ_OnTimerPause", ET_Ignore, Param_Cell);
-	gH_OnPlayerResume = CreateGlobalForward("SKZ_OnTimerResume", ET_Ignore, Param_Cell);
-}
-
-void Call_SKZ_OnChangeOption(int client, KZOption option, any optionValue)
-{
-	Call_StartForward(gH_OnChangeOption);
-	Call_PushCell(client);
-	Call_PushCell(option);
-	Call_PushCell(optionValue);
-	Call_Finish();
-}
-
-void Call_SKZ_OnPerfectBunnyhop(int client)
-{
-	Call_StartForward(gH_OnPerfectBunnyhop);
-	Call_PushCell(client);
-	Call_Finish();
+	gH_OnChangeOption = CreateGlobalForward("SKZ_OnChangeOption", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
+	gH_OnPerfectBunnyhop = CreateGlobalForward("SKZ_OnPerfectBunnyhop", ET_Ignore, Param_Cell);
+	gH_OnPause = CreateGlobalForward("SKZ_OnPause", ET_Ignore, Param_Cell);
+	gH_OnResume = CreateGlobalForward("SKZ_OnResume", ET_Ignore, Param_Cell);
+	gH_OnTeleportToStart = CreateGlobalForward("SKZ_OnTeleportToStart", ET_Ignore, Param_Cell);
+	gH_OnMakeCheckpoint = CreateGlobalForward("SKZ_OnMakeCheckpoint", ET_Ignore, Param_Cell);
+	gH_OnTeleportToCheckpoint = CreateGlobalForward("SKZ_OnTeleportToCheckpoint", ET_Ignore, Param_Cell);
+	gH_OnUndoTeleport = CreateGlobalForward("SKZ_OnUndoTeleport", ET_Ignore, Param_Cell);
 }
 
 void Call_SKZ_OnTimerStart(int client)
@@ -61,16 +49,60 @@ void Call_SKZ_OnTimerForceStop(int client)
 	Call_Finish();
 }
 
-void Call_SKZ_OnPlayerPause(int client)
+void Call_SKZ_OnPause(int client)
 {
-	Call_StartForward(gH_OnPlayerPause);
+	Call_StartForward(gH_OnPause);
 	Call_PushCell(client);
 	Call_Finish();
 }
 
-void Call_SKZ_OnPlayerResume(int client)
+void Call_SKZ_OnResume(int client)
 {
-	Call_StartForward(gH_OnPlayerResume);
+	Call_StartForward(gH_OnResume);
+	Call_PushCell(client);
+	Call_Finish();
+}
+
+void Call_SKZ_OnTeleportToStart(int client)
+{
+	Call_StartForward(gH_OnTeleportToStart);
+	Call_PushCell(client);
+	Call_Finish();
+}
+
+void Call_SKZ_OnMakeCheckpoint(int client)
+{
+	Call_StartForward(gH_OnMakeCheckpoint);
+	Call_PushCell(client);
+	Call_Finish();
+}
+
+void Call_SKZ_OnTeleportToCheckpoint(int client)
+{
+	Call_StartForward(gH_OnTeleportToCheckpoint);
+	Call_PushCell(client);
+	Call_Finish();
+}
+
+void Call_SKZ_OnUndoTeleport(int client)
+{
+	Call_StartForward(gH_OnUndoTeleport);
+	Call_PushCell(client);
+	Call_Finish();
+}
+
+void Call_SKZ_OnChangeOption(int client, KZOption option, any optionValue)
+{
+	Call_StartForward(gH_OnChangeOption);
+	Call_PushCell(client);
+	Call_PushCell(option);
+	Call_PushCell(optionValue);
+	Call_Finish();
+}
+
+void Call_SKZ_OnPerfectBunnyhop(int client)
+{
+	Call_StartForward(gH_OnPerfectBunnyhop);
 	Call_PushCell(client);
 	Call_Finish();
 }

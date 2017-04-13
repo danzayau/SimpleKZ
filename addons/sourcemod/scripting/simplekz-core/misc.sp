@@ -27,7 +27,9 @@ void JoinTeam(int client, int team)
 		CS_RespawnPlayer(client);
 		if (gB_HasSavedPosition[client])
 		{
-			TeleportEntity(client, gF_SavedOrigin[client], gF_SavedAngles[client], view_as<float>( { 0.0, 0.0, -50.0 } ));
+			g_KZPlayer[client].SetOrigin(gF_SavedOrigin[client]);
+			g_KZPlayer[client].SetEyeAngles(gF_SavedAngles[client]);
+			g_KZPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, -50.0 } ));
 			gB_HasSavedPosition[client] = false;
 			if (gB_Paused[client])
 			{
@@ -116,7 +118,9 @@ void GotoPlayer(int client, int target)
 	{
 		CS_RespawnPlayer(client);
 	}
-	TeleportEntity(client, targetOrigin, targetAngles, view_as<float>( { 0.0, 0.0, -100.0 } ));
+	g_KZPlayer[client].SetOrigin(targetOrigin);
+	g_KZPlayer[client].SetEyeAngles(targetAngles);
+	g_KZPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, -50.0 } ));
 	CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Success", target);
 }
 
