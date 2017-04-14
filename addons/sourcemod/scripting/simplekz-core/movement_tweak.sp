@@ -18,6 +18,14 @@
 #define STYLE_LEGACY_PERF_SPEED_CAP 380.0
 #define STYLE_LEGACY_SPEED_PRESTRAFE_MINIMUM 175.0
 
+void MovementTweakOnClientPreThinkPost(int client)
+{
+	if (IsPlayerAlive(client))
+	{
+		MovementTweakConVars(client);
+	}
+}
+
 void MovementTweakOnPlayerRunCmd(int client)
 {
 	if (g_KZPlayer[client].onGround)
@@ -60,6 +68,56 @@ void MovementTweakOnStopTouchLadder(int client)
 void MovementTweakOnStopNoclipping(int client)
 {
 	gB_HitPerf[client] = false;
+}
+
+
+
+/*===============================  ConVars Tweak  ===============================*/
+
+static void MovementTweakConVars(int client)
+{
+	switch (g_Style[client]) {
+		case KZStyle_Standard:
+		{
+			gCV_Accelerate.FloatValue = 6.5;
+			gCV_Friction.FloatValue = 5.2;
+			gCV_AirAccelerate.FloatValue = 100.0;
+			gCV_LadderScaleSpeed.FloatValue = 1.0;
+			gCV_MaxVelocity.FloatValue = 3500.0;
+			
+			gCV_EnableBunnyhopping.BoolValue = true;
+			gCV_AutoBunnyhopping.BoolValue = false;
+			
+			gCV_StaminaMax.FloatValue = 0.0;
+			gCV_StaminaLandCost.FloatValue = 0.0;
+			gCV_StaminaJumpCost.FloatValue = 0.0;
+			gCV_StaminaRecoveryRate.FloatValue = 0.0;
+			
+			gCV_MaxSpeed.FloatValue = 320.0;
+			gCV_WaterAccelerate.FloatValue = 10.0;
+			gCV_TimeBetweenDucks.FloatValue = 0.4;
+		}
+		case KZStyle_Legacy:
+		{
+			gCV_Accelerate.FloatValue = 6.5;
+			gCV_Friction.FloatValue = 5.0;
+			gCV_AirAccelerate.FloatValue = 100.0;
+			gCV_LadderScaleSpeed.FloatValue = 1.0;
+			gCV_MaxVelocity.FloatValue = 3500.0;
+			
+			gCV_EnableBunnyhopping.BoolValue = true;
+			gCV_AutoBunnyhopping.BoolValue = false;
+			
+			gCV_StaminaMax.FloatValue = 0.0;
+			gCV_StaminaLandCost.FloatValue = 0.0;
+			gCV_StaminaJumpCost.FloatValue = 0.0;
+			gCV_StaminaRecoveryRate.FloatValue = 0.0;
+			
+			gCV_MaxSpeed.FloatValue = 320.0;
+			gCV_WaterAccelerate.FloatValue = 10.0;
+			gCV_TimeBetweenDucks.FloatValue = 0.4;
+		}
+	}
 }
 
 

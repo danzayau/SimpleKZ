@@ -31,13 +31,34 @@ Handle gH_OnChangeOption;
 Handle gH_OnPerfectBunnyhop;
 
 
-/* ConVars */
-ConVar gCV_DisableImmunityAlpha;
-ConVar gCV_FullAlltalk;
+/* simplekz-core ConVars */
 ConVar gCV_ChatProcessing;
 ConVar gCV_DefaultStyle;
 ConVar gCV_PlayerModelT;
 ConVar gCV_PlayerModelCT;
+
+ConVar gCV_Accelerate;
+ConVar gCV_Friction;
+ConVar gCV_AirAccelerate;
+ConVar gCV_LadderScaleSpeed;
+
+
+/* CS:GO ConVars */
+ConVar gCV_EnableBunnyhopping;
+ConVar gCV_AutoBunnyhopping;
+
+ConVar gCV_StaminaMax;
+ConVar gCV_StaminaLandCost;
+ConVar gCV_StaminaJumpCost;
+ConVar gCV_StaminaRecoveryRate;
+
+ConVar gCV_MaxVelocity;
+ConVar gCV_MaxSpeed;
+ConVar gCV_WaterAccelerate;
+ConVar gCV_TimeBetweenDucks;
+
+ConVar gCV_DisableImmunityAlpha;
+ConVar gCV_FullAlltalk;
 
 
 /* Timer */

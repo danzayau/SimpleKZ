@@ -129,6 +129,7 @@ public void OnClientConnected(int client)
 
 public void OnClientPutInServer(int client)
 {
+	SDKHook(client, SDKHook_PreThinkPost, OnClientPreThinkPost);
 	HidePlayersOnClientPutInServer(client);
 }
 
@@ -178,6 +179,11 @@ public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcas
 {
 	SetEventBroadcast(event, true); // Block join team messages
 	return Plugin_Continue;
+}
+
+public void OnClientPreThinkPost(int client)
+{
+	MovementTweakOnClientPreThinkPost(client);
 }
 
 
