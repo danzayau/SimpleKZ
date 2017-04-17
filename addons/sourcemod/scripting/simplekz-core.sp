@@ -130,6 +130,7 @@ public void OnClientConnected(int client)
 public void OnClientPutInServer(int client)
 {
 	HidePlayersOnClientPutInServer(client);
+	SDKHook(client, SDKHook_PreThinkPost, OnClientPreThinkPost);
 }
 
 public Action OnClientSayCommand(int client, const char[] command, const char[] sArgs) {
@@ -175,16 +176,20 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	TimerOnPlayerRunCmd(client);
 	ButtonPressOnPlayerRunCmd(client); // After updating timer!
 	StyleOnPlayerRunCmd(client, buttons);
+	TimerTextUpdate(client); // After updating timer!
+}
+
+public void OnClientPreThinkPost(int client)
+{
+	StyleOnClientPreThinkPost(client);
 }
 
 
 
 /*===============================  Movement API Forwards  ===============================*/
 
-public void Movement_OnClientPreThink(int client)
+public void Movement_OnClientPostThink(int client)
 {
-	StyleOnClientPreThink(client);
-	TimerTextUpdate(client);
 	InfoPanelUpdate(client);
 	TPMenuDisplay(client);
 }

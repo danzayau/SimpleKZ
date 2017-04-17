@@ -45,6 +45,7 @@ void FindConVars()
 	gCV_AirAccelerate.Flags &= ~FCVAR_NOTIFY;
 	gCV_LadderScaleSpeed.Flags &= ~FCVAR_NOTIFY;
 	gCV_MaxVelocity.Flags &= ~FCVAR_NOTIFY;
+	gCV_Gravity.Flags &= ~FCVAR_NOTIFY;
 	
 	gCV_EnableBunnyhopping.Flags &= ~FCVAR_NOTIFY;
 	gCV_AutoBunnyhopping.Flags &= ~FCVAR_NOTIFY;

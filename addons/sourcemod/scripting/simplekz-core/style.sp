@@ -21,15 +21,12 @@
 
 void StyleOnPlayerRunCmd(int client, int &buttons)
 {
-	RemoveBind(g_KZPlayer[client], buttons);
+	RemoveCrouchJumpBind(g_KZPlayer[client], buttons);
+	TweakVelMod(g_KZPlayer[client]);
 }
 
-void StyleOnClientPreThink(int client)
+void StyleOnClientPreThinkPost(int client)
 {
-	if (g_KZPlayer[client].onGround)
-	{
-		TweakVelMod(g_KZPlayer[client]);
-	}
 	TweakConVars(g_KZPlayer[client]);
 }
 
@@ -125,6 +122,11 @@ static void TweakConVars(KZPlayer player)
 
 static void TweakVelMod(KZPlayer player)
 {
+	if (!player.onGround)
+	{
+		return;
+	}
+	
 	switch (player.style)
 	{
 		case KZStyle_Standard:
@@ -270,7 +272,7 @@ static float CalcTakeoffSpeed(KZPlayer player)
 
 /*===============================  Other Tweaks  ===============================*/
 
-static void RemoveBind(KZPlayer player, int &buttons)
+static void RemoveCrouchJumpBind(KZPlayer player, int &buttons)
 {
 	if (player.onGround && buttons & IN_JUMP && !(player.oldButtons & IN_JUMP) && !(player.oldButtons & IN_DUCK))
 	{
