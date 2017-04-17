@@ -152,7 +152,7 @@ public Action Timer_RemoveBoosts(Handle timer, int client)
 	{
 		g_KZPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
 		g_KZPlayer[client].SetBaseVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
-		SetEntityGravity(client, 1.0);
+		g_KZPlayer[client].gravity = 1.0;
 	}
 	return Plugin_Continue;
 }

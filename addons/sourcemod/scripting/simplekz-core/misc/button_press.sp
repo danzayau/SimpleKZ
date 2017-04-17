@@ -10,7 +10,7 @@
 void ButtonPressOnPlayerRunCmd(int client)
 {
 	// If just pressed +use button
-	if (!(gI_OldButtons[client] & IN_USE) && GetClientButtons(client) & IN_USE)
+	if (!(g_KZPlayer[client].oldButtons & IN_USE) && g_KZPlayer[client].buttons & IN_USE)
 	{
 		float origin[3];
 		g_KZPlayer[client].GetOrigin(origin);
@@ -26,5 +26,4 @@ void ButtonPressOnPlayerRunCmd(int client)
 			TimerEnd(client, gI_LastCourseEnded[client]);
 		}
 	}
-	gI_OldButtons[client] = GetClientButtons(client);
 } 

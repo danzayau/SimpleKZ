@@ -30,8 +30,8 @@ public Plugin myinfo =
 #include "simplekz-core/commands.sp"
 #include "simplekz-core/convars.sp"
 #include "simplekz-core/misc.sp"
-#include "simplekz-core/movement_tweak.sp"
 #include "simplekz-core/options.sp"
+#include "simplekz-core/style.sp"
 
 #include "simplekz-core/timer/timer.sp"
 #include "simplekz-core/timer/force_stop.sp"
@@ -129,18 +129,7 @@ public void OnClientConnected(int client)
 
 public void OnClientPutInServer(int client)
 {
-	SDKHook(client, SDKHook_PreThinkPost, OnClientPreThinkPost);
 	HidePlayersOnClientPutInServer(client);
-}
-
-public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
-{
-	TimerOnPlayerRunCmd(client);
-	MovementTweakOnPlayerRunCmd(client);
-	ButtonPressOnPlayerRunCmd(client);
-	InfoPanelUpdate(client);
-	TimerTextUpdate(client);
-	TPMenuDisplay(client);
 }
 
 public Action OnClientSayCommand(int client, const char[] command, const char[] sArgs) {
@@ -181,9 +170,49 @@ public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcas
 	return Plugin_Continue;
 }
 
-public void OnClientPreThinkPost(int client)
+public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
-	MovementTweakOnClientPreThinkPost(client);
+	TimerOnPlayerRunCmd(client);
+	ButtonPressOnPlayerRunCmd(client); // After updating timer!
+	StyleOnPlayerRunCmd(client, buttons);
+}
+
+
+
+/*===============================  Movement API Forwards  ===============================*/
+
+public void Movement_OnClientPreThink(int client)
+{
+	StyleOnClientPreThink(client);
+	TimerTextUpdate(client);
+	InfoPanelUpdate(client);
+	TPMenuDisplay(client);
+}
+
+public void Movement_OnStartTouchGround(int client)
+{
+	StyleOnStartTouchGround(client);
+}
+
+public void Movement_OnStopTouchGround(int client, bool jumped, bool ducked, bool landed)
+{
+	StyleOnStopTouchGround(client, jumped);
+}
+
+public void Movement_OnStopTouchLadder(int client)
+{
+	StyleOnStopTouchLadder(client);
+}
+
+public void Movement_OnStartNoclipping(int client)
+{
+	TimerForceStopOnStartNoclipping(client);
+	PauseOnStartNoclipping(client);
+}
+
+public void Movement_OnStopNoclipping(int client)
+{
+	StyleOnStopNoclipping(client);
 }
 
 
@@ -215,36 +244,6 @@ public void SKZ_OnChangeOption(int client, KZOption option, any newValue)
 		case KZOption_ShowingWeapon:HideWeaponUpdate(client);
 		case KZOption_Pistol:PistolUpdate(client);
 	}
-}
-
-
-
-/*===============================  Movement API Forwards  ===============================*/
-
-public void OnStartTouchGround(int client)
-{
-	MovementTweakOnStartTouchGround(client);
-}
-
-public void OnStopTouchGround(int client, bool jumped, bool ducked, bool landed)
-{
-	MovementTweakOnStopTouchGround(client, jumped, ducked);
-}
-
-public void OnStopTouchLadder(int client)
-{
-	MovementTweakOnStopTouchLadder(client);
-}
-
-public void OnStartNoclipping(int client)
-{
-	TimerForceStopOnStartNoclipping(client);
-	PauseOnStartNoclipping(client);
-}
-
-public void OnStopNoclipping(int client)
-{
-	MovementTweakOnStopNoclipping(client);
 }
 
 

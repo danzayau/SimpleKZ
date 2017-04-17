@@ -37,13 +37,14 @@ ConVar gCV_DefaultStyle;
 ConVar gCV_PlayerModelT;
 ConVar gCV_PlayerModelCT;
 
+
+/* CS:GO ConVars */
 ConVar gCV_Accelerate;
 ConVar gCV_Friction;
 ConVar gCV_AirAccelerate;
 ConVar gCV_LadderScaleSpeed;
+ConVar gCV_Gravity;
 
-
-/* CS:GO ConVars */
 ConVar gCV_EnableBunnyhopping;
 ConVar gCV_AutoBunnyhopping;
 
@@ -128,7 +129,6 @@ KZTimerText g_TimerText[MAXPLAYERS + 1];
 
 
 /* Button Press */
-int gI_OldButtons[MAXPLAYERS + 1];
 bool gB_HasStartedThisMap[MAXPLAYERS + 1];
 bool gB_HasEndedThisMap[MAXPLAYERS + 1];
 float gF_StartButtonOrigin[MAXPLAYERS + 1][3];
@@ -178,7 +178,7 @@ char gC_RadioCommands[][] =
 
 
 /* Movement Tweak */
-float gF_PrestrafeVelocityModifier[MAXPLAYERS + 1];
+float gF_PrestrafeVelMod[MAXPLAYERS + 1];
 bool gB_HitPerf[MAXPLAYERS + 1];
 
 char gC_WeaponNames[][] = 

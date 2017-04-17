@@ -24,6 +24,7 @@ void FindConVars()
 	gCV_AirAccelerate = FindConVar("sv_airaccelerate");
 	gCV_LadderScaleSpeed = FindConVar("sv_ladder_scale_speed");
 	gCV_MaxVelocity = FindConVar("sv_maxvelocity");
+	gCV_Gravity = FindConVar("sv_gravity");
 	
 	gCV_EnableBunnyhopping = FindConVar("sv_enablebunnyhopping");
 	gCV_AutoBunnyhopping = FindConVar("sv_autobunnyhopping");

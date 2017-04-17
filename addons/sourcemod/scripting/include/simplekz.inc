@@ -111,7 +111,7 @@ stock void FakePrecacheSound(const char[] relativeSoundPath)
 
 /*===============================  Methodmap  ===============================*/
 
-methodmap KZPlayer < MovementPlayer
+methodmap KZPlayer __nullable__ < MovementPlayer
 {
 	public KZPlayer(int id)
 	{

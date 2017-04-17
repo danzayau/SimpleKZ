@@ -34,7 +34,8 @@ enum KZOption
 	KZOption_CheckpointMessages, 
 	KZOption_CheckpointSounds, 
 	KZOption_TeleportSounds, 
-	KZOption_TimerText
+	KZOption_TimerText, 
+	KZOPTION_COUNT
 }
 
 /*	Each option has it's own enumeration to specify the meaning of its value,
