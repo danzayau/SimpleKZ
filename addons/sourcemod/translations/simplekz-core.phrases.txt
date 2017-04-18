@@ -122,6 +122,10 @@
 	{
 		"en"		"{darkred}You can't pause in midair."
 	}
+	"Can't Resume (Just Paused)"
+	{
+		"en"		"{darkred}You can't resume because you just paused."
+	}
 	"Stopped Sounds"
 	{
 		"en"		"{grey}You have stopped all sounds."

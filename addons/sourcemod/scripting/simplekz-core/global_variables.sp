@@ -72,6 +72,8 @@ int gI_LastCourseEnded[MAXPLAYERS + 1];
 
 /* Pause */
 bool gB_Paused[MAXPLAYERS + 1];
+float gF_LastPauseTime[MAXPLAYERS + 1];
+bool gB_HasPausedInThisRun[MAXPLAYERS + 1];
 float gF_LastResumeTime[MAXPLAYERS + 1];
 bool gB_HasResumedInThisRun[MAXPLAYERS + 1];
 
@@ -162,7 +164,6 @@ float gF_CheckpointAngles[MAXPLAYERS + 1][3];
 bool gB_LastTeleportOnGround[MAXPLAYERS + 1];
 float gF_UndoOrigin[MAXPLAYERS + 1][3];
 float gF_UndoAngle[MAXPLAYERS + 1][3];
-float gF_PauseAngles[MAXPLAYERS + 1][3];
 
 
 /* Position Restoration */

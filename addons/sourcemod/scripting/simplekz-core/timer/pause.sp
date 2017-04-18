@@ -25,7 +25,7 @@ void Pause(int client)
 		return;
 	}
 	if (gB_TimerRunning[client] && gB_HasResumedInThisRun[client]
-		 && gF_CurrentTime[client] - gF_LastResumeTime[client] < TIME_PAUSE_COOLDOWN)
+		 && GetEngineTime() - gF_LastResumeTime[client] < TIME_PAUSE_COOLDOWN)
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Just Resumed)");
 		return;
@@ -41,7 +41,8 @@ void Pause(int client)
 	gB_Paused[client] = true;
 	if (gB_TimerRunning[client])
 	{
-		g_KZPlayer[client].GetEyeAngles(gF_PauseAngles[client]);
+		gB_HasPausedInThisRun[client] = true;
+		gF_LastPauseTime[client] = GetEngineTime();
 	}
 	FreezePlayer(client);
 	
@@ -54,13 +55,18 @@ void Resume(int client)
 	{
 		return;
 	}
+	if (gB_TimerRunning[client] && gB_HasPausedInThisRun[client]
+		 && GetEngineTime() - gF_LastPauseTime[client] < TIME_PAUSE_COOLDOWN)
+	{
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Resume (Just Paused)");
+		return;
+	}
 	
 	gB_Paused[client] = false;
 	if (gB_TimerRunning[client])
 	{
 		gB_HasResumedInThisRun[client] = true;
-		gF_LastResumeTime[client] = gF_CurrentTime[client];
-		g_KZPlayer[client].SetEyeAngles(gF_PauseAngles[client]);
+		gF_LastResumeTime[client] = GetEngineTime();
 	}
 	g_KZPlayer[client].moveType = MOVETYPE_WALK;
 	

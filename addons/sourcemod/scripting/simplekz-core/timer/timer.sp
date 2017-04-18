@@ -74,6 +74,7 @@ static void TimerReset(int client)
 {
 	gF_CurrentTime[client] = 0.0;
 	gF_LastResumeTime[client] = 0.0;
+	gB_HasPausedInThisRun[client] = false;
 	gB_HasResumedInThisRun[client] = false;
 	gI_CheckpointCount[client] = 0;
 	gI_TeleportsUsed[client] = 0;
