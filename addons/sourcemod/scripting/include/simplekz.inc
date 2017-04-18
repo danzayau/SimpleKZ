@@ -197,7 +197,7 @@ methodmap KZPlayer __nullable__ < MovementPlayer
 	{
 		public get()
 		{
-			return SKZ_GetCurrentCourse(this.id);
+			return SKZ_GetPaused(this.id);
 		}
 		public set(bool pause)
 		{
