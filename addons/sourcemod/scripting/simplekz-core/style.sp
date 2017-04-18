@@ -8,14 +8,13 @@
 #define SPEED_NO_WEAPON 260.0
 #define DUCK_SPEED_MINIMUM 7.0
 
-#define PRESTRAFE_VELMOD_MAX 1.104 // Calculated 276/250
-#define PRESTRAFE_VELMOD_INCREMENT 0.0014 // Per tick when prestrafing
-#define PRESTRAFE_VELMOD_DECREMENT 0.0021 // Per tick when not prestrafing
+#define PRE_VELMOD_MAX 1.104 // Calculated 276/250
 
 #define STANDARD_PERF_TICKS 2
+#define STANDARD_PRE_VELMOD_INCREMENT 0.0014 // Per tick when prestrafing
+#define STANDARD_PRE_VELMOD_DECREMENT 0.0021 // Per tick when not prestrafing
 
 #define LEGACY_PERF_SPEED_CAP 380.0
-#define LEGACY_SPEED_PRESTRAFE_MINIMUM 175.0
 
 
 
@@ -50,7 +49,7 @@ void StyleOnStopTouchGround(int client, bool jumped)
 	
 	if (g_Style[client] == KZStyle_Standard)
 	{  // No 'pre b-hopping' in Standard
-		gF_PrestrafeVelMod[client] = 1.0;
+		gF_PreVelMod[client] = 1.0;
 	}
 }
 
@@ -150,41 +149,73 @@ static float CalcPrestrafeVelMod(KZPlayer player)
 				 && ((player.buttons & IN_FORWARD && !(player.buttons & IN_BACK)) || (!(player.buttons & IN_FORWARD) && player.buttons & IN_BACK))
 				 && ((player.buttons & IN_MOVELEFT && !(player.buttons & IN_MOVERIGHT)) || (!(player.buttons & IN_MOVELEFT) && player.buttons & IN_MOVERIGHT)))
 			{
-				gF_PrestrafeVelMod[player.id] += PRESTRAFE_VELMOD_INCREMENT;
+				gF_PreVelMod[player.id] += STANDARD_PRE_VELMOD_INCREMENT;
 			}
 			else
 			{
-				gF_PrestrafeVelMod[player.id] -= PRESTRAFE_VELMOD_DECREMENT;
+				gF_PreVelMod[player.id] -= STANDARD_PRE_VELMOD_DECREMENT;
 			}
 		}
 		case KZStyle_Legacy:
 		{
-			if (player.speed < LEGACY_SPEED_PRESTRAFE_MINIMUM)
+			// KZTimer prestrafe (not exactly the same, and is only for 128 tick)
+			if (!player.turning)
 			{
-				gF_PrestrafeVelMod[player.id] = 1.0;
+				if (GetEngineTime() - gF_PreVelModLastChange[player.id] > 0.2)
+				{
+					gF_PreVelMod[player.id] = 1.0;
+					gF_PreVelModLastChange[player.id] = GetEngineTime();
+				}
 			}
-			else if (player.turning && (player.buttons & IN_MOVELEFT || player.buttons & IN_MOVERIGHT))
+			else if ((player.buttons & IN_MOVELEFT || player.buttons & IN_MOVERIGHT) && player.speed > 248.9)
 			{
-				gF_PrestrafeVelMod[player.id] += PRESTRAFE_VELMOD_INCREMENT;
+				float increment = 0.0009;
+				if (gF_PreVelMod[player.id] > 1.04)
+				{
+					increment = 0.001;
+				}
+				
+				gI_PreTickCounter[player.id]++;
+				if (gI_PreTickCounter[player.id] < 75)
+				{
+					gF_PreVelMod[player.id] += increment;
+					if (gF_PreVelMod[player.id] > PRE_VELMOD_MAX)
+					{
+						if (gF_PreVelMod[player.id] > PRE_VELMOD_MAX + 0.007)
+						{
+							gF_PreVelMod[player.id] = PRE_VELMOD_MAX - 0.001;
+						}
+						else
+						{
+							gF_PreVelMod[player.id] -= 0.007;
+						}
+					}
+					gF_PreVelMod[player.id] += increment;
+				}
+				else
+				{
+					gF_PreVelMod[player.id] -= 0.0045;
+					gI_PreTickCounter[player.id] -= 2;
+				}
 			}
-			else
-			{
-				gF_PrestrafeVelMod[player.id] -= PRESTRAFE_VELMOD_DECREMENT;
+			else {
+				gF_PreVelMod[player.id] -= 0.04;
 			}
 		}
 	}
 	
 	// Keep prestrafe velocity modifier within range
-	if (gF_PrestrafeVelMod[player.id] < 1.0)
+	if (gF_PreVelMod[player.id] < 1.0)
 	{
-		gF_PrestrafeVelMod[player.id] = 1.0;
+		gF_PreVelMod[player.id] = 1.0;
+		gI_PreTickCounter[player.id] = 0;
 	}
-	else if (gF_PrestrafeVelMod[player.id] > PRESTRAFE_VELMOD_MAX)
+	else if (gF_PreVelMod[player.id] > PRE_VELMOD_MAX)
 	{
-		gF_PrestrafeVelMod[player.id] = PRESTRAFE_VELMOD_MAX;
+		gF_PreVelMod[player.id] = PRE_VELMOD_MAX;
 	}
 	
-	return gF_PrestrafeVelMod[player.id];
+	return gF_PreVelMod[player.id];
 }
 
 static float CalcWeaponVelMod(KZPlayer player)

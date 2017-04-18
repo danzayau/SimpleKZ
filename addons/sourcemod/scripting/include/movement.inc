@@ -16,6 +16,7 @@
 /**
  * Called after MovementAPI has refreshed, which
  * is triggered by a PostThink hook on the client.
+ * This is called after all other MovementAPI forwards.
  * Only called if the client is alive.
  *
  * @param client			Client entity index.
@@ -133,6 +134,8 @@ native void Movement_GetVelocity(int client, float buffer[3]);
 
 /**
  * Changes the velocity of the player (by teleporting them).
+ * For convenience, this sets the takeoff velocity and takeoff speed
+ * values if this is done immediately after the player takes off.
  *
  * @param client			Client entity index.
  * @param velocity			Vector to set the player's velocity to.

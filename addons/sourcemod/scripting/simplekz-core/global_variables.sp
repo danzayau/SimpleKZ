@@ -178,7 +178,9 @@ char gC_RadioCommands[][] =
 
 
 /* Movement Tweak */
-float gF_PrestrafeVelMod[MAXPLAYERS + 1];
+float gF_PreVelMod[MAXPLAYERS + 1];
+float gF_PreVelModLastChange[MAXPLAYERS + 1];
+int gI_PreTickCounter[MAXPLAYERS + 1];
 bool gB_HitPerf[MAXPLAYERS + 1];
 
 char gC_WeaponNames[][] = 
