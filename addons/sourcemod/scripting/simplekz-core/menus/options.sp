@@ -43,7 +43,9 @@ public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int par
 			case 8:CycleOption(param1, KZOption_CheckpointMessages);
 			case 9:CycleOption(param1, KZOption_CheckpointSounds);
 			case 10:CycleOption(param1, KZOption_TeleportSounds);
-			case 11:CycleOption(param1, KZOption_TimerText);
+			case 11:CycleOption(param1, KZOption_ErrorSounds);
+			case 12:CycleOption(param1, KZOption_TimerText);
+			case 13:CycleOption(param1, KZOption_SpeedText);
 		}
 		if (param2 != 5)
 		{
@@ -78,7 +80,9 @@ static void OptionsMenuUpdate(int client, Menu menu)
 	OptionsMenuAddToggle(client, menu, g_CheckpointMessages[client], "Options Menu - Checkpoint Messages");
 	OptionsMenuAddToggle(client, menu, g_CheckpointSounds[client], "Options Menu - Checkpoint Sounds");
 	OptionsMenuAddToggle(client, menu, g_TeleportSounds[client], "Options Menu - Teleport Sounds");
+	OptionsMenuAddToggle(client, menu, g_ErrorSounds[client], "Options Menu - Error Sounds");
 	OptionsMenuAddTimerText(client, menu);
+	OptionsMenuAddSpeedText(client, menu);
 }
 
 static void OptionsMenuAddToggle(int client, Menu menu, any optionValue, const char[] optionPhrase)
@@ -92,7 +96,6 @@ static void OptionsMenuAddToggle(int client, Menu menu, any optionValue, const c
 	{
 		FormatEx(text, sizeof(text), "%T - %T", optionPhrase, client, "Options Menu - Enabled", client);
 	}
-	
 	menu.AddItem("", text);
 }
 
@@ -107,5 +110,12 @@ static void OptionsMenuAddTimerText(int client, Menu menu)
 {
 	char text[32];
 	FormatEx(text, sizeof(text), "%T - %T", "Options Menu - Timer Text", client, gC_TimerTextOptionPhrases[g_TimerText[client]], client);
+	menu.AddItem("", text);
+}
+
+static void OptionsMenuAddSpeedText(int client, Menu menu)
+{
+	char text[32];
+	FormatEx(text, sizeof(text), "%T - %T", "Options Menu - Speed Text", client, gC_SpeedTextOptionPhrases[g_SpeedText[client]], client);
 	menu.AddItem("", text);
 } 

@@ -9,7 +9,7 @@ void OptionsSetupClient(int client)
 {
 	g_Style[client] = view_as<KZStyle>(GetConVarInt(gCV_DefaultStyle));
 	g_ShowingTPMenu[client] = KZShowingTPMenu_Enabled;
-	g_ShowingInfoPanel[client] = KZShowingInfoPanel_Disabled;
+	g_ShowingInfoPanel[client] = KZShowingInfoPanel_Enabled;
 	g_ShowingKeys[client] = KZShowingKeys_Disabled;
 	g_ShowingPlayers[client] = KZShowingPlayers_Enabled;
 	g_ShowingWeapon[client] = KZShowingWeapon_Enabled;
@@ -19,7 +19,9 @@ void OptionsSetupClient(int client)
 	g_CheckpointMessages[client] = KZCheckpointMessages_Disabled;
 	g_CheckpointSounds[client] = KZCheckpointSounds_Enabled;
 	g_TeleportSounds[client] = KZTeleportSounds_Disabled;
-	g_TimerText[client] = KZTimerText_Top;
+	g_ErrorSounds[client] = KZErrorSounds_Enabled;
+	g_TimerText[client] = KZTimerText_InfoPanel;
+	g_SpeedText[client] = KZSpeedText_InfoPanel;
 }
 
 // Returns the option value. Note: Returns an int, so you may need to use view_as<enum>().
@@ -39,7 +41,9 @@ int GetOption(int client, KZOption option)
 		case KZOption_CheckpointMessages:return view_as<int>(g_CheckpointMessages[client]);
 		case KZOption_CheckpointSounds:return view_as<int>(g_CheckpointSounds[client]);
 		case KZOption_TeleportSounds:return view_as<int>(g_TeleportSounds[client]);
+		case KZOption_ErrorSounds:return view_as<int>(g_ErrorSounds[client]);
 		case KZOption_TimerText:return view_as<int>(g_TimerText[client]);
+		case KZOption_SpeedText:return view_as<int>(g_SpeedText[client]);
 	}
 	return -1;
 }
@@ -139,6 +143,14 @@ void SetOption(int client, KZOption option, any optionValue)
 				g_CheckpointSounds[client] = optionValue;
 			}
 		}
+		case KZOption_ErrorSounds:
+		{
+			if (g_ErrorSounds[client] != optionValue)
+			{
+				changedOption = true;
+				g_ErrorSounds[client] = optionValue;
+			}
+		}
 		case KZOption_TeleportSounds:
 		{
 			if (g_TeleportSounds[client] != optionValue)
@@ -153,6 +165,14 @@ void SetOption(int client, KZOption option, any optionValue)
 			{
 				changedOption = true;
 				g_TimerText[client] = optionValue;
+			}
+		}
+		case KZOption_SpeedText:
+		{
+			if (g_SpeedText[client] != optionValue)
+			{
+				changedOption = true;
+				g_SpeedText[client] = optionValue;
 			}
 		}
 	}
@@ -183,7 +203,9 @@ void CycleOption(int client, KZOption option)
 		case KZOption_CheckpointMessages:SetOption(client, option, (view_as<int>(g_CheckpointMessages[client]) + 1) % view_as<int>(KZCheckpointMessages));
 		case KZOption_CheckpointSounds:SetOption(client, option, (view_as<int>(g_CheckpointSounds[client]) + 1) % view_as<int>(KZCheckpointSounds));
 		case KZOption_TeleportSounds:SetOption(client, option, (view_as<int>(g_TeleportSounds[client]) + 1) % view_as<int>(KZTeleportSounds));
+		case KZOption_ErrorSounds:SetOption(client, option, (view_as<int>(g_ErrorSounds[client]) + 1) % view_as<int>(KZErrorSounds));
 		case KZOption_TimerText:SetOption(client, option, (view_as<int>(g_TimerText[client]) + 1) % view_as<int>(KZTimerText));
+		case KZOption_SpeedText:SetOption(client, option, (view_as<int>(g_SpeedText[client]) + 1) % view_as<int>(KZSpeedText));
 	}
 }
 
@@ -342,6 +364,20 @@ static void PrintOptionChangeMessage(int client, KZOption option) {
 				case KZTeleportSounds_Enabled:
 				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Sounds - Enable");
+				}
+			}
+		}
+		case KZOption_ErrorSounds:
+		{
+			switch (g_ErrorSounds[client])
+			{
+				case KZErrorSounds_Disabled:
+				{
+					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Error Sounds - Disable");
+				}
+				case KZErrorSounds_Enabled:
+				{
+					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Error Sounds - Enable");
 				}
 			}
 		}

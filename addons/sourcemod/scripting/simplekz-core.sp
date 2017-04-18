@@ -44,6 +44,7 @@ public Plugin myinfo =
 
 #include "simplekz-core/hud/hide_csgo_hud.sp"
 #include "simplekz-core/hud/info_panel.sp"
+#include "simplekz-core/hud/speed_text.sp"
 #include "simplekz-core/hud/timer_text.sp"
 
 #include "simplekz-core/menus/measure.sp"
@@ -191,6 +192,7 @@ public void OnClientPreThinkPost(int client)
 public void Movement_OnClientPostThink(int client)
 {
 	InfoPanelUpdate(client);
+	SpeedTextUpdate(client);
 	TPMenuDisplay(client);
 }
 

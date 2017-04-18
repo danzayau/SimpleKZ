@@ -375,6 +375,18 @@ methodmap KZPlayer __nullable__ < MovementPlayer
 		}
 	}
 	
+	property KZErrorSounds errorSounds
+	{
+		public get()
+		{
+			return view_as<KZErrorSounds>(SKZ_GetOption(this.id, KZOption_ErrorSounds));
+		}
+		public set(KZErrorSounds value)
+		{
+			SKZ_SetOption(this.id, KZOption_ErrorSounds, value);
+		}
+	}
+	
 	property KZTimerText timerText
 	{
 		public get()
@@ -384,6 +396,18 @@ methodmap KZPlayer __nullable__ < MovementPlayer
 		public set(KZTimerText value)
 		{
 			SKZ_SetOption(this.id, KZOption_TimerText, value);
+		}
+	}
+	
+	property KZSpeedText speedText
+	{
+		public get()
+		{
+			return view_as<KZSpeedText>(SKZ_GetOption(this.id, KZOption_SpeedText));
+		}
+		public set(KZSpeedText value)
+		{
+			SKZ_SetOption(this.id, KZOption_SpeedText, value);
 		}
 	}
 	

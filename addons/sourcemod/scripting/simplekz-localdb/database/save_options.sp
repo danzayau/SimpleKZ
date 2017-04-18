@@ -25,7 +25,9 @@ void DB_SaveOptions(KZPlayer player)
 		player.checkpointMessages, 
 		player.checkpointSounds, 
 		player.teleportSounds, 
+		player.errorSounds, 
 		player.timerText, 
+		player.speedText, 
 		gI_DBPlayerID[player.id]);
 	txn.AddQuery(query);
 	

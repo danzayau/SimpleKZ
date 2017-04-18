@@ -20,6 +20,25 @@ enum KZTimeType
 	KZTimeType_Theoretical
 }
 
+enum KZStyleSetting
+{
+	KZStyleSetting_Accelerate = 0, 
+	KZStyleSetting_Friction, 
+	KZStyleSetting_AirAccelerate, 
+	KZStyleSetting_LadderScaleSpeed, 
+	KZStyleSetting_MaxVelocity, 
+	KZStyleSetting_Gravity, 
+	KZStyleSetting_EnableBunnyhopping, 
+	KZStyleSetting_AutoBunnyhopping, 
+	KZStyleSetting_StaminaMax, 
+	KZStyleSetting_StaminaLandCost, 
+	KZStyleSetting_StaminaJumpCost, 
+	KZStyleSetting_StaminaRecoveryRate, 
+	KZStyleSetting_MaxSpeed, 
+	KZStyleSetting_WaterAccelerate, 
+	KZStyleSetting_TimeBetweenDucks
+}
+
 enum KZOption
 {
 	KZOption_Style = 0, 
@@ -34,8 +53,9 @@ enum KZOption
 	KZOption_CheckpointMessages, 
 	KZOption_CheckpointSounds, 
 	KZOption_TeleportSounds, 
+	KZOption_ErrorSounds, 
 	KZOption_TimerText, 
-	KZOPTION_COUNT
+	KZOption_SpeedText
 }
 
 /*	Each option has it's own enumeration to specify the meaning of its value,
@@ -119,11 +139,25 @@ enum KZTeleportSounds
 	KZTeleportSounds_Enabled
 }
 
+enum KZErrorSounds
+{
+	KZErrorSounds_Disabled = 0, 
+	KZErrorSounds_Enabled
+}
+
 enum KZTimerText
 {
 	KZTimerText_Disabled = 0, 
-	KZTimerText_Top, 
-	KZTimerText_Bottom
+	KZTimerText_InfoPanel, 
+	KZTimerText_Bottom, 
+	KZTimerText_Top
+}
+
+enum KZSpeedText
+{
+	KZSpeedText_Disabled = 0, 
+	KZSpeedText_InfoPanel, 
+	KZSpeedText_Bottom
 }
 
 

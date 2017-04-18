@@ -57,7 +57,9 @@ public void DB_TxnSuccess_LoadOptions(Handle db, KZPlayer player, int numQueries
 		player.checkpointMessages = view_as<KZCheckpointMessages>(SQL_FetchInt(results[0], 9));
 		player.checkpointSounds = view_as<KZCheckpointSounds>(SQL_FetchInt(results[0], 10));
 		player.teleportSounds = view_as<KZTeleportSounds>(SQL_FetchInt(results[0], 11));
-		player.timerText = view_as<KZTimerText>(SQL_FetchInt(results[0], 12));
+		player.errorSounds = view_as<KZErrorSounds>(SQL_FetchInt(results[0], 12));
+		player.timerText = view_as<KZTimerText>(SQL_FetchInt(results[0], 13));
+		player.speedText = view_as<KZSpeedText>(SQL_FetchInt(results[0], 14));
 	}
 }
 

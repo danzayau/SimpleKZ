@@ -48,9 +48,8 @@ static void StyleMenuAddItems(int client, Menu menu)
 {
 	char text[32];
 	menu.RemoveAllItems();
-	
-	int numberOfStyles = view_as<int>(KZStyle);
-	for (int style = 0; style < numberOfStyles; style++)
+	int styleCount = view_as<int>(KZStyle);
+	for (int style = 0; style < styleCount; style++)
 	{
 		FormatEx(text, sizeof(text), "%T", gC_StylePhrases[style], client);
 		menu.AddItem("", text, ITEMDRAW_DEFAULT);

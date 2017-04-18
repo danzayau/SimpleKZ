@@ -11,17 +11,13 @@ void TimerTextUpdate(int client)
 		return;
 	}
 	
-	if (g_TimerText[client] == KZTimerText_Disabled)
+	if (g_TimerText[client] == KZTimerText_Disabled || g_TimerText[client] == KZTimerText_InfoPanel)
 	{
 		return;
 	}
 	
 	switch (g_TimerText[client])
 	{
-		case KZTimerText_Disabled:
-		{
-			return;
-		}
 		case KZTimerText_Top:
 		{
 			SetHudTextParams(-1.0, 0.013, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);

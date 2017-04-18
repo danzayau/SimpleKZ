@@ -50,9 +50,8 @@ static void PistolMenuUpdate(int client, Menu menu)
 {
 	menu.SetTitle("%T", "Pistol Menu - Title", client);
 	menu.RemoveAllItems();
-	
-	int numberOfPistols = sizeof(gC_Pistols);
-	for (int pistol = 0; pistol < numberOfPistols; pistol++) {
+	int pistolCount = view_as<int>(KZPistol);
+	for (int pistol = 0; pistol < pistolCount; pistol++) {
 		menu.AddItem("", gC_Pistols[pistol][1]);
 	}
 } 

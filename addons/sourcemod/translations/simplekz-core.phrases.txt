@@ -255,6 +255,14 @@
 	{
 		"en"		"{grey}You will no longer hear teleport sounds."
 	}
+	"Option - Error Sounds - Enable"
+	{
+		"en"		"{grey}You will now hear error sounds."
+	}
+	"Option - Error Sounds - Disable"
+	{
+		"en"		"{grey}You will no longer hear error sounds."
+	}
 	
 	
 	// Info Panel Text ////////////////////////////////////////////////////////////
@@ -401,8 +409,16 @@
 	{
 		"en"		"Teleport sounds"
 	}
+	"Options Menu - Error Sounds"
+	{
+		"en"		"Error sounds"
+	}
 	"Options Menu - Timer Text"
 	{
 		"en"		"Timer text"
+	}
+	"Options Menu - Speed Text"
+	{
+		"en"		"Speed text"
 	}
 }

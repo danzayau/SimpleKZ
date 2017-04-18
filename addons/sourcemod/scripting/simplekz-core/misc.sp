@@ -29,7 +29,6 @@ void JoinTeam(int client, int team)
 		{
 			g_KZPlayer[client].SetOrigin(gF_SavedOrigin[client]);
 			g_KZPlayer[client].SetEyeAngles(gF_SavedAngles[client]);
-			g_KZPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, -50.0 } ));
 			gB_HasSavedPosition[client] = false;
 			if (gB_Paused[client])
 			{
@@ -120,7 +119,7 @@ void GotoPlayer(int client, int target)
 	}
 	g_KZPlayer[client].SetOrigin(targetOrigin);
 	g_KZPlayer[client].SetEyeAngles(targetAngles);
-	g_KZPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, -50.0 } ));
+	g_KZPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
 	CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Success", target);
 }
 

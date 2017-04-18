@@ -69,50 +69,29 @@ void StyleOnStopNoclipping(int client)
 
 static void TweakConVars(KZPlayer player)
 {
-	switch (player.style) {
-		case KZStyle_Standard:
-		{
-			gCV_Accelerate.FloatValue = 6.5;
-			gCV_Friction.FloatValue = 5.2;
-			gCV_AirAccelerate.FloatValue = 100.0;
-			gCV_LadderScaleSpeed.FloatValue = 1.0;
-			gCV_MaxVelocity.FloatValue = 3500.0;
-			gCV_Gravity.FloatValue = 800.0;
-			
-			gCV_EnableBunnyhopping.BoolValue = true;
-			gCV_AutoBunnyhopping.BoolValue = false;
-			
-			gCV_StaminaMax.FloatValue = 0.0;
-			gCV_StaminaLandCost.FloatValue = 0.0;
-			gCV_StaminaJumpCost.FloatValue = 0.0;
-			gCV_StaminaRecoveryRate.FloatValue = 0.0;
-			
-			gCV_MaxSpeed.FloatValue = 320.0;
-			gCV_WaterAccelerate.FloatValue = 10.0;
-			gCV_TimeBetweenDucks.FloatValue = 0.4;
-		}
-		case KZStyle_Legacy:
-		{
-			gCV_Accelerate.FloatValue = 6.5;
-			gCV_Friction.FloatValue = 5.0;
-			gCV_AirAccelerate.FloatValue = 100.0;
-			gCV_LadderScaleSpeed.FloatValue = 1.0;
-			gCV_MaxVelocity.FloatValue = 3500.0;
-			gCV_Gravity.FloatValue = 800.0;
-			
-			gCV_EnableBunnyhopping.BoolValue = true;
-			gCV_AutoBunnyhopping.BoolValue = false;
-			
-			gCV_StaminaMax.FloatValue = 0.0;
-			gCV_StaminaLandCost.FloatValue = 0.0;
-			gCV_StaminaJumpCost.FloatValue = 0.0;
-			gCV_StaminaRecoveryRate.FloatValue = 0.0;
-			
-			gCV_MaxSpeed.FloatValue = 320.0;
-			gCV_WaterAccelerate.FloatValue = 10.0;
-			gCV_TimeBetweenDucks.FloatValue = 0.4;
-		}
-	}
+	gCV_Accelerate.FloatValue = GetStyleSetting(player, KZStyleSetting_Accelerate);
+	gCV_Friction.FloatValue = GetStyleSetting(player, KZStyleSetting_Friction);
+	gCV_AirAccelerate.FloatValue = GetStyleSetting(player, KZStyleSetting_AirAccelerate);
+	gCV_LadderScaleSpeed.FloatValue = GetStyleSetting(player, KZStyleSetting_LadderScaleSpeed);
+	gCV_MaxVelocity.FloatValue = GetStyleSetting(player, KZStyleSetting_MaxVelocity);
+	gCV_Gravity.FloatValue = GetStyleSetting(player, KZStyleSetting_Gravity);
+	
+	gCV_EnableBunnyhopping.FloatValue = GetStyleSetting(player, KZStyleSetting_EnableBunnyhopping);
+	gCV_AutoBunnyhopping.FloatValue = GetStyleSetting(player, KZStyleSetting_AutoBunnyhopping);
+	
+	gCV_StaminaMax.FloatValue = GetStyleSetting(player, KZStyleSetting_StaminaMax);
+	gCV_StaminaLandCost.FloatValue = GetStyleSetting(player, KZStyleSetting_StaminaLandCost);
+	gCV_StaminaJumpCost.FloatValue = GetStyleSetting(player, KZStyleSetting_StaminaJumpCost);
+	gCV_StaminaRecoveryRate.FloatValue = GetStyleSetting(player, KZStyleSetting_StaminaRecoveryRate);
+	
+	gCV_MaxSpeed.FloatValue = GetStyleSetting(player, KZStyleSetting_MaxSpeed);
+	gCV_WaterAccelerate.FloatValue = GetStyleSetting(player, KZStyleSetting_WaterAccelerate);
+	gCV_TimeBetweenDucks.FloatValue = GetStyleSetting(player, KZStyleSetting_TimeBetweenDucks);
+}
+
+static float GetStyleSetting(KZPlayer player, KZStyleSetting setting)
+{
+	return gF_StyleSettings[player.style][view_as<int>(setting)];
 }
 
 

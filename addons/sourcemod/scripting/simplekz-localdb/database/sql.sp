@@ -66,9 +66,11 @@ char sqlite_options_create[] =
 ..."SlayOnEnd INTEGER NOT NULL DEFAULT '0', "
 ..."Pistol INTEGER NOT NULL DEFAULT '0', "
 ..."CheckpointMessages INTEGER NOT NULL DEFAULT '0', "
-..."CheckpointSounds INTEGER NOT NULL DEFAULT '0', "
+..."CheckpointSounds INTEGER NOT NULL DEFAULT '1', "
 ..."TeleportSounds INTEGER NOT NULL DEFAULT '0', "
-..."TimerText INTEGER NOT NULL DEFAULT '0', "
+..."ErrorSounds INTEGER NOT NULL DEFAULT '1', "
+..."TimerText INTEGER NOT NULL DEFAULT '1', "
+..."SpeedText INTEGER NOT NULL DEFAULT '1', "
 ..."CONSTRAINT PK_Options PRIMARY KEY (PlayerID), "
 ..."CONSTRAINT FK_Options_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players(PlayerID) ON UPDATE CASCADE ON DELETE CASCADE);";
 
@@ -85,9 +87,11 @@ char mysql_options_create[] =
 ..."SlayOnEnd TINYINT UNSIGNED NOT NULL DEFAULT '0', "
 ..."Pistol TINYINT UNSIGNED NOT NULL DEFAULT '0', "
 ..."CheckpointMessages TINYINT UNSIGNED NOT NULL DEFAULT '0', "
-..."CheckpointSounds TINYINT UNSIGNED NOT NULL DEFAULT '0', "
+..."CheckpointSounds TINYINT UNSIGNED NOT NULL DEFAULT '1', "
 ..."TeleportSounds TINYINT UNSIGNED NOT NULL DEFAULT '0', "
-..."TimerText TINYINT UNSIGNED NOT NULL DEFAULT '0', "
+..."ErrorSounds TINYINT UNSIGNED NOT NULL DEFAULT '1', "
+..."TimerText TINYINT UNSIGNED NOT NULL DEFAULT '1', "
+..."SpeedText TINYINT UNSIGNED NOT NULL DEFAULT '1', "
 ..."CONSTRAINT PK_Options PRIMARY KEY (PlayerID), "
 ..."CONSTRAINT FK_Options_PlayerID FOREIGN KEY (PlayerID) REFERENCES Players(PlayerID) ON UPDATE CASCADE ON DELETE CASCADE);";
 
@@ -97,11 +101,11 @@ char sql_options_insert[] =
 
 char sql_options_update[] = 
 "UPDATE Options "
-..."SET Style=%d, ShowingTeleportMenu=%d, ShowingInfoPanel=%d, ShowingKeys=%d, ShowingPlayers=%d, ShowingWeapon=%d, AutoRestart=%d, SlayOnEnd=%d, Pistol=%d, CheckpointMessages=%d, CheckpointSounds=%d, TeleportSounds=%d, TimerText=%d "
+..."SET Style=%d, ShowingTeleportMenu=%d, ShowingInfoPanel=%d, ShowingKeys=%d, ShowingPlayers=%d, ShowingWeapon=%d, AutoRestart=%d, SlayOnEnd=%d, Pistol=%d, CheckpointMessages=%d, CheckpointSounds=%d, TeleportSounds=%d, ErrorSounds=%d, TimerText=%d, SpeedText=%d "
 ..."WHERE PlayerID=%d;";
 
 char sql_options_get[] = 
-"SELECT Style, ShowingTeleportMenu, ShowingInfoPanel, ShowingKeys, ShowingPlayers, ShowingWeapon, AutoRestart, SlayOnEnd, Pistol, CheckpointMessages, CheckpointSounds, TeleportSounds, TimerText "
+"SELECT Style, ShowingTeleportMenu, ShowingInfoPanel, ShowingKeys, ShowingPlayers, ShowingWeapon, AutoRestart, SlayOnEnd, Pistol, CheckpointMessages, CheckpointSounds, TeleportSounds, ErrorSounds, TimerText, SpeedText "
 ..."FROM Options "
 ..."WHERE PlayerID=%d;";
 

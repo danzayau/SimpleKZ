@@ -104,10 +104,20 @@ Menu g_OptionsMenu[MAXPLAYERS + 1];
 bool gB_CameFromOptionsMenu[MAXPLAYERS + 1];
 
 // Timer text option menu phrases
-char gC_TimerTextOptionPhrases[][] = 
+char gC_TimerTextOptionPhrases[view_as<int>(KZTimerText)][] = 
 {
 	"Options Menu - Disabled", 
-	"Options Menu - Top", 
+	"Options Menu - Info Panel", 
+	"Options Menu - Bottom", 
+	"Options Menu - Top"
+	
+};
+
+// Speed text option menu phrases
+char gC_SpeedTextOptionPhrases[view_as<int>(KZSpeedText)][] = 
+{
+	"Options Menu - Disabled", 
+	"Options Menu - Info Panel", 
 	"Options Menu - Bottom"
 };
 
@@ -125,7 +135,9 @@ KZPistol g_Pistol[MAXPLAYERS + 1];
 KZCheckpointMessages g_CheckpointMessages[MAXPLAYERS + 1];
 KZCheckpointSounds g_CheckpointSounds[MAXPLAYERS + 1];
 KZTeleportSounds g_TeleportSounds[MAXPLAYERS + 1];
+KZErrorSounds g_ErrorSounds[MAXPLAYERS + 1];
 KZTimerText g_TimerText[MAXPLAYERS + 1];
+KZSpeedText g_SpeedText[MAXPLAYERS + 1];
 
 
 /* Button Press */
@@ -208,11 +220,18 @@ int gI_WeaponRunSpeeds[sizeof(gC_WeaponNames)] =
 	230, 215
 };
 
+// Style settings (respective to KZStyleSetting enumeration)
+float gF_StyleSettings[view_as<int>(KZStyle)][/*view_as<int>(KZStyleSetting)*/] = 
+{
+	{ 6.5, 5.2, 100.0, 1.0, 3500.0, 800.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 320.0, 10.0, 0.4 }, 
+	{ 6.5, 5.0, 100.0, 1.0, 3500.0, 800.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 320.0, 10.0, 0.4 }
+};
+
 
 /* Pistol */
 // Pistol Entity Names (entity name | alias | team that buys it) 
-// Respective to the KZPistol enumeration. */
-char gC_Pistols[][][] = 
+// (respective to the KZPistol enumeration)
+char gC_Pistols[view_as<int>(KZPistol)][][] = 
 {
 	{ "weapon_hkp2000", "P2000 / USP-S", "CT" }, 
 	{ "weapon_glock", "Glock-18", "T" }, 
