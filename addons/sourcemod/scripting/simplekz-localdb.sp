@@ -72,8 +72,6 @@ public void OnPluginStart()
 	CreateGlobalForwards();
 	CreateRegexes();
 	
-	DB_SetupDatabase();
-	
 	if (gB_LateLoad)
 	{
 		OnLateLoad();
@@ -97,6 +95,8 @@ public void OnAllPluginsLoaded()
 	{
 		SetFailState("This plugin requires the SimpleKZ Core plugin.");
 	}
+	
+	DB_SetupDatabase();
 }
 
 

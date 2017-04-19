@@ -57,7 +57,7 @@ stock float SKZ_TimeIntToFloat(int time)
  * @param DBType			Database type (see DatabaseType enumeration)
  * @noreturn
  */
-forward void SimpleKZ_OnDatabaseConnect(Database database, DatabaseType DBType);
+forward void SKZ_OnDatabaseConnect(Database database, DatabaseType DBType);
 
 /**
  * Called when simplekz-localdb retrieves a client's PlayerID from the "Players" database table.
@@ -89,7 +89,7 @@ forward void SKZ_OnRetrieveCurrentMapID(int mapID);
  * @param theoreticalRunTimeMS	Theoretical end time without using teleports (milliseconds).
  * @noreturn
  */
-forward void SKZ_OnSaveTimeToDB(int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS);
+forward void SKZ_OnStoreTimeInDB(int client, int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS);
 
 
 

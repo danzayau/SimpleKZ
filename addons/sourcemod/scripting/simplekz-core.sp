@@ -178,6 +178,9 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	TimerTextUpdate(client); // After updating timer!
 	ButtonPressOnPlayerRunCmd(client); // After updating timer!
 	StyleOnPlayerRunCmd(client, buttons);
+	InfoPanelUpdate(client);
+	SpeedTextUpdate(client);
+	TPMenuDisplay(client);
 }
 
 public void OnClientPreThinkPost(int client)
@@ -188,13 +191,6 @@ public void OnClientPreThinkPost(int client)
 
 
 /*===============================  Movement API Forwards  ===============================*/
-
-public void Movement_OnClientPostThink(int client)
-{
-	InfoPanelUpdate(client);
-	SpeedTextUpdate(client);
-	TPMenuDisplay(client);
-}
 
 public void Movement_OnStartTouchGround(int client)
 {
