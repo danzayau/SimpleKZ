@@ -64,7 +64,8 @@ enum KZOption
 enum KZStyle
 {
 	KZStyle_Standard = 0, 
-	KZStyle_Legacy
+	KZStyle_Legacy, 
+	KZStyle_Competitive
 }
 
 enum KZShowingTPMenu

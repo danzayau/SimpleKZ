@@ -13,6 +13,10 @@
 	{
 		"en"		"Legacy"
 	}
+	"Style - Competitive"
+	{
+		"en"		"Competitive"
+	}
 	"Time Type - Normal"
 	{
 		"en"		"Map"

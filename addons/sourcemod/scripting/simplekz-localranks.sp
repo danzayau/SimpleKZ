@@ -43,7 +43,8 @@ KZStyle g_PlayerTopStyle[MAXPLAYERS + 1];
 char gC_StylePhrases[view_as<int>(KZStyle)][] = 
 {
 	"Style - Standard", 
-	"Style - Legacy"
+	"Style - Legacy", 
+	"Style - Competitive"
 };
 
 // Time type translation phrases for chat messages (respective to KZTimeType enum)

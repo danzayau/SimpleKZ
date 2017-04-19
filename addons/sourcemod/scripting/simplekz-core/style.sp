@@ -105,17 +105,7 @@ static void TweakVelMod(KZPlayer player)
 		return;
 	}
 	
-	switch (player.style)
-	{
-		case KZStyle_Standard:
-		{
-			player.velocityModifier = CalcPrestrafeVelMod(player) * CalcWeaponVelMod(player);
-		}
-		case KZStyle_Legacy:
-		{
-			player.velocityModifier = CalcPrestrafeVelMod(player) * CalcWeaponVelMod(player);
-		}
-	}
+	player.velocityModifier = CalcPrestrafeVelMod(player) * CalcWeaponVelMod(player);
 }
 
 static float CalcPrestrafeVelMod(KZPlayer player)
@@ -181,6 +171,10 @@ static float CalcPrestrafeVelMod(KZPlayer player)
 				gF_PreVelMod[player.id] -= 0.04;
 			}
 		}
+		case KZStyle_Competitive:
+		{
+			gF_PreVelMod[player.id] = 1.0;
+		}
 	}
 	
 	// Keep prestrafe velocity modifier within range
@@ -199,25 +193,32 @@ static float CalcPrestrafeVelMod(KZPlayer player)
 
 static float CalcWeaponVelMod(KZPlayer player)
 {
+	if (player.style == KZStyle_Competitive)
+	{
+		return 1.0;
+	}
+	
 	// Universal Weapon Speed
 	int weaponEnt = GetEntPropEnt(player.id, Prop_Data, "m_hActiveWeapon");
-	if (IsValidEntity(weaponEnt))
+	if (!IsValidEntity(weaponEnt))
 	{
-		char weaponName[64];
-		GetEntityClassname(weaponEnt, weaponName, sizeof(weaponName)); // What weapon the client is holding.
-		
-		// Get weapon speed and work out how much to scale the modifier.
-		int weaponCount = sizeof(gC_WeaponNames);
-		for (int weaponID = 0; weaponID < weaponCount; weaponID++)
+		return SPEED_NORMAL / SPEED_NO_WEAPON; // Weapon entity not found so must have no weapon (260 u/s).
+	}
+	
+	char weaponName[64];
+	GetEntityClassname(weaponEnt, weaponName, sizeof(weaponName)); // What weapon the client is holding.
+	
+	// Get weapon speed and work out how much to scale the modifier.
+	int weaponCount = sizeof(gC_WeaponNames);
+	for (int weaponID = 0; weaponID < weaponCount; weaponID++)
+	{
+		if (StrEqual(weaponName, gC_WeaponNames[weaponID]))
 		{
-			if (StrEqual(weaponName, gC_WeaponNames[weaponID]))
-			{
-				return SPEED_NORMAL / gI_WeaponRunSpeeds[weaponID];
-			}
+			return SPEED_NORMAL / gI_WeaponRunSpeeds[weaponID];
 		}
 	}
 	
-	return SPEED_NORMAL / SPEED_NO_WEAPON; // Weapon entity not found so must have no weapon (260 u/s).
+	return 1.0; // If weapon isn't found (new weapon?)
 }
 
 
@@ -226,7 +227,7 @@ static float CalcWeaponVelMod(KZPlayer player)
 
 static bool HitPerf(KZPlayer player)
 {
-	switch (g_Style[player.id])
+	switch (player.style)
 	{
 		case KZStyle_Standard:
 		{
@@ -239,6 +240,11 @@ static bool HitPerf(KZPlayer player)
 
 static void TweakTakeoffSpeed(KZPlayer player)
 {
+	if (player.style == KZStyle_Competitive)
+	{
+		return;
+	}
+	
 	float oldVelocity[3], landingVelocity[3], baseVelocity[3];
 	player.GetVelocity(oldVelocity);
 	player.GetLandingVelocity(landingVelocity);
@@ -257,7 +263,7 @@ static void TweakTakeoffSpeed(KZPlayer player)
 
 static float CalcTakeoffSpeed(KZPlayer player)
 {
-	switch (g_Style[player.id])
+	switch (player.style)
 	{
 		case KZStyle_Standard:
 		{
@@ -284,6 +290,11 @@ static float CalcTakeoffSpeed(KZPlayer player)
 
 static void RemoveCrouchJumpBind(KZPlayer player, int &buttons)
 {
+	if (player.style == KZStyle_Competitive)
+	{
+		return;
+	}
+	
 	if (player.onGround && buttons & IN_JUMP && !(player.oldButtons & IN_JUMP) && !(player.oldButtons & IN_DUCK))
 	{
 		buttons &= ~IN_DUCK;
@@ -292,6 +303,11 @@ static void RemoveCrouchJumpBind(KZPlayer player, int &buttons)
 
 static void ReduceDuckSlowdown(KZPlayer player)
 {
+	if (player.style == KZStyle_Competitive)
+	{
+		return;
+	}
+	
 	if (player.duckSpeed < DUCK_SPEED_MINIMUM)
 	{
 		player.duckSpeed = DUCK_SPEED_MINIMUM;

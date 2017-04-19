@@ -65,8 +65,9 @@ To add a timer button to your map, use a ```func_button``` with a specific name.
 **Styles**
 
  * ```!style``` - Opens up the movement style selection menu.
- * ```!standard```/```!s``` - Switch to the standard style.
- * ```!legacy```/```!l``` - Switch to the legacy style.
+ * ```!standard```/```!s``` - Switch to the Standard style.
+ * ```!legacy```/```!l``` - Switch to the Legacy style.
+ * ```!comp```/```!c``` - Switch to the Competitive style.
 
 **Other**
 

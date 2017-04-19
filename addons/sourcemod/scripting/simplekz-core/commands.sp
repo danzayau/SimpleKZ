@@ -28,10 +28,12 @@ void CreateCommands()
 	RegConsoleCmd("+noclip", CommandEnableNoclip, "[KZ] Noclip on.");
 	RegConsoleCmd("-noclip", CommandDisableNoclip, "[KZ] Noclip off.");
 	RegConsoleCmd("sm_style", CommandStyle, "[KZ] Open the movement style menu.");
-	RegConsoleCmd("sm_standard", CommandStandard, "[KZ] Switch to the standard style.");
-	RegConsoleCmd("sm_s", CommandStandard, "[KZ] Switch to the standard style.");
-	RegConsoleCmd("sm_legacy", CommandLegacy, "[KZ] Switch to the legacy style.");
-	RegConsoleCmd("sm_l", CommandLegacy, "[KZ] Switch to the legacy style.");
+	RegConsoleCmd("sm_standard", CommandStandard, "[KZ] Switch to the Standard style.");
+	RegConsoleCmd("sm_s", CommandStandard, "[KZ] Switch to the Standard style.");
+	RegConsoleCmd("sm_legacy", CommandLegacy, "[KZ] Switch to the Legacy style.");
+	RegConsoleCmd("sm_l", CommandLegacy, "[KZ] Switch to the Legacy style.");
+	RegConsoleCmd("sm_comp", CommandCompetitive, "[KZ] Switch to the Competitive style.");
+	RegConsoleCmd("sm_c", CommandCompetitive, "[KZ] Switch to the Competitive style.");
 }
 
 
@@ -262,5 +264,11 @@ public Action CommandStandard(int client, int args)
 public Action CommandLegacy(int client, int args)
 {
 	SetOption(client, KZOption_Style, KZStyle_Legacy);
+	return Plugin_Handled;
+}
+
+public Action CommandCompetitive(int client, int args)
+{
+	SetOption(client, KZOption_Style, KZStyle_Competitive);
 	return Plugin_Handled;
 } 

@@ -31,6 +31,7 @@ public int MenuHandler_MovementStyle(Menu menu, MenuAction action, int param1, i
 		{
 			case 0:SetOption(param1, KZOption_Style, KZStyle_Standard);
 			case 1:SetOption(param1, KZOption_Style, KZStyle_Legacy);
+			case 2:SetOption(param1, KZOption_Style, KZStyle_Competitive);
 		}
 	}
 }
