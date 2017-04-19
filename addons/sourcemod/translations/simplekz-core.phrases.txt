@@ -215,14 +215,6 @@
 	{
 		"en"		"{grey}You are now hiding your weapon."
 	}
-	"Option - Show Keys - Enable"
-	{
-		"en"		"{grey}You are now showing your key presses to yourself."
-	}
-	"Option - Show Keys - Disable"
-	{
-		"en"		"{grey}You are no longer showing your key presses to yourself."
-	}
 	"Option - Auto Restart - Enable"
 	{
 		"en"		"{grey}Your timer will now restart when you teleport to start."
@@ -352,7 +344,7 @@
 	}
 	
 	
-	// Options Menu Menu ////////////////////////////////////////////////////////////
+	// Options Menu ////////////////////////////////////////////////////////////
 	"Options Menu - Title"
 	{
 		"en"		"Options"
@@ -373,6 +365,18 @@
 	{
 		"en"		"Bottom"
 	}
+	"Options Menu - Bottom"
+	{
+		"en"		"Bottom"
+	}
+	"Options Menu - Always"
+	{
+		"en"		"Always"
+	}
+	"Options Menu - Spectating"
+	{
+		"en"		"Spectating"
+	}
 	"Options Menu - Teleport Menu"
 	{
 		"en"		"Teleport menu"
@@ -391,7 +395,7 @@
 	}
 	"Options Menu - Show Keys"
 	{
-		"en"		"Show own keys"
+		"en"		"Show key presses"
 	}
 	"Options Menu - Auto Restart"
 	{

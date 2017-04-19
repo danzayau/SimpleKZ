@@ -4,10 +4,12 @@
 	Used to record how long the player takes to complete map courses.
 */
 
-#define STYLE_DEFAULT_SOUND_START "buttons/button9.wav"
-#define STYLE_DEFAULT_SOUND_END "buttons/bell1.wav"
+#define STYLE_STANDARD_SOUND_START "buttons/button9.wav"
+#define STYLE_STANDARD_SOUND_END "buttons/bell1.wav"
 #define STYLE_LEGACY_SOUND_START "buttons/button3.wav"
 #define STYLE_LEGACY_SOUND_END "buttons/button3.wav"
+#define STYLE_COMPETITIVE_SOUND_START "buttons/button9.wav"
+#define STYLE_COMPETITIVE_SOUND_END "buttons/bell1.wav"
 
 void TimerSetupClient(int client)
 {
@@ -137,13 +139,18 @@ static void PlayTimerStartSound(int client)
 	{
 		case KZStyle_Standard:
 		{
-			EmitSoundToClient(client, STYLE_DEFAULT_SOUND_START);
-			EmitSoundToClientSpectators(client, STYLE_DEFAULT_SOUND_START);
+			EmitSoundToClient(client, STYLE_STANDARD_SOUND_START);
+			EmitSoundToClientSpectators(client, STYLE_STANDARD_SOUND_START);
 		}
 		case KZStyle_Legacy:
 		{
 			EmitSoundToClient(client, STYLE_LEGACY_SOUND_START);
 			EmitSoundToClientSpectators(client, STYLE_LEGACY_SOUND_START);
+		}
+		case KZStyle_Competitive:
+		{
+			EmitSoundToClient(client, STYLE_COMPETITIVE_SOUND_START);
+			EmitSoundToClientSpectators(client, STYLE_COMPETITIVE_SOUND_START);
 		}
 	}
 }
@@ -154,13 +161,18 @@ static void PlayTimerEndSound(int client)
 	{
 		case KZStyle_Standard:
 		{
-			EmitSoundToClient(client, STYLE_DEFAULT_SOUND_END);
-			EmitSoundToClientSpectators(client, STYLE_DEFAULT_SOUND_END);
+			EmitSoundToClient(client, STYLE_STANDARD_SOUND_END);
+			EmitSoundToClientSpectators(client, STYLE_STANDARD_SOUND_END);
 		}
 		case KZStyle_Legacy:
 		{
 			EmitSoundToClient(client, STYLE_LEGACY_SOUND_END);
 			EmitSoundToClientSpectators(client, STYLE_LEGACY_SOUND_END);
+		}
+		case KZStyle_Competitive:
+		{
+			EmitSoundToClient(client, STYLE_COMPETITIVE_SOUND_START);
+			EmitSoundToClientSpectators(client, STYLE_COMPETITIVE_SOUND_START);
 		}
 	}
 } 

@@ -82,8 +82,9 @@ enum KZShowingInfoPanel
 
 enum KZShowingKeys
 {
-	KZShowingKeys_Disabled = 0, 
-	KZShowingKeys_Enabled
+	KZShowingKeys_Spectating = 0, 
+	KZShowingKeys_Always, 
+	KZShowingKeys_Disabled
 }
 
 enum KZShowingPlayers

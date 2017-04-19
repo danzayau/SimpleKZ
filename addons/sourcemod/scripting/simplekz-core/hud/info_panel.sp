@@ -18,7 +18,7 @@ void InfoPanelUpdate(int client)
 		return;
 	}
 	
-	if (g_ShowingKeys[client] != KZShowingKeys_Enabled
+	if (g_ShowingKeys[client] == KZShowingKeys_Disabled
 		 && g_TimerText[client] != KZTimerText_InfoPanel
 		 && g_SpeedText[client] != KZSpeedText_InfoPanel)
 	{
@@ -28,14 +28,7 @@ void InfoPanelUpdate(int client)
 	KZPlayer player = g_KZPlayer[client];
 	if (IsPlayerAlive(player.id))
 	{
-		if (player.showingKeys == KZShowingKeys_Enabled)
-		{
-			PrintHintText(player.id, "%s", GetInfoPanelWithKeys(player));
-		}
-		else
-		{
-			PrintHintText(player.id, "%s", GetInfoPanel(player));
-		}
+		PrintHintText(player.id, "%s", GetInfoPanel(player));
 	}
 	else
 	{
@@ -52,17 +45,6 @@ void InfoPanelUpdate(int client)
 /*===============================  Static Functions  ===============================*/
 
 static char[] GetInfoPanel(KZPlayer player)
-{
-	char infoPanelText[256];
-	FormatEx(infoPanelText, sizeof(infoPanelText), 
-		"<font color='#4d4d4d'>%s %s\n%s", 
-		GetTimeString(player), 
-		GetPausedString(player), 
-		GetSpeedString(player));
-	return infoPanelText;
-}
-
-static char[] GetInfoPanelWithKeys(KZPlayer player)
 {
 	char infoPanelText[320];
 	FormatEx(infoPanelText, sizeof(infoPanelText), 
@@ -197,15 +179,26 @@ static char[] GetTakeoffString(KZPlayer player)
 static char[] GetKeysString(KZPlayer player)
 {
 	char keysString[64];
-	FormatEx(keysString, sizeof(keysString), 
-		" <b>%T</b>: <font color='#999999'>%c %c %c %c   %c %c</font>", 
-		"Info Panel Text - Keys", player.id, 
-		GetAString(player), 
-		GetWString(player), 
-		GetSString(player), 
-		GetDString(player), 
-		GetCrouchString(player), 
-		GetJumpString(player));
+	if (player.showingKeys == KZShowingKeys_Disabled)
+	{
+		keysString = "";
+	}
+	else if (player.showingKeys == KZShowingKeys_Spectating && IsPlayerAlive(player.id))
+	{
+		keysString = "";
+	}
+	else
+	{
+		FormatEx(keysString, sizeof(keysString), 
+			" <b>%T</b>: <font color='#999999'>%c %c %c %c   %c %c</font>", 
+			"Info Panel Text - Keys", player.id, 
+			GetAString(player), 
+			GetWString(player), 
+			GetSString(player), 
+			GetDString(player), 
+			GetCrouchString(player), 
+			GetJumpString(player));
+	}
 	return keysString;
 }
 

@@ -10,7 +10,7 @@ void OptionsSetupClient(int client)
 	g_Style[client] = view_as<KZStyle>(GetConVarInt(gCV_DefaultStyle));
 	g_ShowingTPMenu[client] = KZShowingTPMenu_Enabled;
 	g_ShowingInfoPanel[client] = KZShowingInfoPanel_Enabled;
-	g_ShowingKeys[client] = KZShowingKeys_Disabled;
+	g_ShowingKeys[client] = KZShowingKeys_Spectating;
 	g_ShowingPlayers[client] = KZShowingPlayers_Enabled;
 	g_ShowingWeapon[client] = KZShowingWeapon_Enabled;
 	g_AutoRestart[client] = KZAutoRestart_Disabled;
@@ -252,20 +252,6 @@ static void PrintOptionChangeMessage(int client, KZOption option) {
 				case KZShowingInfoPanel_Enabled:
 				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Info Panel - Enable");
-				}
-			}
-		}
-		case KZOption_ShowingKeys:
-		{
-			switch (g_ShowingKeys[client])
-			{
-				case KZShowingKeys_Disabled:
-				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Keys - Disable");
-				}
-				case KZShowingKeys_Enabled:
-				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Keys - Enable");
 				}
 			}
 		}

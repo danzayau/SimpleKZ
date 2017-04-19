@@ -76,7 +76,7 @@ static void OptionsMenuUpdate(int client, Menu menu)
 	OptionsMenuAddToggle(client, menu, g_AutoRestart[client], "Options Menu - Auto Restart");
 	OptionsMenuAddPistol(client, menu);
 	OptionsMenuAddToggle(client, menu, g_SlayOnEnd[client], "Options Menu - Slay On End");
-	OptionsMenuAddToggle(client, menu, g_ShowingKeys[client], "Options Menu - Show Keys");
+	OptionsMenuAddShowingKeys(client, menu);
 	OptionsMenuAddToggle(client, menu, g_CheckpointMessages[client], "Options Menu - Checkpoint Messages");
 	OptionsMenuAddToggle(client, menu, g_CheckpointSounds[client], "Options Menu - Checkpoint Sounds");
 	OptionsMenuAddToggle(client, menu, g_TeleportSounds[client], "Options Menu - Teleport Sounds");
@@ -103,6 +103,13 @@ static void OptionsMenuAddPistol(int client, Menu menu)
 {
 	char text[32];
 	FormatEx(text, sizeof(text), "%T - %s", "Options Menu - Pistol", client, gC_Pistols[g_Pistol[client]][1]);
+	menu.AddItem("", text);
+}
+
+static void OptionsMenuAddShowingKeys(int client, Menu menu)
+{
+	char text[32];
+	FormatEx(text, sizeof(text), "%T - %T", "Options Menu - Show Keys", client, gC_ShowingKeysOptionPhrases[g_ShowingKeys[client]], client);
 	menu.AddItem("", text);
 }
 

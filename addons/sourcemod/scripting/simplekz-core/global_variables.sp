@@ -106,6 +106,14 @@ bool gB_TPMenuIsShowing[MAXPLAYERS + 1];
 Menu g_OptionsMenu[MAXPLAYERS + 1];
 bool gB_CameFromOptionsMenu[MAXPLAYERS + 1];
 
+// Showing keys option phrases
+char gC_ShowingKeysOptionPhrases[view_as<int>(KZShowingKeys)][] = 
+{
+	"Options Menu - Spectating", 
+	"Options Menu - Always", 
+	"Options Menu - Disabled"
+};
+
 // Timer text option menu phrases
 char gC_TimerTextOptionPhrases[view_as<int>(KZTimerText)][] = 
 {
