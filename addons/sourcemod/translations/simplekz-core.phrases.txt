@@ -61,19 +61,19 @@
 	}
 	"Time Stopped"
 	{
-		"en"		"{darkred}Your timer has stopped."
+		"en"		"{red}Your timer has stopped."
 	}
 	"Time Stopped (Noclipped)"
 	{
-		"en"		"{darkred}Your timer has stopped because you noclipped."	
+		"en"		"{red}Your timer has stopped because you noclipped."	
 	}
 	"Time Stopped (Goto)"
 	{
-		"en"		"{darkred}Your timer has stopped because you used !goto."
+		"en"		"{red}Your timer has stopped because you used !goto."
 	}
 	"Time Stopped (Changed Style)"
 	{
-		"en"		"{darkred}Your timer has stopped because you switched style."
+		"en"		"{red}Your timer has stopped because you switched style."
 	}
 	"Client Connection Message"
 	{
@@ -100,35 +100,35 @@
 	}
 	"Can't Checkpoint (Dead)"
 	{
-		"en"		"{darkred}You must be alive to make a checkpoint."
+		"en"		"{red}You must be alive to make a checkpoint."
 	}
 	"Can't Checkpoint (Midair)"
 	{
-		"en"		"{darkred}You can't make a checkpoint midair."
+		"en"		"{red}You can't make a checkpoint midair."
 	}
 	"Can't Checkpoint (Just Landed)"
 	{
-		"en"		"{darkred}You can't make a checkpoint because you just landed."
+		"en"		"{red}You can't make a checkpoint because you just landed."
 	}
 	"Can't Teleport (Map)"
 	{
-		"en"		"{darkred}You can't teleport to your checkpoint on this map."
+		"en"		"{red}You can't teleport to your checkpoint on this map."
 	}
 	"Can't Undo (TP Was Midair)"
 	{
-		"en"		"{darkred}You can't undo because you teleported midair."
+		"en"		"{red}You can't undo because you teleported midair."
 	}
 	"Can't Pause (Just Resumed)"
 	{
-		"en"		"{darkred}You can't pause because you just resumed."
+		"en"		"{red}You can't pause because you just resumed."
 	}
 	"Can't Pause (Midair)"
 	{
-		"en"		"{darkred}You can't pause in midair."
+		"en"		"{red}You can't pause in midair."
 	}
 	"Can't Resume (Just Paused)"
 	{
-		"en"		"{darkred}You can't resume because you just paused."
+		"en"		"{red}You can't resume because you just paused."
 	}
 	"Stopped Sounds"
 	{
@@ -142,23 +142,23 @@
 	}
 	"Goto Failure (Didn't Specify Player)"
 	{
-		"en"		"{darkred}Please specify a player to go to."
+		"en"		"{red}Please specify a player to go to."
 	}
 	"Goto Failure (Not Yourself)"
 	{
-		"en"		"{darkred}You can't teleport to yourself."
+		"en"		"{red}You can't teleport to yourself."
 	}
 	"Goto Failure (Dead)"
 	{
-		"en"		"{darkred}The player you specified is not alive."
+		"en"		"{red}The player you specified is not alive."
 	}
 	"Spectate Failure (Not Yourself)"
 	{
-		"en"		"{darkred}You can't spectate yourself."
+		"en"		"{red}You can't spectate yourself."
 	}
 	"Spectate Failure (Dead)"
 	{
-		"en"		"{darkred}The player you specified is not alive."
+		"en"		"{red}The player you specified is not alive."
 	}
 	"Measure Result"
 	{
@@ -168,11 +168,11 @@
 	}
 	"Measure Failure (Points Not Set)"
 	{
-		"en"		"{darkred}You must set both points to measure a distance."
+		"en"		"{red}You must set both points to measure a distance."
 	}
 	"Measure Failure (Not Aiming at Solid)"
 	{
-		"en"		"{darkred}You are not aiming at anything solid!"
+		"en"		"{red}You are not aiming at anything solid!"
 	}
 	"Switched Style"
 	{

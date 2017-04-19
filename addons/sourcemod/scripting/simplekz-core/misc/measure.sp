@@ -25,6 +25,7 @@ void MeasureGetPos(int client, int arg)
 	{
 		CloseHandle(trace);
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Measure Failure (Not Aiming at Solid)");
+		PlayErrorSound(client);
 		return;
 	}
 	

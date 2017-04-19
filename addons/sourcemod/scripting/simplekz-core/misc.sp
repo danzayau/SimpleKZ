@@ -4,6 +4,8 @@
 	Miscellaneous functions.
 */
 
+#define SOUND_ERROR "buttons/button10.wav"
+
 /*===============================  Helper Functions  ===============================*/
 
 // Switches the players team. Handles important stuff like saving and restoring their position.
@@ -72,6 +74,15 @@ void EmitSoundToClientSpectators(int client, const char[] sound)
 		{
 			EmitSoundToClient(i, sound);
 		}
+	}
+}
+
+// Plays the error sound to the client
+void PlayErrorSound(int client)
+{
+	if (IsValidClient(client) && g_ErrorSounds[client] == KZErrorSounds_Enabled)
+	{
+		EmitSoundToClient(client, SOUND_ERROR);
 	}
 }
 

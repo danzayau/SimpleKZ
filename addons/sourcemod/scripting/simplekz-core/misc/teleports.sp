@@ -38,16 +38,19 @@ void MakeCheckpoint(int client)
 	if (!IsPlayerAlive(client))
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Dead)");
+		PlayErrorSound(client);
 		return;
 	}
 	if (!g_KZPlayer[client].onGround)
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Midair)");
+		PlayErrorSound(client);
 		return;
 	}
 	if (BhopTriggersJustTouched(client))
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Just Landed)");
+		PlayErrorSound(client);
 		return;
 	}
 	
@@ -76,6 +79,7 @@ void TeleportToCheckpoint(int client)
 	if (gB_CurrentMapIsKZPro && gB_TimerRunning[client])
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Teleport (Map)");
+		PlayErrorSound(client);
 		return;
 	}
 	
@@ -93,6 +97,7 @@ void UndoTeleport(int client)
 	if (!gB_LastTeleportOnGround[client])
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Undo (TP Was Midair)");
+		PlayErrorSound(client);
 		return;
 	}
 	

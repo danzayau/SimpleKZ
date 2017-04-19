@@ -28,6 +28,7 @@ void Pause(int client)
 		 && GetEngineTime() - gF_LastResumeTime[client] < TIME_PAUSE_COOLDOWN)
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Just Resumed)");
+		PlayErrorSound(client);
 		return;
 	}
 	// Can't pause in the air if timer is running and player is moving
@@ -35,6 +36,7 @@ void Pause(int client)
 		 && !(g_KZPlayer[client].speed == 0 && g_KZPlayer[client].verticalVelocity == 0))
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Midair)");
+		PlayErrorSound(client);
 		return;
 	}
 	
@@ -59,6 +61,7 @@ void Resume(int client)
 		 && GetEngineTime() - gF_LastPauseTime[client] < TIME_PAUSE_COOLDOWN)
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Resume (Just Paused)");
+		PlayErrorSound(client);
 		return;
 	}
 	

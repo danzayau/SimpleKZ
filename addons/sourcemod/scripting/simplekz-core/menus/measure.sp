@@ -51,6 +51,7 @@ public int MenuHandler_Measure(Handle menu, MenuAction action, int param1, int p
 				else
 				{
 					CPrintToChat(param1, "%t %t", "KZ Prefix", "Measure Failure (Points Not Set)");
+					PlayErrorSound(param1);
 				}
 			}
 		}
