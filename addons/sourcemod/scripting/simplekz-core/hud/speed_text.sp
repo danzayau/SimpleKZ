@@ -20,7 +20,14 @@ void SpeedTextUpdate(int client)
 	{
 		case KZSpeedText_Bottom:
 		{
-			SetHudTextParams(-1.0, 0.75, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
+			if (IsPlayerAlive(client))
+			{
+				SetHudTextParams(-1.0, 0.75, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
+			}
+			else
+			{
+				SetHudTextParams(-1.0, 0.595, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
+			}
 		}
 	}
 	

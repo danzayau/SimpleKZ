@@ -19,7 +19,7 @@ void TimerSetupClient(int client)
 	TimerReset(client);
 }
 
-void TimerOnPlayerRunCmd(int client)
+void TimerUpdate(int client)
 {
 	if (IsPlayerAlive(client) && gB_TimerRunning[client] && !gB_Paused[client])
 	{

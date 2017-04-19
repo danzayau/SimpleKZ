@@ -12,30 +12,28 @@ void InfoPanelUpdate(int client)
 		return;
 	}
 	
-	if (g_ShowingInfoPanel[client] != KZShowingInfoPanel_Enabled
-		)
+	if (g_ShowingInfoPanel[client] == KZShowingInfoPanel_Disabled)
 	{
 		return;
 	}
 	
-	if (g_ShowingKeys[client] == KZShowingKeys_Disabled
+	if ((g_ShowingKeys[client] == KZShowingKeys_Disabled || IsPlayerAlive(client) && g_ShowingKeys[client] == KZShowingKeys_Spectating)
 		 && g_TimerText[client] != KZTimerText_InfoPanel
 		 && g_SpeedText[client] != KZSpeedText_InfoPanel)
 	{
 		return;
 	}
 	
-	KZPlayer player = g_KZPlayer[client];
-	if (IsPlayerAlive(player.id))
+	if (IsPlayerAlive(client))
 	{
-		PrintHintText(player.id, "%s", GetInfoPanel(player));
+		PrintHintText(client, "%s", GetInfoPanel(g_KZPlayer[client], g_KZPlayer[client]));
 	}
 	else
 	{
-		int spectatedPlayer = GetSpectatedClient(player.id);
-		if (IsValidClient(spectatedPlayer))
+		int spectatedClient = GetSpectatedClient(client);
+		if (IsValidClient(spectatedClient))
 		{
-			PrintHintText(player.id, "%s", GetInfoPanelSpectating(g_KZPlayer[spectatedPlayer]));
+			PrintHintText(client, "%s", GetInfoPanel(g_KZPlayer[client], g_KZPlayer[spectatedClient]));
 		}
 	}
 }
@@ -44,55 +42,41 @@ void InfoPanelUpdate(int client)
 
 /*===============================  Static Functions  ===============================*/
 
-static char[] GetInfoPanel(KZPlayer player)
+static char[] GetInfoPanel(KZPlayer player, KZPlayer targetPlayer)
 {
 	char infoPanelText[320];
 	FormatEx(infoPanelText, sizeof(infoPanelText), 
 		"<font color='#4d4d4d'>%s %s\n%s\n%s", 
-		GetTimeString(player), 
-		GetPausedString(player), 
-		GetSpeedString(player), 
-		GetKeysString(player));
+		GetTimeString(player, targetPlayer), 
+		GetPausedString(player, targetPlayer), 
+		GetSpeedString(player, targetPlayer), 
+		GetKeysString(player, targetPlayer));
 	return infoPanelText;
 }
 
-static char[] GetInfoPanelSpectating(KZPlayer player)
-{
-	char infoPanelText[368];
-	FormatEx(infoPanelText, sizeof(infoPanelText), 
-		"<font color='#4d4d4d'>%s %s %s\n%s %s\n%s", 
-		GetTimeString(player), 
-		GetPausedString(player), 
-		GetStyleString(player), 
-		GetSpeedString(player), 
-		GetTakeoffString(player), 
-		GetKeysString(player));
-	return infoPanelText;
-}
-
-static char[] GetTimeString(KZPlayer player)
+static char[] GetTimeString(KZPlayer player, KZPlayer targetPlayer)
 {
 	char timeString[64];
 	if (player.timerText != KZTimerText_InfoPanel) {
 		timeString = "";
 	}
-	else if (gB_TimerRunning[player.id])
+	else if (targetPlayer.timerRunning)
 	{
-		switch (GetCurrentTimeType(player.id))
+		switch (GetCurrentTimeType(targetPlayer.id))
 		{
 			case KZTimeType_Normal:
 			{
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#ffdd99'>%s</font>", 
 					"Info Panel Text - Time", player.id, 
-					SKZ_FormatTime(gF_CurrentTime[player.id]));
+					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id]));
 			}
 			case KZTimeType_Pro:
 			{
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#6699ff'>%s</font>", 
 					"Info Panel Text - Time", player.id, 
-					SKZ_FormatTime(gF_CurrentTime[player.id]));
+					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id]));
 			}
 		}
 	}
@@ -106,10 +90,10 @@ static char[] GetTimeString(KZPlayer player)
 	return timeString;
 }
 
-static char[] GetPausedString(KZPlayer player)
+static char[] GetPausedString(KZPlayer player, KZPlayer targetPlayer)
 {
 	char pausedString[64];
-	if (gB_Paused[player.id])
+	if (gB_Paused[targetPlayer.id])
 	{
 		FormatEx(pausedString, sizeof(pausedString), 
 			"(<font color='#999999'>%T</font>)", 
@@ -122,16 +106,7 @@ static char[] GetPausedString(KZPlayer player)
 	return pausedString;
 }
 
-static char[] GetStyleString(KZPlayer player)
-{
-	char styleString[48];
-	FormatEx(styleString, sizeof(styleString), 
-		"[<font color='#B980EF'>%T</font>]", 
-		gC_StylePhrases[g_Style[player.id]], player.id);
-	return styleString;
-}
-
-static char[] GetSpeedString(KZPlayer player)
+static char[] GetSpeedString(KZPlayer player, KZPlayer targetPlayer)
 {
 	char speedString[128];
 	if (player.speedText != KZSpeedText_InfoPanel || player.paused) {
@@ -139,44 +114,44 @@ static char[] GetSpeedString(KZPlayer player)
 	}
 	else
 	{
-		if (player.onGround || player.onLadder || player.noclipping)
+		if (targetPlayer.onGround || targetPlayer.onLadder || targetPlayer.noclipping)
 		{
 			FormatEx(speedString, sizeof(speedString), 
 				" <b>%T</b>: <font color='#999999'>%.0f</font> u/s", 
 				"Info Panel Text - Speed", player.id, 
-				RoundFloat(player.speed * 10) / 10.0);
+				RoundFloat(targetPlayer.speed * 10) / 10.0);
 		}
 		else
 		{
 			FormatEx(speedString, sizeof(speedString), 
 				" <b>%T</b>: <font color='#999999'>%.0f</font> %s", 
 				"Info Panel Text - Speed", player.id, 
-				RoundFloat(player.speed * 10) / 10.0, 
-				GetTakeoffString(player));
+				RoundFloat(targetPlayer.speed * 10) / 10.0, 
+				GetTakeoffString(targetPlayer));
 		}
 	}
 	return speedString;
 }
 
-static char[] GetTakeoffString(KZPlayer player)
+static char[] GetTakeoffString(KZPlayer targetPlayer)
 {
 	char takeoffString[64];
-	if (player.hitPerf)
+	if (targetPlayer.hitPerf)
 	{
 		FormatEx(takeoffString, sizeof(takeoffString), 
 			"(<font color='#03cc00'>%.0f</font>)", 
-			RoundFloat(player.takeoffSpeed * 10) / 10.0);
+			RoundFloat(targetPlayer.takeoffSpeed * 10) / 10.0);
 	}
 	else
 	{
 		FormatEx(takeoffString, sizeof(takeoffString), 
 			"(<font color='#999999'>%.0f</font>)", 
-			RoundFloat(player.takeoffSpeed * 10) / 10.0);
+			RoundFloat(targetPlayer.takeoffSpeed * 10) / 10.0);
 	}
 	return takeoffString;
 }
 
-static char[] GetKeysString(KZPlayer player)
+static char[] GetKeysString(KZPlayer player, KZPlayer targetPlayer)
 {
 	char keysString[64];
 	if (player.showingKeys == KZShowingKeys_Disabled)
@@ -192,64 +167,64 @@ static char[] GetKeysString(KZPlayer player)
 		FormatEx(keysString, sizeof(keysString), 
 			" <b>%T</b>: <font color='#999999'>%c %c %c %c   %c %c</font>", 
 			"Info Panel Text - Keys", player.id, 
-			GetAString(player), 
-			GetWString(player), 
-			GetSString(player), 
-			GetDString(player), 
-			GetCrouchString(player), 
-			GetJumpString(player));
+			GetAString(targetPlayer), 
+			GetWString(targetPlayer), 
+			GetSString(targetPlayer), 
+			GetDString(targetPlayer), 
+			GetCrouchString(targetPlayer), 
+			GetJumpString(targetPlayer));
 	}
 	return keysString;
 }
 
-static int GetWString(KZPlayer player)
+static int GetWString(KZPlayer targetPlayer)
 {
-	if (player.buttons & IN_FORWARD)
+	if (targetPlayer.buttons & IN_FORWARD)
 	{
 		return 'W';
 	}
 	return '_';
 }
 
-static int GetAString(KZPlayer player)
+static int GetAString(KZPlayer targetPlayer)
 {
-	if (player.buttons & IN_MOVELEFT)
+	if (targetPlayer.buttons & IN_MOVELEFT)
 	{
 		return 'A';
 	}
 	return '_';
 }
 
-static int GetSString(KZPlayer player)
+static int GetSString(KZPlayer targetPlayer)
 {
-	if (player.buttons & IN_BACK)
+	if (targetPlayer.buttons & IN_BACK)
 	{
 		return 'S';
 	}
 	return '_';
 }
 
-static int GetDString(KZPlayer player)
+static int GetDString(KZPlayer targetPlayer)
 {
-	if (player.buttons & IN_MOVERIGHT)
+	if (targetPlayer.buttons & IN_MOVERIGHT)
 	{
 		return 'D';
 	}
 	return '_';
 }
 
-static int GetCrouchString(KZPlayer player)
+static int GetCrouchString(KZPlayer targetPlayer)
 {
-	if (player.buttons & IN_DUCK)
+	if (targetPlayer.buttons & IN_DUCK)
 	{
 		return 'C';
 	}
 	return '_';
 }
 
-static int GetJumpString(KZPlayer player)
+static int GetJumpString(KZPlayer targetPlayer)
 {
-	if (player.buttons & IN_JUMP)
+	if (targetPlayer.buttons & IN_JUMP)
 	{
 		return 'J';
 	}
