@@ -199,7 +199,8 @@ char gC_RadioCommands[][] =
 };
 
 
-/* Movement Tweak */
+/* Style */
+int gI_OldButtons[MAXPLAYERS + 1];
 float gF_PreVelMod[MAXPLAYERS + 1];
 float gF_PreVelModLastChange[MAXPLAYERS + 1];
 int gI_PreTickCounter[MAXPLAYERS + 1];

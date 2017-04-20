@@ -61,19 +61,19 @@
 	}
 	"Time Stopped"
 	{
-		"en"		"{red}Your timer has stopped."
+		"en"		"{darkred}Your timer has stopped."
 	}
 	"Time Stopped (Noclipped)"
 	{
-		"en"		"{red}Your timer has stopped because you noclipped."	
+		"en"		"{darkred}Your timer has stopped because you noclipped."	
 	}
 	"Time Stopped (Goto)"
 	{
-		"en"		"{red}Your timer has stopped because you used !goto."
+		"en"		"{darkred}Your timer has stopped because you used !goto."
 	}
 	"Time Stopped (Changed Style)"
 	{
-		"en"		"{red}Your timer has stopped because you switched style."
+		"en"		"{darkred}Your timer has stopped because you switched style."
 	}
 	"Client Connection Message"
 	{
@@ -100,35 +100,35 @@
 	}
 	"Can't Checkpoint (Dead)"
 	{
-		"en"		"{red}You must be alive to make a checkpoint."
+		"en"		"{darkred}You must be alive to make a checkpoint."
 	}
 	"Can't Checkpoint (Midair)"
 	{
-		"en"		"{red}You can't make a checkpoint midair."
+		"en"		"{darkred}You can't make a checkpoint midair."
 	}
 	"Can't Checkpoint (Just Landed)"
 	{
-		"en"		"{red}You can't make a checkpoint because you just landed."
+		"en"		"{darkred}You can't make a checkpoint because you just landed."
 	}
 	"Can't Teleport (Map)"
 	{
-		"en"		"{red}You can't teleport to your checkpoint on this map."
+		"en"		"{darkred}You can't teleport to your checkpoint on this map."
 	}
 	"Can't Undo (TP Was Midair)"
 	{
-		"en"		"{red}You can't undo because you teleported midair."
+		"en"		"{darkred}You can't undo because you teleported midair."
 	}
 	"Can't Pause (Just Resumed)"
 	{
-		"en"		"{red}You can't pause because you just resumed."
+		"en"		"{darkred}You can't pause because you just resumed."
 	}
 	"Can't Pause (Midair)"
 	{
-		"en"		"{red}You can't pause in midair."
+		"en"		"{darkred}You can't pause in midair."
 	}
 	"Can't Resume (Just Paused)"
 	{
-		"en"		"{red}You can't resume because you just paused."
+		"en"		"{darkred}You can't resume because you just paused."
 	}
 	"Stopped Sounds"
 	{
@@ -142,23 +142,23 @@
 	}
 	"Goto Failure (Didn't Specify Player)"
 	{
-		"en"		"{red}Please specify a player to go to."
+		"en"		"{darkred}Please specify a player to go to."
 	}
 	"Goto Failure (Not Yourself)"
 	{
-		"en"		"{red}You can't teleport to yourself."
+		"en"		"{darkred}You can't teleport to yourself."
 	}
 	"Goto Failure (Dead)"
 	{
-		"en"		"{red}The player you specified is not alive."
+		"en"		"{darkred}The player you specified is not alive."
 	}
 	"Spectate Failure (Not Yourself)"
 	{
-		"en"		"{red}You can't spectate yourself."
+		"en"		"{darkred}You can't spectate yourself."
 	}
 	"Spectate Failure (Dead)"
 	{
-		"en"		"{red}The player you specified is not alive."
+		"en"		"{darkred}The player you specified is not alive."
 	}
 	"Measure Result"
 	{
@@ -168,11 +168,11 @@
 	}
 	"Measure Failure (Points Not Set)"
 	{
-		"en"		"{red}You must set both points to measure a distance."
+		"en"		"{darkred}You must set both points to measure a distance."
 	}
 	"Measure Failure (Not Aiming at Solid)"
 	{
-		"en"		"{red}You are not aiming at anything solid!"
+		"en"		"{darkred}You are not aiming at anything solid!"
 	}
 	"Switched Style"
 	{
@@ -230,38 +230,6 @@
 	"Option - Slay On End - Disable"
 	{
 		"en"		"{grey}You will no longer be slain after finishing a time."
-	}
-	"Option - Checkpoint Messages - Enable"
-	{
-		"en"		"{grey}You will now see checkpoint messages."
-	}
-	"Option - Checkpoint Messages - Disable"
-	{
-		"en"		"{grey}You will no longer see checkpoint messages."
-	}
-	"Option - Checkpoint Sounds - Enable"
-	{
-		"en"		"{grey}You will now hear a checkpoint sound."
-	}
-	"Option - Checkpoint Sounds - Disable"
-	{
-		"en"		"{grey}You will no longer hear a checkpoint sound."
-	}
-	"Option - Teleport Sounds - Enable"
-	{
-		"en"		"{grey}You will now hear teleport sounds."
-	}
-	"Option - Teleport Sounds - Disable"
-	{
-		"en"		"{grey}You will no longer hear teleport sounds."
-	}
-	"Option - Error Sounds - Enable"
-	{
-		"en"		"{grey}You will now hear error sounds."
-	}
-	"Option - Error Sounds - Disable"
-	{
-		"en"		"{grey}You will no longer hear error sounds."
 	}
 	
 	

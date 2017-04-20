@@ -7,10 +7,10 @@
 #define DISTANCE_BUTTON_PRESS_CHECK 40.0 // Max distance from saved press position to detect a press
 
 // Detects and handles if the player has tried to press a start of end button.
-void ButtonPressOnPlayerRunCmd(int client)
+void ButtonPressOnButtonPress(int client, int button)
 {
 	// If just pressed +use button
-	if (!(g_KZPlayer[client].oldButtons & IN_USE) && g_KZPlayer[client].buttons & IN_USE)
+	if (button == IN_USE)
 	{
 		float origin[3];
 		g_KZPlayer[client].GetOrigin(origin);

@@ -99,6 +99,14 @@ public void OnPluginStart()
 	CreateCommandListeners();
 	
 	AutoExecConfig(true, "simplekz-core", "sourcemod/SimpleKZ");
+}
+
+public void OnAllPluginsLoaded()
+{
+	if (!LibraryExists("MovementAPI"))
+	{
+		SetFailState("This plugin requires the MovementAPI plugin.");
+	}
 	
 	if (gB_LateLoad)
 	{
@@ -174,10 +182,9 @@ public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcas
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
-	TimerUpdate(client);
-	TimerTextUpdate(client); // After updating timer!
-	ButtonPressOnPlayerRunCmd(client); // After updating timer!
 	StyleOnPlayerRunCmd(client, buttons);
+	gI_OldButtons[client] = buttons;
+	TimerTextUpdate(client);
 	InfoPanelUpdate(client);
 	SpeedTextUpdate(client);
 	TPMenuDisplay(client);
@@ -191,6 +198,11 @@ public void OnClientPreThinkPost(int client)
 
 
 /*===============================  Movement API Forwards  ===============================*/
+
+public void Movement_OnButtonPress(int client, int button)
+{
+	ButtonPressOnButtonPress(client, button);
+}
 
 public void Movement_OnStartTouchGround(int client)
 {
@@ -252,6 +264,11 @@ public void SKZ_OnChangeOption(int client, KZOption option, any newValue)
 
 
 /*===============================  Other Forwards  ===============================*/
+
+public void OnGameFrame()
+{
+	TimerOnGameFrame();
+}
 
 public void OnMapStart()
 {

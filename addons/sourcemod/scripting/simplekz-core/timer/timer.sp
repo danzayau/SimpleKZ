@@ -19,11 +19,14 @@ void TimerSetupClient(int client)
 	TimerReset(client);
 }
 
-void TimerUpdate(int client)
+void TimerOnGameFrame()
 {
-	if (IsPlayerAlive(client) && gB_TimerRunning[client] && !gB_Paused[client])
+	for (int client = 1; client < MaxClients; client++)
 	{
-		gF_CurrentTime[client] += GetTickInterval();
+		if (IsValidClient(client) && IsPlayerAlive(client) && gB_TimerRunning[client] && !gB_Paused[client])
+		{
+			gF_CurrentTime[client] += GetTickInterval();
+		}
 	}
 }
 

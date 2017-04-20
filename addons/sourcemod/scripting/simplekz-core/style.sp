@@ -295,7 +295,7 @@ static void RemoveCrouchJumpBind(KZPlayer player, int &buttons)
 		return;
 	}
 	
-	if (player.onGround && buttons & IN_JUMP && !(player.oldButtons & IN_JUMP) && !(player.oldButtons & IN_DUCK))
+	if (player.onGround && buttons & IN_JUMP && !(gI_OldButtons[player.id] & IN_JUMP) && !(gI_OldButtons[player.id] & IN_DUCK))
 	{
 		buttons &= ~IN_DUCK;
 	}
