@@ -71,6 +71,16 @@ public void OnPluginStart()
 	CreateKZPlayers();
 	CreateGlobalForwards();
 	CreateRegexes();
+}
+
+public void OnAllPluginsLoaded()
+{
+	if (!LibraryExists("simplekz-core"))
+	{
+		SetFailState("This plugin requires the SimpleKZ Core plugin.");
+	}
+	
+	DB_SetupDatabase();
 	
 	if (gB_LateLoad)
 	{
@@ -87,16 +97,6 @@ void OnLateLoad()
 			DB_SetupClient(g_KZPlayer[client]);
 		}
 	}
-}
-
-public void OnAllPluginsLoaded()
-{
-	if (!LibraryExists("simplekz-core"))
-	{
-		SetFailState("This plugin requires the SimpleKZ Core plugin.");
-	}
-	
-	DB_SetupDatabase();
 }
 
 

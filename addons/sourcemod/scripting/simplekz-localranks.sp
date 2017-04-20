@@ -101,17 +101,6 @@ public void OnPluginStart()
 	CreateMenus();
 	CreateGlobalForwards();
 	CreateCommands();
-	
-	if (gB_LateLoad)
-	{
-		OnLateLoad();
-	}
-}
-
-public void OnLateLoad()
-{
-	SKZ_GetDB(gH_DB);
-	g_DBType = SKZ_GetDBType();
 }
 
 public void OnAllPluginsLoaded()
@@ -124,6 +113,17 @@ public void OnAllPluginsLoaded()
 	{
 		SetFailState("This plugin requires the SimpleKZ Local DB plugin.");
 	}
+	
+	if (gB_LateLoad)
+	{
+		OnLateLoad();
+	}
+}
+
+public void OnLateLoad()
+{
+	SKZ_GetDB(gH_DB);
+	g_DBType = SKZ_GetDBType();
 }
 
 
