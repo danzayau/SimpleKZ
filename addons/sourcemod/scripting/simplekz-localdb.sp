@@ -99,6 +99,14 @@ void OnLateLoad()
 	}
 }
 
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "simplekz-core"))
+	{
+		SetFailState("This plugin requires the SimpleKZ Core plugin.");
+	}
+}
+
 
 
 /*===============================  Other Forwards  ===============================*/

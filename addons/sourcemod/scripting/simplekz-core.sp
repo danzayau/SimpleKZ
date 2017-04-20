@@ -125,6 +125,14 @@ void OnLateLoad()
 	}
 }
 
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "MovementAPI"))
+	{
+		SetFailState("This plugin requires the MovementAPI plugin.");
+	}
+}
+
 
 
 /*===============================  Client Forwards  ===============================*/

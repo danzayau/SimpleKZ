@@ -126,6 +126,18 @@ public void OnLateLoad()
 	g_DBType = SKZ_GetDBType();
 }
 
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "simplekz-core"))
+	{
+		SetFailState("This plugin requires the SimpleKZ Core plugin.");
+	}
+	else if (StrEqual(name, "simplekz-localdb"))
+	{
+		SetFailState("This plugin requires the SimpleKZ Local DB plugin.");
+	}
+}
+
 
 
 /*===============================  SimpleKZ Forwards  ===============================*/
