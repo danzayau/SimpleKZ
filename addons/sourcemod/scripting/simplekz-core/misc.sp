@@ -128,9 +128,9 @@ void GotoPlayer(int client, int target)
 	{
 		CS_RespawnPlayer(client);
 	}
-	g_KZPlayer[client].SetOrigin(targetOrigin);
-	g_KZPlayer[client].SetEyeAngles(targetAngles);
-	g_KZPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
+	
+	TeleportDo(client, targetOrigin, targetAngles);
+	
 	CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Success", target);
 }
 

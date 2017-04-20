@@ -7,6 +7,42 @@
 #define SOUND_CHECKPOINT "buttons/blip1.wav"
 #define SOUND_TELEPORT "buttons/blip1.wav"
 
+// Teleports the player (intended for destination on ground).
+// Handles important stuff like storing postion for undo.
+void TeleportDo(int client, float destination[3], float eyeAngles[3])
+{
+	// Store old variables here to avoid incorrect behaviour when teleporting to undo position
+	float oldOrigin[3], oldAngles[3];
+	g_KZPlayer[client].GetOrigin(oldOrigin);
+	g_KZPlayer[client].GetEyeAngles(oldAngles);
+	
+	g_KZPlayer[client].SetOrigin(destination);
+	g_KZPlayer[client].SetEyeAngles(eyeAngles);
+	
+	g_KZPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
+	g_KZPlayer[client].SetBaseVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
+	
+	CreateTimer(0.01, Timer_RemoveBoosts, client); // Prevent booster exploits
+	
+	gI_TeleportsUsed[client]++;
+	// Store position for undo
+	if (g_KZPlayer[client].onGround)
+	{
+		gB_LastTeleportOnGround[client] = true;
+		gF_UndoOrigin[client] = oldOrigin;
+		gF_UndoAngle[client] = oldAngles;
+	}
+	else
+	{
+		gB_LastTeleportOnGround[client] = false;
+	}
+	
+	if (g_TeleportSounds[client])
+	{
+		EmitSoundToClient(client, SOUND_TELEPORT);
+	}
+}
+
 void TeleportToStart(int client)
 {
 	if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
@@ -104,41 +140,4 @@ void UndoTeleport(int client)
 	TeleportDo(client, gF_UndoOrigin[client], gF_UndoAngle[client]);
 	
 	Call_SKZ_OnUndoTeleport(client);
-}
-
-
-
-/*===============================  Static Functions  ===============================*/
-
-// Teleports the player (intended for destination on ground).
-// Handles important stuff like storing postion for undo.
-static void TeleportDo(int client, float destination[3], float eyeAngles[3])
-{
-	// Store old variables here to avoid incorrect behaviour when teleporting to undo position
-	float oldOrigin[3], oldAngles[3];
-	g_KZPlayer[client].GetOrigin(oldOrigin);
-	g_KZPlayer[client].GetEyeAngles(oldAngles);
-	
-	g_KZPlayer[client].SetOrigin(destination);
-	g_KZPlayer[client].SetEyeAngles(eyeAngles);
-	
-	CreateTimer(0.01, Timer_RemoveBoosts, client); // Prevent booster exploits
-	
-	gI_TeleportsUsed[client]++;
-	// Store position for undo
-	if (g_KZPlayer[client].onGround)
-	{
-		gB_LastTeleportOnGround[client] = true;
-		gF_UndoOrigin[client] = oldOrigin;
-		gF_UndoAngle[client] = oldAngles;
-	}
-	else
-	{
-		gB_LastTeleportOnGround[client] = false;
-	}
-	
-	if (g_TeleportSounds[client])
-	{
-		EmitSoundToClient(client, SOUND_TELEPORT);
-	}
 } 
