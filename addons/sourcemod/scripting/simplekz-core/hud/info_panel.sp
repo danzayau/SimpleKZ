@@ -46,9 +46,8 @@ static char[] GetInfoPanel(KZPlayer player, KZPlayer targetPlayer)
 {
 	char infoPanelText[320];
 	FormatEx(infoPanelText, sizeof(infoPanelText), 
-		"<font color='#4d4d4d'>%s %s\n%s\n%s", 
+		"<font color='#4d4d4d'>%s\n%s\n%s", 
 		GetTimeString(player, targetPlayer), 
-		GetPausedString(player, targetPlayer), 
 		GetSpeedString(player, targetPlayer), 
 		GetKeysString(player, targetPlayer));
 	return infoPanelText;
@@ -56,7 +55,7 @@ static char[] GetInfoPanel(KZPlayer player, KZPlayer targetPlayer)
 
 static char[] GetTimeString(KZPlayer player, KZPlayer targetPlayer)
 {
-	char timeString[64];
+	char timeString[128];
 	if (player.timerText != KZTimerText_InfoPanel) {
 		timeString = "";
 	}
@@ -67,25 +66,28 @@ static char[] GetTimeString(KZPlayer player, KZPlayer targetPlayer)
 			case KZTimeType_Normal:
 			{
 				FormatEx(timeString, sizeof(timeString), 
-					" <b>%T</b>: <font color='#ffdd99'>%s</font>", 
+					" <b>%T</b>: <font color='#ffdd99'>%s</font> %s", 
 					"Info Panel Text - Time", player.id, 
-					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id]));
+					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id]), 
+					GetPausedString(player, targetPlayer));
 			}
 			case KZTimeType_Pro:
 			{
 				FormatEx(timeString, sizeof(timeString), 
-					" <b>%T</b>: <font color='#6699ff'>%s</font>", 
+					" <b>%T</b>: <font color='#6699ff'>%s</font> %s", 
 					"Info Panel Text - Time", player.id, 
-					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id]));
+					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id]), 
+					GetPausedString(player, targetPlayer));
 			}
 		}
 	}
 	else
 	{
 		FormatEx(timeString, sizeof(timeString), 
-			" <b>%T</b>: %T", 
+			" <b>%T</b>: %T %s", 
 			"Info Panel Text - Time", player.id, 
-			"Info Panel Text - Stopped", player.id);
+			"Info Panel Text - Stopped", player.id, 
+			GetPausedString(player, targetPlayer));
 	}
 	return timeString;
 }
@@ -93,7 +95,7 @@ static char[] GetTimeString(KZPlayer player, KZPlayer targetPlayer)
 static char[] GetPausedString(KZPlayer player, KZPlayer targetPlayer)
 {
 	char pausedString[64];
-	if (gB_Paused[targetPlayer.id])
+	if (targetPlayer.paused)
 	{
 		FormatEx(pausedString, sizeof(pausedString), 
 			"(<font color='#999999'>%T</font>)", 

@@ -11,7 +11,9 @@ void SpeedTextUpdate(int client)
 		return;
 	}
 	
-	if (g_SpeedText[client] == KZSpeedText_Disabled || g_SpeedText[client] == KZSpeedText_InfoPanel)
+	if (gB_Paused[client]
+		 || g_SpeedText[client] == KZSpeedText_Disabled
+		 || g_SpeedText[client] == KZSpeedText_InfoPanel)
 	{
 		return;
 	}
@@ -33,7 +35,7 @@ void SpeedTextUpdate(int client)
 	
 	if (IsPlayerAlive(client))
 	{
-		if (g_KZPlayer[client].onGround) {
+		if (g_KZPlayer[client].onGround || g_KZPlayer[client].onLadder || g_KZPlayer[client].noclipping) {
 			ShowHudText(client, 1, "%.0f", 
 				RoundFloat(g_KZPlayer[client].speed * 10) / 10.0);
 		}
