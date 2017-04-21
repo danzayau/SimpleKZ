@@ -20,8 +20,11 @@
 
 void StyleOnPlayerRunCmd(int client, int &buttons)
 {
-	RemoveCrouchJumpBind(g_KZPlayer[client], buttons);
-	TweakVelMod(g_KZPlayer[client]);
+	if (IsPlayerAlive(client))
+	{
+		RemoveCrouchJumpBind(g_KZPlayer[client], buttons);
+		TweakVelMod(g_KZPlayer[client]);
+	}
 }
 
 void StyleOnClientPreThinkPost(int client)

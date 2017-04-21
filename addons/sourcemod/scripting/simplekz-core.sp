@@ -146,6 +146,7 @@ public void OnClientConnected(int client)
 
 public void OnClientPutInServer(int client)
 {
+	PrintConnectMessage(client);
 	HidePlayersOnClientPutInServer(client);
 	SDKHook(client, SDKHook_PreThinkPost, OnClientPreThinkPost);
 }
@@ -172,11 +173,6 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) //
 	TimerForceStopOnPlayerDeath(client);
 }
 
-public void OnPlayerConnect(Event event, const char[] name, bool dontBroadcast) // player_connect hook
-{
-	PrintConnectMessage(event);
-}
-
 public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) // player_disconnect hook
 {
 	PrintDisconnectMessage(event);
@@ -190,13 +186,20 @@ public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcas
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
+	TimerOnPlayerRunCmd(client);
+	
 	StyleOnPlayerRunCmd(client, buttons);
 	gI_OldButtons[client] = buttons;
 	
 	TimerTextUpdate(client);
-	InfoPanelUpdate(client);
 	SpeedTextUpdate(client);
 	TPMenuDisplay(client);
+	
+	// Update info panel every 4th tick because it doesn't seem to show to players instantly anyway
+	if (GetGameTickCount() % 4 == 0)
+	{
+		InfoPanelUpdate(client);
+	}
 	
 	return Plugin_Continue;
 }
@@ -276,11 +279,6 @@ public void SKZ_OnChangeOption(int client, KZOption option, any newValue)
 
 /*===============================  Other Forwards  ===============================*/
 
-public void OnGameFrame()
-{
-	TimerOnGameFrame();
-}
-
 public void OnMapStart()
 {
 	MeasureOnMapStart();
@@ -336,7 +334,6 @@ void CreateHooks()
 {
 	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Pre);
 	HookEvent("player_death", OnPlayerDeath, EventHookMode_Pre);
-	HookEvent("player_connect", OnPlayerConnect, EventHookMode_Pre);
 	HookEvent("player_disconnect", OnPlayerDisconnect, EventHookMode_Pre);
 	HookEvent("round_start", OnRoundStart, EventHookMode_Pre);
 	HookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);

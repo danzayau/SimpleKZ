@@ -22,7 +22,7 @@ void TeleportDo(int client, float destination[3], float eyeAngles[3])
 	g_KZPlayer[client].SetVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
 	g_KZPlayer[client].SetBaseVelocity(view_as<float>( { 0.0, 0.0, 0.0 } ));
 	
-	CreateTimer(0.01, Timer_RemoveBoosts, client); // Prevent booster exploits
+	CreateTimer(0.1, Timer_RemoveBoosts, client); // Prevent booster exploits
 	
 	gI_TeleportsUsed[client]++;
 	// Store position for undo

@@ -21,10 +21,8 @@ void KZConfigOnMapStart()
 	}
 }
 
-// Hooked to player_connect event
-void PrintConnectMessage(Event event)
+void PrintConnectMessage(int client)
 {
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (!IsValidClient(client) || IsFakeClient(client))
 	{
 		return;

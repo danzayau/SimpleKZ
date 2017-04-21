@@ -14,11 +14,14 @@ void ButtonPressOnButtonPress(int client, int button)
 		float origin[3];
 		g_KZPlayer[client].GetOrigin(origin);
 		
-		if (gB_HasStartedThisMap[client] && GetVectorDistance(origin, gF_VirtualStartButtonOrigin[client]) <= DISTANCE_BUTTON_PRESS_CHECK)
+		if (!(gB_TimerRunning[client] && gF_CurrentTime[client] < 0.1)
+			 && gB_HasStartedThisMap[client]
+			 && GetVectorDistance(origin, gF_VirtualStartButtonOrigin[client]) <= DISTANCE_BUTTON_PRESS_CHECK)
 		{
 			TimerStart(client, gI_VirtualStartButtonCourse[client]);
 		}
-		else if (gB_HasEndedThisMap[client] && GetVectorDistance(origin, gF_VirtualEndButtonOrigin[client]) <= DISTANCE_BUTTON_PRESS_CHECK)
+		else if (gB_HasEndedThisMap[client]
+			 && GetVectorDistance(origin, gF_VirtualEndButtonOrigin[client]) <= DISTANCE_BUTTON_PRESS_CHECK)
 		{
 			TimerEnd(client, gI_VirtualEndButtonCourse[client]);
 		}
