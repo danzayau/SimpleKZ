@@ -54,7 +54,6 @@ public Plugin myinfo =
 #include "simplekz-core/menus/tp.sp"
 
 #include "simplekz-core/misc/block_radio.sp"
-#include "simplekz-core/misc/button_press.sp"
 #include "simplekz-core/misc/chat_processing.sp"
 #include "simplekz-core/misc/god_mode.sp"
 #include "simplekz-core/misc/hide_players.sp"
@@ -65,6 +64,7 @@ public Plugin myinfo =
 #include "simplekz-core/misc/player_model.sp"
 #include "simplekz-core/misc/stop_sounds.sp"
 #include "simplekz-core/misc/teleports.sp"
+#include "simplekz-core/misc/virtual_buttons.sp"
 #include "simplekz-core/misc/other.sp"
 
 

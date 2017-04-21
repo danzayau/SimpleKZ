@@ -16,6 +16,7 @@ void TimerSetupClient(int client)
 	gB_TimerRunning[client] = false;
 	gB_Paused[client] = false;
 	gB_HasStartedThisMap[client] = false;
+	gB_HasEndedThisMap[client] = false;
 	TimerReset(client);
 }
 
@@ -42,33 +43,40 @@ void TimerStart(int client, int course)
 	Resume(client);
 	TimerReset(client);
 	gB_TimerRunning[client] = true;
-	gI_CurrentCourse[client] = course;
+	gI_LastCourseStarted[client] = course;
+	
 	gB_HasStartedThisMap[client] = true;
+	gI_LastCourseStarted[client] = course;
 	g_KZPlayer[client].GetOrigin(gF_StartOrigin[client]);
 	g_KZPlayer[client].GetEyeAngles(gF_StartAngles[client]);
+	
 	PlayTimerStartSound(client);
 	
-	Call_SKZ_OnTimerStart(client);
+	Call_SKZ_OnTimerStart(client, course);
 }
 
 // Tries to end the player's timer for the specified course.
 // It won't do anything if the player's isn't on a time on that course.
 void TimerEnd(int client, int course)
 {
-	if (!gB_TimerRunning[client] || course != gI_CurrentCourse[client])
+	if (!gB_TimerRunning[client] || course != gI_LastCourseStarted[client])
 	{
 		return;
 	}
 	
 	gB_TimerRunning[client] = false;
+	
+	gB_HasEndedThisMap[client] = true;
+	
 	PrintEndTimeString(client);
+	PlayTimerEndSound(client);
+	
 	if (g_SlayOnEnd[client] == KZSlayOnEnd_Enabled)
 	{
 		CreateTimer(3.0, Timer_SlayPlayer, client);
 	}
-	PlayTimerEndSound(client);
 	
-	Call_SKZ_OnTimerEnd(client);
+	Call_SKZ_OnTimerEnd(client, course);
 }
 
 
@@ -96,7 +104,7 @@ static void TimerReset(int client)
 
 static void PrintEndTimeString(int client)
 {
-	if (gI_CurrentCourse[client] == 0)
+	if (gI_LastCourseStarted[client] == 0)
 	{
 		switch (GetCurrentTimeType(client))
 		{
@@ -122,14 +130,14 @@ static void PrintEndTimeString(int client)
 			case KZTimeType_Normal:
 			{
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus", 
-					client, gI_CurrentCourse[client], SKZ_FormatTime(gF_CurrentTime[client]), 
+					client, gI_LastCourseStarted[client], SKZ_FormatTime(gF_CurrentTime[client]), 
 					gI_TeleportsUsed[client], SKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
 			}
 			case KZTimeType_Pro:
 			{
 				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus (Pro)", 
-					client, gI_CurrentCourse[client], SKZ_FormatTime(gF_CurrentTime[client]), 
+					client, gI_LastCourseStarted[client], SKZ_FormatTime(gF_CurrentTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
 			}
 		}

@@ -21,20 +21,20 @@ void CreateGlobalForwards()
 	gH_OnUndoTeleport = CreateGlobalForward("SKZ_OnUndoTeleport", ET_Ignore, Param_Cell);
 }
 
-void Call_SKZ_OnTimerStart(int client)
+void Call_SKZ_OnTimerStart(int client, int course)
 {
 	Call_StartForward(gH_OnTimerStart);
 	Call_PushCell(client);
-	Call_PushCell(gI_CurrentCourse[client]);
+	Call_PushCell(course);
 	Call_PushCell(g_Style[client]);
 	Call_Finish();
 }
 
-void Call_SKZ_OnTimerEnd(int client)
+void Call_SKZ_OnTimerEnd(int client, int course)
 {
 	Call_StartForward(gH_OnTimerEnd);
 	Call_PushCell(client);
-	Call_PushCell(gI_CurrentCourse[client]);
+	Call_PushCell(course);
 	Call_PushCell(g_Style[client]);
 	Call_PushFloat(gF_CurrentTime[client]);
 	Call_PushCell(gI_TeleportsUsed[client]);
@@ -170,7 +170,7 @@ public int Native_GetTimerRunning(Handle plugin, int numParams)
 
 public int Native_GetCurrentCourse(Handle plugin, int numParams)
 {
-	return gI_CurrentCourse[GetNativeCell(1)];
+	return gI_LastCourseStarted[GetNativeCell(1)];
 }
 
 public int Native_GetPaused(Handle plugin, int numParams)

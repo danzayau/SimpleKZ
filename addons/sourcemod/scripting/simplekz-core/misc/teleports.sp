@@ -51,11 +51,13 @@ void TeleportToStart(int client)
 	}
 	if (gB_HasStartedThisMap[client])
 	{
+		// Respawn the player before trying to teleport them
 		if (!IsPlayerAlive(client))
 		{
 			CS_RespawnPlayer(client);
 		}
 		TeleportDo(client, gF_StartOrigin[client], gF_StartAngles[client]);
+		
 		if (g_AutoRestart[client] == KZAutoRestart_Enabled)
 		{
 			TimerStart(client, gI_LastCourseStarted[client]);
@@ -96,6 +98,7 @@ void MakeCheckpoint(int client)
 	g_KZPlayer[client].GetEyeAngles(gF_CheckpointAngles[client]);
 	
 	Call_SKZ_OnMakeCheckpoint(client);
+	
 	if (g_CheckpointSounds[client] == KZCheckpointSounds_Enabled)
 	{
 		EmitSoundToClient(client, SOUND_TELEPORT);

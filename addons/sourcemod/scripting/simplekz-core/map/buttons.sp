@@ -28,8 +28,9 @@ public void OnStartButtonPress(const char[] name, int caller, int activator, flo
 		return;
 	}
 	
-	g_KZPlayer[activator].GetOrigin(gF_StartButtonOrigin[activator]);
 	TimerStart(activator, 0);
+	g_KZPlayer[activator].GetOrigin(gF_VirtualStartButtonOrigin[activator]);
+	gI_VirtualStartButtonCourse[activator] = 0;
 }
 
 public void OnEndButtonPress(const char[] name, int caller, int activator, float delay)
@@ -39,8 +40,9 @@ public void OnEndButtonPress(const char[] name, int caller, int activator, float
 		return;
 	}
 	
-	g_KZPlayer[activator].GetOrigin(gF_EndButtonOrigin[activator]);
 	TimerEnd(activator, 0);
+	g_KZPlayer[activator].GetOrigin(gF_VirtualEndButtonOrigin[activator]);
+	gI_VirtualEndButtonCourse[activator] = 0;
 }
 
 public void OnBonusStartButtonPress(const char[] name, int caller, int activator, float delay)
@@ -58,6 +60,8 @@ public void OnBonusStartButtonPress(const char[] name, int caller, int activator
 		if (bonus > 0)
 		{
 			TimerStart(activator, bonus);
+			g_KZPlayer[activator].GetOrigin(gF_VirtualStartButtonOrigin[activator]);
+			gI_VirtualStartButtonCourse[activator] = bonus;
 		}
 	}
 }
@@ -79,6 +83,8 @@ public void OnBonusEndButtonPress(const char[] name, int caller, int activator, 
 		if (bonus > 0)
 		{
 			TimerEnd(activator, bonus);
+			g_KZPlayer[activator].GetOrigin(gF_VirtualEndButtonOrigin[activator]);
+			gI_VirtualEndButtonCourse[activator] = bonus;
 		}
 	}
 }

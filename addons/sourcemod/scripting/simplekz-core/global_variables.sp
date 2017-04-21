@@ -66,9 +66,9 @@ ConVar gCV_FullAlltalk;
 /* Timer */
 bool gB_TimerRunning[MAXPLAYERS + 1];
 float gF_CurrentTime[MAXPLAYERS + 1];
-int gI_CurrentCourse[MAXPLAYERS + 1];
+bool gB_HasStartedThisMap[MAXPLAYERS + 1];
 int gI_LastCourseStarted[MAXPLAYERS + 1];
-int gI_LastCourseEnded[MAXPLAYERS + 1];
+bool gB_HasEndedThisMap[MAXPLAYERS + 1];
 
 
 /* Pause */
@@ -152,10 +152,10 @@ KZSpeedText g_SpeedText[MAXPLAYERS + 1];
 
 
 /* Button Press */
-bool gB_HasStartedThisMap[MAXPLAYERS + 1];
-bool gB_HasEndedThisMap[MAXPLAYERS + 1];
-float gF_StartButtonOrigin[MAXPLAYERS + 1][3];
-float gF_EndButtonOrigin[MAXPLAYERS + 1][3];
+float gF_VirtualStartButtonOrigin[MAXPLAYERS + 1][3];
+float gF_VirtualEndButtonOrigin[MAXPLAYERS + 1][3];
+int gI_VirtualStartButtonCourse[MAXPLAYERS + 1];
+int gI_VirtualEndButtonCourse[MAXPLAYERS + 1];
 
 
 /* Player Model */
