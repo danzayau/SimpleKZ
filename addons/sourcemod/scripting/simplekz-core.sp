@@ -192,10 +192,13 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 {
 	StyleOnPlayerRunCmd(client, buttons);
 	gI_OldButtons[client] = buttons;
+	
 	TimerTextUpdate(client);
 	InfoPanelUpdate(client);
 	SpeedTextUpdate(client);
 	TPMenuDisplay(client);
+	
+	return Plugin_Continue;
 }
 
 public void OnClientPreThinkPost(int client)

@@ -235,8 +235,8 @@ static bool HitPerf(KZPlayer player)
 			return player.takeoffTick - player.landingTick <= STANDARD_PERF_TICKS;
 		}
 	}
-	
-	return player.takeoffTick - player.landingTick <= 1;
+	// Else check if just a normal perfect bunnyhop
+	return Movement_GetHitPerf(player.id);
 }
 
 static void TweakTakeoffSpeed(KZPlayer player)
