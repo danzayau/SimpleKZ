@@ -49,7 +49,7 @@ int GetOption(int client, KZOption option)
 }
 
 // Sets the specified option of the client to the provided value (use the enumerations!)
-void SetOption(int client, KZOption option, any optionValue)
+void SetOption(int client, KZOption option, any optionValue, bool printMessage = true)
 {
 	bool changedOption = false;
 	
@@ -179,33 +179,36 @@ void SetOption(int client, KZOption option, any optionValue)
 	
 	if (changedOption)
 	{
-		PrintOptionChangeMessage(client, option);
+		if (printMessage)
+		{
+			PrintOptionChangeMessage(client, option);
+		}
 		Call_SKZ_OnChangeOption(client, option, optionValue);
 	}
 }
 
 // Steps through an option's possible settings.
-void CycleOption(int client, KZOption option)
+void CycleOption(int client, KZOption option, bool printMessage = true)
 {
 	// Add 1 to the current value of the option
 	// Modulo the result with the total number of that option which can be obtained by using view_as<int>(tag).
 	switch (option)
 	{
-		case KZOption_Style:SetOption(client, option, (view_as<int>(g_Style[client]) + 1) % view_as<int>(KZStyle));
-		case KZOption_ShowingTPMenu:SetOption(client, option, (view_as<int>(g_ShowingTPMenu[client]) + 1) % view_as<int>(KZShowingTPMenu));
-		case KZOption_ShowingInfoPanel:SetOption(client, option, (view_as<int>(g_ShowingInfoPanel[client]) + 1) % view_as<int>(KZShowingInfoPanel));
-		case KZOption_ShowingKeys:SetOption(client, option, (view_as<int>(g_ShowingKeys[client]) + 1) % view_as<int>(KZShowingKeys));
-		case KZOption_ShowingPlayers:SetOption(client, option, (view_as<int>(g_ShowingPlayers[client]) + 1) % view_as<int>(KZShowingPlayers));
-		case KZOption_ShowingWeapon:SetOption(client, option, (view_as<int>(g_ShowingWeapon[client]) + 1) % view_as<int>(KZShowingWeapon));
-		case KZOption_AutoRestart:SetOption(client, option, (view_as<int>(g_AutoRestart[client]) + 1) % view_as<int>(KZAutoRestart));
-		case KZOption_SlayOnEnd:SetOption(client, option, (view_as<int>(g_SlayOnEnd[client]) + 1) % view_as<int>(KZSlayOnEnd));
-		case KZOption_Pistol:SetOption(client, option, (view_as<int>(g_Pistol[client]) + 1) % view_as<int>(KZPistol));
-		case KZOption_CheckpointMessages:SetOption(client, option, (view_as<int>(g_CheckpointMessages[client]) + 1) % view_as<int>(KZCheckpointMessages));
-		case KZOption_CheckpointSounds:SetOption(client, option, (view_as<int>(g_CheckpointSounds[client]) + 1) % view_as<int>(KZCheckpointSounds));
-		case KZOption_TeleportSounds:SetOption(client, option, (view_as<int>(g_TeleportSounds[client]) + 1) % view_as<int>(KZTeleportSounds));
-		case KZOption_ErrorSounds:SetOption(client, option, (view_as<int>(g_ErrorSounds[client]) + 1) % view_as<int>(KZErrorSounds));
-		case KZOption_TimerText:SetOption(client, option, (view_as<int>(g_TimerText[client]) + 1) % view_as<int>(KZTimerText));
-		case KZOption_SpeedText:SetOption(client, option, (view_as<int>(g_SpeedText[client]) + 1) % view_as<int>(KZSpeedText));
+		case KZOption_Style:SetOption(client, option, (view_as<int>(g_Style[client]) + 1) % view_as<int>(KZStyle), printMessage);
+		case KZOption_ShowingTPMenu:SetOption(client, option, (view_as<int>(g_ShowingTPMenu[client]) + 1) % view_as<int>(KZShowingTPMenu), printMessage);
+		case KZOption_ShowingInfoPanel:SetOption(client, option, (view_as<int>(g_ShowingInfoPanel[client]) + 1) % view_as<int>(KZShowingInfoPanel), printMessage);
+		case KZOption_ShowingKeys:SetOption(client, option, (view_as<int>(g_ShowingKeys[client]) + 1) % view_as<int>(KZShowingKeys), printMessage);
+		case KZOption_ShowingPlayers:SetOption(client, option, (view_as<int>(g_ShowingPlayers[client]) + 1) % view_as<int>(KZShowingPlayers), printMessage);
+		case KZOption_ShowingWeapon:SetOption(client, option, (view_as<int>(g_ShowingWeapon[client]) + 1) % view_as<int>(KZShowingWeapon), printMessage);
+		case KZOption_AutoRestart:SetOption(client, option, (view_as<int>(g_AutoRestart[client]) + 1) % view_as<int>(KZAutoRestart), printMessage);
+		case KZOption_SlayOnEnd:SetOption(client, option, (view_as<int>(g_SlayOnEnd[client]) + 1) % view_as<int>(KZSlayOnEnd), printMessage);
+		case KZOption_Pistol:SetOption(client, option, (view_as<int>(g_Pistol[client]) + 1) % view_as<int>(KZPistol), printMessage);
+		case KZOption_CheckpointMessages:SetOption(client, option, (view_as<int>(g_CheckpointMessages[client]) + 1) % view_as<int>(KZCheckpointMessages), printMessage);
+		case KZOption_CheckpointSounds:SetOption(client, option, (view_as<int>(g_CheckpointSounds[client]) + 1) % view_as<int>(KZCheckpointSounds), printMessage);
+		case KZOption_TeleportSounds:SetOption(client, option, (view_as<int>(g_TeleportSounds[client]) + 1) % view_as<int>(KZTeleportSounds), printMessage);
+		case KZOption_ErrorSounds:SetOption(client, option, (view_as<int>(g_ErrorSounds[client]) + 1) % view_as<int>(KZErrorSounds), printMessage);
+		case KZOption_TimerText:SetOption(client, option, (view_as<int>(g_TimerText[client]) + 1) % view_as<int>(KZTimerText), printMessage);
+		case KZOption_SpeedText:SetOption(client, option, (view_as<int>(g_SpeedText[client]) + 1) % view_as<int>(KZSpeedText), printMessage);
 	}
 }
 

@@ -28,26 +28,26 @@ public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int par
 	{
 		switch (param2)
 		{
-			case 0:CycleOption(param1, KZOption_ShowingTPMenu);
-			case 1:CycleOption(param1, KZOption_ShowingInfoPanel);
-			case 2:CycleOption(param1, KZOption_ShowingPlayers);
-			case 3:CycleOption(param1, KZOption_ShowingWeapon);
-			case 4:CycleOption(param1, KZOption_AutoRestart);
-			case 5:
+			case 0:CycleOption(param1, KZOption_ShowingTPMenu, false);
+			case 1:CycleOption(param1, KZOption_ShowingInfoPanel, false);
+			case 2:CycleOption(param1, KZOption_TimerText, false);
+			case 3:CycleOption(param1, KZOption_SpeedText, false);
+			case 4:CycleOption(param1, KZOption_ShowingKeys, false);
+			case 5:CycleOption(param1, KZOption_ShowingPlayers, false);
+			case 6:CycleOption(param1, KZOption_CheckpointMessages, false);
+			case 7:CycleOption(param1, KZOption_CheckpointSounds, false);
+			case 8:CycleOption(param1, KZOption_TeleportSounds, false);
+			case 9:CycleOption(param1, KZOption_ErrorSounds, false);
+			case 10:CycleOption(param1, KZOption_ShowingWeapon, false);
+			case 11:
 			{
 				gB_CameFromOptionsMenu[param1] = true;
 				PistolMenuDisplay(param1);
 			}
-			case 6:CycleOption(param1, KZOption_SlayOnEnd);
-			case 7:CycleOption(param1, KZOption_ShowingKeys);
-			case 8:CycleOption(param1, KZOption_CheckpointMessages);
-			case 9:CycleOption(param1, KZOption_CheckpointSounds);
-			case 10:CycleOption(param1, KZOption_TeleportSounds);
-			case 11:CycleOption(param1, KZOption_ErrorSounds);
-			case 12:CycleOption(param1, KZOption_TimerText);
-			case 13:CycleOption(param1, KZOption_SpeedText);
+			case 12:CycleOption(param1, KZOption_AutoRestart, true);
+			case 13:CycleOption(param1, KZOption_SlayOnEnd, true);
 		}
-		if (param2 != 5)
+		if (param2 != 11) // Pistol
 		{
 			// Reopen the menu at the same place
 			OptionsMenuDisplay(param1, param2 / 6 * 6); // Round item number down to multiple of 6
@@ -71,18 +71,18 @@ static void OptionsMenuUpdate(int client, Menu menu)
 	menu.RemoveAllItems();
 	OptionsMenuAddToggle(client, menu, g_ShowingTPMenu[client], "Options Menu - Teleport Menu");
 	OptionsMenuAddToggle(client, menu, g_ShowingInfoPanel[client], "Options Menu - Info Panel");
-	OptionsMenuAddToggle(client, menu, g_ShowingPlayers[client], "Options Menu - Show Players");
-	OptionsMenuAddToggle(client, menu, g_ShowingWeapon[client], "Options Menu - Show Weapon");
-	OptionsMenuAddToggle(client, menu, g_AutoRestart[client], "Options Menu - Auto Restart");
-	OptionsMenuAddPistol(client, menu);
-	OptionsMenuAddToggle(client, menu, g_SlayOnEnd[client], "Options Menu - Slay On End");
+	OptionsMenuAddTimerText(client, menu);
+	OptionsMenuAddSpeedText(client, menu);
 	OptionsMenuAddShowingKeys(client, menu);
+	OptionsMenuAddToggle(client, menu, g_ShowingPlayers[client], "Options Menu - Show Players");
 	OptionsMenuAddToggle(client, menu, g_CheckpointMessages[client], "Options Menu - Checkpoint Messages");
 	OptionsMenuAddToggle(client, menu, g_CheckpointSounds[client], "Options Menu - Checkpoint Sounds");
 	OptionsMenuAddToggle(client, menu, g_TeleportSounds[client], "Options Menu - Teleport Sounds");
 	OptionsMenuAddToggle(client, menu, g_ErrorSounds[client], "Options Menu - Error Sounds");
-	OptionsMenuAddTimerText(client, menu);
-	OptionsMenuAddSpeedText(client, menu);
+	OptionsMenuAddToggle(client, menu, g_ShowingWeapon[client], "Options Menu - Show Weapon");
+	OptionsMenuAddPistol(client, menu);
+	OptionsMenuAddToggle(client, menu, g_AutoRestart[client], "Options Menu - Auto Restart");
+	OptionsMenuAddToggle(client, menu, g_SlayOnEnd[client], "Options Menu - Slay On End");
 }
 
 static void OptionsMenuAddToggle(int client, Menu menu, any optionValue, const char[] optionPhrase)
