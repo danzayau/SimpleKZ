@@ -37,6 +37,7 @@ void FindConVars()
 	gCV_MaxSpeed = FindConVar("sv_maxspeed");
 	gCV_WaterAccelerate = FindConVar("sv_wateraccelerate");
 	gCV_TimeBetweenDucks = FindConVar("sv_timebetweenducks");
+	gCV_AccelerateUseWeaponSpeed = FindConVar("sv_accelerate_use_weapon_speed");
 	
 	
 	// Remove these notify flags because these ConVars are being set constantly
@@ -58,4 +59,5 @@ void FindConVars()
 	gCV_MaxSpeed.Flags &= ~FCVAR_NOTIFY;
 	gCV_WaterAccelerate.Flags &= ~FCVAR_NOTIFY;
 	gCV_TimeBetweenDucks.Flags &= ~FCVAR_NOTIFY;
+	gCV_AccelerateUseWeaponSpeed.Flags &= ~FCVAR_NOTIFY;
 } 

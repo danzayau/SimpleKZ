@@ -58,6 +58,7 @@ ConVar gCV_MaxVelocity;
 ConVar gCV_MaxSpeed;
 ConVar gCV_WaterAccelerate;
 ConVar gCV_TimeBetweenDucks;
+ConVar gCV_AccelerateUseWeaponSpeed;
 
 ConVar gCV_DisableImmunityAlpha;
 ConVar gCV_FullAlltalk;
@@ -234,9 +235,9 @@ int gI_WeaponRunSpeeds[sizeof(gC_WeaponNames)] =
 // Style settings (respective to KZStyleSetting enumeration)
 float gF_StyleSettings[view_as<int>(KZStyle)][/*view_as<int>(KZStyleSetting)*/] = 
 {
-	{ 6.5, 5.2, 100.0, 1.0, 3500.0, 800.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 320.0, 10.0, 0.4 }, 
-	{ 6.5, 5.0, 100.0, 1.0, 3500.0, 800.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 320.0, 10.0, 0.4 }, 
-	{ 5.5, 5.2, 12.0, 0.78, 3500.0, 800.0, 0.0, 0.0, 80.0, 0.05, 0.08, 60.0, 320.0, 10.0, 0.4 }
+	{ 6.5, 5.2, 100.0, 1.0, 3500.0, 800.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 320.0, 10.0, 0.4, 0.0 }, 
+	{ 6.5, 5.0, 100.0, 1.0, 3500.0, 800.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 320.0, 10.0, 0.4, 0.0 }, 
+	{ 5.5, 5.2, 12.0, 0.78, 3500.0, 800.0, 0.0, 0.0, 80.0, 0.05, 0.08, 60.0, 320.0, 10.0, 0.4, 1.0 }
 };
 
 

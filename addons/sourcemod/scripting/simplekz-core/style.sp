@@ -87,6 +87,7 @@ static void TweakConVars(KZPlayer player)
 	gCV_MaxSpeed.FloatValue = GetStyleSetting(player, KZStyleSetting_MaxSpeed);
 	gCV_WaterAccelerate.FloatValue = GetStyleSetting(player, KZStyleSetting_WaterAccelerate);
 	gCV_TimeBetweenDucks.FloatValue = GetStyleSetting(player, KZStyleSetting_TimeBetweenDucks);
+	gCV_AccelerateUseWeaponSpeed.FloatValue = GetStyleSetting(player, KZStyleSetting_AccelerateUseWeaponSpeed);
 }
 
 static float GetStyleSetting(KZPlayer player, KZStyleSetting setting)

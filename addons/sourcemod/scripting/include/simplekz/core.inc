@@ -36,7 +36,8 @@ enum KZStyleSetting
 	KZStyleSetting_StaminaRecoveryRate, 
 	KZStyleSetting_MaxSpeed, 
 	KZStyleSetting_WaterAccelerate, 
-	KZStyleSetting_TimeBetweenDucks
+	KZStyleSetting_TimeBetweenDucks, 
+	KZStyleSetting_AccelerateUseWeaponSpeed
 }
 
 enum KZOption
