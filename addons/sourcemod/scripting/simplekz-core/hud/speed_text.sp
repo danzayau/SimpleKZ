@@ -63,12 +63,16 @@ static void SpeedTextShow(KZPlayer player, KZPlayer targetPlayer)
 		}
 	}
 	
-	if (targetPlayer.onGround || targetPlayer.onLadder || targetPlayer.noclipping) {
-		ShowHudText(player.id, 1, "%.0f", 
+	if (targetPlayer.onGround || targetPlayer.onLadder || targetPlayer.noclipping)
+	{
+		ShowHudText(player.id, 1, 
+			"%.0f", 
 			RoundFloat(targetPlayer.speed * 10) / 10.0);
 	}
-	else {
-		ShowHudText(player.id, 1, "%.0f\n(%.0f)", 
+	else
+	{
+		ShowHudText(player.id, 1, 
+			"%.0f\n(%.0f)", 
 			RoundFloat(targetPlayer.speed * 10) / 10.0, 
 			RoundFloat(targetPlayer.takeoffSpeed * 10) / 10.0);
 	}

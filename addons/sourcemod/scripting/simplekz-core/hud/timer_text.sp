@@ -11,12 +11,33 @@ void TimerTextUpdate(int client)
 		return;
 	}
 	
-	if (g_TimerText[client] == KZTimerText_Disabled || g_TimerText[client] == KZTimerText_InfoPanel)
+	if (IsPlayerAlive(client))
+	{
+		TimerTextShow(g_KZPlayer[client], g_KZPlayer[client]);
+	}
+	else {
+		int spectatedClient = GetSpectatedClient(client);
+		if (IsValidClient(spectatedClient))
+		{
+			TimerTextShow(g_KZPlayer[client], g_KZPlayer[spectatedClient]);
+		}
+	}
+}
+
+
+
+/*===============================  Static Functions  ===============================*/
+
+static void TimerTextShow(KZPlayer player, KZPlayer targetPlayer)
+{
+	if (player.timerText == KZTimerText_Disabled
+		 || player.timerText == KZTimerText_InfoPanel
+		 || !targetPlayer.timerRunning)
 	{
 		return;
 	}
 	
-	switch (g_TimerText[client])
+	switch (player.timerText)
 	{
 		case KZTimerText_Top:
 		{
@@ -28,16 +49,5 @@ void TimerTextUpdate(int client)
 		}
 	}
 	
-	if (IsPlayerAlive(client) && gB_TimerRunning[client])
-	{
-		ShowHudText(client, 0, SKZ_FormatTime(gF_CurrentTime[client]));
-	}
-	else
-	{
-		int spectatedPlayer = GetSpectatedClient(client);
-		if (IsValidClient(spectatedPlayer) && gB_TimerRunning[spectatedPlayer])
-		{
-			ShowHudText(client, 0, SKZ_FormatTime(gF_CurrentTime[spectatedPlayer]));
-		}
-	}
+	ShowHudText(player.id, 0, SKZ_FormatTime(targetPlayer.currentTime));
 } 
