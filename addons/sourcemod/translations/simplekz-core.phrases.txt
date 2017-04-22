@@ -13,6 +13,10 @@
 	{
 		"en"		"Legacy"
 	}
+	"Style - Competitive"
+	{
+		"en"		"Competitive"
+	}
 	"Time Type - Normal"
 	{
 		"en"		"Map"
@@ -122,6 +126,10 @@
 	{
 		"en"		"{darkred}You can't pause in midair."
 	}
+	"Can't Resume (Just Paused)"
+	{
+		"en"		"{darkred}You can't resume because you just paused."
+	}
 	"Stopped Sounds"
 	{
 		"en"		"{grey}You have stopped all sounds."
@@ -207,14 +215,6 @@
 	{
 		"en"		"{grey}You are now hiding your weapon."
 	}
-	"Option - Show Keys - Enable"
-	{
-		"en"		"{grey}You are now showing your key presses to yourself."
-	}
-	"Option - Show Keys - Disable"
-	{
-		"en"		"{grey}You are no longer showing your key presses to yourself."
-	}
 	"Option - Auto Restart - Enable"
 	{
 		"en"		"{grey}Your timer will now restart when you teleport to start."
@@ -230,30 +230,6 @@
 	"Option - Slay On End - Disable"
 	{
 		"en"		"{grey}You will no longer be slain after finishing a time."
-	}
-	"Option - Checkpoint Messages - Enable"
-	{
-		"en"		"{grey}You will now see checkpoint messages."
-	}
-	"Option - Checkpoint Messages - Disable"
-	{
-		"en"		"{grey}You will no longer see checkpoint messages."
-	}
-	"Option - Checkpoint Sounds - Enable"
-	{
-		"en"		"{grey}You will now hear a checkpoint sound."
-	}
-	"Option - Checkpoint Sounds - Disable"
-	{
-		"en"		"{grey}You will no longer hear a checkpoint sound."
-	}
-	"Option - Teleport Sounds - Enable"
-	{
-		"en"		"{grey}You will now hear teleport sounds."
-	}
-	"Option - Teleport Sounds - Disable"
-	{
-		"en"		"{grey}You will no longer hear teleport sounds."
 	}
 	
 	
@@ -336,7 +312,7 @@
 	}
 	
 	
-	// Options Menu Menu ////////////////////////////////////////////////////////////
+	// Options Menu ////////////////////////////////////////////////////////////
 	"Options Menu - Title"
 	{
 		"en"		"Options"
@@ -357,6 +333,18 @@
 	{
 		"en"		"Bottom"
 	}
+	"Options Menu - Bottom"
+	{
+		"en"		"Bottom"
+	}
+	"Options Menu - Always"
+	{
+		"en"		"Always"
+	}
+	"Options Menu - Spectating"
+	{
+		"en"		"Spectating"
+	}
 	"Options Menu - Teleport Menu"
 	{
 		"en"		"Teleport menu"
@@ -375,7 +363,7 @@
 	}
 	"Options Menu - Show Keys"
 	{
-		"en"		"Show own keys"
+		"en"		"Show key presses"
 	}
 	"Options Menu - Auto Restart"
 	{
@@ -401,17 +389,16 @@
 	{
 		"en"		"Teleport sounds"
 	}
+	"Options Menu - Error Sounds"
+	{
+		"en"		"Error sounds"
+	}
 	"Options Menu - Timer Text"
 	{
 		"en"		"Timer text"
 	}
-	
-	
-	// Server/Admin Messages ////////////////////////////////////////////////////////////
-	"Failed to Open File"
+	"Options Menu - Speed Text"
 	{
-		// There was a problem opening file: cfg/sourcemod/SimpleKZ/mappool.txt.
-		"#format"	"{1:s}"
-		"en"		"{grey}There was a problem opening file: {default}{1}{grey}."
+		"en"		"Speed text"
 	}
 }

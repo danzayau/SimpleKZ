@@ -289,11 +289,4 @@
 		"#format"	"{1:t},{2:t}"
 		"en"		"Top 20 {1:t} Record Holders\n \nStyle - {2}\n "
 	}
-	
-	
-	// Server/Admin Messages ////////////////////////////////////////////////////////////
-	"Map Pool Update Successful"
-	{
-		"en"		"[SimpleKZ] The ranked map pool was successfully updated."
-	}
 }

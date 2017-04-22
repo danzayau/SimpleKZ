@@ -1,8 +1,7 @@
-/* 	Simple KZ Local Ranks Include File
-	Author: DanZay
+/* 	
+	Simple KZ Local Ranks Include File
 	
-	Plugin Version: 0.10.2
-	Plugin Website: https://github.com/danzayau/SimpleKZ	
+	Website: https://github.com/danzayau/SimpleKZ	
 */
 
 #if defined _simplekz_localranks_included_
@@ -10,7 +9,6 @@
 #endif
 #define _simplekz_localranks_included_
 
-#include <simplekz/core>
 
 
 /*===============================  Enumerations  ===============================*/
@@ -29,20 +27,20 @@ enum KZRecordType {
  * Called when the player sets a record.
  *
  * @param client			Client entity index.
- * @param mapID 			MapID from SimpleKZ Core's "Maps" database table.
+ * @param mapID 			MapID from the "Maps" database table.
  * @param course			Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
  * @param style				The movement style of the new record.
  * @param recordType		Type of record (see KZRecordType enumeration).
  * @param runTime			The run time of the record.
  * @noreturn
  */
-forward void SimpleKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime);
+forward void SKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime);
 
 /**
  * Called when the player beats their personal best time (not called for theoretical times).
  *
  * @param client			Client entity index.
- * @param mapID 			MapID from SimpleKZ Core's "Maps" database table.
+ * @param mapID 			MapID from the "Maps" database table.
  * @param course			Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
  * @param style				The movement style of the new PB.
  * @param timeType			The type of run (see TimeType enumeration).
@@ -53,4 +51,4 @@ forward void SimpleKZ_OnNewRecord(int client, int mapID, int course, KZStyle sty
  * @param maxRank			The number of players with times on the map.
  * @noreturn
  */
-forward void SimpleKZ_OnNewPersonalBest(int client, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank); 
+forward void SKZ_OnNewPersonalBest(int client, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank); 

@@ -1,12 +1,9 @@
-/* 	Movement API Include File
-	Author: DanZay
-	
-	Plugin Version: 0.5.2
-	Plugin Website: https://github.com/danzayau/MovementAPI	
+/* 	
+	Movement API Include File
+
+	Website: https://github.com/danzayau/MovementAPI	
 */
 
-
-/*===============================  Double Include Prevention  ===============================*/
 #if defined _movement_included_
 #endinput
 #endif
@@ -17,12 +14,40 @@
 /*===============================  Forwards  ===============================*/
 
 /**
+ * Called after MovementAPI has refreshed (done during OnPlayerRunCmd).
+ * This is called after all other MovementAPI forwards.
+ * Only called if the client is alive.
+ *
+ * @param client			Client entity index.
+ * @noreturn
+ */
+forward void Movement_OnClientUpdate(int client);
+
+/**
+ * Called when the player presses a button when alive.
+ *
+ * @param client			Client entity index.
+ * @param button			Button pressed e.g. IN_FORWARD, IN_LEFT.
+ * @noreturn
+ */
+forward void Movement_OnButtonPress(int client, int button);
+
+/**
+ * Called when the player releases a button when alive.
+ *
+ * @param client			Client entity index.
+ * @param button			Button released e.g. IN_FORWARD, IN_LEFT.
+ * @noreturn
+ */
+forward void Movement_OnButtonRelease(int client, int button);
+
+/**
  * Called when the player touches the ground.
  *
  * @param client			Client entity index.
  * @noreturn
  */
-forward void OnStartTouchGround(int client);
+forward void Movement_OnStartTouchGround(int client);
 
 /**
  * Called when the player leaves the ground.
@@ -33,7 +58,7 @@ forward void OnStartTouchGround(int client);
  * @param landed			True if the player just landed (e.g. perfect bunnyhop).
  * @noreturn
  */
-forward void OnStopTouchGround(int client, bool jumped, bool ducked, bool landed);
+forward void Movement_OnStopTouchGround(int client, bool jumped, bool ducked, bool landed);
 
 /**
  * Called when the player starts ducking.
@@ -41,7 +66,7 @@ forward void OnStopTouchGround(int client, bool jumped, bool ducked, bool landed
  * @param client			Client entity index.
  * @noreturn
  */
-forward void OnStartDucking(int client);
+forward void Movement_OnStartDucking(int client);
 
 /**
  * Called when the player stops ducking.
@@ -49,7 +74,7 @@ forward void OnStartDucking(int client);
  * @param client			Client entity index.
  * @noreturn
  */
-forward void OnStopDucking(int client);
+forward void Movement_OnStopDucking(int client);
 
 /**
  * Called when the player starts touching a ladders.
@@ -57,7 +82,7 @@ forward void OnStopDucking(int client);
  * @param client			Client entity index.
  * @noreturn
  */
-forward void OnStartTouchLadder(int client);
+forward void Movement_OnStartTouchLadder(int client);
 
 /**
  * Called when the player stops touching a ladder.
@@ -65,7 +90,7 @@ forward void OnStartTouchLadder(int client);
  * @param client			Client entity index.
  * @noreturn
  */
-forward void OnStopTouchLadder(int client);
+forward void Movement_OnStopTouchLadder(int client);
 
 /**
  * Called when the player starts noclipping.
@@ -73,7 +98,7 @@ forward void OnStopTouchLadder(int client);
  * @param client			Client entity index.
  * @noreturn
  */
-forward void OnStartNoclipping(int client);
+forward void Movement_OnStartNoclipping(int client);
 
 /**
  * Called when the player stops noclipping.
@@ -81,7 +106,7 @@ forward void OnStartNoclipping(int client);
  * @param client			Client entity index.
  * @noreturn
  */
-forward void OnStopNoclipping(int client);
+forward void Movement_OnStopNoclipping(int client);
 
 
 
@@ -126,6 +151,8 @@ native void Movement_GetVelocity(int client, float buffer[3]);
 
 /**
  * Changes the velocity of the player (by teleporting them).
+ * For convenience, this sets the takeoff velocity and takeoff speed
+ * values if this is done immediately after the player takes off.
  *
  * @param client			Client entity index.
  * @param velocity			Vector to set the player's velocity to.
@@ -292,14 +319,6 @@ native float Movement_GetLandingSpeed(int client);
  * @return        			The tick of the last landing of the player.
  */
 native int Movement_GetLandingTick(int client);
-
-/**
- * Gets the tick of the player's last jump.
- *
- * @param client    		Client entity index.
- * @return        			The time of the last landing of the player.
- */
-native int Movement_GetJumpTick(int client);
 
 /**
  * Gets the maximum height of the player's last jump.
@@ -515,9 +534,6 @@ methodmap MovementPlayer __nullable__ {
 		public get() {
 			return Movement_GetTakeoffSpeed(this.id);
 		}
-		public set(float value) {
-			Movement_SetTakeoffSpeed(this.id, value);
-		}
 	}
 	
 	public void GetLandingOrigin(float buffer[3]) {
@@ -537,12 +553,6 @@ methodmap MovementPlayer __nullable__ {
 	property int landingTick {
 		public get() {
 			return Movement_GetLandingTick(this.id);
-		}
-	}
-	
-	property int jumpTick {
-		public get() {
-			return Movement_GetJumpTick(this.id);
 		}
 	}
 	
@@ -617,6 +627,15 @@ methodmap MovementPlayer __nullable__ {
 	property int buttons {
 		public get() {
 			return GetClientButtons(this.id);
+		}
+	}
+	
+	property float gravity {
+		public get() {
+			GetEntityGravity(this.id);
+		}
+		public set(float value) {
+			SetEntityGravity(this.id, value);
 		}
 	}
 } 
