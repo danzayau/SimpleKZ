@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/danzayau/SimpleKZ.svg?branch=master)](https://travis-ci.org/danzayau/SimpleKZ)
 
-*A timer plugin for climb maps with all the essentials.*
+*A timer plugin for climb maps.*
 
 ### Features
 
@@ -16,8 +16,9 @@
 
 ### Requirements
 
- * **Tested Using**: SourceMod 1.8
- * [**MovementAPI Plugin**](https://github.com/danzayau/MovementAPI) (included in ```SimpleKZ-vX.X.X.zip```)
+ * SourceMod 1.8+
+ * 128 Tick
+ * [**MovementAPI Plugin**](https://github.com/danzayau/MovementAPI) (included in the release)
 
 ### Installation
 
