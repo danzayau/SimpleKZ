@@ -28,6 +28,7 @@ public int MenuHandler_Pistol(Menu menu, MenuAction action, int param1, int para
 	{
 		g_Pistol[param1] = view_as<KZPistol>(param2);
 		PistolUpdate(param1);
+		PistolMenuDisplay(param1);
 	}
 	else if (action == MenuAction_Cancel && gB_CameFromOptionsMenu[param1])
 	{
