@@ -136,6 +136,8 @@ void CreateNatives()
 	CreateNative("SKZ_GetDefaultStyle", Native_GetDefaultStyle);
 	CreateNative("SKZ_GetOption", Native_GetOption);
 	CreateNative("SKZ_SetOption", Native_SetOption);
+	
+	CreateNative("SKZ_PlayErrorSound", Native_PlayErrorSound);
 }
 
 public int Native_GetHitPerf(Handle plugin, int numParams)
@@ -236,4 +238,9 @@ public int Native_GetOption(Handle plugin, int numParams)
 public int Native_SetOption(Handle plugin, int numParams)
 {
 	SetOption(GetNativeCell(1), GetNativeCell(2), GetNativeCell(3));
+}
+
+public int Native_PlayErrorSound(Handle plugin, int numParams)
+{
+	PlayErrorSound(GetNativeCell(1));
 } 

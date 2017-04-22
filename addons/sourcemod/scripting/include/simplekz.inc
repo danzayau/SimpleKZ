@@ -127,7 +127,7 @@ methodmap KZPlayer __nullable__ < MovementPlayer
 	}
 	
 	
-	/*===============================  Timer Functions  ===============================*/
+	/*===============================  Functions  ===============================*/
 	
 	public void StartTimer(int course)
 	{
@@ -172,6 +172,11 @@ methodmap KZPlayer __nullable__ < MovementPlayer
 	public void TogglePause()
 	{
 		SKZ_TogglePause(this.id);
+	}
+	
+	public void PlayErrorSound()
+	{
+		SKZ_PlayErrorSound(this.id);
 	}
 	
 	

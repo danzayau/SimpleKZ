@@ -437,4 +437,12 @@ native int SKZ_GetOption(int client, KZOption option);
  * @param optionValue		What to set the player's option to.
  * @noreturn
  */
-native void SKZ_SetOption(int client, KZOption option, any optionValue); 
+native void SKZ_SetOption(int client, KZOption option, any optionValue);
+
+/**
+ * Plays the error sound to the client (if they have the option enabled).
+ *
+ * @param client			Client entity index.
+ * @noreturn
+ */
+native void SKZ_PlayErrorSound(int client); 
