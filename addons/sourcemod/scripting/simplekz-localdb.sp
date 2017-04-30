@@ -14,16 +14,16 @@ public Plugin myinfo =
 	name = "Simple KZ Local DB", 
 	author = "DanZay", 
 	description = "Local database module for SimpleKZ.", 
-	version = "0.11.0", 
+	version = "0.12.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
 
 
-Handle gH_SKZ_OnDatabaseConnect;
-Handle gH_SKZ_OnRetrievePlayerID;
-Handle gH_SKZ_OnRetrieveCurrentMapID;
-Handle gH_SKZ_OnStoreTimeInDB;
+Handle gH_OnDatabaseConnect;
+Handle gH_OnPlayerSetup;
+Handle gH_OnMapIDRetrieved;
+Handle gH_OnTimeInserted;
 
 KZPlayer g_KZPlayer[MAXPLAYERS + 1];
 bool gB_LateLoad;
@@ -31,7 +31,6 @@ Regex gRE_BonusStartButton;
 
 Database gH_DB = null;
 DatabaseType g_DBType = DatabaseType_None;
-int gI_DBPlayerID[MAXPLAYERS + 1];
 int gI_DBCurrentMapID;
 
 
@@ -44,10 +43,10 @@ int gI_DBCurrentMapID;
 #include "simplekz-localdb/database/load_options.sp"
 #include "simplekz-localdb/database/save_options.sp"
 #include "simplekz-localdb/database/save_time.sp"
-#include "simplekz-localdb/database/setup_client.sp"
 #include "simplekz-localdb/database/setup_database.sp"
 #include "simplekz-localdb/database/setup_map.sp"
 #include "simplekz-localdb/database/setup_map_courses.sp"
+#include "simplekz-localdb/database/setup_player.sp"
 
 
 
@@ -134,14 +133,17 @@ public void SKZ_OnTimerEnd(int client, int course, KZStyle style, float time, in
 	DB_SaveTime(g_KZPlayer[client], course, style, time, teleportsUsed, theoreticalTime);
 }
 
-public void SKZ_OnRetrieveCurrentMapID(int mapID)
+public void SKZ_DB_OnPlayerSetup(int client, int steamID)
 {
-	DB_SetupMapCourses();
+	if (IsValidClient(client))
+	{
+		DB_LoadOptions(g_KZPlayer[client]);
+	}
 }
 
-public void SKZ_OnRetrievePlayerID(int client, int playerID)
+public void SKZ_DB_OnMapIDRetrieved(int mapID)
 {
-	DB_LoadOptions(g_KZPlayer[client]);
+	DB_SetupMapCourses();
 }
 
 

@@ -8,7 +8,7 @@ void DB_PrintRecords(int client, int mapID, int course, KZStyle style)
 {
 	char query[1024];
 	
-	DataPack data = CreateDataPack();
+	DataPack data = new DataPack();
 	data.WriteCell(client);
 	data.WriteCell(course);
 	data.WriteCell(style);
@@ -38,7 +38,7 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 	int client = data.ReadCell();
 	int course = data.ReadCell();
 	KZStyle style = data.ReadCell();
-	CloseHandle(data);
+	data.Close();
 	
 	if (!IsValidClient(client))
 	{
@@ -83,7 +83,7 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 		if (SQL_FetchRow(results[2]))
 		{
 			SQL_FetchString(results[2], 0, recordHolder, sizeof(recordHolder));
-			runTime = SKZ_TimeIntToFloat(SQL_FetchInt(results[2], 1));
+			runTime = SKZ_DB_TimeIntToFloat(SQL_FetchInt(results[2], 1));
 			teleportsUsed = SQL_FetchInt(results[2], 2);
 		}
 	}
@@ -94,7 +94,7 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 		if (SQL_FetchRow(results[3]))
 		{
 			SQL_FetchString(results[3], 0, recordHolderPro, sizeof(recordHolderPro));
-			runTimePro = SKZ_TimeIntToFloat(SQL_FetchInt(results[3], 1));
+			runTimePro = SKZ_DB_TimeIntToFloat(SQL_FetchInt(results[3], 1));
 		}
 	}
 	
@@ -131,7 +131,7 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 
 void DB_PrintRecords_FindMap(int client, const char[] mapSearch, int course, KZStyle style)
 {
-	DataPack data = CreateDataPack();
+	DataPack data = new DataPack();
 	data.WriteCell(client);
 	data.WriteString(mapSearch);
 	data.WriteCell(course);
@@ -148,7 +148,7 @@ public void DB_TxnSuccess_PrintRecords_FindMap(Handle db, DataPack data, int num
 	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
 	KZStyle style = data.ReadCell();
-	CloseHandle(data);
+	data.Close();
 	
 	if (!IsValidClient(client))
 	{

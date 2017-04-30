@@ -426,12 +426,4 @@ methodmap KZPlayer __nullable__ < MovementPlayer
 			return SKZ_GetHitPerf(this.id);
 		}
 	}
-	
-	property int db_playerID
-	{
-		public get()
-		{
-			return SKZ_GetPlayerID(this.id);
-		}
-	}
 } 

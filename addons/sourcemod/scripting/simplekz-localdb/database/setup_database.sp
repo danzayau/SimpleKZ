@@ -30,5 +30,5 @@ void DB_SetupDatabase()
 	
 	DB_CreateTables();
 	
-	Call_SKZ_OnDatabaseConnect();
+	Call_OnDatabaseConnect();
 } 

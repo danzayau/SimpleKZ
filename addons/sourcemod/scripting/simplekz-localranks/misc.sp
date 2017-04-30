@@ -33,7 +33,7 @@ void EmitSoundToClientSpectators(int client, const char[] sound)
 // Sets the player's MVP stars as the percentage PRO completion on the server's default style
 void CompletionMVPStarsUpdate(int client)
 {
-	DB_GetCompletion(client, SKZ_GetPlayerID(client), SKZ_GetDefaultStyle(), false);
+	DB_GetCompletion(client, GetSteamAccountID(client), SKZ_GetDefaultStyle(), false);
 }
 
 void CompletionMVPStarsUpdateAll()

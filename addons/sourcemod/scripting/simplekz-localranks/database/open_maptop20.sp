@@ -10,7 +10,7 @@ void DB_OpenMapTop20(int client, int mapID, int course, KZStyle style, KZTimeTyp
 {
 	char query[1024];
 	
-	DataPack data = CreateDataPack();
+	DataPack data = new DataPack();
 	data.WriteCell(client);
 	data.WriteCell(course);
 	data.WriteCell(style);
@@ -44,7 +44,7 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 	int course = data.ReadCell();
 	KZStyle style = data.ReadCell();
 	KZTimeType timeType = data.ReadCell();
-	CloseHandle(data);
+	data.Close();
 	
 	if (!IsValidClient(client))
 	{
@@ -107,7 +107,7 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 	{
 		rank++;
 		SQL_FetchString(results[2], 0, playerName, sizeof(playerName));
-		runTime = SKZ_TimeIntToFloat(SQL_FetchInt(results[2], 1));
+		runTime = SKZ_DB_TimeIntToFloat(SQL_FetchInt(results[2], 1));
 		switch (timeType)
 		{
 			case KZTimeType_Normal:

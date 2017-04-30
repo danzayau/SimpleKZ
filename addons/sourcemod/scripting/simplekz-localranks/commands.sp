@@ -35,7 +35,7 @@ public Action CommandMapTop(int client, int args)
 {
 	if (args == 0)
 	{  // Open map top for current map and their current style
-		DB_OpenMapTop(client, SKZ_GetCurrentMapID(), 0, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
+		DB_OpenMapTop(client, SKZ_DB_GetCurrentMapID(), 0, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
 	}
 	else if (args >= 1)
 	{  // Open map top for specified map and their current style
@@ -50,7 +50,7 @@ public Action CommandBMapTop(int client, int args)
 {
 	if (args == 0)
 	{  // Open Bonus 1 top for current map and their current style		
-		DB_OpenMapTop(client, SKZ_GetCurrentMapID(), 1, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
+		DB_OpenMapTop(client, SKZ_DB_GetCurrentMapID(), 1, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
 	}
 	else if (args == 1)
 	{  // Open specified Bonus # top for current map and their current style
@@ -59,7 +59,7 @@ public Action CommandBMapTop(int client, int args)
 		int bonus = StringToInt(argBonus);
 		if (bonus > 0)
 		{
-			DB_OpenMapTop(client, SKZ_GetCurrentMapID(), bonus, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
+			DB_OpenMapTop(client, SKZ_DB_GetCurrentMapID(), bonus, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
 		}
 		else
 		{
@@ -88,13 +88,13 @@ public Action CommandPB(int client, int args)
 {
 	if (args == 0)
 	{  // Print their PBs for current map and their current style
-		DB_PrintPBs(client, SKZ_GetPlayerID(client), SKZ_GetCurrentMapID(), 0, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
+		DB_PrintPBs(client, GetSteamAccountID(client), SKZ_DB_GetCurrentMapID(), 0, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
 	}
 	else if (args == 1)
 	{  // Print their PBs for specified map and their current style
 		char argMap[33];
 		GetCmdArg(1, argMap, sizeof(argMap));
-		DB_PrintPBs_FindMap(client, SKZ_GetPlayerID(client), argMap, 0, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
+		DB_PrintPBs_FindMap(client, GetSteamAccountID(client), argMap, 0, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
 	}
 	else if (args >= 2)
 	{  // Print specified player's PBs for specified map and their current style
@@ -109,7 +109,7 @@ public Action CommandPB(int client, int args)
 public Action CommandBPB(int client, int args) {
 	if (args == 0)
 	{  // Print their Bonus 1 PBs for current map and their current style
-		DB_PrintPBs(client, SKZ_GetPlayerID(client), SKZ_GetCurrentMapID(), 1, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
+		DB_PrintPBs(client, GetSteamAccountID(client), SKZ_DB_GetCurrentMapID(), 1, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
 	}
 	else if (args == 1)
 	{  // Print their specified Bonus # PBs for current map and their current style
@@ -118,7 +118,7 @@ public Action CommandBPB(int client, int args) {
 		int bonus = StringToInt(argBonus);
 		if (bonus > 0)
 		{
-			DB_PrintPBs(client, SKZ_GetPlayerID(client), SKZ_GetCurrentMapID(), bonus, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
+			DB_PrintPBs(client, GetSteamAccountID(client), SKZ_DB_GetCurrentMapID(), bonus, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
 		}
 		else
 		{
@@ -133,7 +133,7 @@ public Action CommandBPB(int client, int args) {
 		int bonus = StringToInt(argBonus);
 		if (bonus > 0)
 		{
-			DB_PrintPBs_FindMap(client, SKZ_GetPlayerID(client), argMap, bonus, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
+			DB_PrintPBs_FindMap(client, GetSteamAccountID(client), argMap, bonus, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
 		}
 		else
 		{
@@ -163,7 +163,7 @@ public Action CommandWR(int client, int args)
 {
 	if (args == 0)
 	{  // Print record times for current map and their current style
-		DB_PrintRecords(client, SKZ_GetCurrentMapID(), 0, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
+		DB_PrintRecords(client, SKZ_DB_GetCurrentMapID(), 0, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
 	}
 	else if (args >= 1)
 	{  // Print record times for specified map and their current style
@@ -178,7 +178,7 @@ public Action CommandBWR(int client, int args)
 {
 	if (args == 0)
 	{  // Print Bonus 1 record times for current map and their current style
-		DB_PrintRecords(client, SKZ_GetCurrentMapID(), 1, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
+		DB_PrintRecords(client, SKZ_DB_GetCurrentMapID(), 1, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
 	}
 	else if (args == 1)
 	{  // Print specified Bonus # record times for current map and their current style
@@ -187,7 +187,7 @@ public Action CommandBWR(int client, int args)
 		int bonus = StringToInt(argBonus);
 		if (bonus > 0)
 		{
-			DB_PrintRecords(client, SKZ_GetCurrentMapID(), bonus, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
+			DB_PrintRecords(client, SKZ_DB_GetCurrentMapID(), bonus, view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)));
 		}
 		else
 		{
@@ -216,7 +216,7 @@ public Action CommandPC(int client, int args)
 {
 	if (args < 1)
 	{
-		DB_GetCompletion(client, SKZ_GetPlayerID(client), view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)), true);
+		DB_GetCompletion(client, GetSteamAccountID(client), view_as<KZStyle>(SKZ_GetOption(client, KZOption_Style)), true);
 	}
 	else if (args >= 1)
 	{  // Print record times for specified map and their current style

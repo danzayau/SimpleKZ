@@ -4,37 +4,37 @@
 	Gets the number and percentage of maps completed.
 */
 
-void DB_GetCompletion(int client, int targetPlayerID, KZStyle style, bool print)
+void DB_GetCompletion(int client, int targetSteamID, KZStyle style, bool print)
 {
 	char query[1024];
 	
-	DataPack data = CreateDataPack();
+	DataPack data = new DataPack();
 	data.WriteCell(client);
-	data.WriteCell(targetPlayerID);
+	data.WriteCell(targetSteamID);
 	data.WriteCell(style);
 	data.WriteCell(print);
 	
 	Transaction txn = SQL_CreateTransaction();
 	
-	// Retrieve Alias of PlayerID
-	FormatEx(query, sizeof(query), sql_players_getalias, targetPlayerID);
+	// Retrieve Alias of SteamID
+	FormatEx(query, sizeof(query), sql_players_getalias, targetSteamID);
 	txn.AddQuery(query);
 	// Get total number of ranked main courses
 	txn.AddQuery(sql_getcount_maincourses);
 	// Get number of main course completions
-	FormatEx(query, sizeof(query), sql_getcount_maincoursescompleted, targetPlayerID, style);
+	FormatEx(query, sizeof(query), sql_getcount_maincoursescompleted, targetSteamID, style);
 	txn.AddQuery(query);
 	// Get number of main course completions (PRO)
-	FormatEx(query, sizeof(query), sql_getcount_maincoursescompletedpro, targetPlayerID, style);
+	FormatEx(query, sizeof(query), sql_getcount_maincoursescompletedpro, targetSteamID, style);
 	txn.AddQuery(query);
 	
 	// Get total number of ranked bonuses
 	txn.AddQuery(sql_getcount_bonuses);
 	// Get number of bonus completions
-	FormatEx(query, sizeof(query), sql_getcount_bonusescompleted, targetPlayerID, style);
+	FormatEx(query, sizeof(query), sql_getcount_bonusescompleted, targetSteamID, style);
 	txn.AddQuery(query);
 	// Get number of bonus completions (PRO)
-	FormatEx(query, sizeof(query), sql_getcount_bonusescompletedpro, targetPlayerID, style);
+	FormatEx(query, sizeof(query), sql_getcount_bonusescompletedpro, targetSteamID, style);
 	txn.AddQuery(query);
 	
 	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_GetCompletion, DB_TxnFailure_Generic, data, DBPrio_Low);
@@ -44,10 +44,10 @@ public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries
 {
 	data.Reset();
 	int client = data.ReadCell();
-	int targetPlayerID = data.ReadCell();
+	int targetSteamID = data.ReadCell();
 	KZStyle style = data.ReadCell();
 	bool print = data.ReadCell();
-	CloseHandle(data);
+	data.Close();
 	
 	if (!IsValidClient(client))
 	{
@@ -113,7 +113,7 @@ public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries
 	}
 	
 	// Set scoreboard MVP stars to percentage PRO completion of server's default style
-	if (totalMainCourses + totalBonuses != 0 && targetPlayerID == SKZ_GetPlayerID(client) && style == SKZ_GetDefaultStyle())
+	if (totalMainCourses + totalBonuses != 0 && targetSteamID == GetSteamAccountID(client) && style == SKZ_GetDefaultStyle())
 	{
 		CS_SetMVPCount(client, RoundToFloor(float(completionsPro + bonusCompletionsPro) / float(totalMainCourses + totalBonuses) * 100.0));
 	}
@@ -121,7 +121,7 @@ public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries
 
 void DB_GetCompletion_FindPlayer(int client, const char[] target, KZStyle style)
 {
-	DataPack data = CreateDataPack();
+	DataPack data = new DataPack();
 	data.WriteCell(client);
 	data.WriteString(target);
 	data.WriteCell(style);
@@ -136,7 +136,7 @@ public void DB_TxnSuccess_GetCompletion_FindPlayer(Handle db, DataPack data, int
 	char playerSearch[33];
 	data.ReadString(playerSearch, sizeof(playerSearch));
 	KZStyle style = data.ReadCell();
-	CloseHandle(data);
+	data.Close();
 	
 	if (!IsValidClient(client))
 	{
@@ -149,7 +149,7 @@ public void DB_TxnSuccess_GetCompletion_FindPlayer(Handle db, DataPack data, int
 		return;
 	}
 	else if (SQL_FetchRow(results[0]))
-	{  // Result is the PlayerID
+	{
 		DB_GetCompletion(client, SQL_FetchInt(results[0], 0), style, true);
 	}
 } 

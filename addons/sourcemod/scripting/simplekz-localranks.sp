@@ -14,7 +14,7 @@ public Plugin myinfo =
 	name = "Simple KZ Local Ranks", 
 	author = "DanZay", 
 	description = "Local ranks module for SimpleKZ.", 
-	version = "0.11.0", 
+	version = "0.12.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -122,8 +122,8 @@ public void OnAllPluginsLoaded()
 
 public void OnLateLoad()
 {
-	SKZ_GetDB(gH_DB);
-	g_DBType = SKZ_GetDBType();
+	SKZ_DB_GetDatabase(gH_DB);
+	g_DBType = SKZ_DB_GetDatabaseType();
 }
 
 public void OnLibraryRemoved(const char[] name)
@@ -142,7 +142,7 @@ public void OnLibraryRemoved(const char[] name)
 
 /*===============================  SimpleKZ Forwards  ===============================*/
 
-public void SKZ_OnDatabaseConnect(Database database, DatabaseType DBType)
+public void SKZ_DB_OnDatabaseConnect(Database database, DatabaseType DBType)
 {
 	gH_DB = database;
 	g_DBType = DBType;
@@ -150,22 +150,25 @@ public void SKZ_OnDatabaseConnect(Database database, DatabaseType DBType)
 	CompletionMVPStarsUpdateAll();
 }
 
-public void SKZ_OnStoreTimeInDB(int client, int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS)
+public void SKZ_DB_OnTimeInserted(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS)
 {
-	DB_ProcessNewTime(client, playerID, mapID, course, style, runTimeMS, teleportsUsed);
+	if (IsValidClient(client))
+	{
+		DB_ProcessNewTime(client, steamID, mapID, course, style, runTimeMS, teleportsUsed);
+	}
 }
 
-public void SKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime)
+public void SKZ_DB_OnNewRecord(int client, int steamID, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime)
 {
-	if (mapID == SKZ_GetCurrentMapID())
+	if (IsValidClient(client) && mapID == SKZ_DB_GetCurrentMapID())
 	{
 		AnnounceNewRecord(client, course, style, recordType);
 	}
 }
 
-public void SKZ_OnNewPersonalBest(int client, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank)
+public void SKZ_DB_OnNewPersonalBest(int client, int steamID, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank)
 {
-	if (mapID == SKZ_GetCurrentMapID() && rank != 1)
+	if (IsValidClient(client) && mapID == SKZ_DB_GetCurrentMapID() && rank != 1)
 	{
 		AnnounceNewPersonalBest(client, course, style, timeType, firstTime, improvement, rank, maxRank);
 	}

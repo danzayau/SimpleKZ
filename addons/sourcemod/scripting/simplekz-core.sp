@@ -18,7 +18,7 @@ public Plugin myinfo =
 	name = "Simple KZ Core", 
 	author = "DanZay", 
 	description = "The best KZ plugin.", 
-	version = "0.11.0", 
+	version = "0.12.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 

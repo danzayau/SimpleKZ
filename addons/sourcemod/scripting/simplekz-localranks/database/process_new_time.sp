@@ -5,13 +5,13 @@
 	personal best and if they beat the map course and style's record time.
 */
 
-void DB_ProcessNewTime(int client, int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed)
+void DB_ProcessNewTime(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed)
 {
 	char query[1024];
 	
-	DataPack data = CreateDataPack();
+	DataPack data = new DataPack();
 	data.WriteCell(client);
-	data.WriteCell(playerID);
+	data.WriteCell(steamID);
 	data.WriteCell(mapID);
 	data.WriteCell(course);
 	data.WriteCell(style);
@@ -21,10 +21,10 @@ void DB_ProcessNewTime(int client, int playerID, int mapID, int course, KZStyle 
 	Transaction txn = SQL_CreateTransaction();
 	
 	// Get Top 2 PBs
-	FormatEx(query, sizeof(query), sql_getpb, playerID, mapID, course, style, 2);
+	FormatEx(query, sizeof(query), sql_getpb, steamID, mapID, course, style, 2);
 	txn.AddQuery(query);
 	// Get Rank
-	FormatEx(query, sizeof(query), sql_getmaprank, playerID, mapID, course, style, mapID, course, style);
+	FormatEx(query, sizeof(query), sql_getmaprank, steamID, mapID, course, style, mapID, course, style);
 	txn.AddQuery(query);
 	// Get Number of Players with Times
 	FormatEx(query, sizeof(query), sql_getlowestmaprank, mapID, course, style);
@@ -33,10 +33,10 @@ void DB_ProcessNewTime(int client, int playerID, int mapID, int course, KZStyle 
 	if (teleportsUsed == 0)
 	{
 		// Get Top 2 PRO PBs
-		FormatEx(query, sizeof(query), sql_getpbpro, playerID, mapID, course, style, 2);
+		FormatEx(query, sizeof(query), sql_getpbpro, steamID, mapID, course, style, 2);
 		txn.AddQuery(query);
 		// Get PRO Rank
-		FormatEx(query, sizeof(query), sql_getmaprankpro, playerID, mapID, course, style, mapID, course, style);
+		FormatEx(query, sizeof(query), sql_getmaprankpro, steamID, mapID, course, style, mapID, course, style);
 		txn.AddQuery(query);
 		// Get Number of Players with PRO Times
 		FormatEx(query, sizeof(query), sql_getlowestmaprankpro, mapID, course, style);
@@ -50,20 +50,20 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 {
 	data.Reset();
 	int client = data.ReadCell();
-	int playerID = data.ReadCell();
+	int steamID = data.ReadCell();
 	int mapID = data.ReadCell();
 	int course = data.ReadCell();
 	KZStyle style = data.ReadCell();
 	int runTimeMS = data.ReadCell();
 	int teleportsUsed = data.ReadCell();
-	CloseHandle(data);
+	data.Close();
 	
-	if (!IsValidClient(client) || playerID != SKZ_GetPlayerID(client))
+	if (!IsValidClient(client) || steamID != GetSteamAccountID(client))
 	{
 		return;
 	}
 	
-	float runTime = SKZ_TimeIntToFloat(runTimeMS);
+	float runTime = SKZ_DB_TimeIntToFloat(runTimeMS);
 	
 	bool newPB = false;
 	bool firstTime = false;
@@ -86,7 +86,7 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 			newPB = true;
 			// Time they just beat is second row
 			SQL_FetchRow(results[0]);
-			improvement = SKZ_TimeIntToFloat(SQL_FetchInt(results[0], 0) - runTimeMS);
+			improvement = SKZ_DB_TimeIntToFloat(SQL_FetchInt(results[0], 0) - runTimeMS);
 		}
 	}
 	else
@@ -116,7 +116,7 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 				newPBPro = true;
 				// Time they just beat is second row
 				SQL_FetchRow(results[3]);
-				improvementPro = SKZ_TimeIntToFloat(SQL_FetchInt(results[3], 0) - runTimeMS);
+				improvementPro = SKZ_DB_TimeIntToFloat(SQL_FetchInt(results[3], 0) - runTimeMS);
 			}
 		}
 		else
@@ -139,35 +139,35 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 	{
 		if (firstTime)
 		{
-			Call_SKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Normal, true, runTime, -1.0, rank, maxRank);
+			Call_SKZ_OnNewPersonalBest(client, steamID, mapID, course, style, KZTimeType_Normal, true, runTime, -1.0, rank, maxRank);
 		}
 		else
 		{
-			Call_SKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Normal, false, runTime, improvement, rank, maxRank);
+			Call_SKZ_OnNewPersonalBest(client, steamID, mapID, course, style, KZTimeType_Normal, false, runTime, improvement, rank, maxRank);
 		}
 	}
 	// Call OnNewPersonalBest forward (KZTimeType_Pro)
 	if (newPBPro) {
 		if (firstTimePro) {
-			Call_SKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Pro, true, runTime, -1.0, rankPro, maxRankPro);
+			Call_SKZ_OnNewPersonalBest(client, steamID, mapID, course, style, KZTimeType_Pro, true, runTime, -1.0, rankPro, maxRankPro);
 		}
 		else {
-			Call_SKZ_OnNewPersonalBest(client, mapID, course, style, KZTimeType_Pro, false, runTime, improvementPro, rankPro, maxRankPro);
+			Call_SKZ_OnNewPersonalBest(client, steamID, mapID, course, style, KZTimeType_Pro, false, runTime, improvementPro, rankPro, maxRankPro);
 		}
 	}
 	
 	// Call OnNewRecord forward
 	if ((newPB && rank == 1) && !(newPBPro && rankPro == 1))
 	{
-		Call_SKZ_OnNewRecord(client, mapID, course, style, KZRecordType_Map, runTime);
+		Call_SKZ_OnNewRecord(client, steamID, mapID, course, style, KZRecordType_Map, runTime);
 	}
 	else if (!(newPB && rank == 1) && (newPBPro && rankPro == 1))
 	{
-		Call_SKZ_OnNewRecord(client, mapID, course, style, KZRecordType_Pro, runTime);
+		Call_SKZ_OnNewRecord(client, steamID, mapID, course, style, KZRecordType_Pro, runTime);
 	}
 	else if ((newPB && rank == 1) && (newPBPro && rankPro == 1))
 	{
-		Call_SKZ_OnNewRecord(client, mapID, course, style, KZRecordType_MapAndPro, runTime);
+		Call_SKZ_OnNewRecord(client, steamID, mapID, course, style, KZRecordType_MapAndPro, runTime);
 	}
 	
 	// Update PRO Completion [Standard] percentage in scoreboard
