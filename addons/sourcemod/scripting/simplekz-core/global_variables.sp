@@ -20,6 +20,7 @@ char gC_StylePhrases[view_as<int>(KZStyle)][] =
 
 
 /* Forwards */
+Handle gH_OnClientSetup;
 Handle gH_OnTimerStart;
 Handle gH_OnTimerEnd;
 Handle gH_OnTimerForceStop;

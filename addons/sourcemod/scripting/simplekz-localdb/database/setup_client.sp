@@ -28,7 +28,7 @@ void DB_SetupClient(KZPlayer player)
 	}
 	if (!GeoipCountry(clientIP, country, sizeof(country)))
 	{
-		LogMessage("Couldn't get country of %L.", player.id);
+		LogMessage("Couldn't get country of %L (%s).", player.id, clientIP);
 		country = "Unknown";
 	}
 	
@@ -58,21 +58,15 @@ void DB_SetupClient(KZPlayer player)
 		}
 	}
 	
-	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_SetupPlayer, DB_TxnFailure_Generic, data, DBPrio_High);
+	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_SetupClient, DB_TxnFailure_Generic, data, DBPrio_High);
 }
 
-public void DB_TxnSuccess_SetupPlayer(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
+public void DB_TxnSuccess_SetupClient(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
 	int client = data.ReadCell();
 	int steamID = data.ReadCell();
+	data.Close();
 	
-	if (GetSteamAccountID(client) != steamID)
-	{
-		Call_OnPlayerSetup(-1, steamID); // Not the same client anymore.
-	}
-	else
-	{
-		Call_OnPlayerSetup(client, steamID);
-	}
+	Call_OnClientSetup(client, steamID);
 } 

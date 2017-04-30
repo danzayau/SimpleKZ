@@ -6,12 +6,12 @@
 #include <geoip>
 #include <colorvariables>
 
-#undef REQUIRE_PLUGIN
-#include <basecomm>
-#define REQUIRE_PLUGIN
 #include <movement>
 #include <simplekz>
 #include <simplekz/core>
+
+#undef REQUIRE_PLUGIN
+#include <basecomm>
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -109,7 +109,6 @@ public void OnPluginStart()
 public void OnAllPluginsLoaded()
 {
 	gB_BaseComm = LibraryExists("MovementAPI");
-	
 	if (gB_LateLoad)
 	{
 		OnLateLoad();
@@ -147,18 +146,15 @@ public void OnLibraryRemoved(const char[] name)
 
 /*===============================  Client Forwards  ===============================*/
 
-public void OnClientConnected(int client)
+public void OnClientPutInServer(int client)
 {
 	OptionsSetupClient(client);
 	TimerSetupClient(client);
 	BhopTriggersSetupClient(client);
-}
-
-public void OnClientPutInServer(int client)
-{
-	PrintConnectMessage(client);
 	HidePlayersOnClientPutInServer(client);
 	SDKHook(client, SDKHook_PreThinkPost, OnClientPreThinkPost);
+	PrintConnectMessage(client);
+	Call_SKZ_OnClientSetup(client);
 }
 
 public Action OnClientSayCommand(int client, const char[] command, const char[] sArgs) {
@@ -203,13 +199,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	
 	TimerTextUpdate(client);
 	SpeedTextUpdate(client);
+	InfoPanelUpdate(client);
 	TPMenuDisplay(client);
-	
-	// Update info panel every 4th tick because it doesn't seem to show to players instantly anyway
-	if (GetGameTickCount() % 4 == 0)
-	{
-		InfoPanelUpdate(client);
-	}
 	
 	return Plugin_Continue;
 }

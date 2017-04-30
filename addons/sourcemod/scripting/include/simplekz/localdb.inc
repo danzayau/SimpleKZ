@@ -68,7 +68,7 @@ forward void SKZ_DB_OnDatabaseConnect(Database database, DatabaseType DBType);
  * @param steamID				SteamID32 of the player.
  * @noreturn
  */
-forward void SKZ_DB_OnPlayerSetup(int client, int steamID);
+forward void SKZ_DB_OnClientSetup(int client, int steamID);
 
 /**
  * Called when simplekz-localdb has retrieved the current map's MapID from the "Maps" database table.

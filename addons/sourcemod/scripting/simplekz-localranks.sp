@@ -118,6 +118,8 @@ public void OnLateLoad()
 {
 	SKZ_DB_GetDatabase(gH_DB);
 	g_DBType = SKZ_DB_GetDatabaseType();
+	DB_CreateTables();
+	CompletionMVPStarsUpdateAll();
 }
 
 

@@ -6,8 +6,16 @@
 
 /*===============================  Forwards  ===============================*/
 
+void Call_SKZ_OnClientSetup(int client)
+{
+	Call_StartForward(gH_OnClientSetup);
+	Call_PushCell(client);
+	Call_Finish();
+}
+
 void CreateGlobalForwards()
 {
+	gH_OnClientSetup = CreateGlobalForward("SKZ_OnClientSetup", ET_Ignore, Param_Cell);
 	gH_OnTimerStart = CreateGlobalForward("SKZ_OnTimerStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	gH_OnTimerEnd = CreateGlobalForward("SKZ_OnTimerEnd", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Float, Param_Cell, Param_Float);
 	gH_OnTimerForceStop = CreateGlobalForward("SKZ_OnTimerForceStop", ET_Ignore, Param_Cell);

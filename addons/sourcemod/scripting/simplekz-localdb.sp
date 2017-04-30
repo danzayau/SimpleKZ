@@ -24,7 +24,7 @@ public Plugin myinfo =
 
 
 Handle gH_OnDatabaseConnect;
-Handle gH_OnPlayerSetup;
+Handle gH_OnClientSetup;
 Handle gH_OnMapIDRetrieved;
 Handle gH_OnTimeInserted;
 
@@ -46,10 +46,10 @@ int gI_DBCurrentMapID;
 #include "simplekz-localdb/database/load_options.sp"
 #include "simplekz-localdb/database/save_options.sp"
 #include "simplekz-localdb/database/save_time.sp"
+#include "simplekz-localdb/database/setup_client.sp"
 #include "simplekz-localdb/database/setup_database.sp"
 #include "simplekz-localdb/database/setup_map.sp"
 #include "simplekz-localdb/database/setup_map_courses.sp"
-#include "simplekz-localdb/database/setup_player.sp"
 
 
 
@@ -73,12 +73,12 @@ public void OnPluginStart()
 	CreateKZPlayers();
 	CreateGlobalForwards();
 	CreateRegexes();
+	
+	DB_SetupDatabase();
 }
 
 public void OnAllPluginsLoaded()
 {
-	DB_SetupDatabase();
-	
 	if (gB_LateLoad)
 	{
 		OnLateLoad();
@@ -100,9 +100,14 @@ void OnLateLoad()
 
 /*===============================  Other Forwards  ===============================*/
 
-public void OnClientAuthorized(int client)
+public void OnClientAuthorized(int client, const char[] auth)
 {
 	DB_SetupClient(g_KZPlayer[client]);
+}
+
+public void SKZ_OnClientSetup(int client)
+{
+	DB_LoadOptions(g_KZPlayer[client]);
 }
 
 public void OnClientDisconnect(int client)
@@ -121,14 +126,6 @@ public void OnMapStart()
 public void SKZ_OnTimerEnd(int client, int course, KZStyle style, float time, int teleportsUsed, float theoreticalTime)
 {
 	DB_SaveTime(g_KZPlayer[client], course, style, time, teleportsUsed, theoreticalTime);
-}
-
-public void SKZ_DB_OnPlayerSetup(int client, int steamID)
-{
-	if (IsValidClient(client))
-	{
-		DB_LoadOptions(g_KZPlayer[client]);
-	}
 }
 
 public void SKZ_DB_OnMapIDRetrieved(int mapID)

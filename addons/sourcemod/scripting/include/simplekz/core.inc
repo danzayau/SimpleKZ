@@ -170,6 +170,14 @@ enum KZSpeedText
 /*===============================  Forwards  ===============================*/
 
 /**
+ * Called when the player has been set up (e.g. options, timer).
+ *
+ * @param client			Client entity index.
+ * @noreturn
+ */
+forward void SKZ_OnClientSetup(int client);
+
+/**
  * Called when the player starts their timer.
  *
  * @param client			Client entity index.

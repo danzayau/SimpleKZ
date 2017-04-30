@@ -9,7 +9,7 @@
 void CreateGlobalForwards()
 {
 	gH_OnDatabaseConnect = CreateGlobalForward("SKZ_DB_OnDatabaseConnect", ET_Ignore, Param_Cell, Param_Cell);
-	gH_OnPlayerSetup = CreateGlobalForward("SKZ_DB_OnPlayerSetup", ET_Ignore, Param_Cell, Param_Cell);
+	gH_OnClientSetup = CreateGlobalForward("SKZ_DB_OnClientSetup", ET_Ignore, Param_Cell, Param_Cell);
 	gH_OnMapIDRetrieved = CreateGlobalForward("SKZ_DB_OnMapIDRetrieved", ET_Ignore, Param_Cell);
 	gH_OnTimeInserted = CreateGlobalForward("SKZ_DB_OnTimeInserted", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
 }
@@ -22,9 +22,9 @@ void Call_OnDatabaseConnect()
 	Call_Finish();
 }
 
-void Call_OnPlayerSetup(int client, int steamID)
+void Call_OnClientSetup(int client, int steamID)
 {
-	Call_StartForward(gH_OnPlayerSetup);
+	Call_StartForward(gH_OnClientSetup);
 	if (GetSteamAccountID(client) == steamID)
 	{
 		Call_PushCell(client);
