@@ -158,18 +158,6 @@ public void SKZ_DB_OnNewPersonalBest(int client, int steamID, int mapID, int cou
 
 
 
-/*===============================  Other Forwards  ===============================*/
-
-public void OnMapStart()
-{
-	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_RECORD);
-	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_MAP);
-	FakePrecacheSound(REL_SOUNDPATH_BEAT_RECORD);
-	FakePrecacheSound(REL_SOUNDPATH_BEAT_MAP);
-}
-
-
-
 /*===============================  Functions  ===============================*/
 
 void CreateMenus()

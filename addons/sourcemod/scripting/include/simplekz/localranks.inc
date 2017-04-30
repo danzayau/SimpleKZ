@@ -1,5 +1,5 @@
 /* 	
-	Simple KZ Local Ranks Include File
+	SimpleKZ Local Ranks Include File
 	
 	Website: https://github.com/danzayau/SimpleKZ	
 */

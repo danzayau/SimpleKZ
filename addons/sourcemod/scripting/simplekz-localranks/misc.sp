@@ -4,31 +4,9 @@
 	Miscellaneous functions.
 */
 
-// TO-DO: Replace with sound config
-#define FULL_SOUNDPATH_BEAT_RECORD "sound/SimpleKZ/beatrecord1.mp3"
-#define REL_SOUNDPATH_BEAT_RECORD "*/SimpleKZ/beatrecord1.mp3"
-#define FULL_SOUNDPATH_BEAT_MAP "sound/SimpleKZ/beatmap1.mp3"
-#define REL_SOUNDPATH_BEAT_MAP "*/SimpleKZ/beatmap1.mp3"
-
 
 
 /*===============================  Helper Functions  ===============================*/
-
-int GetSpectatedPlayer(int client)
-{
-	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-}
-
-void EmitSoundToClientSpectators(int client, const char[] sound)
-{
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (IsValidClient(i) && GetSpectatedPlayer(i) == client)
-		{
-			EmitSoundToClient(i, sound);
-		}
-	}
-}
 
 // Sets the player's MVP stars as the percentage PRO completion on the server's default style
 void CompletionMVPStarsUpdate(int client)
@@ -90,7 +68,6 @@ void AnnounceNewRecord(int client, int course, KZStyle style, KZRecordType recor
 			}
 		}
 	}
-	EmitSoundToAll(REL_SOUNDPATH_BEAT_RECORD);
 }
 
 // Print new PB message to chat and play sound if first time beating the map PRO
@@ -118,8 +95,6 @@ void AnnounceNewPersonalBest(int client, int course, KZStyle style, KZTimeType t
 				{
 					CPrintToChatAll(" %t", "New PB - First Time (Pro)", client, rank, maxRank, gC_StylePhrases[style]);
 					CompletionMVPStarsUpdate(client);
-					EmitSoundToClient(client, REL_SOUNDPATH_BEAT_MAP);
-					EmitSoundToClientSpectators(client, REL_SOUNDPATH_BEAT_MAP);
 				}
 				else
 				{
@@ -149,8 +124,6 @@ void AnnounceNewPersonalBest(int client, int course, KZStyle style, KZTimeType t
 				if (firstTime)
 				{
 					CPrintToChatAll(" %t", "New PB - First Time (Pro)", client, rank, maxRank, gC_StylePhrases[style]);
-					EmitSoundToClient(client, REL_SOUNDPATH_BEAT_MAP);
-					EmitSoundToClientSpectators(client, REL_SOUNDPATH_BEAT_MAP);
 				}
 				else
 				{

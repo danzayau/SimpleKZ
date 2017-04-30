@@ -1,5 +1,5 @@
 /* 	
-	Simple KZ Helper Include File
+	SimpleKZ Stocks
 
 	Website: https://github.com/danzayau/SimpleKZ	
 */
@@ -47,8 +47,8 @@ stock char[] SKZ_FormatTime(float time)
 /**
  * Checks if the client is a valid client entity index, and if they are in-game.
  *
- * @param client			Entity index
- * @return					True if the client is valid
+ * @param client				Entity index
+ * @return						True if the client is valid
  */
 stock bool IsValidClient(int client)
 {
@@ -58,9 +58,9 @@ stock bool IsValidClient(int client)
 /**
  * Returns the max of two float values.
  *
- * @param value1			First value
- * @param value2			Second value
- * @return					The greater of the two values, or their value if they are equal
+ * @param value1				First value
+ * @param value2				Second value
+ * @return						The greater of the two values, or their value if they are equal
  */
 stock float FloatMax(float value1, float value2)
 {
@@ -74,9 +74,9 @@ stock float FloatMax(float value1, float value2)
 /**
  * Outputs the string in all lower case.
  *
- * @param input				Input string
- * @param output			Output buffer
- * @param size				Maximum size of output
+ * @param input					Input string
+ * @param output				Output buffer
+ * @param size					Maximum size of output
  * @noreturn
  */
 stock void String_ToLower(const char[] input, char[] output, int size)
@@ -92,12 +92,30 @@ stock void String_ToLower(const char[] input, char[] output, int size)
 }
 
 /**
- * Precaches a sound file.
+ * Gets the player that the client is spectating.
  *
- * @param relativeSoundpath	Relative sound path (starts with *)
+ * @param client				Spectating client.
+ * @return						Client entity index of player they are spectating.
+ */
+stock int GetSpectatedClient(int client)
+{
+	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+}
+
+/**
+ * Emits a sound to other players that are spectating the client.
+ *
+ * @param client				Client being spectated.
+ * @param sound					Sound to play.
  * @noreturn
  */
-stock void FakePrecacheSound(const char[] relativeSoundPath)
+stock void EmitSoundToClientSpectators(int client, const char[] sound)
 {
-	AddToStringTable(FindStringTable("soundprecache"), relativeSoundPath);
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (IsValidClient(i) && GetSpectatedClient(i) == client)
+		{
+			EmitSoundToClient(i, sound);
+		}
+	}
 } 

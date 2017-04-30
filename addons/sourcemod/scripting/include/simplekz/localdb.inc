@@ -1,5 +1,5 @@
 /* 	
-	Simple KZ Local DB Include File
+	SimpleKZ Local DB Include File
 	
 	Website: https://github.com/danzayau/SimpleKZ	
 */

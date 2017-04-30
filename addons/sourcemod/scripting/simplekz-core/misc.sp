@@ -59,24 +59,6 @@ KZTimeType GetCurrentTimeType(int client)
 	}
 }
 
-// Returns which client the player is spectating.
-int GetSpectatedClient(int client)
-{
-	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-}
-
-// Emits a sound to other players that are spectating the client.
-void EmitSoundToClientSpectators(int client, const char[] sound)
-{
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (IsValidClient(i) && GetSpectatedClient(i) == client)
-		{
-			EmitSoundToClient(i, sound);
-		}
-	}
-}
-
 // Plays the error sound to the client
 void PlayErrorSound(int client)
 {
