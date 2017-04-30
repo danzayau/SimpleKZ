@@ -103,7 +103,7 @@ public void OnPluginStart()
 	CreateCommands();
 	CreateCommandListeners();
 	
-	AutoExecConfig(true, "simplekz-core", "sourcemod/SimpleKZ");
+	AutoExecConfig(true, "simplekz-core", "sourcemod/simplekz");
 }
 
 public void OnAllPluginsLoaded()

@@ -7,7 +7,7 @@
 // Executes kz.cfg
 void KZConfigOnMapStart()
 {
-	char kzConfigPath[] = "sourcemod/SimpleKZ/kz.cfg";
+	char kzConfigPath[] = "sourcemod/simplekz/kz.cfg";
 	char kzConfigPathFull[64];
 	FormatEx(kzConfigPathFull, sizeof(kzConfigPathFull), "cfg/%s", kzConfigPath);
 	

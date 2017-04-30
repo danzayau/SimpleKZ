@@ -5,7 +5,7 @@
 	and updates them to be part of the ranked map pool.
 */
 
-#define FILE_PATH_MAPPOOL "cfg/sourcemod/SimpleKZ/mappool.cfg"
+#define FILE_PATH_MAPPOOL "cfg/sourcemod/simplekz/mappool.cfg"
 
 void DB_UpdateRankedMapPool(int client)
 {
