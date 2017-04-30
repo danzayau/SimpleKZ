@@ -53,4 +53,19 @@ forward void SKZ_DB_OnNewRecord(int client, int steamID, int mapID, int course, 
  * @param maxRank				The number of players with times on the map.
  * @noreturn
  */
-forward void SKZ_DB_OnNewPersonalBest(int client, int steamID, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank); 
+forward void SKZ_DB_OnNewPersonalBest(int client, int steamID, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank);
+
+
+
+/*===============================  Dependency  ===============================*/
+
+public SharedPlugin __pl_simplekz_localranks = 
+{
+	name = "simplekz-localranks", 
+	file = "simplekz-localranks.smx", 
+	#if defined REQUIRE_PLUGIN
+	required = 1, 
+	#else
+	required = 0, 
+	#endif
+}; 

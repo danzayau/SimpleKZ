@@ -3,10 +3,15 @@
 #include <sdkhooks>
 #include <regex>
 #include <cstrike>
-#include <basecomm>
 #include <geoip>
 #include <colorvariables>
+
+#undef REQUIRE_PLUGIN
+#include <basecomm>
+#define REQUIRE_PLUGIN
+#include <movement>
 #include <simplekz>
+#include <simplekz/core>
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -103,10 +108,7 @@ public void OnPluginStart()
 
 public void OnAllPluginsLoaded()
 {
-	if (!LibraryExists("MovementAPI"))
-	{
-		SetFailState("This plugin requires the MovementAPI plugin.");
-	}
+	gB_BaseComm = LibraryExists("MovementAPI");
 	
 	if (gB_LateLoad)
 	{
@@ -125,11 +127,19 @@ void OnLateLoad()
 	}
 }
 
+public void OnLibraryAdded(const char[] name)
+{
+	if (StrEqual(name, "basecomm"))
+	{
+		gB_BaseComm = true;
+	}
+}
+
 public void OnLibraryRemoved(const char[] name)
 {
-	if (StrEqual(name, "MovementAPI"))
+	if (StrEqual(name, "basecomm"))
 	{
-		SetFailState("This plugin requires the MovementAPI plugin.");
+		gB_BaseComm = false;
 	}
 }
 

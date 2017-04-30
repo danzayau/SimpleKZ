@@ -12,7 +12,7 @@ Action ChatProcessingOnClientSayCommand(int client, const char[] message)
 		return Plugin_Continue;
 	}
 	
-	if (BaseComm_IsClientGagged(client))
+	if (gB_BaseComm && BaseComm_IsClientGagged(client))
 	{
 		return Plugin_Handled;
 	}

@@ -4,6 +4,9 @@
 #include <colorvariables>
 #include <simplekz>
 
+#include <simplekz/localdb>
+#include <simplekz/localranks>
+
 #pragma newdecls required
 #pragma semicolon 1
 
@@ -105,15 +108,6 @@ public void OnPluginStart()
 
 public void OnAllPluginsLoaded()
 {
-	if (!LibraryExists("simplekz-core"))
-	{
-		SetFailState("This plugin requires the SimpleKZ Core plugin.");
-	}
-	else if (!LibraryExists("simplekz-localdb"))
-	{
-		SetFailState("This plugin requires the SimpleKZ Local DB plugin.");
-	}
-	
 	if (gB_LateLoad)
 	{
 		OnLateLoad();
@@ -124,18 +118,6 @@ public void OnLateLoad()
 {
 	SKZ_DB_GetDatabase(gH_DB);
 	g_DBType = SKZ_DB_GetDatabaseType();
-}
-
-public void OnLibraryRemoved(const char[] name)
-{
-	if (StrEqual(name, "simplekz-core"))
-	{
-		SetFailState("This plugin requires the SimpleKZ Core plugin.");
-	}
-	else if (StrEqual(name, "simplekz-localdb"))
-	{
-		SetFailState("This plugin requires the SimpleKZ Local DB plugin.");
-	}
 }
 
 

@@ -9,6 +9,8 @@
 #endif
 #define _simplekz_localdb_included_
 
+#include <simplekz/core>
+
 
 
 /*===============================  Enumerations  ===============================*/
@@ -115,4 +117,28 @@ native DatabaseType SKZ_DB_GetDatabaseType();
  *
  * @return					MapID from the "Maps" database table.
  */
-native int SKZ_DB_GetCurrentMapID(); 
+native int SKZ_DB_GetCurrentMapID();
+
+
+
+/*===============================  Dependency  ===============================*/
+
+public SharedPlugin __pl_simplekz_localdb = 
+{
+	name = "simplekz-localdb", 
+	file = "simplekz-localdb.smx", 
+	#if defined REQUIRE_PLUGIN
+	required = 1, 
+	#else
+	required = 0, 
+	#endif
+};
+
+#if !defined REQUIRE_PLUGIN
+public void __pl_simplekz_localdb_SetNTVOptional()
+{
+	MarkNativeAsOptional("SKZ_DB_GetDatabase");
+	MarkNativeAsOptional("SKZ_DB_GetDatabaseType");
+	MarkNativeAsOptional("SKZ_DB_GetCurrentMapID");
+}
+#endif

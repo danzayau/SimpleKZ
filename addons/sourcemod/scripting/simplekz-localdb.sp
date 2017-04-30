@@ -4,6 +4,9 @@
 #include <geoip>
 #include <simplekz>
 
+#include <simplekz/core>
+#include <simplekz/localdb>
+
 #pragma newdecls required
 #pragma semicolon 1
 
@@ -74,11 +77,6 @@ public void OnPluginStart()
 
 public void OnAllPluginsLoaded()
 {
-	if (!LibraryExists("simplekz-core"))
-	{
-		SetFailState("This plugin requires the SimpleKZ Core plugin.");
-	}
-	
 	DB_SetupDatabase();
 	
 	if (gB_LateLoad)
@@ -95,14 +93,6 @@ void OnLateLoad()
 		{
 			DB_SetupClient(g_KZPlayer[client]);
 		}
-	}
-}
-
-public void OnLibraryRemoved(const char[] name)
-{
-	if (StrEqual(name, "simplekz-core"))
-	{
-		SetFailState("This plugin requires the SimpleKZ Core plugin.");
 	}
 }
 

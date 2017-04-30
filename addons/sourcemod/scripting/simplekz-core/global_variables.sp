@@ -8,6 +8,7 @@
 /* General */
 KZPlayer g_KZPlayer[MAXPLAYERS + 1];
 bool gB_LateLoad;
+bool gB_BaseComm;
 
 // Styles translation phrases for chat messages (respective to KZStyle enum)
 char gC_StylePhrases[view_as<int>(KZStyle)][] = 
