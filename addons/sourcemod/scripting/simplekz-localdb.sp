@@ -74,12 +74,12 @@ public void OnPluginStart()
 	CreateKZPlayers();
 	CreateGlobalForwards();
 	CreateRegexes();
-	
-	DB_SetupDatabase();
 }
 
 public void OnAllPluginsLoaded()
 {
+	DB_SetupDatabase();
+	
 	if (gB_LateLoad)
 	{
 		OnLateLoad();
