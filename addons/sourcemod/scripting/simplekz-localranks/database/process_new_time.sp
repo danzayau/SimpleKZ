@@ -139,11 +139,11 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 	{
 		if (firstTime)
 		{
-			Call_SKZ_OnNewPersonalBest(client, steamID, mapID, course, style, KZTimeType_Normal, true, runTime, -1.0, rank, maxRank);
+			Call_SKZ_OnNewPersonalBest(client, steamID, mapID, course, style, KZTimeType_Nub, true, runTime, -1.0, rank, maxRank);
 		}
 		else
 		{
-			Call_SKZ_OnNewPersonalBest(client, steamID, mapID, course, style, KZTimeType_Normal, false, runTime, improvement, rank, maxRank);
+			Call_SKZ_OnNewPersonalBest(client, steamID, mapID, course, style, KZTimeType_Nub, false, runTime, improvement, rank, maxRank);
 		}
 	}
 	// Call OnNewPersonalBest forward (KZTimeType_Pro)
@@ -159,7 +159,7 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 	// Call OnNewRecord forward
 	if ((newPB && rank == 1) && !(newPBPro && rankPro == 1))
 	{
-		Call_SKZ_OnNewRecord(client, steamID, mapID, course, style, KZRecordType_Map, runTime);
+		Call_SKZ_OnNewRecord(client, steamID, mapID, course, style, KZRecordType_Nub, runTime);
 	}
 	else if (!(newPB && rank == 1) && (newPBPro && rankPro == 1))
 	{
@@ -167,7 +167,7 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 	}
 	else if ((newPB && rank == 1) && (newPBPro && rankPro == 1))
 	{
-		Call_SKZ_OnNewRecord(client, steamID, mapID, course, style, KZRecordType_MapAndPro, runTime);
+		Call_SKZ_OnNewRecord(client, steamID, mapID, course, style, KZRecordType_NubAndPro, runTime);
 	}
 	
 	// Update PRO Completion [Standard] percentage in scoreboard

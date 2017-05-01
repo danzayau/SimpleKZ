@@ -36,17 +36,17 @@ void AnnounceNewRecord(int client, int course, KZStyle style, KZRecordType recor
 	{
 		switch (recordType)
 		{
-			case KZRecordType_Map:
+			case KZRecordType_Nub:
 			{
-				CPrintToChatAll(" %t", "New Record - Map", client, gC_StylePhrases[style]);
+				CPrintToChatAll(" %t", "New Record (Nub)", client, gC_StylePhrases[style]);
 			}
 			case KZRecordType_Pro:
 			{
-				CPrintToChatAll(" %t", "New Record - Pro", client, gC_StylePhrases[style]);
+				CPrintToChatAll(" %t", "New Record (Pro)", client, gC_StylePhrases[style]);
 			}
-			case KZRecordType_MapAndPro:
+			case KZRecordType_NubAndPro:
 			{
-				CPrintToChatAll(" %t", "New Record - Map and Pro", client, gC_StylePhrases[style]);
+				CPrintToChatAll(" %t", "New Record (Nub and Pro)", client, gC_StylePhrases[style]);
 			}
 		}
 	}
@@ -54,17 +54,17 @@ void AnnounceNewRecord(int client, int course, KZStyle style, KZRecordType recor
 	{
 		switch (recordType)
 		{
-			case KZRecordType_Map:
+			case KZRecordType_Nub:
 			{
-				CPrintToChatAll(" %t", "New Bonus Record - Map", client, course, gC_StylePhrases[style]);
+				CPrintToChatAll(" %t", "New Bonus Record (Nub)", client, course, gC_StylePhrases[style]);
 			}
 			case KZRecordType_Pro:
 			{
-				CPrintToChatAll(" %t", "New Bonus Record - Pro", client, course, gC_StylePhrases[style]);
+				CPrintToChatAll(" %t", "New Bonus Record (Pro)", client, course, gC_StylePhrases[style]);
 			}
-			case KZRecordType_MapAndPro:
+			case KZRecordType_NubAndPro:
 			{
-				CPrintToChatAll(" %t", "New Bonus Record - Map and Pro", client, course, course, gC_StylePhrases[style]);
+				CPrintToChatAll(" %t", "New Bonus Record (Nub and Pro)", client, course, course, gC_StylePhrases[style]);
 			}
 		}
 	}
@@ -77,16 +77,16 @@ void AnnounceNewPersonalBest(int client, int course, KZStyle style, KZTimeType t
 	{
 		switch (timeType)
 		{
-			case KZTimeType_Normal:
+			case KZTimeType_Nub:
 			{
 				// Only printing MAP time improvement to the achieving player (instead of ALL) due to spam complaints
 				if (firstTime)
 				{
-					CPrintToChat(client, " %t", "New PB - First Time", client, rank, maxRank, gC_StylePhrases[style]);
+					CPrintToChat(client, " %t", "New PB - First Time (Nub)", client, rank, maxRank, gC_StylePhrases[style]);
 				}
 				else
 				{
-					CPrintToChat(client, " %t", "New PB - Improve", client, SKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
+					CPrintToChat(client, " %t", "New PB - Improve (Nub)", client, SKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
 				}
 			}
 			case KZTimeType_Pro:
@@ -107,16 +107,16 @@ void AnnounceNewPersonalBest(int client, int course, KZStyle style, KZTimeType t
 	{
 		switch (timeType)
 		{
-			case KZTimeType_Normal:
+			case KZTimeType_Nub:
 			{
 				// Only printing MAP time improvement to the achieving player (instead of ALL) due to spam complaints
 				if (firstTime)
 				{
-					CPrintToChat(client, " %t", "New PB - First Time", client, rank, maxRank, gC_StylePhrases[style]);
+					CPrintToChat(client, " %t", "New PB - First Time (Nub)", client, rank, maxRank, gC_StylePhrases[style]);
 				}
 				else
 				{
-					CPrintToChat(client, " %t", "New PB - Improve", client, SKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
+					CPrintToChat(client, " %t", "New PB - Improve (Nub)", client, SKZ_FormatTime(improvement), rank, maxRank, gC_StylePhrases[style]);
 				}
 			}
 			case KZTimeType_Pro:

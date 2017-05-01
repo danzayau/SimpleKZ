@@ -55,7 +55,7 @@ KZTimeType GetCurrentTimeType(int client)
 	}
 	else
 	{
-		return KZTimeType_Normal;
+		return KZTimeType_Nub;
 	}
 }
 

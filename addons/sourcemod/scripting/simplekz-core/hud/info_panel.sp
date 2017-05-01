@@ -63,7 +63,7 @@ static char[] GetTimeString(KZPlayer player, KZPlayer targetPlayer)
 	{
 		switch (GetCurrentTimeType(targetPlayer.id))
 		{
-			case KZTimeType_Normal:
+			case KZTimeType_Nub:
 			{
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#ffdd99'>%s</font> %s", 

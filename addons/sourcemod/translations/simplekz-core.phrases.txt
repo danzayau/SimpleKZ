@@ -1,10 +1,6 @@
 "Phrases"
 {
 	// General
-	"Style Menu - Title"
-	{
-		"en"		"Switch Styles"
-	}
 	"Style - Standard"
 	{
 		"en"		"Standard"
@@ -17,13 +13,13 @@
 	{
 		"en"		"Competitive"
 	}
-	"Time Type - Normal"
+	"Time Type - Nub"
 	{
-		"en"		"Map"
+		"en"		"NUB"
 	}
 	"Time Type - Pro"
 	{
-		"en"		"Pro"
+		"en"		"PRO"
 	}
 	"Time Type - Theoretical"
 	{
@@ -35,7 +31,7 @@
 	{
 		"en"		"{grey}[{lightgreen}KZ{grey}]"
 	}
-	"Beat Map"
+	"Beat Map (Nub)"
 	{
 		// Bill finished in 01:23.45 (4 TP | 01.02.34) [Style].
 		"#format"	"{1:N},{2:s},{3:d},{4:s},{5:t}"
@@ -47,7 +43,7 @@
 		"#format"	"{1:N},{2:s},{3:t}"
 		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey}) {grey}[{purple}{3}{grey}]."
 	}
-	"Beat Bonus"
+	"Beat Bonus (Nub)"
 	{
 		// Bill finished Bonus 1 in 01:23.45 (4 TP | 01.02.34) [Style].
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:s},{6:t}"
@@ -182,7 +178,7 @@
 	}
 	
 	
-	// Option Toggle Chat Messages ////////////////////////////////////////////////////////////
+	// Option Change Chat Messages ////////////////////////////////////////////////////////////
 	"Option - Teleport Menu - Enable"
 	{
 		"en"		"{grey}Your teleport menu has been enabled."
@@ -284,6 +280,12 @@
 	"TP Menu - Respawn"
 	{
 		"en"		"Respawn"
+	}
+	
+	// Style Menu ////////////////////////////////////////////////////////////
+	"Style Menu - Title"
+	{
+		"en"		"Switch Styles"
 	}
 	
 	// Measure Menu ////////////////////////////////////////////////////////////

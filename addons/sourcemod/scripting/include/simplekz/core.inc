@@ -17,7 +17,7 @@
 
 enum KZTimeType
 {
-	KZTimeType_Normal = 0, 
+	KZTimeType_Nub = 0, 
 	KZTimeType_Pro, 
 	KZTimeType_Theoretical
 }

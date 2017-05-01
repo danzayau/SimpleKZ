@@ -53,7 +53,7 @@ char gC_StylePhrases[view_as<int>(KZStyle)][] =
 // Time type translation phrases for chat messages (respective to KZTimeType enum)
 char gC_TimeTypePhrases[view_as<int>(KZTimeType)][] = 
 {
-	"Time Type - Normal", 
+	"Time Type - Nub", 
 	"Time Type - Pro", 
 	"Time Type - Theoretical"
 };

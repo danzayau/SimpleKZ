@@ -28,7 +28,7 @@ void DB_OpenMapTop20(int client, int mapID, int course, KZStyle style, KZTimeTyp
 	// Get top 20 times for each time type
 	switch (timeType)
 	{
-		case KZTimeType_Normal:FormatEx(query, sizeof(query), sql_getmaptop, mapID, course, style, 20);
+		case KZTimeType_Nub:FormatEx(query, sizeof(query), sql_getmaptop, mapID, course, style, 20);
 		case KZTimeType_Pro:FormatEx(query, sizeof(query), sql_getmaptoppro, mapID, course, style, 20);
 		case KZTimeType_Theoretical:FormatEx(query, sizeof(query), sql_getmaptoptheoretical, mapID, course, style, 20);
 	}
@@ -76,7 +76,7 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 	{
 		switch (timeType)
 		{
-			case KZTimeType_Normal:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times");
+			case KZTimeType_Nub:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times");
 			case KZTimeType_Pro:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times (Pro)");
 			case KZTimeType_Theoretical:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times");
 		}
@@ -110,7 +110,7 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 		runTime = SKZ_DB_TimeIntToFloat(SQL_FetchInt(results[2], 1));
 		switch (timeType)
 		{
-			case KZTimeType_Normal:
+			case KZTimeType_Nub:
 			{
 				teleports = SQL_FetchInt(results[2], 2);
 				FormatEx(newMenuItem, sizeof(newMenuItem), "#%-2d   %11s  %d TP      %s", 

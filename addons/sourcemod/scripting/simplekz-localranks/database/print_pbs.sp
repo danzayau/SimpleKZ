@@ -153,16 +153,16 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	}
 	else if (!hasPBPro)
 	{
-		CPrintToChat(client, "  %t", "PB Time - Map", SKZ_FormatTime(runTime), rank, maxRank, teleportsUsed, SKZ_FormatTime(theoreticalRunTime));
+		CPrintToChat(client, "  %t", "PB Time - Nub", SKZ_FormatTime(runTime), teleportsUsed, SKZ_FormatTime(theoreticalRunTime), rank, maxRank);
 		CPrintToChat(client, "  %t", "PB Time - No Pro Time");
 	}
 	else if (teleportsUsed == 0)
 	{  // Their MAP PB has 0 teleports, and is therefore also their PRO PB
-		CPrintToChat(client, "  %t", "PB Time - Map (Pro)", SKZ_FormatTime(runTime), rank, maxRank, rankPro, maxRankPro);
+		CPrintToChat(client, "  %t", "PB Time - Nub and Pro", SKZ_FormatTime(runTime), rank, maxRank, rankPro, maxRankPro);
 	}
 	else
 	{
-		CPrintToChat(client, "  %t", "PB Time - Map", SKZ_FormatTime(runTime), rank, maxRank, teleportsUsed, SKZ_FormatTime(theoreticalRunTime));
+		CPrintToChat(client, "  %t", "PB Time - Nub", SKZ_FormatTime(runTime), teleportsUsed, SKZ_FormatTime(theoreticalRunTime), rank, maxRank);
 		CPrintToChat(client, "  %t", "PB Time - Pro", SKZ_FormatTime(runTimePro), rankPro, maxRankPro);
 	}
 }

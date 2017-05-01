@@ -115,16 +115,16 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 	}
 	else if (!mapHasRecordPro)
 	{
-		CPrintToChat(client, "  %t", "WR Time - Map", SKZ_FormatTime(runTime), teleportsUsed, recordHolder);
+		CPrintToChat(client, "  %t", "WR Time - Nub", SKZ_FormatTime(runTime), teleportsUsed, recordHolder);
 		CPrintToChat(client, "  %t", "WR Time - No Pro Time");
 	}
 	else if (teleportsUsed == 0)
 	{
-		CPrintToChat(client, "  %t", "WR Time - Map (Pro)", SKZ_FormatTime(runTimePro), recordHolderPro);
+		CPrintToChat(client, "  %t", "WR Time - Nub and Pro", SKZ_FormatTime(runTimePro), recordHolderPro);
 	}
 	else
 	{
-		CPrintToChat(client, "  %t", "WR Time - Map", SKZ_FormatTime(runTime), teleportsUsed, recordHolder);
+		CPrintToChat(client, "  %t", "WR Time - Nub", SKZ_FormatTime(runTime), teleportsUsed, recordHolder);
 		CPrintToChat(client, "  %t", "WR Time - Pro", SKZ_FormatTime(runTimePro), recordHolderPro);
 	}
 }

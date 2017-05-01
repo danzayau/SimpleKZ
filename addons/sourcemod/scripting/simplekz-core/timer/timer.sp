@@ -105,9 +105,9 @@ static void PrintEndTimeString(int client)
 	{
 		switch (GetCurrentTimeType(client))
 		{
-			case KZTimeType_Normal:
+			case KZTimeType_Nub:
 			{
-				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map", 
+				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map (Nub)", 
 					client, SKZ_FormatTime(gF_CurrentTime[client]), 
 					gI_TeleportsUsed[client], SKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
 					gC_StylePhrases[g_Style[client]]);
@@ -124,9 +124,9 @@ static void PrintEndTimeString(int client)
 	{
 		switch (GetCurrentTimeType(client))
 		{
-			case KZTimeType_Normal:
+			case KZTimeType_Nub:
 			{
-				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus", 
+				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus (Nub)", 
 					client, gI_LastCourseStarted[client], SKZ_FormatTime(gF_CurrentTime[client]), 
 					gI_TeleportsUsed[client], SKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
 					gC_StylePhrases[g_Style[client]]);

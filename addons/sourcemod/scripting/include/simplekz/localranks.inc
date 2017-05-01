@@ -14,9 +14,9 @@
 /*===============================  Enumerations  ===============================*/
 
 enum KZRecordType {
-	KZRecordType_Map = 0, 
+	KZRecordType_Nub = 0, 
 	KZRecordType_Pro, 
-	KZRecordType_MapAndPro
+	KZRecordType_NubAndPro
 }
 
 
