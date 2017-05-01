@@ -47,7 +47,7 @@
 		"#format"	"{1:N},{2:t}"
 		"en"		"{lime}{1}{grey} set a new {blue}PRO RECORD {grey}[{purple}{2}{grey}]!"
 	}
-	"New Record - (Nub and Pro)"
+	"New Record (Nub and Pro)"
 	{
 		// Bill set a new NUB and PRO RECORD [Style]!
 		"#format"	"{1:N},{2:t}"
