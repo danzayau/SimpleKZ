@@ -111,7 +111,7 @@ static char[] GetPausedString(KZPlayer player, KZPlayer targetPlayer)
 static char[] GetSpeedString(KZPlayer player, KZPlayer targetPlayer)
 {
 	char speedString[128];
-	if (player.speedText != KZSpeedText_InfoPanel || player.paused) {
+	if (player.speedText != KZSpeedText_InfoPanel || targetPlayer.paused) {
 		speedString = "";
 	}
 	else
