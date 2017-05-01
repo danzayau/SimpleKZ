@@ -1,13 +1,15 @@
 #include <sourcemod>
-#include <sdktools>
-#include <sdkhooks>
-#include <regex>
+
 #include <cstrike>
 #include <geoip>
-#include <colorvariables>
+#include <regex>
+#include <sdktools>
+#include <sdkhooks>
 
-#include <movement>
+#include <colorvariables>
 #include <simplekz>
+
+#include <movementapi>
 #include <simplekz/core>
 
 #undef REQUIRE_PLUGIN
@@ -224,7 +226,7 @@ public void Movement_OnStartTouchGround(int client)
 	StyleOnStartTouchGround(client);
 }
 
-public void Movement_OnStopTouchGround(int client, bool jumped, bool ducked, bool landed)
+public void Movement_OnStopTouchGround(int client, bool jumped)
 {
 	StyleOnStopTouchGround(client, jumped);
 }

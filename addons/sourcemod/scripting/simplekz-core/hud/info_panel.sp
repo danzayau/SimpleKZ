@@ -138,17 +138,17 @@ static char[] GetSpeedString(KZPlayer player, KZPlayer targetPlayer)
 static char[] GetTakeoffString(KZPlayer targetPlayer)
 {
 	char takeoffString[64];
-	if (targetPlayer.hitPerf)
+	if (targetPlayer.skzHitPerf)
 	{
 		FormatEx(takeoffString, sizeof(takeoffString), 
 			"(<font color='#03cc00'>%.0f</font>)", 
-			RoundFloat(targetPlayer.takeoffSpeed * 10) / 10.0);
+			RoundFloat(targetPlayer.skzTakeoffSpeed * 10) / 10.0);
 	}
 	else
 	{
 		FormatEx(takeoffString, sizeof(takeoffString), 
 			"(<font color='#999999'>%.0f</font>)", 
-			RoundFloat(targetPlayer.takeoffSpeed * 10) / 10.0);
+			RoundFloat(targetPlayer.skzTakeoffSpeed * 10) / 10.0);
 	}
 	return takeoffString;
 }

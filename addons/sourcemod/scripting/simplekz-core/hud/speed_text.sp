@@ -41,7 +41,7 @@ static void SpeedTextShow(KZPlayer player, KZPlayer targetPlayer)
 	{
 		case KZSpeedText_Bottom:
 		{
-			if (targetPlayer.hitPerf && !targetPlayer.onGround && !targetPlayer.onLadder && !targetPlayer.noclipping)
+			if (targetPlayer.skzHitPerf && !targetPlayer.onGround && !targetPlayer.onLadder && !targetPlayer.noclipping)
 			{
 				if (IsPlayerAlive(player.id))
 				{
@@ -74,6 +74,6 @@ static void SpeedTextShow(KZPlayer player, KZPlayer targetPlayer)
 		ShowHudText(player.id, 1, 
 			"%.0f\n(%.0f)", 
 			RoundFloat(targetPlayer.speed * 10) / 10.0, 
-			RoundFloat(targetPlayer.takeoffSpeed * 10) / 10.0);
+			RoundFloat(targetPlayer.skzTakeoffSpeed * 10) / 10.0);
 	}
 } 

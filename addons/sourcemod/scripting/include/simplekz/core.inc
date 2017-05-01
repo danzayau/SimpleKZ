@@ -9,7 +9,7 @@
 #endif
 #define _simplekz_core_included_
 
-#include <movement>
+#include <movementapi>
 
 
 
@@ -279,12 +279,11 @@ forward void SKZ_OnPerfectBunnyhop(int client);
 /*===============================  Natives  ===============================*/
 
 /**
- * Gets the whether or not the player's latest jump was a plugin-based perfect b-hop.
+ * Gets the default movement style as set by convar kz_default_style.
  *
- * @param client			Client entity index.
- * @return					whether or not the player's latest jump was a perfect b-hop.
+ * @return					The default movement style (see KZStyle enumeration).
  */
-native bool SKZ_GetHitPerf(int client);
+native KZStyle SKZ_GetDefaultStyle();
 
 /**
  * Starts the player's timer for a course on the current map.
@@ -422,34 +421,6 @@ native void SKZ_Resume(int client);
 native void SKZ_TogglePause(int client);
 
 /**
- * Gets the default movement style as set by convar kz_default_style.
- *
- * @return					The default movement style (see KZStyle enumeration).
- */
-native KZStyle SKZ_GetDefaultStyle();
-
-/**
- * Gets the current value of a player's option. Note that this
- * returns an int, whereas options use an enumerated tag.
- * Use the KZPlayer method map to simplify this caveat.
- *
- * @param client			Client entity index.
- * @param option			The SimpleKZ option (see KZOption enumeration).
- * @return					The current value of a player's option.
- */
-native int SKZ_GetOption(int client, KZOption option);
-
-/**
- * Sets the player's option value.
- *
- * @param client			Client entity index.
- * @param option			The SimpleKZ option (see KZOption enumeration).
- * @param optionValue		What to set the player's option to.
- * @noreturn
- */
-native void SKZ_SetOption(int client, KZOption option, any optionValue);
-
-/**
  * Plays the error sound to the client (if they have the option enabled).
  *
  * @param client			Client entity index.
@@ -457,11 +428,48 @@ native void SKZ_SetOption(int client, KZOption option, any optionValue);
  */
 native void SKZ_PlayErrorSound(int client);
 
+/**
+ * Gets the current value of a player's option. Note that this
+ * returns an int, whereas options use an enumerated tag.
+ * Use the KZPlayer method map to simplify this caveat.
+ *
+ * @param client			Client entity index.
+ * @param option			SimpleKZ option (see KZOption enumeration).
+ * @return					Current value of a player's option.
+ */
+native int SKZ_GetOption(int client, KZOption option);
+
+/**
+ * Sets the player's option value.
+ *
+ * @param client			Client entity index.
+ * @param option			SimpleKZ option (see KZOption enumeration).
+ * @param optionValue		What to set the player's option to.
+ * @noreturn
+ */
+native void SKZ_SetOption(int client, KZOption option, any optionValue);
+
+/**
+ * Gets the whether the player's latest takeoff was a SimpleKZ perfect b-hop.
+ *
+ * @param client			Client entity index.
+ * @return					Whether player's latest takeoff was a SimpleKZ perfect b-hop.
+ */
+native bool SKZ_GetHitPerf(int client);
+
+/**
+ * Gets the speed at which the player last took off as adjusted by SimpleKZ.
+ *
+ * @param client			Client entity index.
+ * @return					Takeoff speed of player's latest takeoff.
+ */
+native float SKZ_GetTakeoffSpeed(int client);
+
 
 
 /*===============================  Methodmap  ===============================*/
 
-methodmap KZPlayer __nullable__ < MovementPlayer
+methodmap KZPlayer __nullable__ < MovementAPIPlayer
 {
 	public KZPlayer(int id)
 	{
@@ -769,11 +777,19 @@ methodmap KZPlayer __nullable__ < MovementPlayer
 	
 	/*===============================  Other Properties  ===============================*/
 	
-	property bool hitPerf
+	property bool skzHitPerf
 	{
 		public get()
 		{
 			return SKZ_GetHitPerf(this.id);
+		}
+	}
+	
+	property float skzTakeoffSpeed
+	{
+		public get()
+		{
+			return SKZ_GetTakeoffSpeed(this.id);
 		}
 	}
 }
@@ -796,18 +812,10 @@ public SharedPlugin __pl_simplekz_core =
 #if !defined REQUIRE_PLUGIN
 public void __pl_simplekz_core_SetNTVOptional()
 {
-	MarkNativeAsOptional("SKZ_GetHitPerf");
-	
 	MarkNativeAsOptional("SKZ_StartTimer");
 	MarkNativeAsOptional("SKZ_EndTimer");
 	MarkNativeAsOptional("SKZ_ForceStopTimer");
 	MarkNativeAsOptional("SKZ_ForceStopTimerAll");
-	MarkNativeAsOptional("SKZ_GetTimerRunning");
-	MarkNativeAsOptional("SKZ_GetCurrentCourse");
-	MarkNativeAsOptional("SKZ_GetPaused");
-	MarkNativeAsOptional("SKZ_GetCurrentTime");
-	MarkNativeAsOptional("SKZ_GetCheckpointCount");
-	
 	MarkNativeAsOptional("SKZ_TeleportToStart");
 	MarkNativeAsOptional("SKZ_MakeCheckpoint");
 	MarkNativeAsOptional("SKZ_TeleportToCheckpoint");
@@ -815,11 +823,17 @@ public void __pl_simplekz_core_SetNTVOptional()
 	MarkNativeAsOptional("SKZ_Pause");
 	MarkNativeAsOptional("SKZ_Resume");
 	MarkNativeAsOptional("SKZ_TogglePause");
+	MarkNativeAsOptional("SKZ_PlayErrorSound");
 	
 	MarkNativeAsOptional("SKZ_GetDefaultStyle");
+	MarkNativeAsOptional("SKZ_GetTimerRunning");
+	MarkNativeAsOptional("SKZ_GetCurrentCourse");
+	MarkNativeAsOptional("SKZ_GetPaused");
+	MarkNativeAsOptional("SKZ_GetCurrentTime");
+	MarkNativeAsOptional("SKZ_GetCheckpointCount");
 	MarkNativeAsOptional("SKZ_GetOption");
 	MarkNativeAsOptional("SKZ_SetOption");
-	
-	MarkNativeAsOptional("SKZ_PlayErrorSound");
+	MarkNativeAsOptional("SKZ_GetHitPerf");
+	MarkNativeAsOptional("SKZ_GetTakeoffSpeed");
 }
 #endif

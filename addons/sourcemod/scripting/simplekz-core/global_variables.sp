@@ -208,6 +208,7 @@ float gF_PreVelMod[MAXPLAYERS + 1];
 float gF_PreVelModLastChange[MAXPLAYERS + 1];
 int gI_PreTickCounter[MAXPLAYERS + 1];
 bool gB_HitPerf[MAXPLAYERS + 1];
+float gF_TakeoffSpeed[MAXPLAYERS + 1];
 
 char gC_WeaponNames[][] = 
 {

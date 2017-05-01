@@ -1,6 +1,8 @@
 #include <sourcemod>
-#include <sdktools>
+
 #include <cstrike>
+#include <sdktools>
+
 #include <colorvariables>
 #include <simplekz>
 
@@ -14,9 +16,9 @@
 
 public Plugin myinfo = 
 {
-	name = "Simple KZ Local Ranks", 
+	name = "SimpleKZ Local Ranks", 
 	author = "DanZay", 
-	description = "Local ranks module for SimpleKZ.", 
+	description = "SimpleKZ Local Ranks Module", 
 	version = "0.12.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };

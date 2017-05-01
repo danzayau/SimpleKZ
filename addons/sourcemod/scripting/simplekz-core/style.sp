@@ -49,6 +49,7 @@ void StyleOnStopTouchGround(int client, bool jumped)
 	{
 		gB_HitPerf[client] = false;
 	}
+	gF_TakeoffSpeed[client] = g_KZPlayer[client].speed;
 	
 	if (g_Style[client] == KZStyle_Standard)
 	{  // No 'pre b-hopping' in Standard
@@ -239,7 +240,7 @@ static bool HitPerf(KZPlayer player)
 		}
 	}
 	// Else check if just a normal perfect bunnyhop
-	return Movement_GetHitPerf(player.id);
+	return player.takeoffTick - player.landingTick <= 1;
 }
 
 static void TweakTakeoffSpeed(KZPlayer player)

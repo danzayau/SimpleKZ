@@ -121,18 +121,10 @@ void Call_SKZ_OnPerfectBunnyhop(int client)
 
 void CreateNatives()
 {
-	CreateNative("SKZ_GetHitPerf", Native_GetHitPerf);
-	
 	CreateNative("SKZ_StartTimer", Native_StartTimer);
 	CreateNative("SKZ_EndTimer", Native_EndTimer);
 	CreateNative("SKZ_ForceStopTimer", Native_ForceStopTimer);
 	CreateNative("SKZ_ForceStopTimerAll", Native_ForceStopTimerAll);
-	CreateNative("SKZ_GetTimerRunning", Native_GetTimerRunning);
-	CreateNative("SKZ_GetCurrentCourse", Native_GetCurrentCourse);
-	CreateNative("SKZ_GetPaused", Native_GetPaused);
-	CreateNative("SKZ_GetCurrentTime", Native_GetCurrentTime);
-	CreateNative("SKZ_GetCheckpointCount", Native_GetCheckpointCount);
-	
 	CreateNative("SKZ_TeleportToStart", Native_TeleportToStart);
 	CreateNative("SKZ_MakeCheckpoint", Native_MakeCheckpoint);
 	CreateNative("SKZ_TeleportToCheckpoint", Native_TeleportToCheckpoint);
@@ -140,17 +132,18 @@ void CreateNatives()
 	CreateNative("SKZ_Pause", Native_Pause);
 	CreateNative("SKZ_Resume", Native_Resume);
 	CreateNative("SKZ_TogglePause", Native_TogglePause);
+	CreateNative("SKZ_PlayErrorSound", Native_PlayErrorSound);
 	
 	CreateNative("SKZ_GetDefaultStyle", Native_GetDefaultStyle);
+	CreateNative("SKZ_GetTimerRunning", Native_GetTimerRunning);
+	CreateNative("SKZ_GetCurrentCourse", Native_GetCurrentCourse);
+	CreateNative("SKZ_GetPaused", Native_GetPaused);
+	CreateNative("SKZ_GetCurrentTime", Native_GetCurrentTime);
+	CreateNative("SKZ_GetCheckpointCount", Native_GetCheckpointCount);
 	CreateNative("SKZ_GetOption", Native_GetOption);
 	CreateNative("SKZ_SetOption", Native_SetOption);
-	
-	CreateNative("SKZ_PlayErrorSound", Native_PlayErrorSound);
-}
-
-public int Native_GetHitPerf(Handle plugin, int numParams)
-{
-	return view_as<int>(gB_HitPerf[GetNativeCell(1)]);
+	CreateNative("SKZ_GetHitPerf", Native_GetHitPerf);
+	CreateNative("SKZ_GetTakeoffSpeed", Native_GetTakeoffSpeed);
 }
 
 public int Native_StartTimer(Handle plugin, int numParams)
@@ -171,31 +164,6 @@ public int Native_ForceStopTimer(Handle plugin, int numParams)
 public int Native_ForceStopTimerAll(Handle plugin, int numParams)
 {
 	TimerForceStopAllNative();
-}
-
-public int Native_GetTimerRunning(Handle plugin, int numParams)
-{
-	return view_as<int>(gB_TimerRunning[GetNativeCell(1)]);
-}
-
-public int Native_GetCurrentCourse(Handle plugin, int numParams)
-{
-	return gI_LastCourseStarted[GetNativeCell(1)];
-}
-
-public int Native_GetPaused(Handle plugin, int numParams)
-{
-	return view_as<int>(gB_Paused[GetNativeCell(1)]);
-}
-
-public int Native_GetCurrentTime(Handle plugin, int numParams)
-{
-	return view_as<int>(gF_CurrentTime[GetNativeCell(1)]);
-}
-
-public int Native_GetCheckpointCount(Handle plugin, int numParams)
-{
-	return gI_CheckpointCount[GetNativeCell(1)];
 }
 
 public int Native_TeleportToStart(Handle plugin, int numParams)
@@ -233,9 +201,39 @@ public int Native_TogglePause(Handle plugin, int numParams)
 	TogglePause(GetNativeCell(1));
 }
 
+public int Native_PlayErrorSound(Handle plugin, int numParams)
+{
+	PlayErrorSound(GetNativeCell(1));
+}
+
 public int Native_GetDefaultStyle(Handle plugin, int numParams)
 {
 	return GetConVarInt(gCV_DefaultStyle);
+}
+
+public int Native_GetTimerRunning(Handle plugin, int numParams)
+{
+	return view_as<int>(gB_TimerRunning[GetNativeCell(1)]);
+}
+
+public int Native_GetCurrentCourse(Handle plugin, int numParams)
+{
+	return gI_LastCourseStarted[GetNativeCell(1)];
+}
+
+public int Native_GetPaused(Handle plugin, int numParams)
+{
+	return view_as<int>(gB_Paused[GetNativeCell(1)]);
+}
+
+public int Native_GetCurrentTime(Handle plugin, int numParams)
+{
+	return view_as<int>(gF_CurrentTime[GetNativeCell(1)]);
+}
+
+public int Native_GetCheckpointCount(Handle plugin, int numParams)
+{
+	return gI_CheckpointCount[GetNativeCell(1)];
 }
 
 public int Native_GetOption(Handle plugin, int numParams)
@@ -248,7 +246,12 @@ public int Native_SetOption(Handle plugin, int numParams)
 	SetOption(GetNativeCell(1), GetNativeCell(2), GetNativeCell(3));
 }
 
-public int Native_PlayErrorSound(Handle plugin, int numParams)
+public int Native_GetHitPerf(Handle plugin, int numParams)
 {
-	PlayErrorSound(GetNativeCell(1));
+	return view_as<int>(gB_HitPerf[GetNativeCell(1)]);
+}
+
+public int Native_GetTakeoffSpeed(Handle plugin, int numParams)
+{
+	return view_as<int>(gF_TakeoffSpeed[GetNativeCell(1)]);
 } 

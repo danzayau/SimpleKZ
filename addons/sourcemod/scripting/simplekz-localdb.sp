@@ -1,7 +1,8 @@
 #include <sourcemod>
 #include <sdktools>
-#include <regex>
 #include <geoip>
+#include <regex>
+
 #include <simplekz>
 
 #include <simplekz/core>
@@ -14,9 +15,9 @@
 
 public Plugin myinfo = 
 {
-	name = "Simple KZ Local DB", 
+	name = "SimpleKZ Local DB", 
 	author = "DanZay", 
-	description = "Local database module for SimpleKZ.", 
+	description = "SimpleKZ Local Database Module", 
 	version = "0.12.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
