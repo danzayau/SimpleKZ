@@ -110,7 +110,7 @@ public void OnPluginStart()
 
 public void OnAllPluginsLoaded()
 {
-	gB_BaseComm = LibraryExists("MovementAPI");
+	gB_BaseComm = LibraryExists("basecomm");
 	if (gB_LateLoad)
 	{
 		OnLateLoad();
