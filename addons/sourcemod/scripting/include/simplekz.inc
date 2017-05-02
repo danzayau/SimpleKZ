@@ -14,12 +14,13 @@
 /*===============================  Stocks  ===============================*/
 
 /**
- * Presents a time float (seconds) as a string e.g. 01:23.45 or 01:23:34.56.
+ * Represents a time float as a string e.g. 01:23.45.
  *
- * @param time				Time in seconds
- * @return					Formatted time
+ * @param time			Time in seconds.
+ * @param precise		Whether to include fractional seconds.
+ * @return				String representation of time.
  */
-stock char[] SKZ_FormatTime(float time)
+stock char[] SKZ_FormatTime(float time, bool precise = true)
 {
 	char formattedTime[12];
 	
@@ -35,20 +36,34 @@ stock char[] SKZ_FormatTime(float time)
 	
 	if (hours == 0)
 	{
-		FormatEx(formattedTime, sizeof(formattedTime), "%02d:%02d.%02d", minutes, seconds, centiseconds);
+		if (precise)
+		{
+			FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d.%02d", minutes, seconds, centiseconds);
+		}
+		else
+		{
+			FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d", minutes, seconds);
+		}
 	}
 	else
 	{
-		FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d:%02d.%02d", hours, minutes, seconds, centiseconds);
+		if (precise)
+		{
+			FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d:%02d.%02d", hours, minutes, seconds, centiseconds);
+		}
+		else
+		{
+			FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d:%02d", hours, minutes, seconds);
+		}
 	}
 	return formattedTime;
 }
 
 /**
- * Checks if the client is a valid client entity index, and if they are in-game.
+ * Checks if the value is a valid client entity index, and if they are in-game.
  *
- * @param client				Entity index
- * @return						True if the client is valid
+ * @param client		Client index.
+ * @return				Whether client is valid.
  */
 stock bool IsValidClient(int client)
 {
@@ -56,11 +71,11 @@ stock bool IsValidClient(int client)
 }
 
 /**
- * Returns the max of two float values.
+ * Returns the greater of two float values.
  *
- * @param value1				First value
- * @param value2				Second value
- * @return						The greater of the two values, or their value if they are equal
+ * @param value1		First value.
+ * @param value2		Second value.
+ * @return				Greatest value.
  */
 stock float FloatMax(float value1, float value2)
 {
@@ -72,11 +87,11 @@ stock float FloatMax(float value1, float value2)
 }
 
 /**
- * Outputs the string in all lower case.
+ * Sets all characters in a string to lower case.
  *
- * @param input					Input string
- * @param output				Output buffer
- * @param size					Maximum size of output
+ * @param input			Input string.
+ * @param output		Output buffer.
+ * @param size			Maximum size of output.
  * @noreturn
  */
 stock void String_ToLower(const char[] input, char[] output, int size)
@@ -92,10 +107,10 @@ stock void String_ToLower(const char[] input, char[] output, int size)
 }
 
 /**
- * Gets the player that the client is spectating.
+ * Gets the player a client is spectating.
  *
- * @param client				Spectating client.
- * @return						Client entity index of player they are spectating.
+ * @param client		Spectating client.
+ * @return				Client index of player they are spectating.
  */
 stock int GetSpectatedClient(int client)
 {
@@ -105,8 +120,8 @@ stock int GetSpectatedClient(int client)
 /**
  * Emits a sound to other players that are spectating the client.
  *
- * @param client				Client being spectated.
- * @param sound					Sound to play.
+ * @param client		Client being spectated.
+ * @param sound			Sound to play.
  * @noreturn
  */
 stock void EmitSoundToClientSpectators(int client, const char[] sound)

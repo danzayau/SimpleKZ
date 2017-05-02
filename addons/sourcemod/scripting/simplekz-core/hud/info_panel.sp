@@ -68,7 +68,7 @@ static char[] GetTimeString(KZPlayer player, KZPlayer targetPlayer)
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#ffdd99'>%s</font> %s", 
 					"Info Panel Text - Time", player.id, 
-					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id]), 
+					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id], false), 
 					GetPausedString(player, targetPlayer));
 			}
 			case KZTimeType_Pro:
@@ -76,7 +76,7 @@ static char[] GetTimeString(KZPlayer player, KZPlayer targetPlayer)
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#6699ff'>%s</font> %s", 
 					"Info Panel Text - Time", player.id, 
-					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id]), 
+					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id], false), 
 					GetPausedString(player, targetPlayer));
 			}
 		}

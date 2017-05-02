@@ -49,5 +49,5 @@ static void TimerTextShow(KZPlayer player, KZPlayer targetPlayer)
 		}
 	}
 	
-	ShowHudText(player.id, 0, SKZ_FormatTime(targetPlayer.currentTime));
+	ShowHudText(player.id, 0, SKZ_FormatTime(targetPlayer.currentTime, false));
 } 
