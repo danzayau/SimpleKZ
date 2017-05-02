@@ -104,6 +104,7 @@ public void OnPluginStart()
 	CreateConVars();
 	CreateCommands();
 	CreateCommandListeners();
+	CreateTimers();
 	
 	AutoExecConfig(true, "simplekz-core", "sourcemod/simplekz");
 	
@@ -200,13 +201,9 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 {
 	TimerOnPlayerRunCmd(client);
 	StyleOnPlayerRunCmd(client, buttons);
-	gI_OldButtons[client] = buttons;
-	
-	TimerTextUpdate(client);
 	SpeedTextUpdate(client);
-	InfoPanelUpdate(client);
 	TPMenuDisplay(client);
-	
+	gI_OldButtons[client] = buttons;
 	return Plugin_Continue;
 }
 
@@ -232,11 +229,13 @@ public void Movement_OnStartTouchGround(int client)
 public void Movement_OnStopTouchGround(int client, bool jumped)
 {
 	StyleOnStopTouchGround(client, jumped);
+	InfoPanelUpdate(client);
 }
 
 public void Movement_OnStopTouchLadder(int client)
 {
 	StyleOnStopTouchLadder(client);
+	InfoPanelUpdate(client);
 }
 
 public void Movement_OnStartNoclipping(int client)
@@ -351,4 +350,22 @@ void CreateCommandListeners()
 {
 	JoinTeamAddCommandListeners();
 	BlockRadioAddCommandListeners();
+}
+
+void CreateTimers()
+{
+	CreateTimer(0.1, Timer_Fast, _, TIMER_REPEAT);
+}
+
+public Action Timer_Fast(Handle timer) // Every 0.1 seconds
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsValidClient(client))
+		{
+			TimerTextUpdate(client);
+			InfoPanelUpdate(client);
+		}
+	}
+	return Plugin_Continue;
 } 
