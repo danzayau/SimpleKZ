@@ -115,7 +115,7 @@ static void AddItemTPMenuUndo(int client, Menu menu)
 {
 	char text[16];
 	FormatEx(text, sizeof(text), "%T", "TP Menu - Undo TP", client);
-	if (gI_TeleportsUsed[client] > 0 && gB_LastTeleportOnGround[client])
+	if (gI_TeleportsUsed[client] > 0 && gB_LastTeleportOnGround[client] || gB_LastTeleportInBhopTrigger[client])
 	{
 		menu.AddItem("", text, ITEMDRAW_DEFAULT);
 	}

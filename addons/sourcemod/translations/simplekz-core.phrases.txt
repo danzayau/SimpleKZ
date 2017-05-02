@@ -108,11 +108,15 @@
 	}
 	"Can't Teleport (Map)"
 	{
-		"en"		"{darkred}You can't teleport to your checkpoint on this map."
+		"en"		"{darkred}You can't teleport to your checkpoint in this area."
 	}
 	"Can't Undo (TP Was Midair)"
 	{
 		"en"		"{darkred}You can't undo because you teleported mid-air."
+	}
+	"Can't Undo (Just Landed)"
+	{
+		"en"		"{darkred}You can't undo because you had just landed."
 	}
 	"Can't Pause (Just Resumed)"
 	{

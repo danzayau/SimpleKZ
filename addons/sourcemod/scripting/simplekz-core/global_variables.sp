@@ -174,6 +174,7 @@ int gI_TeleportsUsed[MAXPLAYERS + 1];
 float gF_CheckpointOrigin[MAXPLAYERS + 1][3];
 float gF_CheckpointAngles[MAXPLAYERS + 1][3];
 bool gB_LastTeleportOnGround[MAXPLAYERS + 1];
+bool gB_LastTeleportInBhopTrigger[MAXPLAYERS + 1];
 float gF_UndoOrigin[MAXPLAYERS + 1][3];
 float gF_UndoAngle[MAXPLAYERS + 1][3];
 

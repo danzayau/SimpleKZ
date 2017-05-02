@@ -36,6 +36,7 @@ void TeleportDo(int client, float destination[3], float eyeAngles[3])
 	{
 		gB_LastTeleportOnGround[client] = false;
 	}
+	gB_LastTeleportInBhopTrigger[client] = BhopTriggersJustTouched(client);
 	
 	if (g_TeleportSounds[client])
 	{
@@ -136,6 +137,12 @@ void UndoTeleport(int client)
 	if (!gB_LastTeleportOnGround[client])
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Undo (TP Was Midair)");
+		PlayErrorSound(client);
+		return;
+	}
+	if (gB_LastTeleportInBhopTrigger[client])
+	{
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Undo (Just Landed)");
 		PlayErrorSound(client);
 		return;
 	}
