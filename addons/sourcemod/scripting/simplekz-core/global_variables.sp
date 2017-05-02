@@ -209,28 +209,29 @@ int gI_PreTickCounter[MAXPLAYERS + 1];
 bool gB_HitPerf[MAXPLAYERS + 1];
 float gF_TakeoffSpeed[MAXPLAYERS + 1];
 
+// Weapon class names - Knife/USP first followed by other pistols faster average linear search
 char gC_WeaponNames[][] = 
 {
-	"weapon_ak47", "weapon_aug", "weapon_awp", "weapon_bizon", "weapon_deagle", 
-	"weapon_decoy", "weapon_elite", "weapon_famas", "weapon_fiveseven", "weapon_flashbang", 
-	"weapon_g3sg1", "weapon_galilar", "weapon_glock", "weapon_hegrenade", "weapon_hkp2000", 
-	"weapon_incgrenade", "weapon_knife", "weapon_m249", "weapon_m4a1", "weapon_mac10", 
-	"weapon_mag7", "weapon_molotov", "weapon_mp7", "weapon_mp9", "weapon_negev", 
-	"weapon_nova", "weapon_p250", "weapon_p90", "weapon_sawedoff", "weapon_scar20", 
-	"weapon_sg556", "weapon_smokegrenade", "weapon_ssg08", "weapon_taser", "weapon_tec9", 
+	"weapon_knife", "weapon_hkp2000", "weapon_deagle", "weapon_elite", "weapon_fiveseven", 
+	"weapon_glock", "weapon_p250", "weapon_tec9", "weapon_decoy", "weapon_flashbang", 
+	"weapon_hegrenade", "weapon_incgrenade", "weapon_molotov", "weapon_smokegrenade", "weapon_taser", 
+	"weapon_ak47", "weapon_aug", "weapon_awp", "weapon_bizon", "weapon_famas", 
+	"weapon_g3sg1", "weapon_galilar", "weapon_m249", "weapon_m4a1", "weapon_mac10", 
+	"weapon_mag7", "weapon_mp7", "weapon_mp9", "weapon_negev", "weapon_nova", 
+	"weapon_p90", "weapon_sawedoff", "weapon_scar20", "weapon_sg556", "weapon_ssg08", 
 	"weapon_ump45", "weapon_xm1014"
 };
 
 // Max movement speed of weapons (respective to gC_WeaponNames)
 int gI_WeaponRunSpeeds[sizeof(gC_WeaponNames)] = 
 {
-	215, 220, 200, 240, 230, 
-	245, 240, 220, 240, 245, 
-	215, 215, 240, 245, 240, 
-	245, 250, 195, 225, 240, 
-	225, 245, 220, 240, 195, 
-	220, 240, 230, 210, 215, 
-	210, 245, 230, 240, 240, 
+	250, 240, 230, 240, 240, 
+	240, 240, 240, 245, 245, 
+	245, 245, 245, 245, 220, 
+	215, 220, 200, 240, 220, 
+	215, 215, 195, 225, 240, 
+	225, 220, 240, 150, 220, 
+	230, 210, 215, 210, 230, 
 	230, 215
 };
 

@@ -195,7 +195,6 @@ public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcas
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
 	TimerOnPlayerRunCmd(client);
-	
 	StyleOnPlayerRunCmd(client, buttons);
 	gI_OldButtons[client] = buttons;
 	

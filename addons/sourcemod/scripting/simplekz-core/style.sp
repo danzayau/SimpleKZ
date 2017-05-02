@@ -20,11 +20,13 @@
 
 void StyleOnPlayerRunCmd(int client, int &buttons)
 {
-	if (IsPlayerAlive(client))
+	if (!IsPlayerAlive(client))
 	{
-		RemoveCrouchJumpBind(g_KZPlayer[client], buttons);
-		TweakVelMod(g_KZPlayer[client]);
+		return;
 	}
+	
+	RemoveCrouchJumpBind(g_KZPlayer[client], buttons);
+	TweakVelMod(g_KZPlayer[client]);
 }
 
 void StyleOnClientPreThinkPost(int client)
@@ -102,7 +104,6 @@ static void TweakVelMod(KZPlayer player)
 	{
 		return;
 	}
-	
 	player.velocityModifier = CalcPrestrafeVelMod(player) * CalcWeaponVelMod(player);
 }
 
@@ -169,9 +170,10 @@ static float CalcPrestrafeVelMod(KZPlayer player)
 				gF_PreVelMod[player.id] -= 0.04;
 			}
 		}
-		case KZStyle_Competitive:
+		default:
 		{
 			gF_PreVelMod[player.id] = 1.0;
+			return 1.0;
 		}
 	}
 	
@@ -196,17 +198,16 @@ static float CalcWeaponVelMod(KZPlayer player)
 		return 1.0;
 	}
 	
-	// Universal Weapon Speed
 	int weaponEnt = GetEntPropEnt(player.id, Prop_Data, "m_hActiveWeapon");
 	if (!IsValidEntity(weaponEnt))
 	{
-		return SPEED_NORMAL / SPEED_NO_WEAPON; // Weapon entity not found so must have no weapon (260 u/s).
+		return SPEED_NORMAL / SPEED_NO_WEAPON; // Weapon entity not found, so no weapon
 	}
 	
 	char weaponName[64];
-	GetEntityClassname(weaponEnt, weaponName, sizeof(weaponName)); // What weapon the client is holding.
+	GetEntityClassname(weaponEnt, weaponName, sizeof(weaponName)); // Weapon the client is holding
 	
-	// Get weapon speed and work out how much to scale the modifier.
+	// Get weapon speed and work out how much to scale the modifier
 	int weaponCount = sizeof(gC_WeaponNames);
 	for (int weaponID = 0; weaponID < weaponCount; weaponID++)
 	{
@@ -264,11 +265,11 @@ static bool HitPerf(KZPlayer player)
 
 static bool NeedToTweakTakeoffSpeed(KZPlayer player)
 {
+	// Returns true if need to tweak player's speed after hitting a perf
 	switch (player.style)
 	{
 		case KZStyle_Standard:return true;
 		case KZStyle_Legacy:return player.takeoffSpeed > LEGACY_PERF_SPEED_CAP;
-		case KZStyle_Competitive:return false;
 	}
 	return false;
 }
