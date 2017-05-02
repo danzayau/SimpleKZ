@@ -45,6 +45,11 @@ void StyleOnStopTouchGround(int client, bool jumped)
 	{
 		TweakJump(g_KZPlayer[client]);
 	}
+	else
+	{
+		gB_HitPerf[client] = false;
+		gF_TakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
+	}
 	
 	if (g_Style[client] == KZStyle_Standard)
 	{  // No 'pre b-hopping' in Standard
@@ -55,11 +60,13 @@ void StyleOnStopTouchGround(int client, bool jumped)
 void StyleOnStopTouchLadder(int client)
 {
 	gB_HitPerf[client] = false;
+	gF_TakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
 }
 
 void StyleOnStopNoclipping(int client)
 {
 	gB_HitPerf[client] = false;
+	gF_TakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
 }
 
 
