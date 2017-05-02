@@ -113,11 +113,6 @@ public void OnPluginStart()
 	}
 }
 
-public void OnAllPluginsLoaded()
-{
-	gB_BaseComm = LibraryExists("basecomm");
-}
-
 void OnLateLoad()
 {
 	for (int client = 1; client <= MaxClients; client++)
@@ -127,6 +122,11 @@ void OnLateLoad()
 			OnClientPostAdminCheck(client);
 		}
 	}
+}
+
+public void OnAllPluginsLoaded()
+{
+	gB_BaseComm = LibraryExists("basecomm");
 }
 
 public void OnLibraryAdded(const char[] name)

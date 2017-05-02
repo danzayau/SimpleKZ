@@ -25,7 +25,7 @@ void Call_OnDatabaseConnect()
 void Call_OnClientSetup(int client, int steamID)
 {
 	Call_StartForward(gH_OnClientSetup);
-	if (GetSteamAccountID(client) == steamID)
+	if (IsValidClient(client) && GetSteamAccountID(client) == steamID)
 	{
 		Call_PushCell(client);
 	}
@@ -47,7 +47,7 @@ void Call_OnMapIDRetrieved()
 void Call_OnTimeInserted(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS)
 {
 	Call_StartForward(gH_OnTimeInserted);
-	if (GetSteamAccountID(client) == steamID)
+	if (IsValidClient(client) && GetSteamAccountID(client) == steamID)
 	{
 		Call_PushCell(client);
 	}

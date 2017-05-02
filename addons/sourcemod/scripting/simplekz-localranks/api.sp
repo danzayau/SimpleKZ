@@ -15,7 +15,7 @@ void CreateGlobalForwards()
 void Call_SKZ_OnNewRecord(int client, int steamID, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime)
 {
 	Call_StartForward(gH_SKZ_OnNewRecord);
-	if (GetSteamAccountID(client) == steamID)
+	if (IsValidClient(client) && GetSteamAccountID(client) == steamID)
 	{
 		Call_PushCell(client);
 	}
@@ -35,7 +35,7 @@ void Call_SKZ_OnNewRecord(int client, int steamID, int mapID, int course, KZStyl
 void Call_SKZ_OnNewPersonalBest(int client, int steamID, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank)
 {
 	Call_StartForward(gH_SKZ_OnNewPersonalBest);
-	if (GetSteamAccountID(client) == steamID)
+	if (IsValidClient(client) && GetSteamAccountID(client) == steamID)
 	{
 		Call_PushCell(client);
 	}
