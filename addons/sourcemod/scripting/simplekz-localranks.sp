@@ -106,22 +106,22 @@ public void OnPluginStart()
 	CreateMenus();
 	CreateGlobalForwards();
 	CreateCommands();
-}
-
-public void OnAllPluginsLoaded()
-{
+	
 	if (gB_LateLoad)
 	{
 		OnLateLoad();
 	}
 }
 
-public void OnLateLoad()
+void OnLateLoad()
 {
 	SKZ_DB_GetDatabase(gH_DB);
-	g_DBType = SKZ_DB_GetDatabaseType();
-	DB_CreateTables();
-	CompletionMVPStarsUpdateAll();
+	if (gH_DB != null)
+	{
+		g_DBType = SKZ_DB_GetDatabaseType();
+		DB_CreateTables();
+		CompletionMVPStarsUpdateAll();
+	}
 }
 
 

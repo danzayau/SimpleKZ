@@ -39,11 +39,10 @@ void PrintConnectMessage(int client)
 }
 
 // Hooked to player_disconnect event
-void PrintDisconnectMessage(Event event)
+void PrintDisconnectMessage(int client, Event event)
 {
 	SetEventBroadcast(event, true);
 	
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (!IsValidClient(client) || IsFakeClient(client))
 	{
 		return;

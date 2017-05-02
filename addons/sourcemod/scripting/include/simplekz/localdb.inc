@@ -99,6 +99,7 @@ forward void SKZ_DB_OnTimeInserted(int client, int steamID, int mapID, int cours
 
 /**
  * Gets the simplekz-localdb database handle.
+ * Handle is null if connection hasn't been made.
  *
  * @param database		Database handle.
  * @noreturn

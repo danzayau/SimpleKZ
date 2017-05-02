@@ -170,7 +170,7 @@ enum KZSpeedText
 /*===============================  Forwards  ===============================*/
 
 /**
- * Called when a player has been set up e.g. options, timer.
+ * Called when a player has been set up e.g. options, timer etc.
  *
  * @param client		Client index.
  * @noreturn
@@ -269,6 +269,14 @@ forward void SKZ_OnChangeOption(int client, KZOption option, any newValue);
 
 
 /*===============================  Natives  ===============================*/
+
+/**
+ * Gets whether client has been set up by SimpleKZ e.g. options, timer etc.
+ *
+ * @param client		Client index.
+ * @return				Whether client has been set up.
+ */
+native KZStyle SKZ_IsClientSetUp(int client);
 
 /**
  * Gets the default movement style as set by convar kz_default_style.

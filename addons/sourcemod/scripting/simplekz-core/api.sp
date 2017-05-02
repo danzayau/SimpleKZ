@@ -113,6 +113,8 @@ void Call_SKZ_OnChangeOption(int client, KZOption option, any optionValue)
 
 void CreateNatives()
 {
+	CreateNative("SKZ_IsClientSetUp", Native_IsClientSetUp);
+	
 	CreateNative("SKZ_StartTimer", Native_StartTimer);
 	CreateNative("SKZ_EndTimer", Native_EndTimer);
 	CreateNative("SKZ_ForceStopTimer", Native_ForceStopTimer);
@@ -136,6 +138,11 @@ void CreateNatives()
 	CreateNative("SKZ_SetOption", Native_SetOption);
 	CreateNative("SKZ_GetHitPerf", Native_GetHitPerf);
 	CreateNative("SKZ_GetTakeoffSpeed", Native_GetTakeoffSpeed);
+}
+
+public int Native_IsClientSetUp(Handle plugin, int numParams)
+{
+	return gB_ClientIsSetUp[GetNativeCell(1)];
 }
 
 public int Native_StartTimer(Handle plugin, int numParams)

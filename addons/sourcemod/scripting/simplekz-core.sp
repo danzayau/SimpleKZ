@@ -106,24 +106,25 @@ public void OnPluginStart()
 	CreateCommandListeners();
 	
 	AutoExecConfig(true, "simplekz-core", "sourcemod/simplekz");
-}
-
-public void OnAllPluginsLoaded()
-{
-	gB_BaseComm = LibraryExists("basecomm");
+	
 	if (gB_LateLoad)
 	{
 		OnLateLoad();
 	}
 }
 
+public void OnAllPluginsLoaded()
+{
+	gB_BaseComm = LibraryExists("basecomm");
+}
+
 void OnLateLoad()
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientInGame(client))
+		if (IsClientInGame(client) && IsClientAuthorized(client))
 		{
-			OnClientPutInServer(client);
+			OnClientPostAdminCheck(client);
 		}
 	}
 }
@@ -148,15 +149,23 @@ public void OnLibraryRemoved(const char[] name)
 
 /*===============================  Client Forwards  ===============================*/
 
-public void OnClientPutInServer(int client)
+public void OnClientPostAdminCheck(int client)
 {
+	SDKHook(client, SDKHook_PreThinkPost, OnClientPreThinkPost);
 	OptionsSetupClient(client);
 	TimerSetupClient(client);
 	BhopTriggersSetupClient(client);
-	HidePlayersOnClientPutInServer(client);
-	SDKHook(client, SDKHook_PreThinkPost, OnClientPreThinkPost);
+	HidePlayersSetupClient(client);
 	PrintConnectMessage(client);
+	gB_ClientIsSetUp[client] = true;
 	Call_SKZ_OnClientSetup(client);
+}
+
+public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) // player_disconnect hook
+{
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	gB_ClientIsSetUp[client] = false;
+	PrintDisconnectMessage(client, event);
 }
 
 public Action OnClientSayCommand(int client, const char[] command, const char[] sArgs) {
@@ -179,11 +188,6 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) //
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	TimerForceStopOnPlayerDeath(client);
-}
-
-public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) // player_disconnect hook
-{
-	PrintDisconnectMessage(event);
 }
 
 public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) // player_team hook

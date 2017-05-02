@@ -74,10 +74,7 @@ public void OnPluginStart()
 	CreateKZPlayers();
 	CreateGlobalForwards();
 	CreateRegexes();
-}
-
-public void OnAllPluginsLoaded()
-{
+	
 	DB_SetupDatabase();
 	
 	if (gB_LateLoad)
@@ -90,9 +87,9 @@ void OnLateLoad()
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientAuthorized(client))
+		if (SKZ_IsClientSetUp(client))
 		{
-			DB_SetupClient(g_KZPlayer[client]);
+			SKZ_OnClientSetup(client);
 		}
 	}
 }
@@ -101,13 +98,9 @@ void OnLateLoad()
 
 /*===============================  Other Forwards  ===============================*/
 
-public void OnClientAuthorized(int client, const char[] auth)
-{
-	DB_SetupClient(g_KZPlayer[client]);
-}
-
 public void SKZ_OnClientSetup(int client)
 {
+	DB_SetupClient(g_KZPlayer[client]);
 	DB_LoadOptions(g_KZPlayer[client]);
 }
 
