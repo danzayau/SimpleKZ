@@ -39,17 +39,9 @@ void StyleOnStartTouchGround(int client)
 
 void StyleOnStopTouchGround(int client, bool jumped)
 {
-	if (jumped && HitPerf(g_KZPlayer[client]))
+	if (jumped)
 	{
-		gB_HitPerf[client] = true;
-		TweakTakeoffSpeed(g_KZPlayer[client]);
-		gF_TakeoffSpeed[client] = g_KZPlayer[client].speed;
-		Call_SKZ_OnPerfectBunnyhop(client);
-	}
-	else
-	{
-		gB_HitPerf[client] = false;
-		gF_TakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
+		TweakJump(g_KZPlayer[client]);
 	}
 	
 	if (g_Style[client] == KZStyle_Standard)
@@ -231,43 +223,57 @@ static float CalcWeaponVelMod(KZPlayer player)
 
 /*===============================  Jump Tweaks  ===============================*/
 
-static bool HitPerf(KZPlayer player)
+static void TweakJump(KZPlayer player)
 {
-	switch (player.style)
+	if (HitPerf(player))
 	{
-		case KZStyle_Standard:
+		gB_HitPerf[player.id] = true;
+		
+		if (NeedToTweakTakeoffSpeed(player))
 		{
-			return player.takeoffTick - player.landingTick <= STANDARD_PERF_TICKS;
+			float velocity[3], baseVelocity[3], newVelocity[3];
+			player.GetVelocity(velocity);
+			player.GetBaseVelocity(baseVelocity);
+			player.GetLandingVelocity(newVelocity);
+			newVelocity[2] = velocity[2];
+			AdjustVectorSpeed(newVelocity, CalcTweakedTakeoffSpeed(player), newVelocity);
+			AddVectors(newVelocity, baseVelocity, newVelocity);
+			player.SetVelocity(newVelocity);
+			gF_TakeoffSpeed[player.id] = player.speed;
+		}
+		else
+		{
+			gF_TakeoffSpeed[player.id] = player.takeoffSpeed;
 		}
 	}
-	// Else check if just a normal perfect bunnyhop
+	else
+	{
+		gB_HitPerf[player.id] = false;
+		gF_TakeoffSpeed[player.id] = player.takeoffSpeed;
+	}
+}
+
+static bool HitPerf(KZPlayer player)
+{
+	if (player.style == KZStyle_Standard)
+	{
+		return player.takeoffTick - player.landingTick <= STANDARD_PERF_TICKS;
+	}
 	return player.hitPerf;
 }
 
-static void TweakTakeoffSpeed(KZPlayer player)
+static bool NeedToTweakTakeoffSpeed(KZPlayer player)
 {
-	if (player.style == KZStyle_Competitive)
+	switch (player.style)
 	{
-		return;
+		case KZStyle_Standard:return true;
+		case KZStyle_Legacy:return player.takeoffSpeed > LEGACY_PERF_SPEED_CAP;
+		case KZStyle_Competitive:return false;
 	}
-	
-	float oldVelocity[3], landingVelocity[3], baseVelocity[3];
-	player.GetVelocity(oldVelocity);
-	player.GetLandingVelocity(landingVelocity);
-	player.GetBaseVelocity(baseVelocity);
-	
-	float newVelocity[3];
-	newVelocity = landingVelocity;
-	newVelocity[2] = 0.0; // Only tweak horizontal speed
-	NormalizeVector(newVelocity, newVelocity);
-	ScaleVector(newVelocity, CalcTakeoffSpeed(player));
-	newVelocity[2] = oldVelocity[2];
-	AddVectors(newVelocity, baseVelocity, newVelocity);
-	
-	player.SetVelocity(newVelocity);
+	return false;
 }
 
-static float CalcTakeoffSpeed(KZPlayer player)
+static float CalcTweakedTakeoffSpeed(KZPlayer player)
 {
 	switch (player.style)
 	{
@@ -275,19 +281,16 @@ static float CalcTakeoffSpeed(KZPlayer player)
 		{
 			if (player.landingSpeed > SPEED_NORMAL)
 			{
-				return 0.2 * player.landingSpeed + 200; // The magic formula
+				return 0.2 * player.landingSpeed + 200; // Formula
 			}
+			return player.landingSpeed;
 		}
 		case KZStyle_Legacy:
 		{
-			if (player.landingSpeed > LEGACY_PERF_SPEED_CAP)
-			{
-				return LEGACY_PERF_SPEED_CAP;
-			}
+			return LEGACY_PERF_SPEED_CAP;
 		}
 	}
-	
-	return player.speed;
+	return -1.0; // This should never happen
 }
 
 

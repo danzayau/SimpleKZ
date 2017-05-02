@@ -20,7 +20,6 @@ void CreateGlobalForwards()
 	gH_OnTimerEnd = CreateGlobalForward("SKZ_OnTimerEnd", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Float, Param_Cell, Param_Float);
 	gH_OnTimerForceStop = CreateGlobalForward("SKZ_OnTimerForceStop", ET_Ignore, Param_Cell);
 	gH_OnChangeOption = CreateGlobalForward("SKZ_OnChangeOption", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
-	gH_OnPerfectBunnyhop = CreateGlobalForward("SKZ_OnPerfectBunnyhop", ET_Ignore, Param_Cell);
 	gH_OnPause = CreateGlobalForward("SKZ_OnPause", ET_Ignore, Param_Cell);
 	gH_OnResume = CreateGlobalForward("SKZ_OnResume", ET_Ignore, Param_Cell);
 	gH_OnTeleportToStart = CreateGlobalForward("SKZ_OnTeleportToStart", ET_Ignore, Param_Cell);
@@ -105,13 +104,6 @@ void Call_SKZ_OnChangeOption(int client, KZOption option, any optionValue)
 	Call_PushCell(client);
 	Call_PushCell(option);
 	Call_PushCell(optionValue);
-	Call_Finish();
-}
-
-void Call_SKZ_OnPerfectBunnyhop(int client)
-{
-	Call_StartForward(gH_OnPerfectBunnyhop);
-	Call_PushCell(client);
 	Call_Finish();
 }
 

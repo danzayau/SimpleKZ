@@ -266,14 +266,6 @@ forward void SKZ_OnUndoTeleport(int client);
  */
 forward void SKZ_OnChangeOption(int client, KZOption option, any newValue);
 
-/**
- * Called when the player hits a plugin-based perfect b-hop.
- *
- * @param client			Client entity index.
- * @noreturn
- */
-forward void SKZ_OnPerfectBunnyhop(int client);
-
 
 
 /*===============================  Natives  ===============================*/

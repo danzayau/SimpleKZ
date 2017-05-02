@@ -31,7 +31,6 @@ Handle gH_OnMakeCheckpoint;
 Handle gH_OnTeleportToCheckpoint;
 Handle gH_OnUndoTeleport;
 Handle gH_OnChangeOption;
-Handle gH_OnPerfectBunnyhop;
 
 
 /* simplekz-core ConVars */
