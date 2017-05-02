@@ -23,7 +23,7 @@
 	{
 		// kz_fakemap Bonus 1 wasn't found.
 		"#format"	"{1:s},{2:d}"
-		"en"		"{default}{1} {darkblue}Bonus {2}{grey} wasn't found."
+		"en"		"{default}{1} {bluegrey}Bonus {2}{grey} wasn't found."
 	}
 	"Invalid Bonus Number"
 	{
@@ -49,27 +49,27 @@
 	}
 	"New Record (Nub and Pro)"
 	{
-		// Bill set a new NUB and PRO RECORD [Style]!
+		// Bill set a new NUB/PRO RECORD [Style]!
 		"#format"	"{1:N},{2:t}"
-		"en"		"{lime}{1}{grey} set a new {yellow}NUB{grey} and {blue}PRO RECORD{grey} [{purple}{2}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {yellow}NUB{grey}/{blue}PRO RECORD{grey} [{purple}{2}{grey}]!"
 	}
 	"New Bonus Record (Nub)"
 	{
 		// Bill set a new Bonus 1 NUB RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:t}"
-		"en"		"{lime}{1}{grey} set a new {darkblue}Bonus {2} {yellow}NUB RECORD{grey} [{purple}{3}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {bluegrey}Bonus {2} {yellow}NUB RECORD{grey} [{purple}{3}{grey}]!"
 	}
 	"New Bonus Record (Pro)"
 	{
 		// Bill set a new Bonus 1 PRO RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:t}"
-		"en"		"{lime}{1}{grey} set a new {darkblue}Bonus {2} {blue}PRO RECORD{grey} [{purple}{3}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {bluegrey}Bonus {2} {blue}PRO RECORD{grey} [{purple}{3}{grey}]!"
 	}
 	"New Bonus Record (Nub and Pro)"
 	{
-		// Bill set a new Bonus 1 NUB and PRO RECORD [Style]!
+		// Bill set a new Bonus 1 NUB/PRO RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} set a new {darkblue}Bonus {2} {yellow}NUB{grey} and {blue}PRO RECORD{grey} [{purple}{4}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {bluegrey}Bonus {2} {yellow}NUB{grey}/{blue}PRO RECORD{grey} [{purple}{4}{grey}]!"
 	}
 	"New PB - First Time (Nub)"
 	{
@@ -99,25 +99,25 @@
 	{
 		// Bill just beat Bonus 1 for the first time [#5/12] [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just beat {darkblue}Bonus {2} {grey}for the first time [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} just beat {bluegrey}Bonus {2} {grey}for the first time [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
 	}
 	"New Bonus PB - First Time (Pro)"
 	{
 		// Bill just PRO'd Bonus 1 for the first time [#5/12] [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d {darkblue}Bonus {2} {grey}for the first time [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d {bluegrey}Bonus {2} {grey}for the first time [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
 	}
 	"New Bonus PB - Improve"
 	{
 		// Bill just beat their Bonus 1 NUB time by -00:12.34 [#5/12] [Style].
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:d},{6:t}"
-		"en"		"{lime}{1}{grey} just beat their {darkblue}Bonus {2} {yellow}NUB{grey} time by {green}-{2}{grey} [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} just beat their {bluegrey}Bonus {2} {yellow}NUB{grey} time by {green}-{2}{grey} [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
 	}
 	"New Bonus PB - Improve (Pro)"
 	{
 		// Bill just beat their Bonus 1 PRO time by -00:12.34 [#5/12] [Style]!
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:d},{6:t}"
-		"en"		"{lime}{1}{grey} just beat their {darkblue}Bonus {2} {blue}PRO{grey} time by {green}-{2}{grey} [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} just beat their {bluegrey}Bonus {2} {blue}PRO{grey} time by {green}-{2}{grey} [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
 	}
 	"PB Header"
 	{	
@@ -129,7 +129,7 @@
 	{
 		// Bill on kz_map Bonus 1 [Style]
 		"#format"	"{1:s},{2:s},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} on {default}{2} {darkblue}Bonus {3} {grey}[{purple}{4}{grey}]"
+		"en"		"{lime}{1}{grey} on {default}{2} {bluegrey}Bonus {3} {grey}[{purple}{4}{grey}]"
 	}
 	"PB Time - No Times"
 	{
@@ -167,7 +167,7 @@
 	{
 		// Server WRs on kz_map Bonus 1 [Style]
 		"#format"	"{1:s},{2:d},{3:t}"
-		"en"		"{grey}Records on {default}{1} {darkblue}Bonus {2} {grey}[{purple}{3}{grey}]"
+		"en"		"{grey}Records on {default}{1} {bluegrey}Bonus {2} {grey}[{purple}{3}{grey}]"
 	}
 	"WR No Times"
 	{

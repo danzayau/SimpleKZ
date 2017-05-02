@@ -100,7 +100,7 @@
 	}
 	"Can't Checkpoint (Midair)"
 	{
-		"en"		"{darkred}You can't make a checkpoint midair."
+		"en"		"{darkred}You can't make a checkpoint mid-air."
 	}
 	"Can't Checkpoint (Just Landed)"
 	{
@@ -112,7 +112,7 @@
 	}
 	"Can't Undo (TP Was Midair)"
 	{
-		"en"		"{darkred}You can't undo because you teleported midair."
+		"en"		"{darkred}You can't undo because you teleported mid-air."
 	}
 	"Can't Pause (Just Resumed)"
 	{
@@ -120,7 +120,7 @@
 	}
 	"Can't Pause (Midair)"
 	{
-		"en"		"{darkred}You can't pause in midair."
+		"en"		"{darkred}You can't pause in mid-air."
 	}
 	"Can't Resume (Just Paused)"
 	{
