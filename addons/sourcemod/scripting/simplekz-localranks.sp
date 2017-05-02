@@ -28,8 +28,6 @@ public Plugin myinfo =
 Handle gH_SKZ_OnNewRecord;
 Handle gH_SKZ_OnNewPersonalBest;
 
-bool gB_LateLoad;
-
 Database gH_DB = null;
 DatabaseType g_DBType = DatabaseType_None;
 
@@ -89,7 +87,6 @@ char gC_TimeTypePhrases[view_as<int>(KZTimeType)][] =
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	RegPluginLibrary("simplekz-localranks");
-	gB_LateLoad = late;
 	return APLRes_Success;
 }
 
@@ -107,21 +104,7 @@ public void OnPluginStart()
 	CreateGlobalForwards();
 	CreateCommands();
 	
-	if (gB_LateLoad)
-	{
-		OnLateLoad();
-	}
-}
-
-void OnLateLoad()
-{
-	SKZ_DB_GetDatabase(gH_DB);
-	if (gH_DB != null)
-	{
-		g_DBType = SKZ_DB_GetDatabaseType();
-		DB_CreateTables();
-		CompletionMVPStarsUpdateAll();
-	}
+	TryGetDatabaseInfo();
 }
 
 
@@ -168,4 +151,15 @@ void CreateMenus()
 {
 	MapTopMenuCreateMenus();
 	PlayerTopMenuCreateMenus();
+}
+
+void TryGetDatabaseInfo()
+{
+	SKZ_DB_GetDatabase(gH_DB);
+	if (gH_DB != null)
+	{
+		g_DBType = SKZ_DB_GetDatabaseType();
+		DB_CreateTables();
+		CompletionMVPStarsUpdateAll();
+	}
 } 
