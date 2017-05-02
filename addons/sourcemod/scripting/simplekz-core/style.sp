@@ -43,13 +43,13 @@ void StyleOnStopTouchGround(int client, bool jumped)
 	{
 		gB_HitPerf[client] = true;
 		TweakTakeoffSpeed(g_KZPlayer[client]);
-		gF_TakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
+		gF_TakeoffSpeed[client] = g_KZPlayer[client].speed;
 		Call_SKZ_OnPerfectBunnyhop(client);
 	}
 	else
 	{
 		gB_HitPerf[client] = false;
-		gF_TakeoffSpeed[client] = g_KZPlayer[client].speed;
+		gF_TakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
 	}
 	
 	if (g_Style[client] == KZStyle_Standard)
