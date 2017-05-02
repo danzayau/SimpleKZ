@@ -4,6 +4,7 @@
 
 ## Features
 
+ * **Timer** - Obviously!
  * **Movement Styles** - Custom movement mechanics. Includes Legacy (KZTimer) and Competitive styles.
  * **Customisable Experience** - Plenty of options to provide the best possible experience for players. 
  * **Database Support** - Store player options, times and more using either a MySQL or SQLite database.
