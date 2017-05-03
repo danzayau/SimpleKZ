@@ -148,6 +148,10 @@ public void SKZ_LR_OnTimeProcessed(
 	if (IsValidClient(client) && steamID == GetSteamAccountID(client) && mapID == SKZ_DB_GetCurrentMapID())
 	{
 		AnnounceNewTime(client, course, style, runTime, teleportsUsed, firstTime, pbDiff, rank, maxRank, firstTimePro, pbDiffPro, rankPro, maxRankPro);
+		if (course == 0 && style == SKZ_GetDefaultStyle() && firstTimePro)
+		{
+			CompletionMVPStarsUpdate(client);
+		}
 	}
 }
 
