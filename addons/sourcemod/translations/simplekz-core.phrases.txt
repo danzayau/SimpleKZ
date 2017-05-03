@@ -164,7 +164,7 @@
 	{
 		// Distance: 123.45, Vertical: 12.34.
 		"#format"	"{1:.2f},{2:.2f}"
-		"en"		"{grey}Distance: {default}{1}{grey}, Vertical {default}{2}{grey}."
+		"en"		"{default}Distance{grey} - Horizontal: {default}{1}{grey}, Vertical: {default}{2}{grey}"
 	}
 	"Measure Failure (Points Not Set)"
 	{
