@@ -247,10 +247,10 @@ public int Native_SetOption(Handle plugin, int numParams)
 
 public int Native_GetHitPerf(Handle plugin, int numParams)
 {
-	return view_as<int>(gB_HitPerf[GetNativeCell(1)]);
+	return view_as<int>(gB_SKZHitPerf[GetNativeCell(1)]);
 }
 
 public int Native_GetTakeoffSpeed(Handle plugin, int numParams)
 {
-	return view_as<int>(gF_TakeoffSpeed[GetNativeCell(1)]);
+	return view_as<int>(gF_SKZTakeoffSpeed[GetNativeCell(1)]);
 } 

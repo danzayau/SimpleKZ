@@ -208,8 +208,8 @@ int gI_OldButtons[MAXPLAYERS + 1];
 float gF_PreVelMod[MAXPLAYERS + 1];
 float gF_PreVelModLastChange[MAXPLAYERS + 1];
 int gI_PreTickCounter[MAXPLAYERS + 1];
-bool gB_HitPerf[MAXPLAYERS + 1];
-float gF_TakeoffSpeed[MAXPLAYERS + 1];
+bool gB_SKZHitPerf[MAXPLAYERS + 1];
+float gF_SKZTakeoffSpeed[MAXPLAYERS + 1];
 
 // Weapon class names - Knife/USP first followed by other pistols faster average linear search
 char gC_WeaponNames[][] = 

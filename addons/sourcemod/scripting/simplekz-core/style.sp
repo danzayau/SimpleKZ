@@ -47,8 +47,8 @@ void StyleOnStopTouchGround(int client, bool jumped)
 	}
 	else
 	{
-		gB_HitPerf[client] = false;
-		gF_TakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
+		gB_SKZHitPerf[client] = false;
+		gF_SKZTakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
 	}
 	
 	if (g_Style[client] == KZStyle_Standard)
@@ -59,14 +59,14 @@ void StyleOnStopTouchGround(int client, bool jumped)
 
 void StyleOnStopTouchLadder(int client)
 {
-	gB_HitPerf[client] = false;
-	gF_TakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
+	gB_SKZHitPerf[client] = false;
+	gF_SKZTakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
 }
 
 void StyleOnStopNoclipping(int client)
 {
-	gB_HitPerf[client] = false;
-	gF_TakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
+	gB_SKZHitPerf[client] = false;
+	gF_SKZTakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
 }
 
 
@@ -233,9 +233,9 @@ static float CalcWeaponVelMod(KZPlayer player)
 
 static void TweakJump(KZPlayer player)
 {
-	if (HitPerf(player))
+	if (SKZHitPerf(player))
 	{
-		gB_HitPerf[player.id] = true;
+		gB_SKZHitPerf[player.id] = true;
 		
 		if (NeedToTweakTakeoffSpeed(player))
 		{
@@ -247,21 +247,26 @@ static void TweakJump(KZPlayer player)
 			AdjustVectorSpeed(newVelocity, CalcTweakedTakeoffSpeed(player), newVelocity);
 			AddVectors(newVelocity, baseVelocity, newVelocity);
 			player.SetVelocity(newVelocity);
-			gF_TakeoffSpeed[player.id] = player.speed;
+			gF_SKZTakeoffSpeed[player.id] = player.speed;
+		}
+		else if (player.style == KZStyle_Competitive)
+		{
+			// MovementAPI takeoff speed is wrong if hit a perf on sv_enablebunnyhopping 0
+			gF_SKZTakeoffSpeed[player.id] = player.speed;
 		}
 		else
 		{
-			gF_TakeoffSpeed[player.id] = player.takeoffSpeed;
+			gF_SKZTakeoffSpeed[player.id] = player.takeoffSpeed;
 		}
 	}
 	else
 	{
-		gB_HitPerf[player.id] = false;
-		gF_TakeoffSpeed[player.id] = player.takeoffSpeed;
+		gB_SKZHitPerf[player.id] = false;
+		gF_SKZTakeoffSpeed[player.id] = player.takeoffSpeed;
 	}
 }
 
-static bool HitPerf(KZPlayer player)
+static bool SKZHitPerf(KZPlayer player)
 {
 	if (player.style == KZStyle_Standard)
 	{
@@ -270,26 +275,28 @@ static bool HitPerf(KZPlayer player)
 	return player.hitPerf;
 }
 
+// Returns true if need to tweak player's speed after hitting a perf
 static bool NeedToTweakTakeoffSpeed(KZPlayer player)
 {
-	// Returns true if need to tweak player's speed after hitting a perf
 	switch (player.style)
 	{
-		case KZStyle_Standard:return true;
+		case KZStyle_Standard:return !player.hitPerf || player.takeoffSpeed > SPEED_NORMAL;
 		case KZStyle_Legacy:return player.takeoffSpeed > LEGACY_PERF_SPEED_CAP;
 	}
 	return false;
 }
 
+// Takeoff speed assuming player has met the conditions to need tweaking
 static float CalcTweakedTakeoffSpeed(KZPlayer player)
 {
 	switch (player.style)
 	{
 		case KZStyle_Standard:
 		{
+			// Formula
 			if (player.landingSpeed > SPEED_NORMAL)
 			{
-				return 0.2 * player.landingSpeed + 200; // Formula
+				return 0.2 * player.landingSpeed + 200;
 			}
 			return player.landingSpeed;
 		}
