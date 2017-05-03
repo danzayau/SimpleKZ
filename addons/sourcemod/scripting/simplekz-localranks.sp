@@ -156,6 +156,7 @@ public void SKZ_LR_OnNewRecord(int client, int steamID, int mapID, int course, K
 	if (IsValidClient(client) && steamID == GetSteamAccountID(client) && mapID == SKZ_DB_GetCurrentMapID())
 	{
 		AnnounceNewRecord(client, course, style, recordType);
+		PlayNewRecordSound();
 	}
 }
 

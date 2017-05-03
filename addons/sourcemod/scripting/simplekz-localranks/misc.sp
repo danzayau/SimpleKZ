@@ -4,7 +4,7 @@
 	Miscellaneous functions.
 */
 
-
+#define SOUND_NEW_RECORD "physics/glass/glass_bottle_break2.wav"
 
 /*===============================  Helper Functions  ===============================*/
 
@@ -193,4 +193,9 @@ void AnnounceNewRecord(int client, int course, KZStyle style, KZRecordType recor
 			}
 		}
 	}
+}
+
+void PlayNewRecordSound()
+{
+	EmitSoundToAll(SOUND_NEW_RECORD);
 } 
