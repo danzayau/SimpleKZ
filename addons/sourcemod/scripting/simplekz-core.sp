@@ -22,9 +22,9 @@
 
 public Plugin myinfo = 
 {
-	name = "Simple KZ Core", 
+	name = "SimpleKZ Core", 
 	author = "DanZay", 
-	description = "The best KZ plugin.", 
+	description = "SimpleKZ Core Plugin", 
 	version = "0.12.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };

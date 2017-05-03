@@ -10,7 +10,7 @@ void DB_SetupDatabase()
 	gH_DB = SQL_Connect("simplekz", true, error, sizeof(error));
 	if (gH_DB == null)
 	{
-		SetFailState("[SimpleKZ] Database connection failed: %s", error);
+		SetFailState("Database connection failed: %s", error);
 	}
 	
 	char databaseType[8];
@@ -25,7 +25,7 @@ void DB_SetupDatabase()
 	}
 	else
 	{
-		SetFailState("[SimpleKZ] Invalid database driver (use SQLite or MySQL).");
+		SetFailState("Invalid database driver (use SQLite or MySQL).");
 	}
 	
 	DB_CreateTables();
