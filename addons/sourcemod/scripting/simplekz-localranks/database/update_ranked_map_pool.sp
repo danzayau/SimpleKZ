@@ -12,7 +12,7 @@ void DB_UpdateRankedMapPool(int client)
 	Handle file = OpenFile(FILE_PATH_MAPPOOL, "r");
 	if (file == null)
 	{
-		PrintToServer("[SimpleKZ] There was a problem opening file: %s", FILE_PATH_MAPPOOL);
+		LogError("[SimpleKZ] There was a problem opening file: %s", FILE_PATH_MAPPOOL);
 		if (IsValidClient(client))
 		{
 			PrintToChat(client, "[SimpleKZ] There was a problem opening file: %s", FILE_PATH_MAPPOOL);
@@ -61,9 +61,9 @@ void DB_UpdateRankedMapPool(int client)
 
 public void DB_TxnSuccess_UpdateRankedMapPool(Handle db, int client, int numQueries, Handle[] results, any[] queryData)
 {
-	PrintToServer("[SimpleKZ] The ranked map pool was successfully updated.");
+	LogMessage("[SimpleKZ] The ranked map pool was updated by %L.", client);
 	if (IsValidClient(client))
 	{
-		PrintToChat(client, "[SimpleKZ] The ranked map pool was successfully updated.");
+		PrintToChat(client, "[SimpleKZ] The ranked map pool was updated.");
 	}
 } 
