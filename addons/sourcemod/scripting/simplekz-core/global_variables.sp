@@ -36,6 +36,7 @@ Handle gH_OnChangeOption;
 
 /* simplekz-core ConVars */
 ConVar gCV_ChatProcessing;
+ConVar gCV_ConnectionMessages;
 ConVar gCV_DefaultStyle;
 ConVar gCV_PlayerModelT;
 ConVar gCV_PlayerModelCT;
