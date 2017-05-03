@@ -30,7 +30,7 @@ enum DatabaseType
  * Converts a time float (seconds) to an integer (milliseconds).
  *
  * @param time			Time in seconds.
- * @return				Number of milliseconds.
+ * @return				Time in milliseconds.
  */
 stock int SKZ_DB_TimeFloatToInt(float time)
 {
@@ -41,7 +41,7 @@ stock int SKZ_DB_TimeFloatToInt(float time)
  * Converts a time integer (milliseconds) to a float (seconds).
  *
  * @param time			Time in milliseconds.
- * @return				Number of seconds.
+ * @return				Time in seconds.
  */
 stock float SKZ_DB_TimeIntToFloat(int time)
 {
@@ -56,13 +56,14 @@ stock float SKZ_DB_TimeIntToFloat(int time)
  * Called when simplekz-localdb has connected to the database.
  *
  * @param database		Database handle.
- * @param DBType		Database type (see DatabaseType enumeration).
+ * @param DBType		Database type.
  * @noreturn
  */
 forward void SKZ_DB_OnDatabaseConnect(Database database, DatabaseType DBType);
 
 /**
- * Called when simplekz-localdb has inserted/updated a player in the "Players" database table.
+ * Called when a player is ready for database interaction.
+ * At this point, the player is present and updated in the "Players" table.
  *
  * @param client		Client index (-1 if client is no longer present).
  * @param steamID		SteamID32 of the player.
@@ -71,24 +72,25 @@ forward void SKZ_DB_OnDatabaseConnect(Database database, DatabaseType DBType);
 forward void SKZ_DB_OnClientSetup(int client, int steamID);
 
 /**
- * Called when simplekz-localdb has retrieved the current map's MapID from the "Maps" database table.
+ * Called when the current map is ready for database interaction.
+ * At this point, the map is present and updated in the "Maps" table.
  *
- * @param mapID			MapID from the "Maps" database table.
+ * @param mapID			MapID from the "Maps" table.
  * @noreturn
  */
-forward void SKZ_DB_OnMapIDRetrieved(int mapID);
+forward void SKZ_DB_OnMapSetup(int mapID);
 
 /**
- * Called when simplekz-localdb successfully saves a time to the database.
+ * Called when a time has been inserted into the database.
  *
  * @param client				Client index (-1 if client is no longer present).
  * @param steamID				SteamID32 of the player.
- * @param mapID					MapID from the "Maps" database table.
- * @param course				Which part of the map (main=0, bonus1=1, bonus2=2 etc.).
- * @param style					The movement style of the player.
- * @param runTimeMS				Player's end time (milliseconds).
- * @param teleportsUsed			Number of teleports the player used.
- * @param theoreticalRunTimeMS	Theoretical end time without using teleports (milliseconds).
+ * @param mapID					MapID from the "Maps" table.
+ * @param course    			Course number e.g. 0=main, 1='bonus1' etc.
+ * @param style					Player's movement style.
+ * @param runTimeMS				Player's end time in milliseconds.
+ * @param teleportsUsed			Number of teleports used by player.
+ * @param theoreticalRunTimeMS	Theoretical end time without using teleports in milliseconds.
  * @noreturn
  */
 forward void SKZ_DB_OnTimeInserted(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS);
@@ -98,25 +100,24 @@ forward void SKZ_DB_OnTimeInserted(int client, int steamID, int mapID, int cours
 /*===============================  Natives  ===============================*/
 
 /**
- * Gets the simplekz-localdb database handle.
- * Handle is null if connection hasn't been made.
+ * Gets the SimpleKZ local database handle.
  *
- * @param database		Database handle.
+ * @param database		Database handle (null if connection hasn't been made).
  * @noreturn
  */
 native void SKZ_DB_GetDatabase(Database &database);
 
 /**
- * Gets the simplekz-localdb database type.
+ * Gets the SimpleKZ local database type.
  *
- * @return				Database type (see DatabaseType enumeration).
+ * @return				Database type.
  */
 native DatabaseType SKZ_DB_GetDatabaseType();
 
 /**
- * Gets the current map's MapID as retrieved from the "Maps" database table.
+ * Gets the current map's MapID as in the "Maps" table.
  *
- * @return				MapID from the "Maps" database table.
+ * @return				MapID from the "Maps" table.
  */
 native int SKZ_DB_GetCurrentMapID();
 

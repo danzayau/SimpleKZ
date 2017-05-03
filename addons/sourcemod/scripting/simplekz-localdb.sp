@@ -26,7 +26,7 @@ public Plugin myinfo =
 
 Handle gH_OnDatabaseConnect;
 Handle gH_OnClientSetup;
-Handle gH_OnMapIDRetrieved;
+Handle gH_OnMapSetup;
 Handle gH_OnTimeInserted;
 
 KZPlayer g_KZPlayer[MAXPLAYERS + 1];

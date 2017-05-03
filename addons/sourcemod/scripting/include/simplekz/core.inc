@@ -61,9 +61,6 @@ enum KZOption
 	KZOption_SpeedText
 }
 
-/*	Each option has it's own enumeration to specify the meaning of its value,
-	and so it's a bit easier to add more option values. */
-
 enum KZStyle
 {
 	KZStyle_Standard = 0, 
@@ -181,8 +178,8 @@ forward void SKZ_OnClientSetup(int client);
  * Called when a player starts their timer.
  *
  * @param client		Client index.
- * @param course		Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
- * @param style			The movement style of the player.
+ * @param course    	Course number e.g. 0=main, 1='bonus1' etc.
+ * @param style			Player's movement style.
  * @noreturn
  */
 forward void SKZ_OnTimerStart(int client, int course, KZStyle style);
@@ -191,10 +188,10 @@ forward void SKZ_OnTimerStart(int client, int course, KZStyle style);
  * Called when a player ends their timer.
  *
  * @param client			Client index.
- * @param course			Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
- * @param style				The movement style of the player.
+ * @param course    		Course number e.g. 0=main, 1='bonus1' etc.
+ * @param style				Player's movement style.
  * @param time				Player's end time.
- * @param teleportsUsed		Number of teleports the player used.
+ * @param teleportsUsed		Number of teleports used by player.
  * @param theoreticalTime	Theoretical end time without using teleports.
  * @noreturn
  */
@@ -260,8 +257,8 @@ forward void SKZ_OnUndoTeleport(int client);
  * Called when a player changes an option.
  *
  * @param client		Client index.
- * @param option		The option that was changed
- * @param newValue		The new value of the option.
+ * @param option		Option that was changed.
+ * @param newValue		New value of the option.
  * @noreturn
  */
 forward void SKZ_OnChangeOption(int client, KZOption option, any newValue);
@@ -281,7 +278,7 @@ native KZStyle SKZ_IsClientSetUp(int client);
 /**
  * Gets the default movement style as set by convar kz_default_style.
  *
- * @return				The default movement style (see KZStyle enumeration).
+ * @return				Default movement style.
  */
 native KZStyle SKZ_GetDefaultStyle();
 
@@ -289,17 +286,16 @@ native KZStyle SKZ_GetDefaultStyle();
  * Starts the player's timer for a course on the current map.
  *
  * @param client    	Client index.
- * @param course    	Course number (0 = main, 1+ = bonus).
+ * @param course    	Course number e.g. 0=main, 1='bonus1' etc.
  * @noreturn
  */
 native void SKZ_StartTimer(int client, int course);
 
 /**
  * Ends the player's timer for a course on the current map.
- * Only works if the player's timer is started for that course.
  *
  * @param client    	Client index.
- * @param course    	Course number (0 = main, 1+ = bonus).
+ * @param course    	Course number e.g. 0=main, 1='bonus1' etc.
  * @noreturn
  */
 native void SKZ_EndTimer(int client, int course);
@@ -329,15 +325,15 @@ native void SKZ_ForceStopTimerAll(int client);
 native bool SKZ_GetTimerRunning(int client);
 
 /**
- * Gets what course the player is currently running.
+ * Gets the course the player is currently running.
  *
  * @param client    	Client index.
- * @return				Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
+ * @param course    	Course number e.g. 0=main, 1='bonus1' etc.
  */
 native bool SKZ_GetCurrentCourse(int client);
 
 /**
- * Gets whether or not the player is paused.
+ * Gets whether the player is paused.
  *
  * @param client    	Client index.
  * @return				Whether player is paused.
@@ -346,7 +342,6 @@ native bool SKZ_GetPaused(int client);
 
 /**
  * Gets the player's current run time.
- * Runtime is reset when the player's timer is started.
  *
  * @param client    	Client index.
  * @return				Player's current run time.
@@ -355,7 +350,6 @@ native float SKZ_GetCurrentTime(int client);
 
 /**
  * Gets the player's current checkpoint count.
- * Checkpoint count is reset when the player's timer is started.
  *
  * @param client    	Client index.
  * @return				Player's current checkpoint count.
@@ -363,7 +357,7 @@ native float SKZ_GetCurrentTime(int client);
 native int SKZ_GetCheckpointCount(int client);
 
 /**
- * Teleports the player to their start position or else respawns them.
+ * Teleports the player to start, or respawns them.
  *
  * @param client    	Client index.
  * @noreturn
@@ -371,7 +365,7 @@ native int SKZ_GetCheckpointCount(int client);
 native void SKZ_TeleportToStart(int client);
 
 /**
- * Tries to set a new checkpoint at the player's current position.
+ * Set a new checkpoint at the player's current position.
  *
  * @param client    	Client index.
  * @noreturn
@@ -379,7 +373,7 @@ native void SKZ_TeleportToStart(int client);
 native void SKZ_MakeCheckpoint(int client);
 
 /**
- * Teleports the player to their latest checkpoint.
+ * Teleports the player to their last checkpoint.
  *
  * @param client    	Client index.
  * @noreturn
@@ -387,7 +381,7 @@ native void SKZ_MakeCheckpoint(int client);
 native void SKZ_TeleportToCheckpoint(int client);
 
 /**
- * Undoes the player's last teleport by teleporting them back.
+ * Teleport the player to where they last teleported from.
  *
  * @param client    	Client index.
  * @noreturn
@@ -395,7 +389,7 @@ native void SKZ_TeleportToCheckpoint(int client);
 native void SKZ_UndoTeleport(int client);
 
 /**
- * Tries to pause the player's timer. Pausing freezes the player if they aren't on a time.
+ * Pause the player's timer and freeze them.
  *
  * @param client    	Client index.
  * @noreturn
@@ -403,7 +397,7 @@ native void SKZ_UndoTeleport(int client);
 native void SKZ_Pause(int client);
 
 /**
- * Resumes the player's timer.
+ * Resumes the player's timer and unfreezes them.
  *
  * @param client    	Client index.
  * @noreturn
@@ -432,8 +426,8 @@ native void SKZ_PlayErrorSound(int client);
  * Use the KZPlayer method map to simplify this caveat.
  *
  * @param client		Client index.
- * @param option		SimpleKZ option (see KZOption enumeration).
- * @return				Current value of a player's option.
+ * @param option		SimpleKZ option.
+ * @return				Current value of option.
  */
 native int SKZ_GetOption(int client, KZOption option);
 
@@ -441,8 +435,8 @@ native int SKZ_GetOption(int client, KZOption option);
  * Sets the player's option value.
  *
  * @param client		Client index.
- * @param option		SimpleKZ option (see KZOption enumeration).
- * @param optionValue	What to set the player's option to.
+ * @param option		SimpleKZ option.
+ * @param optionValue	New option value.
  * @noreturn
  */
 native void SKZ_SetOption(int client, KZOption option, any optionValue);
