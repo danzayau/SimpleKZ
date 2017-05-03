@@ -28,8 +28,8 @@ void DB_SaveOptions(KZPlayer player)
 		player.errorSounds, 
 		player.timerText, 
 		player.speedText, 
-		gI_DBPlayerID[player.id]);
+		GetSteamAccountID(player.id));
 	txn.AddQuery(query);
 	
-	SQL_ExecuteTransaction(gH_DB, txn, INVALID_FUNCTION, DB_TxnFailure_Generic, _, DBPrio_High);
+	SQL_ExecuteTransaction(gH_DB, txn, _, DB_TxnFailure_Generic, _, DBPrio_High);
 } 

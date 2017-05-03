@@ -46,7 +46,7 @@ static char[] GetInfoPanel(KZPlayer player, KZPlayer targetPlayer)
 {
 	char infoPanelText[320];
 	FormatEx(infoPanelText, sizeof(infoPanelText), 
-		"<font color='#4d4d4d'>%s\n%s\n%s", 
+		"<font color='#4d4d4d'>%s%s%s", 
 		GetTimeString(player, targetPlayer), 
 		GetSpeedString(player, targetPlayer), 
 		GetKeysString(player, targetPlayer));
@@ -63,20 +63,20 @@ static char[] GetTimeString(KZPlayer player, KZPlayer targetPlayer)
 	{
 		switch (GetCurrentTimeType(targetPlayer.id))
 		{
-			case KZTimeType_Normal:
+			case KZTimeType_Nub:
 			{
 				FormatEx(timeString, sizeof(timeString), 
-					" <b>%T</b>: <font color='#ffdd99'>%s</font> %s", 
+					" <b>%T</b>: <font color='#ffdd99'>%s</font> %s\n", 
 					"Info Panel Text - Time", player.id, 
-					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id]), 
+					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id], false), 
 					GetPausedString(player, targetPlayer));
 			}
 			case KZTimeType_Pro:
 			{
 				FormatEx(timeString, sizeof(timeString), 
-					" <b>%T</b>: <font color='#6699ff'>%s</font> %s", 
+					" <b>%T</b>: <font color='#6699ff'>%s</font> %s\n", 
 					"Info Panel Text - Time", player.id, 
-					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id]), 
+					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id], false), 
 					GetPausedString(player, targetPlayer));
 			}
 		}
@@ -84,7 +84,7 @@ static char[] GetTimeString(KZPlayer player, KZPlayer targetPlayer)
 	else
 	{
 		FormatEx(timeString, sizeof(timeString), 
-			" <b>%T</b>: %T %s", 
+			" <b>%T</b>: %T %s\n", 
 			"Info Panel Text - Time", player.id, 
 			"Info Panel Text - Stopped", player.id, 
 			GetPausedString(player, targetPlayer));
@@ -111,7 +111,7 @@ static char[] GetPausedString(KZPlayer player, KZPlayer targetPlayer)
 static char[] GetSpeedString(KZPlayer player, KZPlayer targetPlayer)
 {
 	char speedString[128];
-	if (player.speedText != KZSpeedText_InfoPanel || player.paused) {
+	if (player.speedText != KZSpeedText_InfoPanel || targetPlayer.paused) {
 		speedString = "";
 	}
 	else
@@ -119,14 +119,14 @@ static char[] GetSpeedString(KZPlayer player, KZPlayer targetPlayer)
 		if (targetPlayer.onGround || targetPlayer.onLadder || targetPlayer.noclipping)
 		{
 			FormatEx(speedString, sizeof(speedString), 
-				" <b>%T</b>: <font color='#999999'>%.0f</font> u/s", 
+				" <b>%T</b>: <font color='#999999'>%.0f</font> u/s\n", 
 				"Info Panel Text - Speed", player.id, 
 				RoundFloat(targetPlayer.speed * 10) / 10.0);
 		}
 		else
 		{
 			FormatEx(speedString, sizeof(speedString), 
-				" <b>%T</b>: <font color='#999999'>%.0f</font> %s", 
+				" <b>%T</b>: <font color='#999999'>%.0f</font> %s\n", 
 				"Info Panel Text - Speed", player.id, 
 				RoundFloat(targetPlayer.speed * 10) / 10.0, 
 				GetTakeoffString(targetPlayer));
@@ -138,17 +138,17 @@ static char[] GetSpeedString(KZPlayer player, KZPlayer targetPlayer)
 static char[] GetTakeoffString(KZPlayer targetPlayer)
 {
 	char takeoffString[64];
-	if (targetPlayer.hitPerf)
+	if (targetPlayer.skzHitPerf)
 	{
 		FormatEx(takeoffString, sizeof(takeoffString), 
 			"(<font color='#03cc00'>%.0f</font>)", 
-			RoundFloat(targetPlayer.takeoffSpeed * 10) / 10.0);
+			RoundFloat(targetPlayer.skzTakeoffSpeed * 10) / 10.0);
 	}
 	else
 	{
 		FormatEx(takeoffString, sizeof(takeoffString), 
 			"(<font color='#999999'>%.0f</font>)", 
-			RoundFloat(targetPlayer.takeoffSpeed * 10) / 10.0);
+			RoundFloat(targetPlayer.skzTakeoffSpeed * 10) / 10.0);
 	}
 	return takeoffString;
 }
@@ -167,7 +167,7 @@ static char[] GetKeysString(KZPlayer player, KZPlayer targetPlayer)
 	else
 	{
 		FormatEx(keysString, sizeof(keysString), 
-			" <b>%T</b>: <font color='#999999'>%c %c %c %c   %c %c</font>", 
+			" <b>%T</b>: <font color='#999999'>%c %c %c %c   %c %c</font>\n", 
 			"Info Panel Text - Keys", player.id, 
 			GetAString(targetPlayer), 
 			GetWString(targetPlayer), 

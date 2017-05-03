@@ -11,7 +11,7 @@ void HideCSGOHUD(int client)
 		return;
 	}
 	
-	CreateTimer(0.0, CleanHUD, client); // Using 1 tick timer or else it won't work	
+	CreateTimer(0.0, CleanHUD, client);
 }
 
 

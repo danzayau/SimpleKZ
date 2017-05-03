@@ -7,7 +7,7 @@
 // Executes kz.cfg
 void KZConfigOnMapStart()
 {
-	char kzConfigPath[] = "sourcemod/SimpleKZ/kz.cfg";
+	char kzConfigPath[] = "sourcemod/simplekz/kz.cfg";
 	char kzConfigPathFull[64];
 	FormatEx(kzConfigPathFull, sizeof(kzConfigPathFull), "cfg/%s", kzConfigPath);
 	
@@ -23,36 +23,36 @@ void KZConfigOnMapStart()
 
 void PrintConnectMessage(int client)
 {
+	if (!GetConVarBool(gCV_ConnectionMessages))
+	{
+		return;
+	}
 	if (!IsValidClient(client) || IsFakeClient(client))
 	{
 		return;
 	}
 	
-	char name[MAX_NAME_LENGTH], clientIP[32], country[45];
-	GetClientName(client, name, MAX_NAME_LENGTH);
-	GetClientIP(client, clientIP, sizeof(clientIP));
-	if (!GeoipCountry(clientIP, country, sizeof(country)))
-	{
-		country = "Unknown";
-	}
-	CPrintToChatAll("%T", "Client Connection Message", client, name, country);
+	CPrintToChatAll("%T", "Client Connection Message", client, client);
 }
 
 // Hooked to player_disconnect event
-void PrintDisconnectMessage(Event event)
+void PrintDisconnectMessage(int client, Event event)
 {
+	if (!GetConVarBool(gCV_ConnectionMessages))
+	{
+		return;
+	}
+	
 	SetEventBroadcast(event, true);
 	
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (!IsValidClient(client) || IsFakeClient(client))
 	{
 		return;
 	}
 	
-	char reason[64], name[MAX_NAME_LENGTH];
+	char reason[64];
 	GetEventString(event, "reason", reason, sizeof(reason));
-	GetClientName(client, name, MAX_NAME_LENGTH);
-	CPrintToChatAll("%T", "Client Disconnection Message", client, name, reason);
+	CPrintToChatAll("%T", "Client Disconnection Message", client, client, reason);
 }
 
 // Replaces the jointeam command so that it uses the helper function instead

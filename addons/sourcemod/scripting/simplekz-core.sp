@@ -1,12 +1,19 @@
 #include <sourcemod>
+
+#include <cstrike>
+#include <geoip>
+#include <regex>
 #include <sdktools>
 #include <sdkhooks>
-#include <regex>
-#include <cstrike>
-#include <basecomm>
-#include <geoip>
+
 #include <colorvariables>
 #include <simplekz>
+
+#include <movementapi>
+#include <simplekz/core>
+
+#undef REQUIRE_PLUGIN
+#include <basecomm>
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -18,7 +25,7 @@ public Plugin myinfo =
 	name = "Simple KZ Core", 
 	author = "DanZay", 
 	description = "The best KZ plugin.", 
-	version = "0.11.0", 
+	version = "0.12.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -97,16 +104,9 @@ public void OnPluginStart()
 	CreateConVars();
 	CreateCommands();
 	CreateCommandListeners();
+	CreateTimers();
 	
-	AutoExecConfig(true, "simplekz-core", "sourcemod/SimpleKZ");
-}
-
-public void OnAllPluginsLoaded()
-{
-	if (!LibraryExists("MovementAPI"))
-	{
-		SetFailState("This plugin requires the MovementAPI plugin.");
-	}
+	AutoExecConfig(true, "simplekz-core", "sourcemod/simplekz");
 	
 	if (gB_LateLoad)
 	{
@@ -118,18 +118,31 @@ void OnLateLoad()
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientInGame(client))
+		if (IsClientInGame(client) && IsClientAuthorized(client))
 		{
-			OnClientPutInServer(client);
+			OnClientPostAdminCheck(client);
 		}
+	}
+}
+
+public void OnAllPluginsLoaded()
+{
+	gB_BaseComm = LibraryExists("basecomm");
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+	if (StrEqual(name, "basecomm"))
+	{
+		gB_BaseComm = true;
 	}
 }
 
 public void OnLibraryRemoved(const char[] name)
 {
-	if (StrEqual(name, "MovementAPI"))
+	if (StrEqual(name, "basecomm"))
 	{
-		SetFailState("This plugin requires the MovementAPI plugin.");
+		gB_BaseComm = false;
 	}
 }
 
@@ -137,18 +150,23 @@ public void OnLibraryRemoved(const char[] name)
 
 /*===============================  Client Forwards  ===============================*/
 
-public void OnClientConnected(int client)
+public void OnClientPostAdminCheck(int client)
 {
+	SDKHook(client, SDKHook_PreThinkPost, OnClientPreThinkPost);
 	OptionsSetupClient(client);
 	TimerSetupClient(client);
 	BhopTriggersSetupClient(client);
+	HidePlayersSetupClient(client);
+	PrintConnectMessage(client);
+	gB_ClientIsSetUp[client] = true;
+	Call_SKZ_OnClientSetup(client);
 }
 
-public void OnClientPutInServer(int client)
+public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) // player_disconnect hook
 {
-	PrintConnectMessage(client);
-	HidePlayersOnClientPutInServer(client);
-	SDKHook(client, SDKHook_PreThinkPost, OnClientPreThinkPost);
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	gB_ClientIsSetUp[client] = false;
+	PrintDisconnectMessage(client, event);
 }
 
 public Action OnClientSayCommand(int client, const char[] command, const char[] sArgs) {
@@ -173,11 +191,6 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) //
 	TimerForceStopOnPlayerDeath(client);
 }
 
-public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) // player_disconnect hook
-{
-	PrintDisconnectMessage(event);
-}
-
 public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) // player_team hook
 {
 	SetEventBroadcast(event, true); // Block join team messages
@@ -187,20 +200,10 @@ public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcas
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
 	TimerOnPlayerRunCmd(client);
-	
 	StyleOnPlayerRunCmd(client, buttons);
-	gI_OldButtons[client] = buttons;
-	
-	TimerTextUpdate(client);
 	SpeedTextUpdate(client);
 	TPMenuDisplay(client);
-	
-	// Update info panel every 4th tick because it doesn't seem to show to players instantly anyway
-	if (GetGameTickCount() % 4 == 0)
-	{
-		InfoPanelUpdate(client);
-	}
-	
+	gI_OldButtons[client] = buttons;
 	return Plugin_Continue;
 }
 
@@ -223,14 +226,16 @@ public void Movement_OnStartTouchGround(int client)
 	StyleOnStartTouchGround(client);
 }
 
-public void Movement_OnStopTouchGround(int client, bool jumped, bool ducked, bool landed)
+public void Movement_OnStopTouchGround(int client, bool jumped)
 {
 	StyleOnStopTouchGround(client, jumped);
+	InfoPanelUpdate(client);
 }
 
 public void Movement_OnStopTouchLadder(int client)
 {
 	StyleOnStopTouchLadder(client);
+	InfoPanelUpdate(client);
 }
 
 public void Movement_OnStartNoclipping(int client)
@@ -345,4 +350,22 @@ void CreateCommandListeners()
 {
 	JoinTeamAddCommandListeners();
 	BlockRadioAddCommandListeners();
+}
+
+void CreateTimers()
+{
+	CreateTimer(0.1, Timer_Fast, _, TIMER_REPEAT);
+}
+
+public Action Timer_Fast(Handle timer) // Every 0.1 seconds
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsValidClient(client))
+		{
+			TimerTextUpdate(client);
+			InfoPanelUpdate(client);
+		}
+	}
+	return Plugin_Continue;
 } 

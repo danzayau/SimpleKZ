@@ -1,10 +1,6 @@
 "Phrases"
 {
 	// General
-	"Style Menu - Title"
-	{
-		"en"		"Switch Styles"
-	}
 	"Style - Standard"
 	{
 		"en"		"Standard"
@@ -17,13 +13,13 @@
 	{
 		"en"		"Competitive"
 	}
-	"Time Type - Normal"
+	"Time Type - Nub"
 	{
-		"en"		"Map"
+		"en"		"NUB"
 	}
 	"Time Type - Pro"
 	{
-		"en"		"Pro"
+		"en"		"PRO"
 	}
 	"Time Type - Theoretical"
 	{
@@ -35,7 +31,7 @@
 	{
 		"en"		"{grey}[{lightgreen}KZ{grey}]"
 	}
-	"Beat Map"
+	"Beat Map (Nub)"
 	{
 		// Bill finished in 01:23.45 (4 TP | 01.02.34) [Style].
 		"#format"	"{1:N},{2:s},{3:d},{4:s},{5:t}"
@@ -47,7 +43,7 @@
 		"#format"	"{1:N},{2:s},{3:t}"
 		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey}) {grey}[{purple}{3}{grey}]."
 	}
-	"Beat Bonus"
+	"Beat Bonus (Nub)"
 	{
 		// Bill finished Bonus 1 in 01:23.45 (4 TP | 01.02.34) [Style].
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:s},{6:t}"
@@ -77,15 +73,15 @@
 	}
 	"Client Connection Message"
 	{
-		// Bill has connected from Australia.
-		"#format"	"{1:s},{2:s}"
-		"en"		"{lime}{1}{grey} has connected from {default}{2}{grey}."
+		// Bill has joined the server.
+		"#format"	"{1:N}"
+		"en"		"{lime}{1}{grey} has joined the server."
 	}
 	"Client Disconnection Message"
 	{
-		// Bill has left the game (Disconnect).
-		"#format"	"{1:s},{2:s}"
-		"en"		"{lime}{1}{grey} has left the game ({2})."
+		// Bill has left the server (Disconnect).
+		"#format"	"{1:N},{2:s}"
+		"en"		"{lime}{1}{grey} has left the server ({2})."
 	}
 	"Database Not Connected"
 	{
@@ -104,7 +100,7 @@
 	}
 	"Can't Checkpoint (Midair)"
 	{
-		"en"		"{darkred}You can't make a checkpoint midair."
+		"en"		"{darkred}You can't make a checkpoint mid-air."
 	}
 	"Can't Checkpoint (Just Landed)"
 	{
@@ -112,11 +108,15 @@
 	}
 	"Can't Teleport (Map)"
 	{
-		"en"		"{darkred}You can't teleport to your checkpoint on this map."
+		"en"		"{darkred}You can't teleport to your checkpoint in this area."
 	}
 	"Can't Undo (TP Was Midair)"
 	{
-		"en"		"{darkred}You can't undo because you teleported midair."
+		"en"		"{darkred}You can't undo because you teleported mid-air."
+	}
+	"Can't Undo (Just Landed)"
+	{
+		"en"		"{darkred}You can't undo because you had just landed."
 	}
 	"Can't Pause (Just Resumed)"
 	{
@@ -124,7 +124,7 @@
 	}
 	"Can't Pause (Midair)"
 	{
-		"en"		"{darkred}You can't pause in midair."
+		"en"		"{darkred}You can't pause in mid-air."
 	}
 	"Can't Resume (Just Paused)"
 	{
@@ -164,7 +164,7 @@
 	{
 		// Distance: 123.45, Vertical: 12.34.
 		"#format"	"{1:.2f},{2:.2f}"
-		"en"		"{grey}Distance: {default}{1}{grey}, Vertical {default}{2}{grey}."
+		"en"		"{default}Distance{grey} - Horizontal: {default}{1}{grey}, Vertical: {default}{2}{grey}"
 	}
 	"Measure Failure (Points Not Set)"
 	{
@@ -182,7 +182,7 @@
 	}
 	
 	
-	// Option Toggle Chat Messages ////////////////////////////////////////////////////////////
+	// Option Change Chat Messages ////////////////////////////////////////////////////////////
 	"Option - Teleport Menu - Enable"
 	{
 		"en"		"{grey}Your teleport menu has been enabled."
@@ -284,6 +284,12 @@
 	"TP Menu - Respawn"
 	{
 		"en"		"Respawn"
+	}
+	
+	// Style Menu ////////////////////////////////////////////////////////////
+	"Style Menu - Title"
+	{
+		"en"		"Switch Styles"
 	}
 	
 	// Measure Menu ////////////////////////////////////////////////////////////

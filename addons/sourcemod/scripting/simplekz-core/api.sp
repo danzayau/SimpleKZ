@@ -6,13 +6,20 @@
 
 /*===============================  Forwards  ===============================*/
 
+void Call_SKZ_OnClientSetup(int client)
+{
+	Call_StartForward(gH_OnClientSetup);
+	Call_PushCell(client);
+	Call_Finish();
+}
+
 void CreateGlobalForwards()
 {
+	gH_OnClientSetup = CreateGlobalForward("SKZ_OnClientSetup", ET_Ignore, Param_Cell);
 	gH_OnTimerStart = CreateGlobalForward("SKZ_OnTimerStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	gH_OnTimerEnd = CreateGlobalForward("SKZ_OnTimerEnd", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Float, Param_Cell, Param_Float);
 	gH_OnTimerForceStop = CreateGlobalForward("SKZ_OnTimerForceStop", ET_Ignore, Param_Cell);
 	gH_OnChangeOption = CreateGlobalForward("SKZ_OnChangeOption", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
-	gH_OnPerfectBunnyhop = CreateGlobalForward("SKZ_OnPerfectBunnyhop", ET_Ignore, Param_Cell);
 	gH_OnPause = CreateGlobalForward("SKZ_OnPause", ET_Ignore, Param_Cell);
 	gH_OnResume = CreateGlobalForward("SKZ_OnResume", ET_Ignore, Param_Cell);
 	gH_OnTeleportToStart = CreateGlobalForward("SKZ_OnTeleportToStart", ET_Ignore, Param_Cell);
@@ -100,31 +107,18 @@ void Call_SKZ_OnChangeOption(int client, KZOption option, any optionValue)
 	Call_Finish();
 }
 
-void Call_SKZ_OnPerfectBunnyhop(int client)
-{
-	Call_StartForward(gH_OnPerfectBunnyhop);
-	Call_PushCell(client);
-	Call_Finish();
-}
-
 
 
 /*===============================  Natives  ===============================*/
 
 void CreateNatives()
 {
-	CreateNative("SKZ_GetHitPerf", Native_GetHitPerf);
+	CreateNative("SKZ_IsClientSetUp", Native_IsClientSetUp);
 	
 	CreateNative("SKZ_StartTimer", Native_StartTimer);
 	CreateNative("SKZ_EndTimer", Native_EndTimer);
 	CreateNative("SKZ_ForceStopTimer", Native_ForceStopTimer);
 	CreateNative("SKZ_ForceStopTimerAll", Native_ForceStopTimerAll);
-	CreateNative("SKZ_GetTimerRunning", Native_GetTimerRunning);
-	CreateNative("SKZ_GetCurrentCourse", Native_GetCurrentCourse);
-	CreateNative("SKZ_GetPaused", Native_GetPaused);
-	CreateNative("SKZ_GetCurrentTime", Native_GetCurrentTime);
-	CreateNative("SKZ_GetCheckpointCount", Native_GetCheckpointCount);
-	
 	CreateNative("SKZ_TeleportToStart", Native_TeleportToStart);
 	CreateNative("SKZ_MakeCheckpoint", Native_MakeCheckpoint);
 	CreateNative("SKZ_TeleportToCheckpoint", Native_TeleportToCheckpoint);
@@ -132,17 +126,23 @@ void CreateNatives()
 	CreateNative("SKZ_Pause", Native_Pause);
 	CreateNative("SKZ_Resume", Native_Resume);
 	CreateNative("SKZ_TogglePause", Native_TogglePause);
+	CreateNative("SKZ_PlayErrorSound", Native_PlayErrorSound);
 	
 	CreateNative("SKZ_GetDefaultStyle", Native_GetDefaultStyle);
+	CreateNative("SKZ_GetTimerRunning", Native_GetTimerRunning);
+	CreateNative("SKZ_GetCurrentCourse", Native_GetCurrentCourse);
+	CreateNative("SKZ_GetPaused", Native_GetPaused);
+	CreateNative("SKZ_GetCurrentTime", Native_GetCurrentTime);
+	CreateNative("SKZ_GetCheckpointCount", Native_GetCheckpointCount);
 	CreateNative("SKZ_GetOption", Native_GetOption);
 	CreateNative("SKZ_SetOption", Native_SetOption);
-	
-	CreateNative("SKZ_PlayErrorSound", Native_PlayErrorSound);
+	CreateNative("SKZ_GetHitPerf", Native_GetHitPerf);
+	CreateNative("SKZ_GetTakeoffSpeed", Native_GetTakeoffSpeed);
 }
 
-public int Native_GetHitPerf(Handle plugin, int numParams)
+public int Native_IsClientSetUp(Handle plugin, int numParams)
 {
-	return view_as<int>(gB_HitPerf[GetNativeCell(1)]);
+	return gB_ClientIsSetUp[GetNativeCell(1)];
 }
 
 public int Native_StartTimer(Handle plugin, int numParams)
@@ -163,31 +163,6 @@ public int Native_ForceStopTimer(Handle plugin, int numParams)
 public int Native_ForceStopTimerAll(Handle plugin, int numParams)
 {
 	TimerForceStopAllNative();
-}
-
-public int Native_GetTimerRunning(Handle plugin, int numParams)
-{
-	return view_as<int>(gB_TimerRunning[GetNativeCell(1)]);
-}
-
-public int Native_GetCurrentCourse(Handle plugin, int numParams)
-{
-	return gI_LastCourseStarted[GetNativeCell(1)];
-}
-
-public int Native_GetPaused(Handle plugin, int numParams)
-{
-	return view_as<int>(gB_Paused[GetNativeCell(1)]);
-}
-
-public int Native_GetCurrentTime(Handle plugin, int numParams)
-{
-	return view_as<int>(gF_CurrentTime[GetNativeCell(1)]);
-}
-
-public int Native_GetCheckpointCount(Handle plugin, int numParams)
-{
-	return gI_CheckpointCount[GetNativeCell(1)];
 }
 
 public int Native_TeleportToStart(Handle plugin, int numParams)
@@ -225,9 +200,39 @@ public int Native_TogglePause(Handle plugin, int numParams)
 	TogglePause(GetNativeCell(1));
 }
 
+public int Native_PlayErrorSound(Handle plugin, int numParams)
+{
+	PlayErrorSound(GetNativeCell(1));
+}
+
 public int Native_GetDefaultStyle(Handle plugin, int numParams)
 {
 	return GetConVarInt(gCV_DefaultStyle);
+}
+
+public int Native_GetTimerRunning(Handle plugin, int numParams)
+{
+	return view_as<int>(gB_TimerRunning[GetNativeCell(1)]);
+}
+
+public int Native_GetCurrentCourse(Handle plugin, int numParams)
+{
+	return gI_LastCourseStarted[GetNativeCell(1)];
+}
+
+public int Native_GetPaused(Handle plugin, int numParams)
+{
+	return view_as<int>(gB_Paused[GetNativeCell(1)]);
+}
+
+public int Native_GetCurrentTime(Handle plugin, int numParams)
+{
+	return view_as<int>(gF_CurrentTime[GetNativeCell(1)]);
+}
+
+public int Native_GetCheckpointCount(Handle plugin, int numParams)
+{
+	return gI_CheckpointCount[GetNativeCell(1)];
 }
 
 public int Native_GetOption(Handle plugin, int numParams)
@@ -240,7 +245,12 @@ public int Native_SetOption(Handle plugin, int numParams)
 	SetOption(GetNativeCell(1), GetNativeCell(2), GetNativeCell(3));
 }
 
-public int Native_PlayErrorSound(Handle plugin, int numParams)
+public int Native_GetHitPerf(Handle plugin, int numParams)
 {
-	PlayErrorSound(GetNativeCell(1));
+	return view_as<int>(gB_SKZHitPerf[GetNativeCell(1)]);
+}
+
+public int Native_GetTakeoffSpeed(Handle plugin, int numParams)
+{
+	return view_as<int>(gF_SKZTakeoffSpeed[GetNativeCell(1)]);
 } 

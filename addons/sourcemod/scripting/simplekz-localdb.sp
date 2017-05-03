@@ -1,8 +1,12 @@
 #include <sourcemod>
 #include <sdktools>
-#include <regex>
 #include <geoip>
+#include <regex>
+
 #include <simplekz>
+
+#include <simplekz/core>
+#include <simplekz/localdb>
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -11,19 +15,19 @@
 
 public Plugin myinfo = 
 {
-	name = "Simple KZ Local DB", 
+	name = "SimpleKZ Local DB", 
 	author = "DanZay", 
-	description = "Local database module for SimpleKZ.", 
-	version = "0.11.0", 
+	description = "SimpleKZ Local Database Module", 
+	version = "0.12.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
 
 
-Handle gH_SKZ_OnDatabaseConnect;
-Handle gH_SKZ_OnRetrievePlayerID;
-Handle gH_SKZ_OnRetrieveCurrentMapID;
-Handle gH_SKZ_OnStoreTimeInDB;
+Handle gH_OnDatabaseConnect;
+Handle gH_OnClientSetup;
+Handle gH_OnMapSetup;
+Handle gH_OnTimeInserted;
 
 KZPlayer g_KZPlayer[MAXPLAYERS + 1];
 bool gB_LateLoad;
@@ -31,7 +35,6 @@ Regex gRE_BonusStartButton;
 
 Database gH_DB = null;
 DatabaseType g_DBType = DatabaseType_None;
-int gI_DBPlayerID[MAXPLAYERS + 1];
 int gI_DBCurrentMapID;
 
 
@@ -71,14 +74,6 @@ public void OnPluginStart()
 	CreateKZPlayers();
 	CreateGlobalForwards();
 	CreateRegexes();
-}
-
-public void OnAllPluginsLoaded()
-{
-	if (!LibraryExists("simplekz-core"))
-	{
-		SetFailState("This plugin requires the SimpleKZ Core plugin.");
-	}
 	
 	DB_SetupDatabase();
 	
@@ -92,18 +87,10 @@ void OnLateLoad()
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientAuthorized(client))
+		if (SKZ_IsClientSetUp(client))
 		{
-			DB_SetupClient(g_KZPlayer[client]);
+			SKZ_OnClientSetup(client);
 		}
-	}
-}
-
-public void OnLibraryRemoved(const char[] name)
-{
-	if (StrEqual(name, "simplekz-core"))
-	{
-		SetFailState("This plugin requires the SimpleKZ Core plugin.");
 	}
 }
 
@@ -111,9 +98,10 @@ public void OnLibraryRemoved(const char[] name)
 
 /*===============================  Other Forwards  ===============================*/
 
-public void OnClientAuthorized(int client)
+public void SKZ_OnClientSetup(int client)
 {
 	DB_SetupClient(g_KZPlayer[client]);
+	DB_LoadOptions(g_KZPlayer[client]);
 }
 
 public void OnClientDisconnect(int client)
@@ -134,14 +122,9 @@ public void SKZ_OnTimerEnd(int client, int course, KZStyle style, float time, in
 	DB_SaveTime(g_KZPlayer[client], course, style, time, teleportsUsed, theoreticalTime);
 }
 
-public void SKZ_OnRetrieveCurrentMapID(int mapID)
+public void SKZ_DB_OnMapIDRetrieved(int mapID)
 {
 	DB_SetupMapCourses();
-}
-
-public void SKZ_OnRetrievePlayerID(int client, int playerID)
-{
-	DB_LoadOptions(g_KZPlayer[client]);
 }
 
 

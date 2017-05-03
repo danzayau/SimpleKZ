@@ -9,13 +9,15 @@
 #endif
 #define _simplekz_core_included_
 
+#include <movementapi>
+
 
 
 /*===============================  Enumerations  ===============================*/
 
 enum KZTimeType
 {
-	KZTimeType_Normal = 0, 
+	KZTimeType_Nub = 0, 
 	KZTimeType_Pro, 
 	KZTimeType_Theoretical
 }
@@ -58,9 +60,6 @@ enum KZOption
 	KZOption_TimerText, 
 	KZOption_SpeedText
 }
-
-/*	Each option has it's own enumeration to specify the meaning of its value,
-	and so it's a bit easier to add more option values. */
 
 enum KZStyle
 {
@@ -168,237 +167,239 @@ enum KZSpeedText
 /*===============================  Forwards  ===============================*/
 
 /**
- * Called when the player starts their timer.
+ * Called when a player has been set up e.g. options, timer etc.
  *
- * @param client			Client entity index.
- * @param course			Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
- * @param style				The movement style of the player.
+ * @param client		Client index.
+ * @noreturn
+ */
+forward void SKZ_OnClientSetup(int client);
+
+/**
+ * Called when a player starts their timer.
+ *
+ * @param client		Client index.
+ * @param course    	Course number e.g. 0=main, 1='bonus1' etc.
+ * @param style			Player's movement style.
  * @noreturn
  */
 forward void SKZ_OnTimerStart(int client, int course, KZStyle style);
 
 /**
- * Called when the player ends their timer.
+ * Called when a player ends their timer.
  *
- * @param client			Client entity index.
- * @param course			Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
- * @param style				The movement style of the player.
+ * @param client			Client index.
+ * @param course    		Course number e.g. 0=main, 1='bonus1' etc.
+ * @param style				Player's movement style.
  * @param time				Player's end time.
- * @param teleportsUsed		Number of teleports the player used.
+ * @param teleportsUsed		Number of teleports used by player.
  * @param theoreticalTime	Theoretical end time without using teleports.
  * @noreturn
  */
 forward void SKZ_OnTimerEnd(int client, int course, KZStyle style, float time, int teleportsUsed, float theoreticalTime);
 
 /**
- * Called when the player's timer has been force stopped (without finishing the map).
+ * Called when a player's timer has been force stopped.
  *
- * @param client			Client entity index.
+ * @param client		Client index.
  * @noreturn
  */
 forward void SKZ_OnTimerForceStop(int client);
 
 /**
- * Called when the player pauses.
+ * Called when a player pauses.
  *
- * @param client			Client entity index.
+ * @param client		Client index.
  * @noreturn
  */
 forward void SKZ_OnPause(int client);
 
 /**
- * Called when the player resumes.
+ * Called when a player resumes.
  *
- * @param client			Client entity index.
+ * @param client		Client index.
  * @noreturn
  */
 forward void SKZ_OnResume(int client);
 
 /**
- * Called when the player teleports to start.
+ * Called when a player teleports to start.
  *
- * @param client			Client entity index.
+ * @param client		Client index.
  * @noreturn
  */
 forward void SKZ_OnTeleportToStart(int client);
 
 /**
- * Called when the player makes a checkpoint.
+ * Called when a player makes a checkpoint.
  *
- * @param client			Client entity index.
+ * @param client		Client index.
  * @noreturn
  */
 forward void SKZ_OnCheckpoint(int client);
 
 /**
- * Called when the player teleports to their checkpoint.
+ * Called when a player teleports to their checkpoint.
  *
- * @param client			Client entity index.
+ * @param client		Client index.
  * @noreturn
  */
 forward void SKZ_OnTeleportToCheckpoint(int client);
 
 /**
- * Called when the player undos teleport.
+ * Called when a player undos teleport.
  *
- * @param client			Client entity index.
+ * @param client		Client index.
  * @noreturn
  */
 forward void SKZ_OnUndoTeleport(int client);
 
 /**
- * Called when the player changes an option.
+ * Called when a player changes an option.
  *
- * @param client			Client entity index.
- * @param option			The option that was changed
- * @param newValue			The new value of the option.
+ * @param client		Client index.
+ * @param option		Option that was changed.
+ * @param newValue		New value of the option.
  * @noreturn
  */
 forward void SKZ_OnChangeOption(int client, KZOption option, any newValue);
-
-/**
- * Called when the player hits a plugin-based perfect b-hop.
- *
- * @param client			Client entity index.
- * @noreturn
- */
-forward void SKZ_OnPerfectBunnyhop(int client);
 
 
 
 /*===============================  Natives  ===============================*/
 
 /**
- * Gets the whether or not the player's latest jump was a plugin-based perfect b-hop.
+ * Gets whether client has been set up by SimpleKZ e.g. options, timer etc.
  *
- * @param client			Client entity index.
- * @return					whether or not the player's latest jump was a perfect b-hop.
+ * @param client		Client index.
+ * @return				Whether client has been set up.
  */
-native bool SKZ_GetHitPerf(int client);
+native KZStyle SKZ_IsClientSetUp(int client);
+
+/**
+ * Gets the default movement style as set by convar kz_default_style.
+ *
+ * @return				Default movement style.
+ */
+native KZStyle SKZ_GetDefaultStyle();
 
 /**
  * Starts the player's timer for a course on the current map.
  *
- * @param client    		Client entity index.
- * @param course    		Course number (0 = main, 1+ = bonus).
+ * @param client    	Client index.
+ * @param course    	Course number e.g. 0=main, 1='bonus1' etc.
  * @noreturn
  */
 native void SKZ_StartTimer(int client, int course);
 
 /**
  * Ends the player's timer for a course on the current map.
- * Only works if the player's timer is started for that course.
  *
- * @param client    		Client entity index.
- * @param course    		Course number (0 = main, 1+ = bonus).
+ * @param client    	Client index.
+ * @param course    	Course number e.g. 0=main, 1='bonus1' etc.
  * @noreturn
  */
 native void SKZ_EndTimer(int client, int course);
 
 /**
- * Forces the player's timer to stop.
- * Intended for run invalidation.
+ * Forces the player's timer to stop. Intended for run invalidation.
  *
- * @param client    		Client entity index.
- * @return					Whether or not the player's timer was stopped.
+ * @param client    	Client index.
+ * @return				Whether player's timer was stopped.
  */
 native bool SKZ_ForceStopTimer(int client);
 
 /**
- * Forces all players' timers to stop.
- * Intended for run invalidation.
+ * Forces all players' timers to stop. Intended for run invalidation.
  *
- * @param client    		Client entity index.
+ * @param client    	Client index.
  * @noreturn
  */
 native void SKZ_ForceStopTimerAll(int client);
 
 /**
- * Gets whether or not the player's timer is running i.e. isn't 'stopped' (regardless of paused state).
+ * Gets whether or not the player's timer is running i.e. isn't 'stopped'.
  *
- * @param client    		Client entity index.
- * @return					Whether or not the player's timer is running.
+ * @param client    	Client index.
+ * @return				Whether player's timer is running.
  */
 native bool SKZ_GetTimerRunning(int client);
 
 /**
- * Gets what course the player is currently running.
+ * Gets the course the player is currently running.
  *
- * @param client    		Client entity index.
- * @return					Which part of the map (main=0, 'bonus1'=1, 'bonus2'=2 etc.).
+ * @param client    	Client index.
+ * @param course    	Course number e.g. 0=main, 1='bonus1' etc.
  */
 native bool SKZ_GetCurrentCourse(int client);
 
 /**
- * Gets whether or not the player is paused.
+ * Gets whether the player is paused.
  *
- * @param client    		Client entity index.
- * @return					Whether or not the player is paused.
+ * @param client    	Client index.
+ * @return				Whether player is paused.
  */
 native bool SKZ_GetPaused(int client);
 
 /**
  * Gets the player's current run time.
- * Runtime is reset when the player's timer is started.
  *
- * @param client    		Client entity index.
- * @return					The player's current run time.
+ * @param client    	Client index.
+ * @return				Player's current run time.
  */
 native float SKZ_GetCurrentTime(int client);
 
 /**
  * Gets the player's current checkpoint count.
- * Checkpoint count is reset when the player's timer is started.
  *
- * @param client    		Client entity index.
- * @return					The player's current checkpoint count.
+ * @param client    	Client index.
+ * @return				Player's current checkpoint count.
  */
 native int SKZ_GetCheckpointCount(int client);
 
 /**
- * Teleports the player to their start position or else respawns them.
+ * Teleports the player to start, or respawns them.
  *
- * @param client    		Client entity index.
+ * @param client    	Client index.
  * @noreturn
  */
 native void SKZ_TeleportToStart(int client);
 
 /**
- * Tries to set a new checkpoint at the player's current position.
+ * Set a new checkpoint at the player's current position.
  *
- * @param client    		Client entity index.
+ * @param client    	Client index.
  * @noreturn
  */
 native void SKZ_MakeCheckpoint(int client);
 
 /**
- * Teleports the player to their latest checkpoint.
+ * Teleports the player to their last checkpoint.
  *
- * @param client    		Client entity index.
+ * @param client    	Client index.
  * @noreturn
  */
 native void SKZ_TeleportToCheckpoint(int client);
 
 /**
- * Undoes the player's last teleport by teleporting them back.
+ * Teleport the player to where they last teleported from.
  *
- * @param client    		Client entity index.
+ * @param client    	Client index.
  * @noreturn
  */
 native void SKZ_UndoTeleport(int client);
 
 /**
- * Tries to pause the player's timer (pausing freezes the player if they aren't on a time).
+ * Pause the player's timer and freeze them.
  *
- * @param client    		Client entity index.
+ * @param client    	Client index.
  * @noreturn
  */
 native void SKZ_Pause(int client);
 
 /**
- * Resumes the player's timer.
+ * Resumes the player's timer and unfreezes them.
  *
- * @param client    		Client entity index.
+ * @param client    	Client index.
  * @noreturn
  */
 native void SKZ_Resume(int client);
@@ -406,43 +407,351 @@ native void SKZ_Resume(int client);
 /**
  * Toggles the paused state of the player.
  *
- * @param client    		Client entity index.
+ * @param client    	Client index.
  * @noreturn
  */
 native void SKZ_TogglePause(int client);
 
 /**
- * Gets the default movement style as set by convar kz_default_style.
+ * Plays the error sound to the client if they have the option enabled.
  *
- * @return					The default movement style (see KZStyle enumeration).
+ * @param client		Client index.
+ * @noreturn
  */
-native KZStyle SKZ_GetDefaultStyle();
+native void SKZ_PlayErrorSound(int client);
 
 /**
  * Gets the current value of a player's option. Note that this
  * returns an int, whereas options use an enumerated tag.
  * Use the KZPlayer method map to simplify this caveat.
  *
- * @param client			Client entity index.
- * @param option			The SimpleKZ option (see KZOption enumeration).
- * @return					The current value of a player's option.
+ * @param client		Client index.
+ * @param option		SimpleKZ option.
+ * @return				Current value of option.
  */
 native int SKZ_GetOption(int client, KZOption option);
 
 /**
  * Sets the player's option value.
  *
- * @param client			Client entity index.
- * @param option			The SimpleKZ option (see KZOption enumeration).
- * @param optionValue		What to set the player's option to.
+ * @param client		Client index.
+ * @param option		SimpleKZ option.
+ * @param optionValue	New option value.
  * @noreturn
  */
 native void SKZ_SetOption(int client, KZOption option, any optionValue);
 
 /**
- * Plays the error sound to the client (if they have the option enabled).
+ * Gets whether player's last takeoff was a perfect bunnyhop as adjusted by SimpleKZ.
  *
- * @param client			Client entity index.
- * @noreturn
+ * @param client		Client index.
+ * @return				Whether player's last takeoff was a SimpleKZ perfect b-hop.
  */
-native void SKZ_PlayErrorSound(int client); 
+native bool SKZ_GetHitPerf(int client);
+
+/**
+ * Gets the player's horizontal speed at the time of their last takeoff
+ * as adjusted by SimpleKZ.
+ *
+ * @param client		Client index.
+ * @return				Player's last takeoff speed as adjusted by SimpleKZ.
+ */
+native float SKZ_GetTakeoffSpeed(int client);
+
+
+
+/*===============================  Methodmap  ===============================*/
+
+methodmap KZPlayer __nullable__ < MovementAPIPlayer {
+	
+	public KZPlayer(int id) {
+		return view_as<KZPlayer>(id);
+	}
+	
+	property int id {
+		public get() {
+			return view_as<int>(this);
+		}
+	}
+	
+	
+	/*===============================  Functions  ===============================*/
+	
+	public void StartTimer(int course) {
+		SKZ_StartTimer(this.id, course);
+	}
+	
+	public void EndTimer(int course) {
+		SKZ_EndTimer(this.id, course);
+	}
+	
+	public bool ForceStopTimer() {
+		return SKZ_ForceStopTimer(this.id);
+	}
+	
+	public void TeleportToStart() {
+		SKZ_TeleportToStart(this.id);
+	}
+	
+	public void TeleportToCheckpoint() {
+		SKZ_TeleportToCheckpoint(this.id);
+	}
+	
+	public void UndoTeleport() {
+		SKZ_UndoTeleport(this.id);
+	}
+	
+	public void Pause() {
+		SKZ_Pause(this.id);
+	}
+	
+	public void Resume() {
+		SKZ_Resume(this.id);
+	}
+	
+	public void TogglePause() {
+		SKZ_TogglePause(this.id);
+	}
+	
+	public void PlayErrorSound() {
+		SKZ_PlayErrorSound(this.id);
+	}
+	
+	
+	/*===============================  Timer Properties  ===============================*/
+	
+	property bool timerRunning {
+		public get() {
+			return SKZ_GetTimerRunning(this.id);
+		}
+	}
+	
+	property int currentCourse {
+		public get() {
+			return SKZ_GetCurrentCourse(this.id);
+		}
+	}
+	
+	property bool paused {
+		public get() {
+			return SKZ_GetPaused(this.id);
+		}
+		public set(bool pause) {
+			if (pause) {
+				this.Pause();
+			}
+			else {
+				this.Resume();
+			}
+		}
+	}
+	
+	property float currentTime {
+		public get() {
+			return SKZ_GetCurrentTime(this.id);
+		}
+	}
+	
+	property int checkpointCount {
+		public get() {
+			return SKZ_GetCheckpointCount(this.id);
+		}
+	}
+	
+	
+	/*===============================  Options Properties  ===============================*/
+	
+	property KZStyle style {
+		public get() {
+			return view_as<KZStyle>(SKZ_GetOption(this.id, KZOption_Style));
+		}
+		public set(KZStyle value) {
+			SKZ_SetOption(this.id, KZOption_Style, value);
+		}
+	}
+	
+	property KZShowingTPMenu showingTPMenu {
+		public get() {
+			return view_as<KZShowingTPMenu>(SKZ_GetOption(this.id, KZOption_ShowingTPMenu));
+		}
+		public set(KZShowingTPMenu value) {
+			SKZ_SetOption(this.id, KZOption_ShowingTPMenu, value);
+		}
+	}
+	
+	property KZShowingInfoPanel showingInfoPanel {
+		public get() {
+			return view_as<KZShowingInfoPanel>(SKZ_GetOption(this.id, KZOption_ShowingInfoPanel));
+		}
+		public set(KZShowingInfoPanel value) {
+			SKZ_SetOption(this.id, KZOption_ShowingInfoPanel, value);
+		}
+	}
+	
+	property KZShowingKeys showingKeys {
+		public get() {
+			return view_as<KZShowingKeys>(SKZ_GetOption(this.id, KZOption_ShowingKeys));
+		}
+		public set(KZShowingKeys value) {
+			SKZ_SetOption(this.id, KZOption_ShowingKeys, value);
+		}
+	}
+	
+	property KZShowingPlayers showingPlayers {
+		public get() {
+			return view_as<KZShowingPlayers>(SKZ_GetOption(this.id, KZOption_ShowingPlayers));
+		}
+		public set(KZShowingPlayers value) {
+			SKZ_SetOption(this.id, KZOption_ShowingPlayers, value);
+		}
+	}
+	
+	property KZShowingWeapon showingWeapon {
+		public get() {
+			return view_as<KZShowingWeapon>(SKZ_GetOption(this.id, KZOption_ShowingWeapon));
+		}
+		public set(KZShowingWeapon value) {
+			SKZ_SetOption(this.id, KZOption_ShowingWeapon, value);
+		}
+	}
+	
+	property KZAutoRestart autoRestart {
+		public get() {
+			return view_as<KZAutoRestart>(SKZ_GetOption(this.id, KZOption_AutoRestart));
+		}
+		public set(KZAutoRestart value) {
+			SKZ_SetOption(this.id, KZOption_AutoRestart, value);
+		}
+	}
+	
+	property KZSlayOnEnd slayOnEnd {
+		public get() {
+			return view_as<KZSlayOnEnd>(SKZ_GetOption(this.id, KZOption_SlayOnEnd));
+		}
+		public set(KZSlayOnEnd value) {
+			SKZ_SetOption(this.id, KZOption_SlayOnEnd, value);
+		}
+	}
+	
+	property KZPistol pistol {
+		public get() {
+			return view_as<KZPistol>(SKZ_GetOption(this.id, KZOption_Pistol));
+		}
+		public set(KZPistol value) {
+			SKZ_SetOption(this.id, KZOption_Pistol, value);
+		}
+	}
+	
+	property KZCheckpointMessages checkpointMessages {
+		public get() {
+			return view_as<KZCheckpointMessages>(SKZ_GetOption(this.id, KZOption_CheckpointMessages));
+		}
+		public set(KZCheckpointMessages value) {
+			SKZ_SetOption(this.id, KZOption_CheckpointMessages, value);
+		}
+	}
+	
+	property KZCheckpointSounds checkpointSounds {
+		public get() {
+			return view_as<KZCheckpointSounds>(SKZ_GetOption(this.id, KZOption_CheckpointSounds));
+		}
+		public set(KZCheckpointSounds value) {
+			SKZ_SetOption(this.id, KZOption_CheckpointSounds, value);
+		}
+	}
+	
+	property KZTeleportSounds teleportSounds {
+		public get() {
+			return view_as<KZTeleportSounds>(SKZ_GetOption(this.id, KZOption_TeleportSounds));
+		}
+		public set(KZTeleportSounds value) {
+			SKZ_SetOption(this.id, KZOption_TeleportSounds, value);
+		}
+	}
+	
+	property KZErrorSounds errorSounds {
+		public get() {
+			return view_as<KZErrorSounds>(SKZ_GetOption(this.id, KZOption_ErrorSounds));
+		}
+		public set(KZErrorSounds value) {
+			SKZ_SetOption(this.id, KZOption_ErrorSounds, value);
+		}
+	}
+	
+	property KZTimerText timerText {
+		public get() {
+			return view_as<KZTimerText>(SKZ_GetOption(this.id, KZOption_TimerText));
+		}
+		public set(KZTimerText value) {
+			SKZ_SetOption(this.id, KZOption_TimerText, value);
+		}
+	}
+	
+	property KZSpeedText speedText {
+		public get() {
+			return view_as<KZSpeedText>(SKZ_GetOption(this.id, KZOption_SpeedText));
+		}
+		public set(KZSpeedText value) {
+			SKZ_SetOption(this.id, KZOption_SpeedText, value);
+		}
+	}
+	
+	
+	/*===============================  Other Properties  ===============================*/
+	
+	property bool skzHitPerf {
+		public get() {
+			return SKZ_GetHitPerf(this.id);
+		}
+	}
+	
+	property float skzTakeoffSpeed {
+		public get() {
+			return SKZ_GetTakeoffSpeed(this.id);
+		}
+	}
+}
+
+
+
+/*===============================  Dependency  ===============================*/
+
+public SharedPlugin __pl_simplekz_core = 
+{
+	name = "simplekz-core", 
+	file = "simplekz-core.smx", 
+	#if defined REQUIRE_PLUGIN
+	required = 1, 
+	#else
+	required = 0, 
+	#endif
+};
+
+#if !defined REQUIRE_PLUGIN
+public void __pl_simplekz_core_SetNTVOptional()
+{
+	MarkNativeAsOptional("SKZ_StartTimer");
+	MarkNativeAsOptional("SKZ_EndTimer");
+	MarkNativeAsOptional("SKZ_ForceStopTimer");
+	MarkNativeAsOptional("SKZ_ForceStopTimerAll");
+	MarkNativeAsOptional("SKZ_TeleportToStart");
+	MarkNativeAsOptional("SKZ_MakeCheckpoint");
+	MarkNativeAsOptional("SKZ_TeleportToCheckpoint");
+	MarkNativeAsOptional("SKZ_UndoTeleport");
+	MarkNativeAsOptional("SKZ_Pause");
+	MarkNativeAsOptional("SKZ_Resume");
+	MarkNativeAsOptional("SKZ_TogglePause");
+	MarkNativeAsOptional("SKZ_PlayErrorSound");
+	
+	MarkNativeAsOptional("SKZ_GetDefaultStyle");
+	MarkNativeAsOptional("SKZ_GetTimerRunning");
+	MarkNativeAsOptional("SKZ_GetCurrentCourse");
+	MarkNativeAsOptional("SKZ_GetPaused");
+	MarkNativeAsOptional("SKZ_GetCurrentTime");
+	MarkNativeAsOptional("SKZ_GetCheckpointCount");
+	MarkNativeAsOptional("SKZ_GetOption");
+	MarkNativeAsOptional("SKZ_SetOption");
+	MarkNativeAsOptional("SKZ_GetHitPerf");
+	MarkNativeAsOptional("SKZ_GetTakeoffSpeed");
+}
+#endif

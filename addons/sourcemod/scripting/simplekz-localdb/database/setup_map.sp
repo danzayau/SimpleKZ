@@ -54,7 +54,7 @@ public void DB_TxnSuccess_SetupMap(Handle db, any data, int numQueries, Handle[]
 			if (SQL_FetchRow(results[2]))
 			{
 				gI_DBCurrentMapID = SQL_FetchInt(results[2], 0);
-				Call_SKZ_OnRetrieveCurrentMapID();
+				Call_OnMapSetup();
 			}
 		}
 		case DatabaseType_MySQL:
@@ -62,7 +62,7 @@ public void DB_TxnSuccess_SetupMap(Handle db, any data, int numQueries, Handle[]
 			if (SQL_FetchRow(results[1]))
 			{
 				gI_DBCurrentMapID = SQL_FetchInt(results[1], 0);
-				Call_SKZ_OnRetrieveCurrentMapID();
+				Call_OnMapSetup();
 			}
 		}
 	}

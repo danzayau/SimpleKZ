@@ -15,8 +15,8 @@ void DB_LoadOptions(KZPlayer player)
 	
 	Transaction txn = SQL_CreateTransaction();
 	
-	// Get options for the client's PlayerID
-	FormatEx(query, sizeof(query), sql_options_get, player.db_playerID);
+	// Get options for the client
+	FormatEx(query, sizeof(query), sql_options_get, GetSteamAccountID(player.id));
 	txn.AddQuery(query);
 	
 	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_LoadOptions, DB_TxnFailure_Generic, player, DBPrio_High);
@@ -31,13 +31,13 @@ public void DB_TxnSuccess_LoadOptions(Handle db, KZPlayer player, int numQueries
 	
 	else if (SQL_GetRowCount(results[0]) == 0)
 	{
-		// No options found for that PlayerID, so insert those options and then try reload them again
+		// No options found for that client, so insert them and try load them again
 		char query[1024];
 		
 		Transaction txn = SQL_CreateTransaction();
 		
 		// Insert options
-		FormatEx(query, sizeof(query), sql_options_insert, player.db_playerID, SKZ_GetDefaultStyle());
+		FormatEx(query, sizeof(query), sql_options_insert, GetSteamAccountID(player.id), SKZ_GetDefaultStyle());
 		txn.AddQuery(query);
 		
 		SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_InsertOptions, DB_TxnFailure_Generic, player, DBPrio_High);

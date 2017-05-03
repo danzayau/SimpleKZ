@@ -1,8 +1,13 @@
 #include <sourcemod>
-#include <sdktools>
+
 #include <cstrike>
+#include <sdktools>
+
 #include <colorvariables>
 #include <simplekz>
+
+#include <simplekz/localdb>
+#include <simplekz/localranks>
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -11,10 +16,10 @@
 
 public Plugin myinfo = 
 {
-	name = "Simple KZ Local Ranks", 
+	name = "SimpleKZ Local Ranks", 
 	author = "DanZay", 
-	description = "Local ranks module for SimpleKZ.", 
-	version = "0.11.0", 
+	description = "SimpleKZ Local Ranks Module", 
+	version = "0.12.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
@@ -22,8 +27,6 @@ public Plugin myinfo =
 
 Handle gH_SKZ_OnNewRecord;
 Handle gH_SKZ_OnNewPersonalBest;
-
-bool gB_LateLoad;
 
 Database gH_DB = null;
 DatabaseType g_DBType = DatabaseType_None;
@@ -50,7 +53,7 @@ char gC_StylePhrases[view_as<int>(KZStyle)][] =
 // Time type translation phrases for chat messages (respective to KZTimeType enum)
 char gC_TimeTypePhrases[view_as<int>(KZTimeType)][] = 
 {
-	"Time Type - Normal", 
+	"Time Type - Nub", 
 	"Time Type - Pro", 
 	"Time Type - Theoretical"
 };
@@ -84,7 +87,6 @@ char gC_TimeTypePhrases[view_as<int>(KZTimeType)][] =
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	RegPluginLibrary("simplekz-localranks");
-	gB_LateLoad = late;
 	return APLRes_Success;
 }
 
@@ -101,48 +103,15 @@ public void OnPluginStart()
 	CreateMenus();
 	CreateGlobalForwards();
 	CreateCommands();
-}
-
-public void OnAllPluginsLoaded()
-{
-	if (!LibraryExists("simplekz-core"))
-	{
-		SetFailState("This plugin requires the SimpleKZ Core plugin.");
-	}
-	else if (!LibraryExists("simplekz-localdb"))
-	{
-		SetFailState("This plugin requires the SimpleKZ Local DB plugin.");
-	}
 	
-	if (gB_LateLoad)
-	{
-		OnLateLoad();
-	}
-}
-
-public void OnLateLoad()
-{
-	SKZ_GetDB(gH_DB);
-	g_DBType = SKZ_GetDBType();
-}
-
-public void OnLibraryRemoved(const char[] name)
-{
-	if (StrEqual(name, "simplekz-core"))
-	{
-		SetFailState("This plugin requires the SimpleKZ Core plugin.");
-	}
-	else if (StrEqual(name, "simplekz-localdb"))
-	{
-		SetFailState("This plugin requires the SimpleKZ Local DB plugin.");
-	}
+	TryGetDatabaseInfo();
 }
 
 
 
 /*===============================  SimpleKZ Forwards  ===============================*/
 
-public void SKZ_OnDatabaseConnect(Database database, DatabaseType DBType)
+public void SKZ_DB_OnDatabaseConnect(Database database, DatabaseType DBType)
 {
 	gH_DB = database;
 	g_DBType = DBType;
@@ -150,37 +119,28 @@ public void SKZ_OnDatabaseConnect(Database database, DatabaseType DBType)
 	CompletionMVPStarsUpdateAll();
 }
 
-public void SKZ_OnStoreTimeInDB(int client, int playerID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS)
+public void SKZ_DB_OnTimeInserted(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS)
 {
-	DB_ProcessNewTime(client, playerID, mapID, course, style, runTimeMS, teleportsUsed);
+	if (IsValidClient(client))
+	{
+		DB_ProcessNewTime(client, steamID, mapID, course, style, runTimeMS, teleportsUsed);
+	}
 }
 
-public void SKZ_OnNewRecord(int client, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime)
+public void SKZ_DB_OnNewRecord(int client, int steamID, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime)
 {
-	if (mapID == SKZ_GetCurrentMapID())
+	if (IsValidClient(client) && mapID == SKZ_DB_GetCurrentMapID())
 	{
 		AnnounceNewRecord(client, course, style, recordType);
 	}
 }
 
-public void SKZ_OnNewPersonalBest(int client, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank)
+public void SKZ_DB_OnNewPersonalBest(int client, int steamID, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank)
 {
-	if (mapID == SKZ_GetCurrentMapID() && rank != 1)
+	if (IsValidClient(client) && mapID == SKZ_DB_GetCurrentMapID() && rank != 1)
 	{
 		AnnounceNewPersonalBest(client, course, style, timeType, firstTime, improvement, rank, maxRank);
 	}
-}
-
-
-
-/*===============================  Other Forwards  ===============================*/
-
-public void OnMapStart()
-{
-	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_RECORD);
-	AddFileToDownloadsTable(FULL_SOUNDPATH_BEAT_MAP);
-	FakePrecacheSound(REL_SOUNDPATH_BEAT_RECORD);
-	FakePrecacheSound(REL_SOUNDPATH_BEAT_MAP);
 }
 
 
@@ -191,4 +151,15 @@ void CreateMenus()
 {
 	MapTopMenuCreateMenus();
 	PlayerTopMenuCreateMenus();
+}
+
+void TryGetDatabaseInfo()
+{
+	SKZ_DB_GetDatabase(gH_DB);
+	if (gH_DB != null)
+	{
+		g_DBType = SKZ_DB_GetDatabaseType();
+		DB_CreateTables();
+		CompletionMVPStarsUpdateAll();
+	}
 } 

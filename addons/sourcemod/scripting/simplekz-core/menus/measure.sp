@@ -43,9 +43,9 @@ public int MenuHandler_Measure(Handle menu, MenuAction action, int param1, int p
 			{  //Find Distance
 				if (gB_MeasurePosSet[param1][0] && gB_MeasurePosSet[param1][1])
 				{
-					float vDist = GetVectorDistance(gF_MeasurePos[param1][0], gF_MeasurePos[param1][1]);
-					float vHightDist = (gF_MeasurePos[param1][1][2] - gF_MeasurePos[param1][0][2]);
-					CPrintToChat(param1, "%t %t", "KZ Prefix", "Measure Result", vDist, vHightDist);
+					float horizontalDist = CalcHorizontalDistance(gF_MeasurePos[param1][0], gF_MeasurePos[param1][1]);
+					float verticalDist = CalcVerticalDistance(gF_MeasurePos[param1][0], gF_MeasurePos[param1][1]);
+					CPrintToChat(param1, "%t %t", "KZ Prefix", "Measure Result", horizontalDist, verticalDist);
 					MeasureBeam(param1, gF_MeasurePos[param1][0], gF_MeasurePos[param1][1], 5.0, 2.0, 200, 200, 200);
 				}
 				else

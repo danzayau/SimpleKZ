@@ -23,7 +23,7 @@
 	{
 		// kz_fakemap Bonus 1 wasn't found.
 		"#format"	"{1:s},{2:d}"
-		"en"		"{default}{1} {darkblue}Bonus {2}{grey} wasn't found."
+		"en"		"{default}{1} {bluegrey}Bonus {2}{grey} wasn't found."
 	}
 	"Invalid Bonus Number"
 	{
@@ -35,89 +35,89 @@
 	{
 		"en"		"{grey}This server hasn't set any maps to be ranked."
 	}
-	"New Record - Map"
+	"New Record (Nub)"
 	{
-		// Bill beat the MAP RECORD [Style]!
+		// Bill set a new NUB RECORD [Style]!
 		"#format"	"{1:N},{2:t}"
-		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD {grey}[{purple}{2}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {yellow}NUB RECORD {grey}[{purple}{2}{grey}]!"
 	}
-	"New Record - Pro"
+	"New Record (Pro)"
 	{
-		// Bill beat the PRO RECORD [Style]!
+		// Bill set a new PRO RECORD [Style]!
 		"#format"	"{1:N},{2:t}"
-		"en"		"{lime}{1}{grey} beat the {blue}PRO RECORD {grey}[{purple}{2}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {blue}PRO RECORD {grey}[{purple}{2}{grey}]!"
 	}
-	"New Record - Map and Pro"
+	"New Record (Nub and Pro)"
 	{
-		// Bill beat the MAP RECORD and the PRO RECORD [Style]!
+		// Bill set a new NUB/PRO RECORD [Style]!
 		"#format"	"{1:N},{2:t}"
-		"en"		"{lime}{1}{grey} beat the {yellow}MAP RECORD{grey} and the {blue}PRO RECORD {grey}[{purple}{2}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {yellow}NUB{grey}/{blue}PRO RECORD{grey} [{purple}{2}{grey}]!"
 	}
-	"New Bonus Record - Map"
+	"New Bonus Record (Nub)"
 	{
-		// Bill beat the Bonus 1 MAP RECORD [Style]!
+		// Bill set a new Bonus 1 NUB RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:t}"
-		"en"		"{lime}{1}{grey} beat the {darkblue}Bonus {2} {yellow}MAP RECORD {grey}[{purple}{3}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {bluegrey}Bonus {2} {yellow}NUB RECORD{grey} [{purple}{3}{grey}]!"
 	}
-	"New Bonus Record - Pro"
+	"New Bonus Record (Pro)"
 	{
-		// Bill beat the PRO RECORD [Style]!
+		// Bill set a new Bonus 1 PRO RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:t}"
-		"en"		"{lime}{1}{grey} beat the {darkblue}Bonus {2} {blue}PRO RECORD {grey}[{purple}{3}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {bluegrey}Bonus {2} {blue}PRO RECORD{grey} [{purple}{3}{grey}]!"
 	}
-	"New Bonus Record - Map and Pro"
+	"New Bonus Record (Nub and Pro)"
 	{
-		// Bill beat the Bonus 1 MAP RECORD and the PRO RECORD [Style]!
+		// Bill set a new Bonus 1 NUB/PRO RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} beat the {darkblue}Bonus {2} {yellow}MAP RECORD{grey} and the {darkblue}Bonus {3} {blue}PRO RECORD {grey}[{purple}{4}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {bluegrey}Bonus {2} {yellow}NUB{grey}/{blue}PRO RECORD{grey} [{purple}{4}{grey}]!"
 	}
-	"New PB - First Time"
+	"New PB - First Time (Nub)"
 	{
-		// Bill just beat the map for the first time (#5/12) [Style]!
+		// Bill just beat the map for the first time [#5/12] [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} just beat the map for the first time (#{default}{2}{grey}/{3}) {grey}[{purple}{4}{grey}]!"
+		"en"		"{lime}{1}{grey} just beat the map for the first time [#{default}{2}{grey}/{3}] {grey}[{purple}{4}{grey}]!"
 	}
 	"New PB - First Time (Pro)"
 	{
-		// Bill just PRO'd the map for the first time (#5/12) [Style]!
+		// Bill just PRO'd the map for the first time [#5/12] [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d the map for the first time (#{default}{2}{grey}/{3}) {grey}[{purple}{4}{grey}]!"
+		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d the map for the first time [#{default}{2}{grey}/{3}] {grey}[{purple}{4}{grey}]!"
 	}
-	"New PB - Improve"
+	"New PB - Improve (Nub)"
 	{
-		// Bill just beat their MAP time by -00:12.34 (#5/12) [Style].
+		// Bill just beat their NUB time by -00:12.34 [#5/12] [Style].
 		"#format"	"{1:N},{2:s},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just beat their {yellow}MAP{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} just beat their {yellow}NUB{grey} time by {green}-{2}{grey} [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
 	}
 	"New PB - Improve (Pro)"
 	{
-		// Bill just beat their PRO time by -00:12.34 (#5/12) [Style]!
+		// Bill just beat their PRO time by -00:12.34 [#5/12] [Style]!
 		"#format"	"{1:N},{2:s},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just beat their {blue}PRO{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} just beat their {blue}PRO{grey} time by {green}-{2}{grey} [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
 	}
 	"New Bonus PB - First Time"
 	{
-		// Bill just beat Bonus 1 for the first time (#5/12) [Style]!
+		// Bill just beat Bonus 1 for the first time [#5/12] [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just beat {darkblue}Bonus {2} {grey}for the first time (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} just beat {bluegrey}Bonus {2} {grey}for the first time [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
 	}
 	"New Bonus PB - First Time (Pro)"
 	{
-		// Bill just PRO'd Bonus 1 for the first time (#5/12) [Style]!
+		// Bill just PRO'd Bonus 1 for the first time [#5/12] [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d {darkblue}Bonus {2} {grey}for the first time (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d {bluegrey}Bonus {2} {grey}for the first time [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
 	}
 	"New Bonus PB - Improve"
 	{
-		// Bill just beat their Bonus 1 MAP time by -00:12.34 (#5/12) [Style].
+		// Bill just beat their Bonus 1 NUB time by -00:12.34 [#5/12] [Style].
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:d},{6:t}"
-		"en"		"{lime}{1}{grey} just beat their {darkblue}Bonus {2} {yellow}MAP{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} just beat their {bluegrey}Bonus {2} {yellow}NUB{grey} time by {green}-{2}{grey} [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
 	}
 	"New Bonus PB - Improve (Pro)"
 	{
-		// Bill just beat their Bonus 1 PRO time by -00:12.34 (#5/12) [Style]!
+		// Bill just beat their Bonus 1 PRO time by -00:12.34 [#5/12] [Style]!
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:d},{6:t}"
-		"en"		"{lime}{1}{grey} just beat their {darkblue}Bonus {2} {blue}PRO{grey} time by {green}-{2}{grey} (#{default}{3}{grey}/{4}) {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} just beat their {bluegrey}Bonus {2} {blue}PRO{grey} time by {green}-{2}{grey} [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
 	}
 	"PB Header"
 	{	
@@ -129,29 +129,29 @@
 	{
 		// Bill on kz_map Bonus 1 [Style]
 		"#format"	"{1:s},{2:s},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} on {default}{2} {darkblue}Bonus {3} {grey}[{purple}{4}{grey}]"
+		"en"		"{lime}{1}{grey} on {default}{2} {bluegrey}Bonus {3} {grey}[{purple}{4}{grey}]"
 	}
 	"PB Time - No Times"
 	{
-		"en"		"{yellow}MAP PB{grey}: None... yet."
+		"en"		"{grey}You haven't set a time... yet."
 	}
-	"PB Time - Map"
+	"PB Time - Nub"
 	{
-		// MAP PB: 01:23.45 #4/123 (5 TP | 01:01.23)
-		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:s}"
-		"en"		"{yellow}MAP PB{grey}: {default}{1}{grey} #{default}{2}{grey}/{3}  ({yellow}{4} TP{grey} | {grey}{5}{grey})"
+		// NUB PB: 01:23.45 (5 TP | 01:01.23) [#4/123]
+		"#format"	"{1:s},{2:d},{3:s},{4:d},{5:d}"
+		"en"		"{yellow}NUB PB{grey}: {default}{1}{grey} ({yellow}{2} TP{grey} | {grey}{3}{grey}) [#{default}{4}{grey}/{5}]"
 	}
-	"PB Time - Map (Pro)"
+	"PB Time - Nub and Pro"
 	{
-		// MAP PB: 01:23.45 #4/123 (PRO #3/12)
+		// NUB/PRO PB: 01:23.45 [NUB #4/123] [PRO #3/12]
 		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:d}"
-		"en"		"{yellow}MAP PB{grey}: {default}{1}{grey} #{default}{2}{grey}/{3} ({blue}PRO{grey} #{default}{4}{grey}/{5})"
+		"en"		"{yellow}NUB{grey}/{blue}PRO PB{grey}: {default}{1}{grey} [{yellow}NUB{grey} #{default}{2}{grey}/{3}] [{blue}PRO{grey} #{default}{4}{grey}/{5}]"
 	}
 	"PB Time - Pro"
 	{
-		// PRO PB: 01:23.45 #4/123
+		// PRO PB: 01:23.45 [#4/123]
 		"#format"	"{1:s},{2:d},{3:d}"
-		"en"		"{blue}PRO PB{grey}: {default}{1}{grey} #{default}{2}{grey}/{3}"
+		"en"		"{blue}PRO PB{grey}: {default}{1}{grey} [#{default}{2}{grey}/{3}]"
 	}
 	"PB Time - No Pro Time"
 	{
@@ -167,23 +167,23 @@
 	{
 		// Server WRs on kz_map Bonus 1 [Style]
 		"#format"	"{1:s},{2:d},{3:t}"
-		"en"		"{grey}Records on {default}{1} {darkblue}Bonus {2} {grey}[{purple}{3}{grey}]"
+		"en"		"{grey}Records on {default}{1} {bluegrey}Bonus {2} {grey}[{purple}{3}{grey}]"
 	}
 	"WR No Times"
 	{
 		"en"		"{grey}No times found!"
 	}
-	"WR Time - Map"
+	"WR Time - Nub"
 	{
-		// MAP RECORD: 01:23.45 (4 TP) by Bill
+		// NUB RECORD: 01:23.45 (5 TP) by Bill
 		"#format"	"{1:s},{2:d},{3:s}"
-		"en"		"{yellow}MAP RECORD{grey}: {default}{1}{grey} ({yellow}{2} TP{grey}) by {lime}{3}"
+		"en"		"{yellow}NUB RECORD{grey}: {default}{1}{grey} ({yellow}{2} TP{grey}) by {lime}{3}"
 	}
-	"WR Time - Map (Pro)"
+	"WR Time - Nub and Pro"
 	{
-		// MAP RECORD: 01:23.45 (PRO) by Bill
+		// NUB/PRO RECORD: 01:23.45 by Bill
 		"#format"	"{1:s},{2:s}"
-		"en"		"{yellow}MAP RECORD{grey}: {default}{1}{grey} ({blue}PRO{grey}) by {lime}{2}"
+		"en"		"{yellow}NUB{grey}/{blue}PRO RECORD{grey}: {default}{1}{grey} by {lime}{2}"
 	}
 	"WR Time - Pro"
 	{
@@ -267,12 +267,12 @@
 	// Player Top Menu ////////////////////////////////////////////////////////////
 	"Player Top Menu - Title"
 	{
-		// Top Players
+		// Top Record Holders
 		//
 		// Style - Standard
 		//
 		"#format"	"{1:t}"
-		"en"		"Top Players\n \nStyle - {1}\n "
+		"en"		"Top Record Holders\n \nStyle - {1}\n "
 	}
 	"Player Top Menu - Top 20"
 	{

@@ -6,10 +6,11 @@
 
 void CreateConVars()
 {
-	gCV_ChatProcessing = CreateConVar("kz_chat_processing", "1", "Whether or not SimpleKZ processes player chat (in case you want to use another chat plugin).", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	gCV_DefaultStyle = CreateConVar("kz_default_style", "0", "The default movement style (0 = Standard, 1 = Legacy).", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	gCV_PlayerModelT = CreateConVar("kz_player_model_t", "models/player/tm_leet_varianta.mdl", "The model to change Terrorists to (applies after map change).", FCVAR_NOTIFY);
-	gCV_PlayerModelCT = CreateConVar("kz_player_model_ct", "models/player/ctm_idf_variantc.mdl", "The model to change Counter-Terrorists to (applies after map change).", FCVAR_NOTIFY);
+	gCV_ChatProcessing = CreateConVar("kz_chat_processing", "1", "Whether SimpleKZ processes player chat messages.", _, true, 0.0, true, 1.0);
+	gCV_ConnectionMessages = CreateConVar("kz_connection_messages", "1", "Whether SimpleKZ handles connection and disconnection messages.", _, true, 0.0, true, 1.0);
+	gCV_DefaultStyle = CreateConVar("kz_default_style", "0", "Default movement style (0 = Standard, 1 = Legacy, 2 = Competitive).", _, true, 0.0, true, 2.0);
+	gCV_PlayerModelT = CreateConVar("kz_player_model_t", "models/player/tm_leet_varianta.mdl", "Model to change Terrorists to (applies after map change).");
+	gCV_PlayerModelCT = CreateConVar("kz_player_model_ct", "models/player/ctm_idf_variantc.mdl", "Model to change Counter-Terrorists to (applies after map change).");
 	
 	FindConVars();
 }
