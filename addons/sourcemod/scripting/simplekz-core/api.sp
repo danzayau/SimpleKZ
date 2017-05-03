@@ -1,7 +1,7 @@
 /*
 	API
 	
-	Simple KZ Core API.
+	SimpleKZ Core API.
 */
 
 /*===============================  Forwards  ===============================*/

@@ -33,27 +33,27 @@
 	}
 	"Beat Map (Nub)"
 	{
-		// Bill finished in 01:23.45 (4 TP | 01.02.34) [Style].
+		// Bill finished in 01:23.45 (4 TP | 01.02.34) [Style]
 		"#format"	"{1:N},{2:s},{3:d},{4:s},{5:t}"
-		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({yellow}{3} TP{grey} | {grey}{4}{grey}) {grey}[{purple}{5}{grey}]."
+		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({yellow}{3} TP{grey} | {grey}{4}{grey}) {grey}[{purple}{5}{grey}]"
 	}
 	"Beat Map (Pro)"
 	{
-		// Bill finished in 01:23.45 (PRO) [Style].
+		// Bill finished in 01:23.45 (PRO) [Style]
 		"#format"	"{1:N},{2:s},{3:t}"
-		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey}) {grey}[{purple}{3}{grey}]."
+		"en"		"{lime}{1}{grey} finished in {default}{2}{grey} ({blue}PRO{grey}) {grey}[{purple}{3}{grey}]"
 	}
 	"Beat Bonus (Nub)"
 	{
-		// Bill finished Bonus 1 in 01:23.45 (4 TP | 01.02.34) [Style].
+		// Bill finished Bonus 1 in 01:23.45 (4 TP | 01.02.34) [Style]
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:s},{6:t}"
-		"en"		"{lime}{1}{grey} finished {bluegrey}Bonus {2}{grey} in {default}{3}{grey} ({yellow}{4} TP{grey} | {grey}{5}{grey}) {grey}[{purple}{6}{grey}]."
+		"en"		"{lime}{1}{grey} finished {bluegrey}Bonus {2}{grey} in {default}{3}{grey} ({yellow}{4} TP{grey} | {grey}{5}{grey}) {grey}[{purple}{6}{grey}]"
 	}
 	"Beat Bonus (Pro)"
 	{
-		// Bill finished Bonus 1 in 01:23.45 (PRO) [Style].
+		// Bill finished Bonus 1 in 01:23.45 (PRO) [Style]
 		"#format"	"{1:N},{2:d},{3:s},{4:t}"
-		"en"		"{lime}{1}{grey} finished {bluegrey}Bonus {2}{grey} in {default}{3}{grey} ({blue}PRO{grey}) {grey}[{purple}{4}{grey}]."
+		"en"		"{lime}{1}{grey} finished {bluegrey}Bonus {2}{grey} in {default}{3}{grey} ({blue}PRO{grey}) {grey}[{purple}{4}{grey}]"
 	}
 	"Time Stopped"
 	{
@@ -162,7 +162,7 @@
 	}
 	"Measure Result"
 	{
-		// Distance: 123.45, Vertical: 12.34.
+		// Distance - Horizontal: 123.45, Vertical: 12.34.
 		"#format"	"{1:.2f},{2:.2f}"
 		"en"		"{default}Distance{grey} - Horizontal: {default}{1}{grey}, Vertical: {default}{2}{grey}"
 	}

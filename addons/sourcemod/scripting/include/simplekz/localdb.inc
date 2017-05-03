@@ -65,7 +65,7 @@ forward void SKZ_DB_OnDatabaseConnect(Database database, DatabaseType DBType);
  * Called when a player is ready for database interaction.
  * At this point, the player is present and updated in the "Players" table.
  *
- * @param client		Client index (-1 if client is no longer present).
+ * @param client		Client index.
  * @param steamID		SteamID32 of the player.
  * @noreturn
  */
@@ -83,17 +83,17 @@ forward void SKZ_DB_OnMapSetup(int mapID);
 /**
  * Called when a time has been inserted into the database.
  *
- * @param client				Client index (-1 if client is no longer present).
- * @param steamID				SteamID32 of the player.
- * @param mapID					MapID from the "Maps" table.
- * @param course    			Course number e.g. 0=main, 1='bonus1' etc.
- * @param style					Player's movement style.
- * @param runTimeMS				Player's end time in milliseconds.
- * @param teleportsUsed			Number of teleports used by player.
- * @param theoreticalRunTimeMS	Theoretical end time without using teleports in milliseconds.
+ * @param client			Client index.
+ * @param steamID			SteamID32 of the player.
+ * @param mapID				MapID from the "Maps" table.
+ * @param course    		Course number e.g. 0=main, 1='bonus1' etc.
+ * @param style				Player's movement style.
+ * @param runTimeMS			Player's end time in milliseconds.
+ * @param teleportsUsed		Number of teleports used by player.
+ * @param theoRunTimeMS		Theoretical end time without using teleports in milliseconds.
  * @noreturn
  */
-forward void SKZ_DB_OnTimeInserted(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS);
+forward void SKZ_DB_OnTimeInserted(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoRunTimeMS);
 
 
 

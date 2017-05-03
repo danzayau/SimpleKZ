@@ -5,7 +5,7 @@
 	personal best and if they beat the map course and style's record time.
 */
 
-void DB_ProcessNewTime(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed)
+void DB_ProcessNewTime(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoRunTimeMS)
 {
 	char query[1024];
 	
@@ -17,6 +17,7 @@ void DB_ProcessNewTime(int client, int steamID, int mapID, int course, KZStyle s
 	data.WriteCell(style);
 	data.WriteCell(runTimeMS);
 	data.WriteCell(teleportsUsed);
+	data.WriteCell(theoRunTimeMS);
 	
 	Transaction txn = SQL_CreateTransaction();
 	
@@ -56,123 +57,96 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 	KZStyle style = data.ReadCell();
 	int runTimeMS = data.ReadCell();
 	int teleportsUsed = data.ReadCell();
+	int theoRunTimeMS = data.ReadCell();
 	data.Close();
 	
-	if (!IsValidClient(client) || steamID != GetSteamAccountID(client))
-	{
-		return;
-	}
-	
-	float runTime = SKZ_DB_TimeIntToFloat(runTimeMS);
-	
-	bool newPB = false;
-	bool firstTime = false;
-	float improvement;
-	int rank;
-	int maxRank;
-	
-	bool newPBPro = false;
-	bool firstTimePro = false;
-	float improvementPro;
-	int rankPro;
-	int maxRankPro;
-	
-	// Check for new PB
-	if (SQL_GetRowCount(results[0]) == 2)
+	bool firstTime = SQL_GetRowCount(results[0]) == 1;
+	int pbDiff = 0;
+	int rank = -1;
+	int maxRank = -1;
+	if (!firstTime)
 	{
 		SQL_FetchRow(results[0]);
-		if (runTimeMS == SQL_FetchInt(results[0], 0))
+		int pb = SQL_FetchInt(results[0], 0);
+		if (runTimeMS == pb) // New time is new PB
 		{
-			newPB = true;
-			// Time they just beat is second row
 			SQL_FetchRow(results[0]);
-			improvement = SKZ_DB_TimeIntToFloat(SQL_FetchInt(results[0], 0) - runTimeMS);
+			int oldPB = SQL_FetchInt(results[0], 0);
+			pbDiff = runTimeMS - oldPB;
+		}
+		else // Didn't beat PB
+		{
+			pbDiff = runTimeMS - pb;
 		}
 	}
-	else
-	{  // Only 1 row (the time they just got) so this is their first time
-		newPB = true;
-		firstTime = true;
-	}
+	// Get NUB Rank
+	SQL_FetchRow(results[1]);
+	rank = SQL_FetchInt(results[1], 0);
+	SQL_FetchRow(results[2]);
+	maxRank = SQL_FetchInt(results[2], 0);
 	
-	// If new PB, get rank information
-	if (newPB)
-	{
-		SQL_FetchRow(results[1]);
-		rank = SQL_FetchInt(results[1], 0);
-		SQL_FetchRow(results[2]);
-		maxRank = SQL_FetchInt(results[2], 0);
-	}
-	
-	// Repeat for PRO runs if necessary
+	// Repeat for PRO Runs
+	bool firstTimePro = false;
+	int pbDiffPro = 0;
+	int rankPro = -1;
+	int maxRankPro = -1;
 	if (teleportsUsed == 0)
 	{
-		// Check for new PRO PB
-		if (SQL_GetRowCount(results[3]) == 2)
+		firstTimePro = SQL_GetRowCount(results[3]) == 1;
+		if (!firstTimePro)
 		{
 			SQL_FetchRow(results[3]);
-			if (runTimeMS == SQL_FetchInt(results[3], 0))
+			int pb = SQL_FetchInt(results[3], 0);
+			if (runTimeMS == pb) // New time is new PB
 			{
-				newPBPro = true;
-				// Time they just beat is second row
 				SQL_FetchRow(results[3]);
-				improvementPro = SKZ_DB_TimeIntToFloat(SQL_FetchInt(results[3], 0) - runTimeMS);
+				int oldPB = SQL_FetchInt(results[3], 0);
+				pbDiffPro = runTimeMS - oldPB;
+			}
+			else // Didn't beat PB
+			{
+				pbDiffPro = runTimeMS - pb;
 			}
 		}
-		else
-		{  // Only 1 row (the time they just got)
-			newPBPro = true;
-			firstTimePro = true;
-		}
-		// If new PB, get rank information
-		if (newPBPro)
-		{
-			SQL_FetchRow(results[4]);
-			rankPro = SQL_FetchInt(results[4], 0);
-			SQL_FetchRow(results[5]);
-			maxRankPro = SQL_FetchInt(results[5], 0);
-		}
+		// Get PRO Rank
+		SQL_FetchRow(results[4]);
+		rankPro = SQL_FetchInt(results[4], 0);
+		SQL_FetchRow(results[5]);
+		maxRankPro = SQL_FetchInt(results[5], 0);
 	}
 	
-	// Call OnNewPersonalBest forward (KZTimeType_Normal)
-	if (newPB)
-	{
-		if (firstTime)
-		{
-			Call_SKZ_OnNewPersonalBest(client, steamID, mapID, course, style, KZTimeType_Nub, true, runTime, -1.0, rank, maxRank);
-		}
-		else
-		{
-			Call_SKZ_OnNewPersonalBest(client, steamID, mapID, course, style, KZTimeType_Nub, false, runTime, improvement, rank, maxRank);
-		}
-	}
-	// Call OnNewPersonalBest forward (KZTimeType_Pro)
-	if (newPBPro) {
-		if (firstTimePro) {
-			Call_SKZ_OnNewPersonalBest(client, steamID, mapID, course, style, KZTimeType_Pro, true, runTime, -1.0, rankPro, maxRankPro);
-		}
-		else {
-			Call_SKZ_OnNewPersonalBest(client, steamID, mapID, course, style, KZTimeType_Pro, false, runTime, improvementPro, rankPro, maxRankPro);
-		}
-	}
+	// Call OnTimeProcessed forward
+	Call_OnTimeProcessed(
+		client, 
+		steamID, 
+		mapID, 
+		course, 
+		style, 
+		SKZ_DB_TimeIntToFloat(runTimeMS), 
+		teleportsUsed, 
+		SKZ_DB_TimeIntToFloat(theoRunTimeMS), 
+		firstTime, 
+		SKZ_DB_TimeIntToFloat(pbDiff), 
+		rank, 
+		maxRank, 
+		firstTimePro, 
+		SKZ_DB_TimeIntToFloat(pbDiffPro), 
+		rankPro, 
+		maxRankPro);
 	
 	// Call OnNewRecord forward
-	if ((newPB && rank == 1) && !(newPBPro && rankPro == 1))
+	bool newWR = (firstTime || pbDiff < 0) && rank == 1;
+	bool newWRPro = (firstTimePro || pbDiffPro < 0) && rankPro == 1;
+	if (newWR && newWRPro)
 	{
-		Call_SKZ_OnNewRecord(client, steamID, mapID, course, style, KZRecordType_Nub, runTime);
+		Call_OnNewRecord(client, steamID, mapID, course, style, KZRecordType_NubAndPro);
 	}
-	else if (!(newPB && rank == 1) && (newPBPro && rankPro == 1))
+	else if (newWR)
 	{
-		Call_SKZ_OnNewRecord(client, steamID, mapID, course, style, KZRecordType_Pro, runTime);
+		Call_OnNewRecord(client, steamID, mapID, course, style, KZRecordType_Nub);
 	}
-	else if ((newPB && rank == 1) && (newPBPro && rankPro == 1))
+	else if (newWRPro)
 	{
-		Call_SKZ_OnNewRecord(client, steamID, mapID, course, style, KZRecordType_NubAndPro, runTime);
-	}
-	
-	// Update PRO Completion [Standard] percentage in scoreboard
-	if (style == KZStyle_Standard && course == 0 && firstTimePro)
-	{
-		DB_GetCompletion(client, client, KZStyle_Standard, false);
+		Call_OnNewRecord(client, steamID, mapID, course, style, KZRecordType_Pro);
 	}
 } 

@@ -39,85 +39,109 @@
 	{
 		// Bill set a new NUB RECORD [Style]!
 		"#format"	"{1:N},{2:t}"
-		"en"		"{lime}{1}{grey} set a new {yellow}NUB RECORD {grey}[{purple}{2}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {yellow}NUB RECORD {grey}[{purple}{2}{grey}]"
 	}
 	"New Record (Pro)"
 	{
 		// Bill set a new PRO RECORD [Style]!
 		"#format"	"{1:N},{2:t}"
-		"en"		"{lime}{1}{grey} set a new {blue}PRO RECORD {grey}[{purple}{2}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {blue}PRO RECORD {grey}[{purple}{2}{grey}]"
 	}
 	"New Record (Nub and Pro)"
 	{
 		// Bill set a new NUB/PRO RECORD [Style]!
 		"#format"	"{1:N},{2:t}"
-		"en"		"{lime}{1}{grey} set a new {yellow}NUB{grey}/{blue}PRO RECORD{grey} [{purple}{2}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {yellow}NUB{grey}/{blue}PRO RECORD{grey} [{purple}{2}{grey}]"
 	}
 	"New Bonus Record (Nub)"
 	{
 		// Bill set a new Bonus 1 NUB RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:t}"
-		"en"		"{lime}{1}{grey} set a new {bluegrey}Bonus {2} {yellow}NUB RECORD{grey} [{purple}{3}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {bluegrey}Bonus {2} {yellow}NUB RECORD{grey} [{purple}{3}{grey}]"
 	}
 	"New Bonus Record (Pro)"
 	{
 		// Bill set a new Bonus 1 PRO RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:t}"
-		"en"		"{lime}{1}{grey} set a new {bluegrey}Bonus {2} {blue}PRO RECORD{grey} [{purple}{3}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {bluegrey}Bonus {2} {blue}PRO RECORD{grey} [{purple}{3}{grey}]"
 	}
 	"New Bonus Record (Nub and Pro)"
 	{
 		// Bill set a new Bonus 1 NUB/PRO RECORD [Style]!
 		"#format"	"{1:N},{2:d},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} set a new {bluegrey}Bonus {2} {yellow}NUB{grey}/{blue}PRO RECORD{grey} [{purple}{4}{grey}]!"
+		"en"		"{lime}{1}{grey} set a new {bluegrey}Bonus {2} {yellow}NUB{grey}/{blue}PRO RECORD{grey} [{purple}{4}{grey}]"
 	}
-	"New PB - First Time (Nub)"
+	"New Time - First Time"
 	{
-		// Bill just beat the map for the first time [#5/12] [Style]!
-		"#format"	"{1:N},{2:d},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} just beat the map for the first time [#{default}{2}{grey}/{3}] {grey}[{purple}{4}{grey}]!"
-	}
-	"New PB - First Time (Pro)"
-	{
-		// Bill just PRO'd the map for the first time [#5/12] [Style]!
-		"#format"	"{1:N},{2:d},{3:d},{4:t}"
-		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d the map for the first time [#{default}{2}{grey}/{3}] {grey}[{purple}{4}{grey}]!"
-	}
-	"New PB - Improve (Nub)"
-	{
-		// Bill just beat their NUB time by -00:12.34 [#5/12] [Style].
+		// Bill finished in NUB 01:23.45 [#2/5] [Style]
 		"#format"	"{1:N},{2:s},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just beat their {yellow}NUB{grey} time by {green}-{2}{grey} [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} finished in {yellow}NUB {default}{2} {grey}[#{default}{3}{grey}/{default}{4}{grey}] [{purple}{5}{grey}]"
 	}
-	"New PB - Improve (Pro)"
+	"New Time - Beat PB"
 	{
-		// Bill just beat their PRO time by -00:12.34 [#5/12] [Style]!
+		// Bill finished in NUB 01:23.45 (-00:12.34) [#2/5] [Style]
+		"#format"	"{1:N},{2:s},{3:s},{4:d},{5:d},{6:t}"
+		"en"		"{lime}{1}{grey} finished in {yellow}NUB {default}{2} {grey}({green}-{3}{grey}) {grey}[#{default}{4}{grey}/{default}{5}{grey}] [{purple}{6}{grey}]"
+	}
+	"New Time - Miss PB"
+	{
+		// Bill finished in NUB 01:23.45 (+00:12.34) [#2/5] [Style]
+		"#format"	"{1:N},{2:s},{3:s},{4:d},{5:d},{6:t}"
+		"en"		"{lime}{1}{grey} finished in {yellow}NUB {default}{2} {grey}({lightred}+{3}{grey}) {grey}[#{default}{4}{grey}/{default}{5}{grey}] [{purple}{6}{grey}]"
+	}
+	"New Time - First Time (Pro)"
+	{
+		// Bill finished in PRO 01:23.45 [#2/5] [Style]
 		"#format"	"{1:N},{2:s},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just beat their {blue}PRO{grey} time by {green}-{2}{grey} [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} finished in {blue}PRO {default}{2} {grey}[#{default}{3}{grey}/{default}{4}{grey}] [{purple}{5}{grey}]"
 	}
-	"New Bonus PB - First Time"
+	"New Time - Beat PB (Pro)"
 	{
-		// Bill just beat Bonus 1 for the first time [#5/12] [Style]!
-		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just beat {bluegrey}Bonus {2} {grey}for the first time [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
+		// Bill finished in PRO 01:23.45 (-00:12.34) [#2/5] [Style]
+		"#format"	"{1:N},{2:s},{3:s},{4:d},{5:d},{6:t}"
+		"en"		"{lime}{1}{grey} finished in {blue}PRO {default}{2} {grey}({green}-{3}{grey}) {grey}[#{default}{4}{grey}/{default}{5}{grey}] [{purple}{6}{grey}]"
 	}
-	"New Bonus PB - First Time (Pro)"
+	"New Time - Miss PB (Pro)"
 	{
-		// Bill just PRO'd Bonus 1 for the first time [#5/12] [Style]!
-		"#format"	"{1:N},{2:d},{3:d},{4:d},{5:t}"
-		"en"		"{lime}{1}{grey} just {blue}PRO{grey}'d {bluegrey}Bonus {2} {grey}for the first time [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
+		// Bill finished in PRO 01:23.45 (+00:12.34) [#2/5] [Style]
+		"#format"	"{1:N},{2:s},{3:s},{4:d},{5:d},{6:t}"
+		"en"		"{lime}{1}{grey} finished in {blue}PRO {default}{2} {grey}({lightred}+{3}{grey}) {grey}[#{default}{4}{grey}/{default}{5}{grey}] [{purple}{6}{grey}]"
 	}
-	"New Bonus PB - Improve"
+	"New Bonus Time - First Time"
 	{
-		// Bill just beat their Bonus 1 NUB time by -00:12.34 [#5/12] [Style].
+		// Bill finished Bonus 1 in NUB 01:23.45 [#2/5] [Style]
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:d},{6:t}"
-		"en"		"{lime}{1}{grey} just beat their {bluegrey}Bonus {2} {yellow}NUB{grey} time by {green}-{2}{grey} [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} finished {bluegrey}Bonus {2} {grey}in {yellow}NUB {default}{3} {grey}[#{default}{4}{grey}/{default}{5}{grey}] [{purple}{6}{grey}]"
 	}
-	"New Bonus PB - Improve (Pro)"
+	"New Bonus Time - Beat PB"
 	{
-		// Bill just beat their Bonus 1 PRO time by -00:12.34 [#5/12] [Style]!
+		// Bill finished Bonus 1 in NUB 01:23.45 (-00:12.34) [#2/5] [Style]
+		"#format"	"{1:N},{2:d},{3:s},{4:s},{5:d},{6:d},{7:t}"
+		"en"		"{lime}{1}{grey} finished {bluegrey}Bonus {2} {grey}in {yellow}NUB {default}{3} {grey}({green}-{4}{grey}) {grey}[#{default}{5}{grey}/{default}{6}{grey}] [{purple}{7}{grey}]"
+	}
+	"New Bonus Time - Miss PB"
+	{
+		// Bill finished Bonus 1 in NUB 01:23.45 (+00:12.34) [#2/5] [Style]
+		"#format"	"{1:N},{2:d},{3:s},{4:s},{5:d},{6:d},{7:t}"
+		"en"		"{lime}{1}{grey} finished {bluegrey}Bonus {2} {grey}in {yellow}NUB {default}{3} {grey}({lightred}+{4}{grey}) {grey}[#{default}{5}{grey}/{default}{6}{grey}] [{purple}{7}{grey}]"
+	}
+	"New Bonus Time - First Time (Pro)"
+	{
+		// Bill finished Bonus 1 in PRO 01:23.45 [#2/5] [Style]
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:d},{6:t}"
-		"en"		"{lime}{1}{grey} just beat their {bluegrey}Bonus {2} {blue}PRO{grey} time by {green}-{2}{grey} [#{default}{3}{grey}/{4}] {grey}[{purple}{5}{grey}]!"
+		"en"		"{lime}{1}{grey} finished {bluegrey}Bonus {2} {grey}in {blue}PRO {default}{3} {grey}[#{default}{4}{grey}/{default}{5}{grey}] [{purple}{6}{grey}]"
+	}
+	"New Bonus Time - Beat PB (Pro)"
+	{
+		// Bill finished Bonus 1 in PRO 01:23.45 (-00:12.34) [#2/5] [Style]
+		"#format"	"{1:N},{2:d},{3:s},{4:s},{5:d},{6:d},{7:t}"
+		"en"		"{lime}{1}{grey} finished {bluegrey}Bonus {2} {grey}in {blue}PRO {default}{3} {grey}({green}-{4}{grey}) {grey}[#{default}{5}{grey}/{default}{6}{grey}] [{purple}{7}{grey}]"
+	}
+	"New Bonus Time - Miss PB (Pro)"
+	{
+		// Bill finished Bonus 1 in PRO 01:23.45 (+00:12.34) [#2/5] [Style]
+		"#format"	"{1:N},{2:d},{3:s},{4:s},{5:d},{6:d},{7:t}"
+		"en"		"{lime}{1}{grey} finished {bluegrey}Bonus {2} {grey}in {blue}PRO {default}{3} {grey}({lightred}+{4}{grey}) {grey}[#{default}{5}{grey}/{default}{6}{grey}] [{purple}{7}{grey}]"
 	}
 	"PB Header"
 	{	

@@ -128,6 +128,7 @@ void OnLateLoad()
 public void OnAllPluginsLoaded()
 {
 	gB_BaseComm = LibraryExists("basecomm");
+	gB_SKZLocalRanks = LibraryExists("simplekz-localranks");
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -136,6 +137,10 @@ public void OnLibraryAdded(const char[] name)
 	{
 		gB_BaseComm = true;
 	}
+	else if (StrEqual(name, "simplekz-localranks"))
+	{
+		gB_SKZLocalRanks = true;
+	}
 }
 
 public void OnLibraryRemoved(const char[] name)
@@ -143,6 +148,10 @@ public void OnLibraryRemoved(const char[] name)
 	if (StrEqual(name, "basecomm"))
 	{
 		gB_BaseComm = false;
+	}
+	else if (StrEqual(name, "simplekz-localranks"))
+	{
+		gB_SKZLocalRanks = false;
 	}
 }
 
