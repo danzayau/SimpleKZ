@@ -49,7 +49,7 @@ int GetOption(int client, KZOption option)
 }
 
 // Sets the specified option of the client to the provided value (use the enumerations!)
-void SetOption(int client, KZOption option, any optionValue, bool printMessage = true)
+void SetOption(int client, KZOption option, any optionValue, bool printMessage = false)
 {
 	bool changedOption = false;
 	
@@ -188,7 +188,7 @@ void SetOption(int client, KZOption option, any optionValue, bool printMessage =
 }
 
 // Steps through an option's possible settings.
-void CycleOption(int client, KZOption option, bool printMessage = true)
+void CycleOption(int client, KZOption option, bool printMessage = false)
 {
 	// Add 1 to the current value of the option
 	// Modulo the result with the total number of that option which can be obtained by using view_as<int>(tag).

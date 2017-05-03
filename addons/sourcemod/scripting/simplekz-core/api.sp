@@ -242,7 +242,7 @@ public int Native_GetOption(Handle plugin, int numParams)
 
 public int Native_SetOption(Handle plugin, int numParams)
 {
-	SetOption(GetNativeCell(1), GetNativeCell(2), GetNativeCell(3));
+	SetOption(GetNativeCell(1), GetNativeCell(2), GetNativeCell(3), GetNativeCell(4));
 }
 
 public int Native_GetHitPerf(Handle plugin, int numParams)

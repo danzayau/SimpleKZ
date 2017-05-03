@@ -28,17 +28,17 @@ public int MenuHandler_Options(Menu menu, MenuAction action, int param1, int par
 	{
 		switch (param2)
 		{
-			case 0:CycleOption(param1, KZOption_ShowingTPMenu, false);
-			case 1:CycleOption(param1, KZOption_ShowingInfoPanel, false);
-			case 2:CycleOption(param1, KZOption_TimerText, false);
-			case 3:CycleOption(param1, KZOption_SpeedText, false);
-			case 4:CycleOption(param1, KZOption_ShowingKeys, false);
-			case 5:CycleOption(param1, KZOption_ShowingPlayers, false);
-			case 6:CycleOption(param1, KZOption_CheckpointMessages, false);
-			case 7:CycleOption(param1, KZOption_CheckpointSounds, false);
-			case 8:CycleOption(param1, KZOption_TeleportSounds, false);
-			case 9:CycleOption(param1, KZOption_ErrorSounds, false);
-			case 10:CycleOption(param1, KZOption_ShowingWeapon, false);
+			case 0:CycleOption(param1, KZOption_ShowingTPMenu);
+			case 1:CycleOption(param1, KZOption_ShowingInfoPanel);
+			case 2:CycleOption(param1, KZOption_TimerText);
+			case 3:CycleOption(param1, KZOption_SpeedText);
+			case 4:CycleOption(param1, KZOption_ShowingKeys);
+			case 5:CycleOption(param1, KZOption_ShowingPlayers);
+			case 6:CycleOption(param1, KZOption_CheckpointMessages);
+			case 7:CycleOption(param1, KZOption_CheckpointSounds);
+			case 8:CycleOption(param1, KZOption_TeleportSounds);
+			case 9:CycleOption(param1, KZOption_ErrorSounds);
+			case 10:CycleOption(param1, KZOption_ShowingWeapon);
 			case 11:
 			{
 				gB_CameFromOptionsMenu[param1] = true;

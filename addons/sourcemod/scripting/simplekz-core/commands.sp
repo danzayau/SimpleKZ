@@ -203,19 +203,19 @@ public Action CommandOptions(int client, int args)
 
 public Action CommandToggleShowPlayers(int client, int args)
 {
-	CycleOption(client, KZOption_ShowingPlayers);
+	CycleOption(client, KZOption_ShowingPlayers, true);
 	return Plugin_Handled;
 }
 
 public Action CommandToggleInfoPanel(int client, int args)
 {
-	CycleOption(client, KZOption_ShowingInfoPanel);
+	CycleOption(client, KZOption_ShowingInfoPanel, true);
 	return Plugin_Handled;
 }
 
 public Action CommandToggleShowWeapon(int client, int args)
 {
-	CycleOption(client, KZOption_ShowingWeapon);
+	CycleOption(client, KZOption_ShowingWeapon, true);
 	return Plugin_Handled;
 }
 
@@ -257,18 +257,18 @@ public Action CommandStyle(int client, int args)
 
 public Action CommandStandard(int client, int args)
 {
-	SetOption(client, KZOption_Style, KZStyle_Standard);
+	SetOption(client, KZOption_Style, KZStyle_Standard, true);
 	return Plugin_Handled;
 }
 
 public Action CommandLegacy(int client, int args)
 {
-	SetOption(client, KZOption_Style, KZStyle_Legacy);
+	SetOption(client, KZOption_Style, KZStyle_Legacy, true);
 	return Plugin_Handled;
 }
 
 public Action CommandCompetitive(int client, int args)
 {
-	SetOption(client, KZOption_Style, KZStyle_Competitive);
+	SetOption(client, KZOption_Style, KZStyle_Competitive, true);
 	return Plugin_Handled;
 } 

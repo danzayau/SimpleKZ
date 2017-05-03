@@ -437,9 +437,10 @@ native int SKZ_GetOption(int client, KZOption option);
  * @param client		Client index.
  * @param option		SimpleKZ option.
  * @param optionValue	New option value.
+ * @param printMessage	Whether to print option change messages.
  * @noreturn
  */
-native void SKZ_SetOption(int client, KZOption option, any optionValue);
+native void SKZ_SetOption(int client, KZOption option, any optionValue, bool printMessage = false);
 
 /**
  * Gets whether player's last takeoff was a perfect bunnyhop as adjusted by SimpleKZ.
