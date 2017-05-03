@@ -65,4 +65,12 @@ void JoinTeamAddCommandListeners()
 void ForceAllTalkOnRoundStart()
 {
 	SetConVarInt(gCV_FullAlltalk, 1);
+}
+
+void AutoRestartOnTeleportToStart(int client)
+{
+	if (gB_HasStartedThisMap[client] && g_AutoRestart[client] == KZAutoRestart_Enabled)
+	{
+		TimerStart(client, gI_LastCourseStarted[client], true);
+	}
 } 

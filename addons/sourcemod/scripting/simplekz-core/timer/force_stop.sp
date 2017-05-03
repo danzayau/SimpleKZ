@@ -34,7 +34,7 @@ void TimerForceStopOnChangeStyle(int client) // Called from options.sp (SetOptio
 
 void TimerForceStopOnTeleportToStart(int client)
 {
-	if (gB_CurrentMapIsKZPro)
+	if (gB_CurrentMapIsKZPro && g_AutoRestart[client] == KZAutoRestart_Disabled)
 	{
 		TimerForceStop(client);
 	}

@@ -267,6 +267,7 @@ public void SKZ_OnTeleportToStart(int client)
 {
 	TimerForceStopOnTeleportToStart(client);
 	WastedTimeOnTeleportToStart(client);
+	AutoRestartOnTeleportToStart(client);
 }
 
 public void SKZ_OnTeleportToCheckpoint(int client)

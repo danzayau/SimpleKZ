@@ -58,11 +58,6 @@ void TeleportToStart(int client)
 			CS_RespawnPlayer(client);
 		}
 		TeleportDo(client, gF_StartOrigin[client], gF_StartAngles[client]);
-		
-		if (g_AutoRestart[client] == KZAutoRestart_Enabled)
-		{
-			TimerStart(client, gI_LastCourseStarted[client], true);
-		}
 	}
 	else
 	{
