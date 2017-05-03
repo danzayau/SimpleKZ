@@ -61,7 +61,7 @@ void TeleportToStart(int client)
 		
 		if (g_AutoRestart[client] == KZAutoRestart_Enabled)
 		{
-			TimerStart(client, gI_LastCourseStarted[client]);
+			TimerStart(client, gI_LastCourseStarted[client], true);
 		}
 	}
 	else

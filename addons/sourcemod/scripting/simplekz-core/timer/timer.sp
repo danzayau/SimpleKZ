@@ -29,10 +29,10 @@ void TimerOnPlayerRunCmd(int client)
 }
 
 // Starts the player's timer for the specified course.
-void TimerStart(int client, int course)
+void TimerStart(int client, int course, bool allowOffGround = false)
 {
 	// Have to be on ground, not noclipping, and haven't just started timer
-	if (!g_KZPlayer[client].onGround || g_KZPlayer[client].noclipping
+	if (!allowOffGround && !g_KZPlayer[client].onGround || g_KZPlayer[client].noclipping
 		 || (gB_TimerRunning[client] && gF_CurrentTime[client] < 0.1))
 	{
 		return;
