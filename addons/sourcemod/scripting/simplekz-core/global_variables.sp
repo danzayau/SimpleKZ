@@ -9,6 +9,7 @@
 KZPlayer g_KZPlayer[MAXPLAYERS + 1];
 bool gB_LateLoad;
 bool gB_BaseComm;
+bool gB_SKZLocalRanks;
 bool gB_ClientIsSetUp[MAXPLAYERS + 1];
 
 // Styles translation phrases for chat messages (respective to KZStyle enum)

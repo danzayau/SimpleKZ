@@ -1,7 +1,7 @@
 /*
 	API
 	
-	Simple KZ Local DB API.
+	SimpleKZ Local DB API.
 */
 
 /*===============================  Forwards  ===============================*/
@@ -25,14 +25,7 @@ void Call_OnDatabaseConnect()
 void Call_OnClientSetup(int client, int steamID)
 {
 	Call_StartForward(gH_OnClientSetup);
-	if (IsValidClient(client) && GetSteamAccountID(client) == steamID)
-	{
-		Call_PushCell(client);
-	}
-	else
-	{
-		Call_PushCell(-1);
-	}
+	Call_PushCell(client);
 	Call_PushCell(steamID);
 	Call_Finish();
 }
@@ -47,14 +40,7 @@ void Call_OnMapSetup()
 void Call_OnTimeInserted(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS)
 {
 	Call_StartForward(gH_OnTimeInserted);
-	if (IsValidClient(client) && GetSteamAccountID(client) == steamID)
-	{
-		Call_PushCell(client);
-	}
-	else
-	{
-		Call_PushCell(-1);
-	}
+	Call_PushCell(client);
 	Call_PushCell(steamID);
 	Call_PushCell(mapID);
 	Call_PushCell(course);

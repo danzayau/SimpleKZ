@@ -25,8 +25,8 @@ public Plugin myinfo =
 
 
 
-Handle gH_SKZ_OnNewRecord;
-Handle gH_SKZ_OnNewPersonalBest;
+Handle gH_OnTimeProcessed;
+Handle gH_OnNewRecord;
 
 Database gH_DB = null;
 DatabaseType g_DBType = DatabaseType_None;
@@ -119,27 +119,44 @@ public void SKZ_DB_OnDatabaseConnect(Database database, DatabaseType DBType)
 	CompletionMVPStarsUpdateAll();
 }
 
-public void SKZ_DB_OnTimeInserted(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS)
+public void SKZ_DB_OnTimeInserted(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoRunTimeMS)
 {
-	if (IsValidClient(client))
+	if (IsValidClient(client) && steamID == GetSteamAccountID(client))
 	{
-		DB_ProcessNewTime(client, steamID, mapID, course, style, runTimeMS, teleportsUsed);
+		DB_ProcessNewTime(client, steamID, mapID, course, style, runTimeMS, teleportsUsed, theoRunTimeMS);
 	}
 }
 
-public void SKZ_DB_OnNewRecord(int client, int steamID, int mapID, int course, KZStyle style, KZRecordType recordType, float runTime)
+public void SKZ_LR_OnTimeProcessed(
+	int client, 
+	int steamID, 
+	int mapID, 
+	int course, 
+	KZStyle style, 
+	float runTime, 
+	int teleportsUsed, 
+	float theoRunTime, 
+	bool firstTime, 
+	float pbDiff, 
+	int rank, 
+	int maxRank, 
+	bool firstTimePro, 
+	float pbDiffPro, 
+	int rankPro, 
+	int maxRankPro)
 {
-	if (IsValidClient(client) && mapID == SKZ_DB_GetCurrentMapID())
+	if (IsValidClient(client) && steamID == GetSteamAccountID(client) && mapID == SKZ_DB_GetCurrentMapID())
+	{
+		AnnounceNewTime(client, course, style, runTime, teleportsUsed, firstTime, pbDiff, rank, maxRank, firstTimePro, pbDiffPro, rankPro, maxRankPro);
+	}
+}
+
+public void SKZ_LR_OnNewRecord(int client, int steamID, int mapID, int course, KZStyle style, KZRecordType recordType)
+{
+	if (IsValidClient(client) && steamID == GetSteamAccountID(client) && mapID == SKZ_DB_GetCurrentMapID())
 	{
 		AnnounceNewRecord(client, course, style, recordType);
-	}
-}
-
-public void SKZ_DB_OnNewPersonalBest(int client, int steamID, int mapID, int course, KZStyle style, KZTimeType timeType, bool firstTime, float runTime, float improvement, int rank, int maxRank)
-{
-	if (IsValidClient(client) && mapID == SKZ_DB_GetCurrentMapID() && rank != 1)
-	{
-		AnnounceNewPersonalBest(client, course, style, timeType, firstTime, improvement, rank, maxRank);
+		PlayNewRecordSound();
 	}
 }
 

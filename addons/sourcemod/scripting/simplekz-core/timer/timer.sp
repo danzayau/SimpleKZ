@@ -66,7 +66,10 @@ void TimerEnd(int client, int course)
 	
 	gB_HasEndedThisMap[client] = true;
 	
-	PrintEndTimeString(client);
+	if (!gB_SKZLocalRanks)
+	{
+		PrintEndTimeString(client);
+	}
 	PlayTimerEndSound(client);
 	
 	if (g_SlayOnEnd[client] == KZSlayOnEnd_Enabled)

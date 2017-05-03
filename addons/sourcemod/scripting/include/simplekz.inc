@@ -38,7 +38,7 @@ stock char[] SKZ_FormatTime(float time, bool precise = true)
 	{
 		if (precise)
 		{
-			FormatEx(formattedTime, sizeof(formattedTime), "%d:%02d.%02d", minutes, seconds, centiseconds);
+			FormatEx(formattedTime, sizeof(formattedTime), "%02d:%02d.%02d", minutes, seconds, centiseconds);
 		}
 		else
 		{
