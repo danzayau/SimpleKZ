@@ -78,5 +78,10 @@ void Resume(int client)
 
 void PauseOnStartNoclipping(int client)
 {
-	gB_Paused[client] = false; // Player forcefully left paused state by noclipping
+	gB_Paused[client] = false;
+}
+
+void PauseOnPlayerDeath(int client)
+{
+	gB_Paused[client] = false;
 } 

@@ -2,7 +2,7 @@
 
 ## SimpleKZ Core
 
-### Timer Commands
+### Timer
 
  * ```!checkpoint``` - Set your checkpoint.
  * ```!gocheck``` - Teleport to your checkpoint.

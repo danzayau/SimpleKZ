@@ -104,6 +104,11 @@ public void SKZ_OnClientSetup(int client)
 	DB_LoadOptions(g_KZPlayer[client]);
 }
 
+public void SKZ_DB_OnMapSetup(int mapID)
+{
+	DB_SetupMapCourses();
+}
+
 public void OnClientDisconnect(int client)
 {
 	if (!IsFakeClient(client))
@@ -120,11 +125,6 @@ public void OnMapStart()
 public void SKZ_OnTimerEnd(int client, int course, KZStyle style, float time, int teleportsUsed, float theoreticalTime)
 {
 	DB_SaveTime(g_KZPlayer[client], course, style, time, teleportsUsed, theoreticalTime);
-}
-
-public void SKZ_DB_OnMapIDRetrieved(int mapID)
-{
-	DB_SetupMapCourses();
 }
 
 

@@ -47,13 +47,13 @@
 	{
 		// Bill finished Bonus 1 in 01:23.45 (4 TP | 01.02.34) [Style].
 		"#format"	"{1:N},{2:d},{3:s},{4:d},{5:s},{6:t}"
-		"en"		"{lime}{1}{grey} finished {darkblue}Bonus {2}{grey} in {default}{3}{grey} ({yellow}{4} TP{grey} | {grey}{5}{grey}) {grey}[{purple}{6}{grey}]."
+		"en"		"{lime}{1}{grey} finished {bluegrey}Bonus {2}{grey} in {default}{3}{grey} ({yellow}{4} TP{grey} | {grey}{5}{grey}) {grey}[{purple}{6}{grey}]."
 	}
 	"Beat Bonus (Pro)"
 	{
 		// Bill finished Bonus 1 in 01:23.45 (PRO) [Style].
 		"#format"	"{1:N},{2:d},{3:s},{4:t}"
-		"en"		"{lime}{1}{grey} finished {darkblue}Bonus {2}{grey} in {default}{3}{grey} ({blue}PRO{grey}) {grey}[{purple}{4}{grey}]."
+		"en"		"{lime}{1}{grey} finished {bluegrey}Bonus {2}{grey} in {default}{3}{grey} ({blue}PRO{grey}) {grey}[{purple}{4}{grey}]."
 	}
 	"Time Stopped"
 	{

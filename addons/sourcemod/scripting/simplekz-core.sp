@@ -189,6 +189,7 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) //
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	TimerForceStopOnPlayerDeath(client);
+	PauseOnPlayerDeath(client);
 }
 
 public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) // player_team hook

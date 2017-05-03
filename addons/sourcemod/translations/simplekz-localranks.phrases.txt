@@ -17,7 +17,7 @@
 	{
 		// kz_fakemap Main Course wasn't found.
 		"#format"	"{1:s}"
-		"en"		"{default}{1} {darkblue}Main Course{grey} wasn't found."
+		"en"		"{default}{1} {bluegrey}Main Course{grey} wasn't found."
 	}
 	"Bonus Not Found"
 	{
