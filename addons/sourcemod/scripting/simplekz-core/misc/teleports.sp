@@ -67,6 +67,7 @@ void TeleportToStart(int client)
 	else
 	{
 		CS_RespawnPlayer(client);
+		gB_Paused[client] = false;
 	}
 	
 	Call_SKZ_OnTeleportToStart(client);
