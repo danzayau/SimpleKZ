@@ -28,9 +28,9 @@ void InfoPanelUpdate(int client)
 	{
 		PrintHintText(client, "%s", GetInfoPanel(g_KZPlayer[client], g_KZPlayer[client]));
 	}
-	else
+	else if (IsSpectatingSomeone(client))
 	{
-		int spectatedClient = GetSpectatedClient(client);
+		int spectatedClient = GetObserverTarget(client);
 		if (IsValidClient(spectatedClient))
 		{
 			PrintHintText(client, "%s", GetInfoPanel(g_KZPlayer[client], g_KZPlayer[spectatedClient]));

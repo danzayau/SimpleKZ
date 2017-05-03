@@ -19,7 +19,7 @@ public Action OnSetTransmitClient(int entity, int client)
 {
 	if (g_ShowingPlayers[client] == KZShowingPlayers_Disabled
 		 && entity != client
-		 && entity != GetSpectatedClient(client))
+		 && (!IsSpectatingSomeone(client) || entity != GetObserverTarget(client)))
 	{
 		return Plugin_Handled;
 	}

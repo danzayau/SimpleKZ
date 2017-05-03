@@ -11,6 +11,21 @@
 
 
 
+/*===============================  Enumerations  ===============================*/
+
+enum ObsMode
+{
+	ObsMode_None = 0,  // Not in spectator mode
+	ObsMode_DeathCam,  // Special mode for death cam animation
+	ObsMode_FreezeCam,  // Zooms to a target, and freeze-frames on them
+	ObsMode_Fixed,  // View from a fixed camera position
+	ObsMode_InEye,  // Follow a player in first person view
+	ObsMode_Chase,  // Follow a player in third person view
+	ObsMode_Roaming // Free roaming
+};
+
+
+
 /*===============================  Stocks  ===============================*/
 
 /**
@@ -107,12 +122,35 @@ stock void String_ToLower(const char[] input, char[] output, int size)
 }
 
 /**
+ * Gets the client's observer mode.
+ *
+ * @param client		Client index.
+ * @return				Current observer mode.
+ */
+stock ObsMode GetObserverMode(int client)
+{
+	return view_as<ObsMode>(GetEntProp(client, Prop_Send, "m_iObserverMode"));
+}
+
+/**
+ * Gets whether client is spectating someone.
+ *
+ * @param client		Client index.
+ * @return				Whether client is spectating someone.
+ */
+stock bool IsSpectatingSomeone(int client)
+{
+	ObsMode mode = GetObserverMode(client);
+	return mode == ObsMode_InEye || mode == ObsMode_Chase;
+}
+
+/**
  * Gets the player a client is spectating.
  *
- * @param client		Spectating client.
- * @return				Client index of player they are spectating.
+ * @param client		Client index.
+ * @return				Client index of target.
  */
-stock int GetSpectatedClient(int client)
+stock int GetObserverTarget(int client)
 {
 	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
 }
@@ -128,7 +166,7 @@ stock void EmitSoundToClientSpectators(int client, const char[] sound)
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (IsValidClient(i) && GetSpectatedClient(i) == client)
+		if (IsValidClient(i) && IsSpectatingSomeone(i) && GetObserverTarget(i) == client)
 		{
 			EmitSoundToClient(i, sound);
 		}

@@ -15,8 +15,9 @@ void TimerTextUpdate(int client)
 	{
 		TimerTextShow(g_KZPlayer[client], g_KZPlayer[client]);
 	}
-	else {
-		int spectatedClient = GetSpectatedClient(client);
+	else if (IsSpectatingSomeone(client))
+	{
+		int spectatedClient = GetObserverTarget(client);
 		if (IsValidClient(spectatedClient))
 		{
 			TimerTextShow(g_KZPlayer[client], g_KZPlayer[spectatedClient]);
