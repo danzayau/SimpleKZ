@@ -6,8 +6,8 @@
 
  * **Timer** - Obviously!
  * **Movement Styles** - Custom movement mechanics. Includes Legacy (KZTimer) and Competitive styles.
- * **Customisable Experience** - Plenty of options to provide the best possible experience for players. 
- * **Database Support** - Store player options, times and more using either a MySQL or SQLite database.
+ * **Customisable Experience** - Tonnes of options to provide the best possible experience for players. 
+ * **Database Support** - Store player times, options and more using either a MySQL or SQLite database.
  * Map bonus support, HUD, teleport menu, noclip, !goto, !measure and much, much more.
 
 ## Usage
@@ -18,7 +18,7 @@
  * 128 Tick
  * [**MovementAPI Plugin**](https://github.com/danzayau/MovementAPI) (included)
 
-### Server Installation
+### Plugin Installation
 
  * Download and extract ```SimpleKZ-vX.X.X.zip``` from the latest GitHub release to ```csgo/``` in the server directory.
  * Check ```csgo/cfg/sourcemod/simplekz/kz.cfg``` is appropriate for the server.
