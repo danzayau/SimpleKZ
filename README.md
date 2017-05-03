@@ -15,20 +15,20 @@
 ### Server Requirements
 
  * SourceMod 1.8+
- * 128 Tick Server
+ * 128 Tick
  * [**MovementAPI Plugin**](https://github.com/danzayau/MovementAPI) (included)
 
 ### Server Installation
 
- * Download and extract ```SimpleKZ-vX.X.X.zip``` from the latest GitHub release to ```csgo/``` in your server directory.
- * Check ```csgo/cfg/sourcemod/simplekz/kz.cfg``` is appropriate for your server.
+ * Download and extract ```SimpleKZ-vX.X.X.zip``` from the latest GitHub release to ```csgo/``` in the server directory.
+ * Check ```csgo/cfg/sourcemod/simplekz/kz.cfg``` is appropriate for the server.
  * ConVar config files are also generated in that directory after starting the plugins.
  * Add a MySQL/SQLite database called ```simplekz``` to ```csgo/addons/sourcemod/configs/databases.cfg```.
  * Use ```!updatemappool``` to populate the ranked map pool with those in ```csgo/cfg/sourcemod/simplekz/mappool.cfg```.
  
 ### Mapping
 
-To add a timer button to your map, use a ```func_button``` with a specific name.
+To add a timer button to a map, use a ```func_button``` with a specific name.
 
  * Start button is named ```climb_startbutton```.
  * End button is named ```climb_endbutton```.
@@ -36,3 +36,5 @@ To add a timer button to your map, use a ```func_button``` with a specific name.
  * Bonus end buttons are named ```climb_bonusX_endbutton``` where X is the bonus number.
  
 **NOTE:** Enable both the ```Don't move``` and ```Toggle``` flags to avoid any usability issues.
+
+### [Commands](COMMANDS.md)

@@ -30,10 +30,10 @@
 ### Other
 
  * ```!nc``` - Toggle noclip.
- * ```+noclip``` - Noclip (bind a key to it in console).
- * ```!spec``` - Join spectators or spectate a specified player.
+ * ```+noclip``` - Noclip (bind a key to it).
+ * ```!spec``` - Join spectators or spectate a specified player. Usage ```!spec <player>```
  * ```!goto``` - Teleport to another player. Usage: ```!goto <player>```
- * ```!measure``` - Open the measurement menu.
+ * ```!measure``` - Open the distance measurement menu.
  * ```!stopsound``` - Stop all sounds e.g. map soundscapes (music).
  
 ## SimpleKZ Local Ranks
