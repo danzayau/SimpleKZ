@@ -34,6 +34,12 @@ void StyleOnClientPreThinkPost(int client)
 	TweakConVars(g_KZPlayer[client]);
 }
 
+void StyleOnPlayerSpawn(int client)
+{
+	gB_SKZHitPerf[client] = false;
+	gF_SKZTakeoffSpeed[client] = 0.0;
+}
+
 void StyleOnStartTouchGround(int client)
 {
 	ReduceDuckSlowdown(g_KZPlayer[client]);
@@ -48,7 +54,7 @@ void StyleOnStopTouchGround(int client, bool jumped)
 	else
 	{
 		gB_SKZHitPerf[client] = false;
-		gF_SKZTakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
+		gF_SKZTakeoffSpeed[client] = Movement_GetTakeoffSpeed(client);
 	}
 	
 	if (g_Style[client] == KZStyle_Standard)
@@ -57,16 +63,13 @@ void StyleOnStopTouchGround(int client, bool jumped)
 	}
 }
 
-void StyleOnStopTouchLadder(int client)
+void StyleOnChangeMoveType(int client, MoveType newMoveType)
 {
-	gB_SKZHitPerf[client] = false;
-	gF_SKZTakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
-}
-
-void StyleOnStopNoclipping(int client)
-{
-	gB_SKZHitPerf[client] = false;
-	gF_SKZTakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
+	if (newMoveType == MOVETYPE_WALK)
+	{
+		gB_SKZHitPerf[client] = false;
+		gF_SKZTakeoffSpeed[client] = Movement_GetTakeoffSpeed(client);
+	}
 }
 
 
@@ -244,7 +247,7 @@ static void TweakJump(KZPlayer player)
 			player.GetBaseVelocity(baseVelocity);
 			player.GetLandingVelocity(newVelocity);
 			newVelocity[2] = velocity[2];
-			AdjustVectorSpeed(newVelocity, CalcTweakedTakeoffSpeed(player), newVelocity);
+			SetVectorHorizontalLength(newVelocity, CalcTweakedTakeoffSpeed(player));
 			AddVectors(newVelocity, baseVelocity, newVelocity);
 			player.SetVelocity(newVelocity);
 			gF_SKZTakeoffSpeed[player.id] = player.speed;

@@ -11,11 +11,17 @@ void TimerForceStopOnRoundStart()
 	TimerForceStopAll();
 }
 
-void TimerForceStopOnStartNoclipping(int client)
+void TimerForceStopOnChangeMoveType(int client, MoveType newMoveType)
 {
-	if (TimerForceStop(client))
+	// Prevent noclip during times, and any other unusual move types
+	if (newMoveType != MOVETYPE_WALK
+		 && newMoveType != MOVETYPE_LADDER
+		 && newMoveType != MOVETYPE_NONE)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Noclipped)");
+		if (TimerForceStop(client))
+		{
+			CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Noclipped)");
+		}
 	}
 }
 

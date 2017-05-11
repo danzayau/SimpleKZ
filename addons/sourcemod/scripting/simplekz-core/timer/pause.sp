@@ -76,9 +76,9 @@ void Resume(int client)
 	Call_SKZ_OnResume(client);
 }
 
-void PauseOnStartNoclipping(int client)
+void PauseOnChangeMoveType(int client, MoveType newMoveType)
 {
-	gB_Paused[client] = false;
+	gB_Paused[client] = gB_Paused[client] && newMoveType == MOVETYPE_NONE;
 }
 
 void PauseOnPlayerDeath(int client)

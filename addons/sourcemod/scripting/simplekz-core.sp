@@ -185,6 +185,7 @@ public Action OnClientSayCommand(int client, const char[] command, const char[] 
 public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) // player_spawn hook
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	StyleOnPlayerSpawn(client);
 	HideCSGOHUD(client);
 	HideWeaponUpdate(client);
 	PistolUpdate(client);
@@ -242,21 +243,12 @@ public void Movement_OnStopTouchGround(int client, bool jumped)
 	InfoPanelUpdate(client);
 }
 
-public void Movement_OnStopTouchLadder(int client)
+public void Movement_OnChangeMoveType(int client, MoveType oldMoveType, MoveType newMoveType)
 {
-	StyleOnStopTouchLadder(client);
+	StyleOnChangeMoveType(client, newMoveType);
+	TimerForceStopOnChangeMoveType(client, newMoveType);
+	PauseOnChangeMoveType(client, newMoveType);
 	InfoPanelUpdate(client);
-}
-
-public void Movement_OnStartNoclipping(int client)
-{
-	TimerForceStopOnStartNoclipping(client);
-	PauseOnStartNoclipping(client);
-}
-
-public void Movement_OnStopNoclipping(int client)
-{
-	StyleOnStopNoclipping(client);
 }
 
 
