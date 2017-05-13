@@ -44,7 +44,7 @@ public int MenuHandler_Measure(Handle menu, MenuAction action, int param1, int p
 				if (gB_MeasurePosSet[param1][0] && gB_MeasurePosSet[param1][1])
 				{
 					float horizontalDist = GetVectorHorizontalDistance(gF_MeasurePos[param1][0], gF_MeasurePos[param1][1]);
-					float verticalDist = GetVectorHorizontalDistance(gF_MeasurePos[param1][0], gF_MeasurePos[param1][1]);
+					float verticalDist = gF_MeasurePos[param1][1][2] - gF_MeasurePos[param1][0][2];
 					CPrintToChat(param1, "%t %t", "KZ Prefix", "Measure Result", horizontalDist, verticalDist);
 					MeasureBeam(param1, gF_MeasurePos[param1][0], gF_MeasurePos[param1][1], 5.0, 2.0, 200, 200, 200);
 				}
