@@ -4,7 +4,9 @@
 	Prints the player's personal times on a map course and given style.
 */
 
-void DB_PrintPBs(int client, int targetSteamID, int mapID, int course, KZStyle style)
+
+
+void DB_PrintPBs(int client, int targetSteamID, int mapID, int course, int style)
 {
 	char query[1024];
 	
@@ -53,7 +55,7 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	data.Reset();
 	int client = data.ReadCell();
 	int course = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))
@@ -167,7 +169,7 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	}
 }
 
-void DB_PrintPBs_FindMap(int client, int targetSteamID, const char[] mapSearch, int course, KZStyle style)
+void DB_PrintPBs_FindMap(int client, int targetSteamID, const char[] mapSearch, int course, int style)
 {
 	DataPack data = new DataPack();
 	data.WriteCell(client);
@@ -187,7 +189,7 @@ public void DB_TxnSuccess_PrintPBs_FindMap(Handle db, DataPack data, int numQuer
 	char mapSearch[33];
 	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))
@@ -207,7 +209,7 @@ public void DB_TxnSuccess_PrintPBs_FindMap(Handle db, DataPack data, int numQuer
 	}
 }
 
-void DB_PrintPBs_FindPlayerAndMap(int client, const char[] playerSearch, const char[] mapSearch, int course, KZStyle style)
+void DB_PrintPBs_FindPlayerAndMap(int client, const char[] playerSearch, const char[] mapSearch, int course, int style)
 {
 	DataPack data = new DataPack();
 	data.WriteCell(client);
@@ -228,7 +230,7 @@ public void DB_TxnSuccess_PrintPBs_FindPlayerAndMap(Handle db, DataPack data, in
 	char mapSearch[33];
 	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))

@@ -11,9 +11,10 @@
 
 
 
-/*===============================  Enumerations  ===============================*/
+// =========================  ENUMERATIONS  ========================= //
 
-enum KZRecordType {
+enum KZRecordType
+{
 	KZRecordType_Nub = 0, 
 	KZRecordType_Pro, 
 	KZRecordType_NubAndPro
@@ -21,7 +22,7 @@ enum KZRecordType {
 
 
 
-/*===============================  Forwards  ===============================*/
+// =========================  FORWARDS  ========================= //
 
 /**
  * Called when a player's time has been processed by SimpleKZ Local Ranks.
@@ -33,7 +34,7 @@ enum KZRecordType {
  * @param style			Player's movement style.
  * @param runTime		Player's end time.
  * @param teleportsUsed	Number of teleportsUsed used by player.
- * @param theoTime		Theoretical end time without using teleportsUsed.
+ * @param theoTime		Theoretical end time without teleports.
  * @param firstTime		Whether this is player's first time on this course.
  * @param pbDiff		Difference between new time and PB in seconds.
  * @param rank			New rank of the player's PB time.
@@ -49,7 +50,7 @@ forward void SKZ_LR_OnTimeProcessed(
 	int steamID, 
 	int mapID, 
 	int course, 
-	KZStyle style, 
+	int style, 
 	float runTime, 
 	int teleportsUsed, 
 	float theoRunTime, 
@@ -74,11 +75,17 @@ forward void SKZ_LR_OnTimeProcessed(
  * @param recordType		Type of record.
  * @noreturn
  */
-forward void SKZ_LR_OnNewRecord(int client, int steamID, int mapID, int course, KZStyle style, KZRecordType recordType);
+forward void SKZ_LR_OnNewRecord(
+	int client, 
+	int steamID, 
+	int mapID, 
+	int course, 
+	int style, 
+	KZRecordType recordType);
 
 
 
-/*===============================  Dependency  ===============================*/
+// =========================  DEPENDENCY  ========================= //
 
 public SharedPlugin __pl_simplekz_localranks = 
 {

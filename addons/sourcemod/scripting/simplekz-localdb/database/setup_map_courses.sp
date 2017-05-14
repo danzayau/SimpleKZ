@@ -4,6 +4,8 @@
 	Inserts the map's courses into the database.
 */
 
+
+
 void DB_SetupMapCourses()
 {
 	int entity = -1;

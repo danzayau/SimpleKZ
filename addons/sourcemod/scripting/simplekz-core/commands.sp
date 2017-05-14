@@ -4,6 +4,20 @@
 	Commands for player and admin use.
 */
 
+
+
+static char radioCommands[][] = 
+{
+	"coverme", "takepoint", "holdpos", "regroup", "followme", "takingfire", "go", 
+	"fallback", "sticktog", "getinpos", "stormfront", "report", "roger", "enemyspot", 
+	"needbackup", "sectorclear", "inposition", "reportingin", "getout", "negative", 
+	"enemydown", "compliment", "thanks", "cheer"
+};
+
+
+
+// =========================  PUBLIC  ========================= //
+
 void CreateCommands()
 {
 	RegConsoleCmd("sm_menu", CommandToggleMenu, "[KZ] Toggle the visibility of the teleport menu.");
@@ -36,16 +50,24 @@ void CreateCommands()
 	RegConsoleCmd("sm_c", CommandCompetitive, "[KZ] Switch to the Competitive style.");
 }
 
+void CreateCommandListeners()
+{
+	AddCommandListener(CommandJoinTeam, "jointeam");
+	for (int i = 0; i < sizeof(radioCommands); i++)
+	{
+		AddCommandListener(CommandBlock, radioCommands[i]);
+	}
+}
 
 
-/*===============================  Command Listener Handlers  ===============================*/
+
+// =========================  COMMAND HANDLERS  ========================= //
 
 public Action CommandBlock(int client, const char[] command, int argc)
 {
 	return Plugin_Handled;
 }
 
-// Allow unlimited team changes
 public Action CommandJoinTeam(int client, const char[] command, int argc)
 {
 	char teamString[4];
@@ -55,41 +77,37 @@ public Action CommandJoinTeam(int client, const char[] command, int argc)
 	return Plugin_Handled;
 }
 
-
-
-/*===============================  Command Handlers  ===============================*/
-
 public Action CommandToggleMenu(int client, int args)
 {
-	CycleOption(client, KZOption_ShowingTPMenu);
+	CycleOption(client, Option_ShowingTPMenu);
 	return Plugin_Handled;
 }
 
 public Action CommandMakeCheckpoint(int client, int args)
 {
 	MakeCheckpoint(client);
-	TPMenuUpdate(client);
+	UpdateTPMenu(client);
 	return Plugin_Handled;
 }
 
 public Action CommandTeleportToCheckpoint(int client, int args)
 {
 	TeleportToCheckpoint(client);
-	TPMenuUpdate(client);
+	UpdateTPMenu(client);
 	return Plugin_Handled;
 }
 
 public Action CommandUndoTeleport(int client, int args)
 {
 	UndoTeleport(client);
-	TPMenuUpdate(client);
+	UpdateTPMenu(client);
 	return Plugin_Handled;
 }
 
 public Action CommandTeleportToStart(int client, int args)
 {
 	TeleportToStart(client);
-	TPMenuUpdate(client);
+	UpdateTPMenu(client);
 	return Plugin_Handled;
 }
 
@@ -103,13 +121,13 @@ public Action CommandTogglePause(int client, int args)
 	{
 		TogglePause(client);
 	}
-	TPMenuUpdate(client);
+	UpdateTPMenu(client);
 	return Plugin_Handled;
 }
 
 public Action CommandStopTimer(int client, int args)
 {
-	if (TimerForceStopCommand(client))
+	if (TimerStop(client))
 	{
 		CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped");
 	}
@@ -149,11 +167,11 @@ public Action CommandGoto(int client, int args)
 			else
 			{
 				GotoPlayer(client, target);
-				if (gB_TimerRunning[client])
+				if (GetTimerRunning(client))
 				{
 					CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Goto)");
 				}
-				SKZ_ForceStopTimer(client);
+				TimerStop(client);
 			}
 		}
 	}
@@ -197,37 +215,37 @@ public Action CommandSpec(int client, int args)
 
 public Action CommandOptions(int client, int args)
 {
-	OptionsMenuDisplay(client);
+	DisplayOptionsMenu(client);
 	return Plugin_Handled;
 }
 
 public Action CommandToggleShowPlayers(int client, int args)
 {
-	CycleOption(client, KZOption_ShowingPlayers, true);
+	CycleOption(client, Option_ShowingPlayers, true);
 	return Plugin_Handled;
 }
 
 public Action CommandToggleInfoPanel(int client, int args)
 {
-	CycleOption(client, KZOption_ShowingInfoPanel, true);
+	CycleOption(client, Option_ShowingInfoPanel, true);
 	return Plugin_Handled;
 }
 
 public Action CommandToggleShowWeapon(int client, int args)
 {
-	CycleOption(client, KZOption_ShowingWeapon, true);
+	CycleOption(client, Option_ShowingWeapon, true);
 	return Plugin_Handled;
 }
 
 public Action CommandMeasureMenu(int client, int args)
 {
-	MeasureMenuDisplay(client);
+	DisplayMeasureMenu(client);
 	return Plugin_Handled;
 }
 
 public Action CommandPistolMenu(int client, int args)
 {
-	PistolMenuDisplay(client);
+	DisplayPistolMenu(client);
 	return Plugin_Handled;
 }
 
@@ -239,36 +257,36 @@ public Action CommandToggleNoclip(int client, int args)
 
 public Action CommandEnableNoclip(int client, int args)
 {
-	g_KZPlayer[client].moveType = MOVETYPE_NOCLIP;
+	Movement_SetMoveType(client, MOVETYPE_NOCLIP);
 	return Plugin_Handled;
 }
 
 public Action CommandDisableNoclip(int client, int args)
 {
-	g_KZPlayer[client].moveType = MOVETYPE_WALK;
+	Movement_SetMoveType(client, MOVETYPE_WALK);
 	return Plugin_Handled;
 }
 
 public Action CommandStyle(int client, int args)
 {
-	StyleMenuDisplay(client);
+	DisplayStyleMenu(client);
 	return Plugin_Handled;
 }
 
 public Action CommandStandard(int client, int args)
 {
-	SetOption(client, KZOption_Style, KZStyle_Standard, true);
+	SetOption(client, Option_Style, Style_Standard, true);
 	return Plugin_Handled;
 }
 
 public Action CommandLegacy(int client, int args)
 {
-	SetOption(client, KZOption_Style, KZStyle_Legacy, true);
+	SetOption(client, Option_Style, Style_Legacy, true);
 	return Plugin_Handled;
 }
 
 public Action CommandCompetitive(int client, int args)
 {
-	SetOption(client, KZOption_Style, KZStyle_Competitive, true);
+	SetOption(client, Option_Style, Style_Competitive, true);
 	return Plugin_Handled;
 } 

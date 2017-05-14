@@ -4,35 +4,51 @@
 	Uses ShowHudText to show current run time somewhere on the screen.
 */
 
-void TimerTextUpdate(int client)
+
+
+// =========================  PUBLIC  ========================= //
+
+void UpdateTimerText(int client)
 {
-	if (IsFakeClient(client))
+	KZPlayer player = new KZPlayer(client);
+	
+	if (player.fake
+		 || player.timerText != TimerText_Bottom && player.timerText != TimerText_Top)
 	{
 		return;
 	}
 	
-	if (IsPlayerAlive(client))
+	if (player.alive)
 	{
-		TimerTextShow(g_KZPlayer[client], g_KZPlayer[client]);
+		TimerTextShow(player, player);
 	}
-	else if (IsSpectatingSomeone(client))
+	else if (player.hasSpecTarget)
 	{
-		int spectatedClient = GetObserverTarget(client);
-		if (IsValidClient(spectatedClient))
-		{
-			TimerTextShow(g_KZPlayer[client], g_KZPlayer[spectatedClient]);
-		}
+		KZPlayer targetPlayer = new KZPlayer(player.specTarget);
+		TimerTextShow(player, targetPlayer);
 	}
 }
 
 
 
-/*===============================  Static Functions  ===============================*/
+// =========================  LISTENERS  ========================= //
+
+void OnPlayerRunCmd_TimerText(int client, int tickcount)
+{
+	if ((tickcount + client) % 12 == 0)
+	{
+		UpdateTimerText(client);
+	}
+}
+
+
+
+// =========================  PRIVATE  ========================= //
 
 static void TimerTextShow(KZPlayer player, KZPlayer targetPlayer)
 {
-	if (player.timerText == KZTimerText_Disabled
-		 || player.timerText == KZTimerText_InfoPanel
+	if (player.timerText == TimerText_Disabled
+		 || player.timerText == TimerText_InfoPanel
 		 || !targetPlayer.timerRunning)
 	{
 		return;
@@ -40,13 +56,13 @@ static void TimerTextShow(KZPlayer player, KZPlayer targetPlayer)
 	
 	switch (player.timerText)
 	{
-		case KZTimerText_Top:
+		case TimerText_Top:
 		{
-			SetHudTextParams(-1.0, 0.013, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
+			SetHudTextParams(-1.0, 0.013, 0.5, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
 		}
-		case KZTimerText_Bottom:
+		case TimerText_Bottom:
 		{
-			SetHudTextParams(-1.0, 0.957, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
+			SetHudTextParams(-1.0, 0.957, 0.5, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
 		}
 	}
 	

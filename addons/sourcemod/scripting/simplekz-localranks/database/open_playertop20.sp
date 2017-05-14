@@ -6,7 +6,9 @@
 		menus/playertop.sp
 */
 
-void DB_OpenPlayerTop20(int client, KZTimeType timeType, KZStyle style)
+
+
+void DB_OpenPlayerTop20(int client, int timeType, int style)
 {
 	char query[1024];
 	
@@ -19,17 +21,17 @@ void DB_OpenPlayerTop20(int client, KZTimeType timeType, KZStyle style)
 	
 	// Get top 20 players
 	switch (timeType) {
-		case KZTimeType_Nub:
+		case TimeType_Nub:
 		{
 			FormatEx(query, sizeof(query), sql_gettopplayers_map, style);
 			txn.AddQuery(query);
 		}
-		case KZTimeType_Pro:
+		case TimeType_Pro:
 		{
 			FormatEx(query, sizeof(query), sql_gettopplayers_pro, style);
 			txn.AddQuery(query);
 		}
-		case KZTimeType_Theoretical:
+		case TimeType_Theoretical:
 		{
 			FormatEx(query, sizeof(query), sql_gettopplayers_theoretical, style);
 			txn.AddQuery(query);
@@ -44,7 +46,7 @@ public void DB_TxnSuccess_OpenPlayerTop20(Handle db, DataPack data, int numQueri
 	data.Reset();
 	int client = data.ReadCell();
 	KZRecordType timeType = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))
@@ -56,9 +58,9 @@ public void DB_TxnSuccess_OpenPlayerTop20(Handle db, DataPack data, int numQueri
 	{
 		switch (timeType)
 		{
-			case KZTimeType_Nub:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times");
-			case KZTimeType_Pro:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times (Pro)");
-			case KZTimeType_Theoretical:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times");
+			case TimeType_Nub:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times");
+			case TimeType_Pro:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times (Pro)");
+			case TimeType_Theoretical:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times");
 		}
 		PlayerTopMenuDisplay(client);
 		return;

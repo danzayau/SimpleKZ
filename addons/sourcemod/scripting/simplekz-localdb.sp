@@ -18,26 +18,21 @@ public Plugin myinfo =
 	name = "SimpleKZ Local DB", 
 	author = "DanZay", 
 	description = "SimpleKZ Local Database Module", 
-	version = "0.12.0", 
+	version = "0.13.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
-
-
 
 Handle gH_OnDatabaseConnect;
 Handle gH_OnClientSetup;
 Handle gH_OnMapSetup;
 Handle gH_OnTimeInserted;
 
-KZPlayer g_KZPlayer[MAXPLAYERS + 1];
 bool gB_LateLoad;
 Regex gRE_BonusStartButton;
 
 Database gH_DB = null;
 DatabaseType g_DBType = DatabaseType_None;
 int gI_DBCurrentMapID;
-
-
 
 #include "simplekz-localdb/api.sp"
 #include "simplekz-localdb/database.sp"
@@ -54,7 +49,7 @@ int gI_DBCurrentMapID;
 
 
 
-/*===============================  Plugin Forwards  ===============================*/
+// =========================  PLUGIN  ========================= //
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -71,7 +66,6 @@ public void OnPluginStart()
 		SetFailState("This plugin is only for CS:GO.");
 	}
 	
-	CreateKZPlayers();
 	CreateGlobalForwards();
 	CreateRegexes();
 	
@@ -96,12 +90,12 @@ void OnLateLoad()
 
 
 
-/*===============================  Other Forwards  ===============================*/
+// =========================  OTHER  ========================= //
 
 public void SKZ_OnClientSetup(int client)
 {
-	DB_SetupClient(g_KZPlayer[client]);
-	DB_LoadOptions(g_KZPlayer[client]);
+	DB_SetupClient(client);
+	DB_LoadOptions(client);
 }
 
 public void SKZ_DB_OnMapSetup(int mapID)
@@ -113,7 +107,7 @@ public void OnClientDisconnect(int client)
 {
 	if (!IsFakeClient(client))
 	{
-		DB_SaveOptions(g_KZPlayer[client]);
+		DB_SaveOptions(client);
 	}
 }
 
@@ -122,24 +116,16 @@ public void OnMapStart()
 	DB_SetupMap();
 }
 
-public void SKZ_OnTimerEnd(int client, int course, KZStyle style, float time, int teleportsUsed, float theoreticalTime)
+public void SKZ_OnTimerEnd_Post(int client, int course, int style, float time, int teleportsUsed, float theoreticalTime)
 {
-	DB_SaveTime(g_KZPlayer[client], course, style, time, teleportsUsed, theoreticalTime);
+	DB_SaveTime(client, course, style, time, teleportsUsed, theoreticalTime);
 }
 
 
 
-/*===============================  Functions  ===============================*/
+// =========================  PRIVATE  ========================= //
 
-void CreateKZPlayers()
-{
-	for (int client = 1; client <= MaxClients; client++)
-	{
-		g_KZPlayer[client] = new KZPlayer(client);
-	}
-}
-
-void CreateRegexes()
+static void CreateRegexes()
 {
 	gRE_BonusStartButton = CompileRegex("^climb_bonus(\\d+)_startbutton$");
 } 

@@ -4,11 +4,107 @@
 	Pausing and resuming functionality.
 */
 
-#define TIME_PAUSE_COOLDOWN 1.0
+
+
+#define PAUSE_COOLDOWN 1.0
+
+static bool paused[MAXPLAYERS + 1];
+static float lastPauseTime[MAXPLAYERS + 1];
+static bool hasPausedInThisRun[MAXPLAYERS + 1];
+static float lastResumeTime[MAXPLAYERS + 1];
+static bool hasResumedInThisRun[MAXPLAYERS + 1];
+
+
+
+// =========================  PUBLIC  ========================= //
+
+bool GetPaused(int client)
+{
+	return paused[client];
+}
+
+void Pause(int client)
+{
+	if (paused[client])
+	{
+		return;
+	}
+	if (GetTimerRunning(client) && hasResumedInThisRun[client]
+		 && GetEngineTime() - lastResumeTime[client] < PAUSE_COOLDOWN)
+	{
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Just Resumed)");
+		PlayErrorSound(client);
+		return;
+	}
+	if (GetTimerRunning(client)
+		 && !Movement_GetOnGround(client)
+		 && !(Movement_GetSpeed(client) == 0 && Movement_GetVerticalVelocity(client) == 0))
+	{
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Midair)");
+		PlayErrorSound(client);
+		return;
+	}
+	
+	// Call Pre Forward
+	Action result;
+	int error = Call_SKZ_OnPause(client, result);
+	if (error != SP_ERROR_NONE || result != Plugin_Continue)
+	{
+		return;
+	}
+	
+	// Pause
+	paused[client] = true;
+	Movement_SetVelocity(client, view_as<float>( { 0.0, 0.0, 0.0 } ));
+	Movement_SetMoveType(client, MOVETYPE_NONE);
+	if (GetTimerRunning(client))
+	{
+		hasPausedInThisRun[client] = true;
+		lastPauseTime[client] = GetEngineTime();
+	}
+	
+	// Call Post Forward
+	Call_SKZ_OnPause_Post(client);
+}
+
+void Resume(int client)
+{
+	if (!paused[client])
+	{
+		return;
+	}
+	if (GetTimerRunning(client) && hasPausedInThisRun[client]
+		 && GetEngineTime() - lastPauseTime[client] < PAUSE_COOLDOWN)
+	{
+		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Resume (Just Paused)");
+		PlayErrorSound(client);
+		return;
+	}
+	
+	// Call Pre Forward
+	Action result;
+	int error = Call_SKZ_OnResume(client, result);
+	if (error != SP_ERROR_NONE || result != Plugin_Continue)
+	{
+		return;
+	}
+	
+	// Resume
+	Movement_SetMoveType(client, MOVETYPE_WALK);
+	paused[client] = false;
+	if (GetTimerRunning(client))
+	{
+		hasResumedInThisRun[client] = true;
+		lastResumeTime[client] = GetEngineTime();
+	}
+	
+	// Call Post Forward
+	Call_SKZ_OnResume_Post(client);
+}
 
 void TogglePause(int client)
 {
-	if (gB_Paused[client])
+	if (paused[client])
 	{
 		Resume(client);
 	}
@@ -18,70 +114,39 @@ void TogglePause(int client)
 	}
 }
 
-void Pause(int client)
+
+
+// =========================  LISTENERS  ========================= //
+
+void OnTimerStart_Pause(int client)
 {
-	if (gB_Paused[client])
-	{
-		return;
-	}
-	if (gB_TimerRunning[client] && gB_HasResumedInThisRun[client]
-		 && GetEngineTime() - gF_LastResumeTime[client] < TIME_PAUSE_COOLDOWN)
-	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Just Resumed)");
-		PlayErrorSound(client);
-		return;
-	}
-	// Can't pause in the air if timer is running and player is moving
-	if (gB_TimerRunning[client] && !g_KZPlayer[client].onGround
-		 && !(g_KZPlayer[client].speed == 0 && g_KZPlayer[client].verticalVelocity == 0))
-	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Midair)");
-		PlayErrorSound(client);
-		return;
-	}
-	
-	gB_Paused[client] = true;
-	if (gB_TimerRunning[client])
-	{
-		gB_HasPausedInThisRun[client] = true;
-		gF_LastPauseTime[client] = GetEngineTime();
-	}
-	FreezePlayer(client);
-	
-	Call_SKZ_OnPause(client);
+	paused[client] = false;
+	lastResumeTime[client] = 0.0;
+	hasPausedInThisRun[client] = false;
+	hasResumedInThisRun[client] = false;
 }
 
-void Resume(int client)
+void OnChangeMoveType_Pause(int client, MoveType newMoveType)
 {
-	if (!gB_Paused[client])
+	// Check if player has escaped MOVETYPE_NONE
+	if (!paused[client] || newMoveType == MOVETYPE_NONE)
 	{
 		return;
 	}
-	if (gB_TimerRunning[client] && gB_HasPausedInThisRun[client]
-		 && GetEngineTime() - gF_LastPauseTime[client] < TIME_PAUSE_COOLDOWN)
+	
+	// Player has escaped MOVETYPE_NONE, so resume
+	paused[client] = false;
+	if (GetTimerRunning(client))
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Resume (Just Paused)");
-		PlayErrorSound(client);
-		return;
+		hasResumedInThisRun[client] = true;
+		lastResumeTime[client] = GetEngineTime();
 	}
 	
-	gB_Paused[client] = false;
-	if (gB_TimerRunning[client])
-	{
-		gB_HasResumedInThisRun[client] = true;
-		gF_LastResumeTime[client] = GetEngineTime();
-	}
-	g_KZPlayer[client].moveType = MOVETYPE_WALK;
-	
-	Call_SKZ_OnResume(client);
+	// Call Post Forward
+	Call_SKZ_OnResume_Post(client);
 }
 
-void PauseOnChangeMoveType(int client, MoveType newMoveType)
+void OnPlayerDeath_Pause(int client)
 {
-	gB_Paused[client] = gB_Paused[client] && newMoveType == MOVETYPE_NONE;
-}
-
-void PauseOnPlayerDeath(int client)
-{
-	gB_Paused[client] = false;
+	paused[client] = false;
 } 

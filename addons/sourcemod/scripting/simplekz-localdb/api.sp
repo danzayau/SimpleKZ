@@ -4,7 +4,9 @@
 	SimpleKZ Local DB API.
 */
 
-/*===============================  Forwards  ===============================*/
+
+
+// =========================  FORWARDS  ========================= //
 
 void CreateGlobalForwards()
 {
@@ -37,7 +39,7 @@ void Call_OnMapSetup()
 	Call_Finish();
 }
 
-void Call_OnTimeInserted(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS)
+void Call_OnTimeInserted(int client, int steamID, int mapID, int course, int style, int runTimeMS, int teleportsUsed, int theoreticalRunTimeMS)
 {
 	Call_StartForward(gH_OnTimeInserted);
 	Call_PushCell(client);
@@ -52,7 +54,8 @@ void Call_OnTimeInserted(int client, int steamID, int mapID, int course, KZStyle
 }
 
 
-/*===============================  Natives  ===============================*/
+
+// =========================  NATIVES  ========================= //
 
 void CreateNatives()
 {

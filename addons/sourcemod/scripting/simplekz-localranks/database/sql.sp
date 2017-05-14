@@ -5,7 +5,8 @@
 */
 
 
-/*===============================  Maps Table  ===============================*/
+
+// =========================  MAPS  ========================= //
 
 char sqlite_maps_alter1[] = 
 "ALTER TABLE Maps "
@@ -49,7 +50,7 @@ char sql_maps_searchbyname[] =
 
 
 
-/*===============================  Players Table  ===============================*/
+// =========================  PLAYERS  ========================= //
 
 char sql_players_getalias[] = 
 "SELECT Alias "
@@ -65,7 +66,7 @@ char sql_players_searchbyalias[] =
 
 
 
-/*===============================  Map Courses  ===============================*/
+// =========================  MAPCOURSES  ========================= //
 
 char sql_mapcourses_findid[] = 
 "SELECT MapCourseID "
@@ -74,7 +75,7 @@ char sql_mapcourses_findid[] =
 
 
 
-/*===============================  General  ===============================*/
+// =========================  GENERAL  ========================= //
 
 char sql_getpb[] = 
 "SELECT Times.RunTime, Times.Teleports, Times.TheoreticalRunTime "

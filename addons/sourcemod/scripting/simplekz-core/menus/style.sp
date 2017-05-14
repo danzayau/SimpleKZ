@@ -4,55 +4,52 @@
 	Lets players pick their movement style.
 */
 
-void StyleMenuCreateMenus()
+
+
+static Menu styleMenu[MAXPLAYERS + 1];
+
+
+
+// =========================  PUBLIC  ========================= //
+
+void CreateMenusStyle()
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		StyleMenuCreate(client);
+		styleMenu[client] = new Menu(MenuHandler_MovementStyle);
 	}
 }
 
-void StyleMenuDisplay(int client)
+void DisplayStyleMenu(int client)
 {
-	g_StyleMenu[client].SetTitle("%T", "Style Menu - Title", client);
-	StyleMenuAddItems(client, g_StyleMenu[client]);
-	g_StyleMenu[client].Display(client, MENU_TIME_FOREVER);
+	styleMenu[client].SetTitle("%T", "Style Menu - Title", client);
+	StyleMenuAddItems(client, styleMenu[client]);
+	styleMenu[client].Display(client, MENU_TIME_FOREVER);
 }
 
 
 
-/*===============================  Public Callbacks  ===============================*/
+// =========================  HANDLER  ========================= //
 
 public int MenuHandler_MovementStyle(Menu menu, MenuAction action, int param1, int param2)
 {
 	if (action == MenuAction_Select)
 	{
-		switch (param2)
-		{
-			case 0:SetOption(param1, KZOption_Style, KZStyle_Standard);
-			case 1:SetOption(param1, KZOption_Style, KZStyle_Legacy);
-			case 2:SetOption(param1, KZOption_Style, KZStyle_Competitive);
-		}
+		SetOption(param1, Option_Style, param2);
 	}
 }
 
 
 
-/*===============================  Static Functions  ===============================*/
-
-static void StyleMenuCreate(int client)
-{
-	g_StyleMenu[client] = new Menu(MenuHandler_MovementStyle);
-}
+// =========================  PRIVATE  ========================= //
 
 static void StyleMenuAddItems(int client, Menu menu)
 {
-	char text[32];
+	char temp[32];
 	menu.RemoveAllItems();
-	int styleCount = view_as<int>(KZStyle);
-	for (int style = 0; style < styleCount; style++)
+	for (int style = 0; style < STYLE_COUNT; style++)
 	{
-		FormatEx(text, sizeof(text), "%T", gC_StylePhrases[style], client);
-		menu.AddItem("", text, ITEMDRAW_DEFAULT);
+		FormatEx(temp, sizeof(temp), "%T", gC_StylePhrases[style], client);
+		menu.AddItem("", temp, ITEMDRAW_DEFAULT);
 	}
 } 

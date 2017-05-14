@@ -4,7 +4,9 @@
 	Prints the record times on a map course and given style.
 */
 
-void DB_PrintRecords(int client, int mapID, int course, KZStyle style)
+
+
+void DB_PrintRecords(int client, int mapID, int course, int style)
 {
 	char query[1024];
 	
@@ -37,7 +39,7 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 	data.Reset();
 	int client = data.ReadCell();
 	int course = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))
@@ -129,7 +131,7 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 	}
 }
 
-void DB_PrintRecords_FindMap(int client, const char[] mapSearch, int course, KZStyle style)
+void DB_PrintRecords_FindMap(int client, const char[] mapSearch, int course, int style)
 {
 	DataPack data = new DataPack();
 	data.WriteCell(client);
@@ -147,7 +149,7 @@ public void DB_TxnSuccess_PrintRecords_FindMap(Handle db, DataPack data, int num
 	char mapSearch[33];
 	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))

@@ -4,8 +4,12 @@
 	Inserts the player's time into the database.
 */
 
-void DB_SaveTime(KZPlayer player, int course, KZStyle style, float runTime, int teleportsUsed, float theoreticalRunTime)
+
+
+void DB_SaveTime(int client, int course, int style, float runTime, int teleportsUsed, float theoreticalRunTime)
 {
+	KZPlayer player = new KZPlayer(client);
+	
 	char query[1024];
 	int steamID = GetSteamAccountID(player.id);
 	int mapID = SKZ_DB_GetCurrentMapID();
@@ -38,7 +42,7 @@ public void DB_TxnSuccess_SaveTime(Handle db, DataPack data, int numQueries, Han
 	int steamID = data.ReadCell();
 	int mapID = data.ReadCell();
 	int course = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	int runTimeMS = data.ReadCell();
 	int teleportsUsed = data.ReadCell();
 	int theoreticalTimeMS = data.ReadCell();

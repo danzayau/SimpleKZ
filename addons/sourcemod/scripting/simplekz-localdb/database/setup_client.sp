@@ -4,9 +4,13 @@
 	Inserts the player into the database, or else updates their information.
 */
 
-void DB_SetupClient(KZPlayer player)
+
+
+void DB_SetupClient(int client)
 {
-	if (IsFakeClient(player.id))
+	KZPlayer player = new KZPlayer(client);
+	
+	if (player.fake)
 	{
 		return;
 	}

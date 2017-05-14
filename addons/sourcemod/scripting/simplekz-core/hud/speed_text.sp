@@ -4,62 +4,76 @@
 	Uses ShowHudText to show current speed somewhere on the screen.
 */
 
-void SpeedTextUpdate(int client)
+
+
+// =========================  PUBLIC  ========================= //
+
+void UpdateSpeedText(int client)
 {
-	if (IsFakeClient(client))
+	KZPlayer player = new KZPlayer(client);
+	
+	if (player.fake
+		 || player.speedText != SpeedText_Bottom)
 	{
 		return;
 	}
 	
-	if (IsPlayerAlive(client))
+	if (player.alive)
 	{
-		SpeedTextShow(g_KZPlayer[client], g_KZPlayer[client]);
+		SpeedTextShow(player, player);
 	}
-	else if (IsSpectatingSomeone(client))
+	else if (player.hasSpecTarget)
 	{
-		int spectatedClient = GetObserverTarget(client);
-		if (IsValidClient(spectatedClient))
-		{
-			SpeedTextShow(g_KZPlayer[client], g_KZPlayer[spectatedClient]);
-		}
+		KZPlayer targetPlayer = new KZPlayer(player.specTarget);
+		SpeedTextShow(player, targetPlayer);
 	}
 }
 
 
 
-/*===============================  Static Functions  ===============================*/
+// =========================  LISTENERS  ========================= //
+
+void OnPlayerRunCmd_SpeedText(int client, int tickcount)
+{
+	if ((tickcount + client) % 3 == 0)
+	{
+		UpdateSpeedText(client);
+	}
+}
+
+
+
+// =========================  PRIVATE  ========================= //
 
 static void SpeedTextShow(KZPlayer player, KZPlayer targetPlayer)
 {
-	if (targetPlayer.paused
-		 || player.speedText == KZSpeedText_Disabled
-		 || player.speedText == KZSpeedText_InfoPanel)
+	if (targetPlayer.paused)
 	{
 		return;
 	}
 	
 	switch (player.speedText)
 	{
-		case KZSpeedText_Bottom:
+		case SpeedText_Bottom:
 		{
 			if (targetPlayer.skzHitPerf && !targetPlayer.onGround && !targetPlayer.onLadder && !targetPlayer.noclipping)
 			{
 				if (IsPlayerAlive(player.id))
 				{
-					SetHudTextParams(-1.0, 0.75, 0.1, 3, 204, 0, 0, 1, 0.0, 0.0, 0.0);
+					SetHudTextParams(-1.0, 0.75, 0.5, 3, 204, 0, 0, 1, 0.0, 0.0, 0.0);
 				}
 				else
 				{
-					SetHudTextParams(-1.0, 0.595, 0.1, 3, 204, 0, 0, 0, 0.0, 0.0, 0.0);
+					SetHudTextParams(-1.0, 0.595, 0.5, 3, 204, 0, 0, 0, 0.0, 0.0, 0.0);
 				}
 			}
 			else if (IsPlayerAlive(player.id))
 			{
-				SetHudTextParams(-1.0, 0.75, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
+				SetHudTextParams(-1.0, 0.75, 0.5, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
 			}
 			else
 			{
-				SetHudTextParams(-1.0, 0.595, 0.1, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
+				SetHudTextParams(-1.0, 0.595, 0.5, 255, 255, 255, 0, 0, 0.0, 0.0, 0.0);
 			}
 		}
 	}
