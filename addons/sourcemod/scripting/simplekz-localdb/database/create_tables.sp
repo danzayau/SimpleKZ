@@ -4,6 +4,8 @@
 	Table creation and alteration.
 */
 
+
+
 void DB_CreateTables()
 {
 	SQL_LockDatabase(gH_DB);

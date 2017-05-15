@@ -4,8 +4,12 @@
 	Saves player options to the database.
 */
 
-void DB_SaveOptions(KZPlayer player)
+
+
+void DB_SaveOptions(int client)
 {
+	KZPlayer player = new KZPlayer(client);
+	
 	char query[1024];
 	
 	Transaction txn = SQL_CreateTransaction();

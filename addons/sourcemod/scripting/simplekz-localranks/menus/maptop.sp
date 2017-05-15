@@ -7,6 +7,8 @@
 		database/open_maptop20.sp
 */
 
+
+
 void MapTopMenuCreateMenus()
 {
 	for (int client = 1; client <= MaxClients; client++)
@@ -40,7 +42,7 @@ public int MenuHandler_MapTop(Menu menu, MenuAction action, int param1, int para
 {
 	if (action == MenuAction_Select)
 	{
-		DB_OpenMapTop20(param1, gI_MapTopMapID[param1], gI_MapTopCourse[param1], g_MapTopStyle[param1], view_as<KZTimeType>(param2));
+		DB_OpenMapTop20(param1, gI_MapTopMapID[param1], gI_MapTopCourse[param1], g_MapTopStyle[param1], param2);
 	}
 }
 
@@ -71,7 +73,7 @@ static void MapTopMenuAddItems(int client, Menu menu)
 {
 	char text[32];
 	menu.RemoveAllItems();
-	for (int timeType = 0; timeType < view_as<int>(KZTimeType); timeType++)
+	for (int timeType = 0; timeType < TIMETYPE_COUNT; timeType++)
 	{
 		FormatEx(text, sizeof(text), "%T", "Map Top Menu - Top 20", client, gC_TimeTypePhrases[timeType]);
 		menu.AddItem("", text, ITEMDRAW_DEFAULT);

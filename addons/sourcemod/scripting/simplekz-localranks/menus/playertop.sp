@@ -6,6 +6,8 @@
 		database/open_playertop20.sp
 */
 
+
+
 void PlayerTopMenuCreateMenus()
 {
 	for (int client = 1; client <= MaxClients; client++)
@@ -30,7 +32,7 @@ public int MenuHandler_PlayerTop(Menu menu, MenuAction action, int param1, int p
 {
 	if (action == MenuAction_Select)
 	{
-		DB_OpenPlayerTop20(param1, view_as<KZTimeType>(param2), g_PlayerTopStyle[param1]);
+		DB_OpenPlayerTop20(param1, param2, g_PlayerTopStyle[param1]);
 	}
 }
 
@@ -60,7 +62,7 @@ static void PlayerTopMenuAddItems(int client, Menu menu)
 {
 	char text[32];
 	menu.RemoveAllItems();
-	for (int timeType = 0; timeType < view_as<int>(KZTimeType); timeType++)
+	for (int timeType = 0; timeType < TIMETYPE_COUNT; timeType++)
 	{
 		FormatEx(text, sizeof(text), "%T", "Player Top Menu - Top 20", client, gC_TimeTypePhrases[timeType]);
 		menu.AddItem("", text, ITEMDRAW_DEFAULT);

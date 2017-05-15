@@ -4,7 +4,11 @@
 	Hides elements of the CS:GO HUD.
 */
 
-void HideCSGOHUD(int client)
+
+
+// =========================  PUBLIC  ========================= //
+
+void UpdateCSGOHUD(int client)
 {
 	if (IsFakeClient(client))
 	{
@@ -16,7 +20,7 @@ void HideCSGOHUD(int client)
 
 
 
-/*===============================  Public Callbacks  ===============================*/
+// =========================  CALLBACKS  ========================= //
 
 public Action CleanHUD(Handle timer, int client)
 {

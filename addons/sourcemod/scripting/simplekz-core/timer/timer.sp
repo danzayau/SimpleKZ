@@ -4,162 +4,232 @@
 	Used to record how long the player takes to complete map courses.
 */
 
+
+
 #define STYLE_STANDARD_SOUND_START "buttons/button9.wav"
 #define STYLE_STANDARD_SOUND_END "buttons/bell1.wav"
 #define STYLE_LEGACY_SOUND_START "buttons/button3.wav"
 #define STYLE_LEGACY_SOUND_END "buttons/button3.wav"
 #define STYLE_COMPETITIVE_SOUND_START "buttons/button9.wav"
 #define STYLE_COMPETITIVE_SOUND_END "buttons/bell1.wav"
+#define SOUND_TIMER_STOP "buttons/button18.wav"
 
-void TimerSetupClient(int client)
+static bool timerRunning[MAXPLAYERS + 1];
+static float currentTime[MAXPLAYERS + 1];
+static int currentCourse[MAXPLAYERS + 1];
+static bool hasStartedTimerThisMap[MAXPLAYERS + 1];
+static bool hasEndedTimerThisMap[MAXPLAYERS + 1];
+
+
+
+// =========================  PUBLIC  ========================= //
+
+bool GetTimerRunning(int client)
 {
-	gB_TimerRunning[client] = false;
-	gB_Paused[client] = false;
-	gB_HasStartedThisMap[client] = false;
-	gB_HasEndedThisMap[client] = false;
-	TimerReset(client);
+	return timerRunning[client];
 }
 
-void TimerOnPlayerRunCmd(int client)
+float GetCurrentTime(int client)
 {
-	if (IsPlayerAlive(client) && gB_TimerRunning[client] && !gB_Paused[client])
+	return currentTime[client];
+}
+
+int GetCurrentCourse(int client)
+{
+	return currentCourse[client];
+}
+
+bool GetHasStartedTimerThisMap(int client)
+{
+	return hasStartedTimerThisMap[client];
+}
+
+int GetCurrentTimeType(int client)
+{
+	if (GetTeleportCount(client) == 0)
 	{
-		gF_CurrentTime[client] += GetTickInterval();
+		return TimeType_Pro;
 	}
+	return TimeType_Nub;
 }
 
-// Starts the player's timer for the specified course.
 void TimerStart(int client, int course, bool allowOffGround = false)
 {
-	// Have to be on ground, not noclipping, and haven't just started timer
-	if (!allowOffGround && !g_KZPlayer[client].onGround || g_KZPlayer[client].noclipping
-		 || (gB_TimerRunning[client] && gF_CurrentTime[client] < 0.1))
+	if (!IsPlayerAlive(client)
+		 || !Movement_GetOnGround(client) && !allowOffGround
+		 || Movement_GetMoveType(client) != MOVETYPE_WALK
+		 || timerRunning[client] && currentTime[client] < 0.1)
 	{
 		return;
 	}
 	
-	Resume(client);
-	TimerReset(client);
-	gB_TimerRunning[client] = true;
-	gI_LastCourseStarted[client] = course;
+	int style = GetOption(client, Option_Style);
 	
-	gB_HasStartedThisMap[client] = true;
-	gI_LastCourseStarted[client] = course;
-	g_KZPlayer[client].GetOrigin(gF_StartOrigin[client]);
-	g_KZPlayer[client].GetEyeAngles(gF_StartAngles[client]);
+	// Call Pre Forward
+	Action result;
+	int error = Call_SKZ_OnTimerStart(client, course, style, result);
+	if (error != SP_ERROR_NONE || result != Plugin_Continue)
+	{
+		return;
+	}
 	
+	// Start Timer
+	currentTime[client] = 0.0;
+	timerRunning[client] = true;
+	currentCourse[client] = course;
+	hasStartedTimerThisMap[client] = true;
 	PlayTimerStartSound(client);
 	
-	Call_SKZ_OnTimerStart(client, course);
+	// Call Post Forward
+	Call_SKZ_OnTimerStart_Post(client, course, style);
 }
 
-// Tries to end the player's timer for the specified course.
-// It won't do anything if the player's isn't on a time on that course.
 void TimerEnd(int client, int course)
 {
-	if (!gB_TimerRunning[client] || course != gI_LastCourseStarted[client])
+	if (!IsPlayerAlive(client)
+		 || !timerRunning[client]
+		 || course != currentCourse[client])
 	{
 		return;
 	}
 	
-	gB_TimerRunning[client] = false;
+	int style = GetOption(client, Option_Style);
+	float time = GetCurrentTime(client);
+	int teleportsUsed = GetTeleportCount(client);
+	float theoreticalTime = GetCurrentTime(client) - GetWastedTime(client);
 	
-	gB_HasEndedThisMap[client] = true;
+	// Call Pre Forward
+	Action result;
+	int error = Call_SKZ_OnTimerEnd(client, course, style, time, teleportsUsed, theoreticalTime, result);
+	if (error != SP_ERROR_NONE || result != Plugin_Continue)
+	{
+		return;
+	}
 	
+	// End Timer
+	timerRunning[client] = false;
+	hasEndedTimerThisMap[client] = true;
+	PlayTimerEndSound(client);
 	if (!gB_SKZLocalRanks)
 	{
 		PrintEndTimeString(client);
 	}
-	PlayTimerEndSound(client);
 	
-	if (g_SlayOnEnd[client] == KZSlayOnEnd_Enabled)
-	{
-		CreateTimer(3.0, Timer_SlayPlayer, client);
-	}
-	
-	Call_SKZ_OnTimerEnd(client, course);
+	// Call Post Forward
+	Call_SKZ_OnTimerEnd_Post(client, course, style, time, teleportsUsed, theoreticalTime);
 }
 
-
-
-/*===============================  Static Functions  ===============================*/
-
-static void TimerReset(int client)
+bool TimerStop(int client)
 {
-	gF_CurrentTime[client] = 0.0;
-	gF_LastResumeTime[client] = 0.0;
-	gB_HasPausedInThisRun[client] = false;
-	gB_HasResumedInThisRun[client] = false;
-	gI_CheckpointCount[client] = 0;
-	gI_TeleportsUsed[client] = 0;
-	gF_LastCheckpointTime[client] = 0.0;
-	gF_LastGoCheckTime[client] = 0.0;
-	gF_LastGoCheckWastedTime[client] = 0.0;
-	gF_LastUndoTime[client] = 0.0;
-	gF_LastUndoWastedTime[client] = 0.0;
-	gF_LastTeleportToStartTime[client] = 0.0;
-	gF_LastTeleportToStartWastedTime[client] = 0.0;
-	gF_WastedTime[client] = 0.0;
-	gB_HasSavedPosition[client] = false;
+	if (!timerRunning[client])
+	{
+		return false;
+	}
+	
+	timerRunning[client] = false;
+	PlayTimerStopSound(client);
+	
+	Call_SKZ_OnTimerStopped(client);
+	
+	return true;
 }
 
-static void PrintEndTimeString(int client)
+void TimerStopAll()
 {
-	if (gI_LastCourseStarted[client] == 0)
+	for (int client = 1; client <= MaxClients; client++)
 	{
-		switch (GetCurrentTimeType(client))
+		if (IsValidClient(client))
 		{
-			case KZTimeType_Nub:
-			{
-				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map (Nub)", 
-					client, SKZ_FormatTime(gF_CurrentTime[client]), 
-					gI_TeleportsUsed[client], SKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
-					gC_StylePhrases[g_Style[client]]);
-			}
-			case KZTimeType_Pro:
-			{
-				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map (Pro)", 
-					client, SKZ_FormatTime(gF_CurrentTime[client]), 
-					gC_StylePhrases[g_Style[client]]);
-			}
-		}
-	}
-	else
-	{
-		switch (GetCurrentTimeType(client))
-		{
-			case KZTimeType_Nub:
-			{
-				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus (Nub)", 
-					client, gI_LastCourseStarted[client], SKZ_FormatTime(gF_CurrentTime[client]), 
-					gI_TeleportsUsed[client], SKZ_FormatTime(gF_CurrentTime[client] - gF_WastedTime[client]), 
-					gC_StylePhrases[g_Style[client]]);
-			}
-			case KZTimeType_Pro:
-			{
-				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus (Pro)", 
-					client, gI_LastCourseStarted[client], SKZ_FormatTime(gF_CurrentTime[client]), 
-					gC_StylePhrases[g_Style[client]]);
-			}
+			TimerStop(client);
 		}
 	}
 }
+
+
+
+// =========================  LISTENERS  ========================= //
+
+void SetupClientTimer(int client)
+{
+	timerRunning[client] = false;
+	hasStartedTimerThisMap[client] = false;
+	hasEndedTimerThisMap[client] = false;
+	currentTime[client] = 0.0;
+}
+
+void OnPlayerRunCmd_Timer(int client)
+{
+	if (IsPlayerAlive(client) && timerRunning[client] && !GetPaused(client))
+	{
+		currentTime[client] += GetTickInterval();
+	}
+}
+
+void OnChangeMoveType_Timer(int client, MoveType newMoveType)
+{
+	if (newMoveType != MOVETYPE_WALK
+		 && newMoveType != MOVETYPE_LADDER
+		 && newMoveType != MOVETYPE_NONE)
+	{
+		if (TimerStop(client))
+		{
+			CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Noclipped)");
+		}
+	}
+}
+
+void OnTeleportToStart_Timer(int client)
+{
+	if (GetCurrentMapPrefix() == MapPrefix_KZPro)
+	{
+		TimerStop(client);
+	}
+	if (hasStartedTimerThisMap[client] && GetOption(client, Option_AutoRestart) == AutoRestart_Enabled)
+	{
+		TimerStart(client, currentCourse[client], true);
+	}
+}
+
+void OnPlayerDeath_Timer(int client)
+{
+	TimerStop(client);
+}
+
+void OnOptionChanged_Timer(int client, Option option)
+{
+	if (option == Option_Style)
+	{
+		if (TimerStop(client))
+		{
+			CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Changed Style)");
+		}
+	}
+}
+
+void OnRoundStart_Timer()
+{
+	TimerStopAll();
+}
+
+
+
+// =========================  PRIVATE  ========================= //
 
 static void PlayTimerStartSound(int client)
 {
-	switch (g_Style[client])
+	switch (GetOption(client, Option_Style))
 	{
-		case KZStyle_Standard:
+		case Style_Standard:
 		{
 			EmitSoundToClient(client, STYLE_STANDARD_SOUND_START);
 			EmitSoundToClientSpectators(client, STYLE_STANDARD_SOUND_START);
 		}
-		case KZStyle_Legacy:
+		case Style_Legacy:
 		{
 			EmitSoundToClient(client, STYLE_LEGACY_SOUND_START);
 			EmitSoundToClientSpectators(client, STYLE_LEGACY_SOUND_START);
 		}
-		case KZStyle_Competitive:
+		case Style_Competitive:
 		{
 			EmitSoundToClient(client, STYLE_COMPETITIVE_SOUND_START);
 			EmitSoundToClientSpectators(client, STYLE_COMPETITIVE_SOUND_START);
@@ -169,22 +239,78 @@ static void PlayTimerStartSound(int client)
 
 static void PlayTimerEndSound(int client)
 {
-	switch (g_Style[client])
+	switch (GetOption(client, Option_Style))
 	{
-		case KZStyle_Standard:
+		case Style_Standard:
 		{
 			EmitSoundToClient(client, STYLE_STANDARD_SOUND_END);
 			EmitSoundToClientSpectators(client, STYLE_STANDARD_SOUND_END);
 		}
-		case KZStyle_Legacy:
+		case Style_Legacy:
 		{
 			EmitSoundToClient(client, STYLE_LEGACY_SOUND_END);
 			EmitSoundToClientSpectators(client, STYLE_LEGACY_SOUND_END);
 		}
-		case KZStyle_Competitive:
+		case Style_Competitive:
 		{
 			EmitSoundToClient(client, STYLE_COMPETITIVE_SOUND_START);
 			EmitSoundToClientSpectators(client, STYLE_COMPETITIVE_SOUND_START);
+		}
+	}
+}
+
+static void PlayTimerStopSound(int client)
+{
+	EmitSoundToClient(client, SOUND_TIMER_STOP);
+	EmitSoundToClientSpectators(client, SOUND_TIMER_STOP);
+}
+
+static void PrintEndTimeString(int client)
+{
+	if (currentCourse[client] == 0)
+	{
+		switch (GetCurrentTimeType(client))
+		{
+			case TimeType_Nub:
+			{
+				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map (Nub)", 
+					client, 
+					SKZ_FormatTime(currentTime[client]), 
+					GetTeleportCount(client), 
+					SKZ_FormatTime(currentTime[client] - GetWastedTime(client)), 
+					gC_StylePhrases[GetOption(client, Option_Style)]);
+			}
+			case TimeType_Pro:
+			{
+				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map (Pro)", 
+					client, 
+					SKZ_FormatTime(currentTime[client]), 
+					gC_StylePhrases[GetOption(client, Option_Style)]);
+			}
+		}
+	}
+	else
+	{
+		switch (GetCurrentTimeType(client))
+		{
+			case TimeType_Nub:
+			{
+				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus (Nub)", 
+					client, 
+					currentCourse[client], 
+					SKZ_FormatTime(currentTime[client]), 
+					GetTeleportCount(client), 
+					SKZ_FormatTime(currentTime[client] - GetWastedTime(client)), 
+					gC_StylePhrases[GetOption(client, Option_Style)]);
+			}
+			case TimeType_Pro:
+			{
+				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus (Pro)", 
+					client, 
+					currentCourse[client], 
+					SKZ_FormatTime(currentTime[client]), 
+					gC_StylePhrases[GetOption(client, Option_Style)]);
+			}
 		}
 	}
 } 

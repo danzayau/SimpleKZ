@@ -1,57 +1,76 @@
 /*
 	Pistol Menu
 	
-	Lets players pick and be given a pistol.
+	Lets players pick their pistol.
 */
 
-void PistolMenuCreateMenus()
+
+
+static Menu pistolMenu[MAXPLAYERS + 1];
+
+static char pistolNames[PISTOL_COUNT][] = 
+{
+	"P2000 / USP-S", 
+	"Glock-18", 
+	"P250", 
+	"Dual Berettas", 
+	"Deagle", 
+	"CZ75-Auto", 
+	"Five-SeveN", 
+	"Tec-9"
+};
+
+
+
+// =========================  PUBLIC  ========================= //
+
+void CreateMenusPistol()
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		PistolMenuCreate(client);
+		pistolMenu[client] = new Menu(MenuHandler_Pistol);
 	}
 }
 
-void PistolMenuDisplay(int client, int atItem = 0)
+void DisplayPistolMenu(int client, int atItem = 0)
 {
-	PistolMenuUpdate(client, g_PistolMenu[client]);
-	g_PistolMenu[client].DisplayAt(client, atItem, MENU_TIME_FOREVER);
+	if (IsFakeClient(client))
+	{
+		return;
+	}
+	
+	PistolMenuUpdate(client, pistolMenu[client]);
+	pistolMenu[client].DisplayAt(client, atItem, MENU_TIME_FOREVER);
 }
 
 
 
-/*===============================  Public Callbacks  ===============================*/
+// =========================  HANDLER  ========================= //
 
 public int MenuHandler_Pistol(Menu menu, MenuAction action, int param1, int param2)
 {
 	if (action == MenuAction_Select)
 	{
-		g_Pistol[param1] = view_as<KZPistol>(param2);
-		PistolUpdate(param1);
-		PistolMenuDisplay(param1, param2 / 6 * 6);
+		SetOption(param1, Option_Pistol, param2);
+		UpdatePistol(param1);
+		DisplayPistolMenu(param1, param2 / 6 * 6);
 	}
-	else if (action == MenuAction_Cancel && gB_CameFromOptionsMenu[param1])
+	else if (action == MenuAction_Cancel && GetCameFromOptionsMenu(param1))
 	{
-		gB_CameFromOptionsMenu[param1] = false;
-		OptionsMenuDisplay(param1);
+		DisplayOptionsMenu(param1, 6);
 	}
 }
 
 
 
-/*===============================  Static Functions  ===============================*/
-
-static void PistolMenuCreate(int client)
-{
-	g_PistolMenu[client] = new Menu(MenuHandler_Pistol);
-}
+// =========================  PRIVATE  ========================= //
 
 static void PistolMenuUpdate(int client, Menu menu)
 {
 	menu.SetTitle("%T", "Pistol Menu - Title", client);
 	menu.RemoveAllItems();
-	int pistolCount = view_as<int>(KZPistol);
-	for (int pistol = 0; pistol < pistolCount; pistol++) {
-		menu.AddItem("", gC_Pistols[pistol][1]);
+	for (int pistol = 0; pistol < PISTOL_COUNT; pistol++)
+	{
+		menu.AddItem("", pistolNames[pistol]);
 	}
 } 

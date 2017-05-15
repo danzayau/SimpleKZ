@@ -4,43 +4,56 @@
 	Centre information panel (hint text).
 */
 
-// Generates and prints a new info panel for the player, if it's enabled.
-void InfoPanelUpdate(int client)
+
+
+// =========================  PUBLIC  ========================= //
+
+void UpdateInfoPanel(int client)
 {
-	if (IsFakeClient(client))
+	KZPlayer player = new KZPlayer(client);
+	
+	if (player.fake
+		 || player.showingInfoPanel == ShowingInfoPanel_Disabled
+		 || NothingEnabledInInfoPanel(player))
 	{
 		return;
 	}
 	
-	if (g_ShowingInfoPanel[client] == KZShowingInfoPanel_Disabled)
+	if (player.alive)
 	{
-		return;
+		PrintHintText(player.id, "%s", GetInfoPanel(player, player));
 	}
-	
-	if ((g_ShowingKeys[client] == KZShowingKeys_Disabled || IsPlayerAlive(client) && g_ShowingKeys[client] == KZShowingKeys_Spectating)
-		 && g_TimerText[client] != KZTimerText_InfoPanel
-		 && g_SpeedText[client] != KZSpeedText_InfoPanel)
+	else if (player.hasSpecTarget)
 	{
-		return;
-	}
-	
-	if (IsPlayerAlive(client))
-	{
-		PrintHintText(client, "%s", GetInfoPanel(g_KZPlayer[client], g_KZPlayer[client]));
-	}
-	else if (IsSpectatingSomeone(client))
-	{
-		int spectatedClient = GetObserverTarget(client);
-		if (IsValidClient(spectatedClient))
-		{
-			PrintHintText(client, "%s", GetInfoPanel(g_KZPlayer[client], g_KZPlayer[spectatedClient]));
-		}
+		KZPlayer targetPlayer = new KZPlayer(player.specTarget);
+		PrintHintText(player.id, "%s", GetInfoPanel(player, targetPlayer));
 	}
 }
 
 
 
-/*===============================  Static Functions  ===============================*/
+// =========================  LISTENERS  ========================= //
+
+void OnPlayerRunCmd_InfoPanel(int client, int tickcount)
+{
+	if ((tickcount + client) % 12 == 0)
+	{
+		UpdateInfoPanel(client);
+	}
+}
+
+
+
+// =========================  PRIVATE  ========================= //
+
+static bool NothingEnabledInInfoPanel(KZPlayer player)
+{
+	bool noTimerText = player.timerText != TimerText_InfoPanel;
+	bool noSpeedText = player.speedText != SpeedText_InfoPanel;
+	bool noKeys = player.showingKeys == ShowingKeys_Disabled
+	 || player.showingKeys == ShowingKeys_Spectating && player.alive;
+	return noTimerText && noSpeedText && noKeys;
+}
 
 static char[] GetInfoPanel(KZPlayer player, KZPlayer targetPlayer)
 {
@@ -56,27 +69,27 @@ static char[] GetInfoPanel(KZPlayer player, KZPlayer targetPlayer)
 static char[] GetTimeString(KZPlayer player, KZPlayer targetPlayer)
 {
 	char timeString[128];
-	if (player.timerText != KZTimerText_InfoPanel) {
+	if (player.timerText != TimerText_InfoPanel) {
 		timeString = "";
 	}
 	else if (targetPlayer.timerRunning)
 	{
 		switch (GetCurrentTimeType(targetPlayer.id))
 		{
-			case KZTimeType_Nub:
+			case TimeType_Nub:
 			{
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#ffdd99'>%s</font> %s\n", 
 					"Info Panel Text - Time", player.id, 
-					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id], false), 
+					SKZ_FormatTime(targetPlayer.currentTime, false), 
 					GetPausedString(player, targetPlayer));
 			}
-			case KZTimeType_Pro:
+			case TimeType_Pro:
 			{
 				FormatEx(timeString, sizeof(timeString), 
 					" <b>%T</b>: <font color='#6699ff'>%s</font> %s\n", 
 					"Info Panel Text - Time", player.id, 
-					SKZ_FormatTime(gF_CurrentTime[targetPlayer.id], false), 
+					SKZ_FormatTime(targetPlayer.currentTime, false), 
 					GetPausedString(player, targetPlayer));
 			}
 		}
@@ -111,7 +124,7 @@ static char[] GetPausedString(KZPlayer player, KZPlayer targetPlayer)
 static char[] GetSpeedString(KZPlayer player, KZPlayer targetPlayer)
 {
 	char speedString[128];
-	if (player.speedText != KZSpeedText_InfoPanel || targetPlayer.paused) {
+	if (player.speedText != SpeedText_InfoPanel || targetPlayer.paused) {
 		speedString = "";
 	}
 	else
@@ -156,11 +169,11 @@ static char[] GetTakeoffString(KZPlayer targetPlayer)
 static char[] GetKeysString(KZPlayer player, KZPlayer targetPlayer)
 {
 	char keysString[64];
-	if (player.showingKeys == KZShowingKeys_Disabled)
+	if (player.showingKeys == ShowingKeys_Disabled)
 	{
 		keysString = "";
 	}
-	else if (player.showingKeys == KZShowingKeys_Spectating && IsPlayerAlive(player.id))
+	else if (player.showingKeys == ShowingKeys_Spectating && player.alive)
 	{
 		keysString = "";
 	}

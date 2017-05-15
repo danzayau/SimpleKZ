@@ -6,7 +6,9 @@
 		menus/maptop.sp
 */
 
-void DB_OpenMapTop(int client, int mapID, int course, KZStyle style)
+
+
+void DB_OpenMapTop(int client, int mapID, int course, int style)
 {
 	char query[1024];
 	
@@ -34,7 +36,7 @@ public void DB_TxnSuccess_OpenMapTopMenu(Handle db, DataPack data, int numQuerie
 	int client = data.ReadCell();
 	int mapID = data.ReadCell();
 	int course = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))
@@ -67,7 +69,7 @@ public void DB_TxnSuccess_OpenMapTopMenu(Handle db, DataPack data, int numQuerie
 	MapTopMenuDisplay(client);
 }
 
-void DB_OpenMapTop_FindMap(int client, const char[] mapSearch, int course, KZStyle style)
+void DB_OpenMapTop_FindMap(int client, const char[] mapSearch, int course, int style)
 {
 	DataPack data = new DataPack();
 	data.WriteCell(client);
@@ -85,7 +87,7 @@ public void DB_TxnSuccess_OpenMapTopMenu_FindMap(Handle db, DataPack data, int n
 	char mapSearch[33];
 	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))

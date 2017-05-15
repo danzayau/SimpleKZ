@@ -9,11 +9,9 @@
 #endif
 #define _simplekz_localdb_included_
 
-#include <simplekz/core>
 
 
-
-/*===============================  Enumerations  ===============================*/
+// =========================  ENUMERATIONS  ========================= //
 
 enum DatabaseType
 {
@@ -24,7 +22,7 @@ enum DatabaseType
 
 
 
-/*===============================  Stocks  ===============================*/
+// =========================  STOCKS  ========================= //
 
 /**
  * Converts a time float (seconds) to an integer (milliseconds).
@@ -50,7 +48,7 @@ stock float SKZ_DB_TimeIntToFloat(int time)
 
 
 
-/*===============================  Forwards  ===============================*/
+// =========================  FORWARDS  ========================= //
 
 /**
  * Called when simplekz-localdb has connected to the database.
@@ -90,14 +88,22 @@ forward void SKZ_DB_OnMapSetup(int mapID);
  * @param style				Player's movement style.
  * @param runTimeMS			Player's end time in milliseconds.
  * @param teleportsUsed		Number of teleports used by player.
- * @param theoRunTimeMS		Theoretical end time without using teleports in milliseconds.
+ * @param theoRunTimeMS		Theoretical end time without teleports in milliseconds.
  * @noreturn
  */
-forward void SKZ_DB_OnTimeInserted(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoRunTimeMS);
+forward void SKZ_DB_OnTimeInserted(
+	int client, 
+	int steamID, 
+	int mapID, 
+	int course, 
+	int style, 
+	int runTimeMS, 
+	int teleportsUsed, 
+	int theoRunTimeMS);
 
 
 
-/*===============================  Natives  ===============================*/
+// =========================  NATIVES  ========================= //
 
 /**
  * Gets the SimpleKZ local database handle.
@@ -123,7 +129,7 @@ native int SKZ_DB_GetCurrentMapID();
 
 
 
-/*===============================  Dependency  ===============================*/
+// =========================  DEPENDENCY  ========================= //
 
 public SharedPlugin __pl_simplekz_localdb = 
 {

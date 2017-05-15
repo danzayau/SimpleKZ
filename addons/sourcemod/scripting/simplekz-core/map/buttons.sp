@@ -4,97 +4,26 @@
 	Hooks between func_buttons and SimpleKZ.
 */
 
-// Creates regexes used to detect certain entity names.
-void MapButtonsCreateRegexes()
+
+
+static Regex RE_BonusStartButton;
+static Regex RE_BonusEndButton;
+
+
+
+// =========================  PUBLIC  ========================= //
+
+void CreateRegexesMapButtons()
 {
-	gRE_BonusStartButton = CompileRegex("^climb_bonus(\\d+)_startbutton$");
-	gRE_BonusEndButton = CompileRegex("^climb_bonus(\\d+)_endbutton$");
-}
-
-// Hooks up the map with the mapping API.
-void MapButtonsUpdate()
-{
-	MapButtonsSetupHooks();
-}
-
-
-
-/*===============================  Public Callbacks  ===============================*/
-
-public void OnStartButtonPress(const char[] name, int caller, int activator, float delay)
-{
-	if (!IsValidEntity(caller) || !IsValidClient(activator))
-	{
-		return;
-	}
-	
-	TimerStart(activator, 0);
-	g_KZPlayer[activator].GetOrigin(gF_VirtualStartButtonOrigin[activator]);
-	gI_VirtualStartButtonCourse[activator] = 0;
-}
-
-public void OnEndButtonPress(const char[] name, int caller, int activator, float delay)
-{
-	if (!IsValidEntity(caller) || !IsValidClient(activator))
-	{
-		return;
-	}
-	
-	TimerEnd(activator, 0);
-	g_KZPlayer[activator].GetOrigin(gF_VirtualEndButtonOrigin[activator]);
-	gI_VirtualEndButtonCourse[activator] = 0;
-}
-
-public void OnBonusStartButtonPress(const char[] name, int caller, int activator, float delay)
-{
-	if (!IsValidEntity(caller) || !IsValidClient(activator)) {
-		return;
-	}
-	
-	char tempString[32];
-	GetEntPropString(caller, Prop_Data, "m_iName", tempString, sizeof(tempString));
-	if (MatchRegex(gRE_BonusStartButton, tempString) > 0)
-	{
-		GetRegexSubString(gRE_BonusStartButton, 1, tempString, sizeof(tempString));
-		int bonus = StringToInt(tempString);
-		if (bonus > 0)
-		{
-			TimerStart(activator, bonus);
-			g_KZPlayer[activator].GetOrigin(gF_VirtualStartButtonOrigin[activator]);
-			gI_VirtualStartButtonCourse[activator] = bonus;
-		}
-	}
-}
-
-public void OnBonusEndButtonPress(const char[] name, int caller, int activator, float delay)
-{
-	if (!IsValidEntity(caller) || !IsValidClient(activator))
-	{
-		return;
-	}
-	
-	char tempString[32];
-	
-	GetEntPropString(caller, Prop_Data, "m_iName", tempString, sizeof(tempString));
-	if (MatchRegex(gRE_BonusEndButton, tempString) > 0)
-	{
-		GetRegexSubString(gRE_BonusEndButton, 1, tempString, sizeof(tempString));
-		int bonus = StringToInt(tempString);
-		if (bonus > 0)
-		{
-			TimerEnd(activator, bonus);
-			g_KZPlayer[activator].GetOrigin(gF_VirtualEndButtonOrigin[activator]);
-			gI_VirtualEndButtonCourse[activator] = bonus;
-		}
-	}
+	RE_BonusStartButton = CompileRegex("^climb_bonus(\\d+)_startbutton$");
+	RE_BonusEndButton = CompileRegex("^climb_bonus(\\d+)_endbutton$");
 }
 
 
 
-/*===============================  Static Functions  ===============================*/
+// =========================  PUBLIC  ========================= //
 
-// Hooks up func_button entities. Note: Most map entities are recreated on round start.
-static void MapButtonsSetupHooks()
+void UpdateMapButtons()
 {
 	int entity = -1;
 	char tempString[32];
@@ -111,13 +40,81 @@ static void MapButtonsSetupHooks()
 		{
 			HookSingleEntityOutput(entity, "OnPressed", OnEndButtonPress);
 		}
-		else if (MatchRegex(gRE_BonusStartButton, tempString) > 0)
+		else if (MatchRegex(RE_BonusStartButton, tempString) > 0)
 		{
 			HookSingleEntityOutput(entity, "OnPressed", OnBonusStartButtonPress);
 		}
-		else if (MatchRegex(gRE_BonusEndButton, tempString) > 0)
+		else if (MatchRegex(RE_BonusEndButton, tempString) > 0)
 		{
 			HookSingleEntityOutput(entity, "OnPressed", OnBonusEndButtonPress);
+		}
+	}
+}
+
+
+
+// =========================  HANDLERS  ========================= //
+
+public void OnStartButtonPress(const char[] name, int caller, int activator, float delay)
+{
+	if (!IsValidEntity(caller) || !IsValidClient(activator))
+	{
+		return;
+	}
+	
+	TimerStart(activator, 0);
+	OnStartButtonPress_VirtualButtons(activator, 0);
+}
+
+public void OnEndButtonPress(const char[] name, int caller, int activator, float delay)
+{
+	if (!IsValidEntity(caller) || !IsValidClient(activator))
+	{
+		return;
+	}
+	
+	TimerEnd(activator, 0);
+	OnEndButtonPress_VirtualButtons(activator, 0);
+}
+
+public void OnBonusStartButtonPress(const char[] name, int caller, int activator, float delay)
+{
+	if (!IsValidEntity(caller) || !IsValidClient(activator)) {
+		return;
+	}
+	
+	char tempString[32];
+	GetEntPropString(caller, Prop_Data, "m_iName", tempString, sizeof(tempString));
+	if (MatchRegex(RE_BonusStartButton, tempString) > 0)
+	{
+		GetRegexSubString(RE_BonusStartButton, 1, tempString, sizeof(tempString));
+		int bonus = StringToInt(tempString);
+		if (bonus > 0)
+		{
+			TimerStart(activator, bonus);
+			OnStartButtonPress_VirtualButtons(activator, bonus);
+		}
+	}
+}
+
+public void OnBonusEndButtonPress(const char[] name, int caller, int activator, float delay)
+{
+	if (!IsValidEntity(caller) || !IsValidClient(activator))
+	{
+		return;
+	}
+	
+	char tempString[32];
+	
+	GetEntPropString(caller, Prop_Data, "m_iName", tempString, sizeof(tempString));
+	if (MatchRegex(RE_BonusEndButton, tempString) > 0)
+	{
+		GetRegexSubString(RE_BonusEndButton, 1, tempString, sizeof(tempString));
+		int bonus = StringToInt(tempString);
+		if (bonus > 0)
+		{
+			TimerEnd(activator, bonus);
+			OnEndButtonPress_VirtualButtons(activator, bonus);
 		}
 	}
 } 

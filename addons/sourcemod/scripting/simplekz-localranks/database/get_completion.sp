@@ -4,7 +4,9 @@
 	Gets the number and percentage of maps completed.
 */
 
-void DB_GetCompletion(int client, int targetSteamID, KZStyle style, bool print)
+
+
+void DB_GetCompletion(int client, int targetSteamID, int style, bool print)
 {
 	char query[1024];
 	
@@ -45,7 +47,7 @@ public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries
 	data.Reset();
 	int client = data.ReadCell();
 	int targetSteamID = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	bool print = data.ReadCell();
 	data.Close();
 	
@@ -119,7 +121,7 @@ public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries
 	}
 }
 
-void DB_GetCompletion_FindPlayer(int client, const char[] target, KZStyle style)
+void DB_GetCompletion_FindPlayer(int client, const char[] target, int style)
 {
 	DataPack data = new DataPack();
 	data.WriteCell(client);
@@ -135,7 +137,7 @@ public void DB_TxnSuccess_GetCompletion_FindPlayer(Handle db, DataPack data, int
 	int client = data.ReadCell();
 	char playerSearch[33];
 	data.ReadString(playerSearch, sizeof(playerSearch));
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))

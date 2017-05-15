@@ -5,7 +5,8 @@
 */
 
 
-/*===============================  Players Table  ===============================*/
+
+// =========================  PLAYERS  ========================= //
 
 char sqlite_players_create[] = 
 "CREATE TABLE IF NOT EXISTS Players ("
@@ -44,7 +45,7 @@ char mysql_players_upsert[] =
 
 
 
-/*===============================  Options Table  ===============================*/
+// =========================  OPTIONS  ========================= //
 
 char sqlite_options_create[] = 
 "CREATE TABLE IF NOT EXISTS Options ("
@@ -104,7 +105,7 @@ char sql_options_get[] =
 
 
 
-/*===============================  Maps Table  ===============================*/
+// =========================  MAPS  ========================= //
 
 char sqlite_maps_create[] = 
 "CREATE TABLE IF NOT EXISTS Maps ("
@@ -146,7 +147,7 @@ char sql_maps_findid[] =
 
 
 
-/*===============================  MapCourses Table  ===============================*/
+// =========================  MAPCOURSES  ========================= //
 
 char sqlite_mapcourses_create[] = 
 "CREATE TABLE IF NOT EXISTS MapCourses ("
@@ -178,7 +179,7 @@ char mysql_mapcourses_insert[] =
 
 
 
-/*===============================  Times Table  ===============================*/
+// =========================  TIMES  ========================= //
 
 char sqlite_times_create[] = 
 "CREATE TABLE IF NOT EXISTS Times ("

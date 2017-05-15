@@ -4,11 +4,10 @@
 	Miscellaneous functions.
 */
 
+
+
 #define SOUND_NEW_RECORD "physics/glass/glass_bottle_break2.wav"
 
-/*===============================  Helper Functions  ===============================*/
-
-// Sets the player's MVP stars as the percentage PRO completion on the server's default style
 void CompletionMVPStarsUpdate(int client)
 {
 	DB_GetCompletion(client, GetSteamAccountID(client), SKZ_GetDefaultStyle(), false);
@@ -25,14 +24,10 @@ void CompletionMVPStarsUpdateAll()
 	}
 }
 
-
-
-/*===============================  Announcements  ===============================*/
-
 void AnnounceNewTime(
 	int client, 
 	int course, 
-	KZStyle style, 
+	int style, 
 	float runTime, 
 	int teleportsUsed, 
 	bool firstTime, 
@@ -155,7 +150,7 @@ void AnnounceNewTime(
 	}
 }
 
-void AnnounceNewRecord(int client, int course, KZStyle style, KZRecordType recordType)
+void AnnounceNewRecord(int client, int course, int style, KZRecordType recordType)
 {
 	if (course == 0)
 	{
