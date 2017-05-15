@@ -576,12 +576,12 @@ native float SKZ_GetTakeoffSpeed(int client);
  * the beginning of the message.
  *
  * @param client		Client index.
- * @param prefix		Whether to add the chat prefix.
+ * @param addPrefix		Whether to add the chat prefix.
  * @param format		Formatting rules.
  * @param any			Variable number of format parameters.
  * @noreturn
  */
-native int SKZ_PrintToChat(int client, bool prefix, const char[] format, any...);
+native int SKZ_PrintToChat(int client, bool addPrefix, const char[] format, any...);
 
 
 /**
@@ -590,21 +590,21 @@ native int SKZ_PrintToChat(int client, bool prefix, const char[] format, any...)
  * the beginning of the message.
  *
  * @param client		Client index.
- * @param prefix		Whether to add the chat prefix.
+ * @param addPrefix		Whether to add the chat prefix.
  * @param format		Formatting rules.
  * @param any			Variable number of format parameters.
  * @noreturn
  */
-stock void SKZ_PrintToChatAll(bool prefix, const char[] format, any...)
+stock void SKZ_PrintToChatAll(bool addPrefix, const char[] format, any...)
 {
-	char buffer[256];
+	char buffer[1024];
 	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client))
 		{
 			SetGlobalTransTarget(client);
 			VFormat(buffer, sizeof(buffer), format, 3);
-			SKZ_PrintToChat(client, prefix, buffer);
+			SKZ_PrintToChat(client, addPrefix, buffer);
 		}
 	}
 }

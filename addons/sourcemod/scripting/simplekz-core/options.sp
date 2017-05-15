@@ -88,7 +88,7 @@ static void SetDefaultOptions(int client)
 }
 
 static void PrintOptionChangeMessage(int client, Option option) {
-	if (!IsValidClient(client))
+	if (!IsClientInGame(client))
 	{
 		return;
 	}

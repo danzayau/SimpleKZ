@@ -102,10 +102,7 @@ public void SKZ_DB_OnDatabaseConnect(Database database, DatabaseType DBType)
 
 public void SKZ_DB_OnTimeInserted(int client, int steamID, int mapID, int course, int style, int runTimeMS, int teleportsUsed, int theoRunTimeMS)
 {
-	if (IsValidClient(client) && steamID == GetSteamAccountID(client))
-	{
-		DB_ProcessNewTime(client, steamID, mapID, course, style, runTimeMS, teleportsUsed, theoRunTimeMS);
-	}
+	DB_ProcessNewTime(client, steamID, mapID, course, style, runTimeMS, teleportsUsed, theoRunTimeMS);
 }
 
 public void SKZ_LR_OnTimeProcessed(
@@ -126,23 +123,27 @@ public void SKZ_LR_OnTimeProcessed(
 	int rankPro, 
 	int maxRankPro)
 {
-	if (IsValidClient(client) && steamID == GetSteamAccountID(client) && mapID == SKZ_DB_GetCurrentMapID())
+	if (mapID != SKZ_DB_GetCurrentMapID())
 	{
-		AnnounceNewTime(client, course, style, runTime, teleportsUsed, firstTime, pbDiff, rank, maxRank, firstTimePro, pbDiffPro, rankPro, maxRankPro);
-		if (course == 0 && style == SKZ_GetDefaultStyle() && firstTimePro)
-		{
-			CompletionMVPStarsUpdate(client);
-		}
+		return;
+	}
+	
+	AnnounceNewTime(client, course, style, runTime, teleportsUsed, firstTime, pbDiff, rank, maxRank, firstTimePro, pbDiffPro, rankPro, maxRankPro);
+	if (course == 0 && style == SKZ_GetDefaultStyle() && firstTimePro)
+	{
+		CompletionMVPStarsUpdate(client);
 	}
 }
 
 public void SKZ_LR_OnNewRecord(int client, int steamID, int mapID, int course, int style, KZRecordType recordType)
 {
-	if (IsValidClient(client) && steamID == GetSteamAccountID(client) && mapID == SKZ_DB_GetCurrentMapID())
+	if (mapID != SKZ_DB_GetCurrentMapID())
 	{
-		AnnounceNewRecord(client, course, style, recordType);
-		PlayNewRecordSound();
+		return;
 	}
+	
+	AnnounceNewRecord(client, course, style, recordType);
+	PlayNewRecordSound();
 }
 
 

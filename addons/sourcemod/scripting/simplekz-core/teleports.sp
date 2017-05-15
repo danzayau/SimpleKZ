@@ -189,7 +189,7 @@ void UndoTeleport(int client)
 
 void GotoPlayer(int client, int target)
 {
-	if (!IsValidClient(client) || !IsValidClient(target) || !IsPlayerAlive(target) || client == target)
+	if (!IsPlayerAlive(target) || client == target)
 	{
 		return;
 	}

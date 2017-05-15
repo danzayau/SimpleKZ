@@ -13,7 +13,7 @@ void DB_OpenPlayerTop20(int client, int timeType, int style)
 	char query[1024];
 	
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteCell(timeType);
 	data.WriteCell(style);
 	
@@ -44,7 +44,7 @@ void DB_OpenPlayerTop20(int client, int timeType, int style)
 public void DB_TxnSuccess_OpenPlayerTop20(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	KZRecordType timeType = data.ReadCell();
 	int style = data.ReadCell();
 	data.Close();

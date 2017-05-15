@@ -13,27 +13,27 @@
 
 void DB_LoadOptions(int client)
 {
-	KZPlayer player = new KZPlayer(client);
-	
 	char query[1024];
 	
 	Transaction txn = SQL_CreateTransaction();
 	
 	// Get options for the client
-	FormatEx(query, sizeof(query), sql_options_get, GetSteamAccountID(player.id));
+	FormatEx(query, sizeof(query), sql_options_get, GetSteamAccountID(client));
 	txn.AddQuery(query);
 	
-	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_LoadOptions, DB_TxnFailure_Generic, player, DBPrio_High);
+	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_LoadOptions, DB_TxnFailure_Generic, GetClientUserId(client), DBPrio_High);
 }
 
-public void DB_TxnSuccess_LoadOptions(Handle db, KZPlayer player, int numQueries, Handle[] results, any[] queryData)
+public void DB_TxnSuccess_LoadOptions(Handle db, int userid, int numQueries, Handle[] results, any[] queryData)
 {
-	if (!IsClientAuthorized(player.id))
+	int client = GetClientOfUserId(userid);
+	
+	if (!IsValidClient(client))
 	{
 		return;
 	}
 	
-	else if (SQL_GetRowCount(results[0]) == 0)
+	if (SQL_GetRowCount(results[0]) == 0)
 	{
 		// No options found for that client, so insert them and try load them again
 		char query[1024];
@@ -41,14 +41,15 @@ public void DB_TxnSuccess_LoadOptions(Handle db, KZPlayer player, int numQueries
 		Transaction txn = SQL_CreateTransaction();
 		
 		// Insert options
-		FormatEx(query, sizeof(query), sql_options_insert, GetSteamAccountID(player.id), SKZ_GetDefaultStyle());
+		FormatEx(query, sizeof(query), sql_options_insert, GetSteamAccountID(client), SKZ_GetDefaultStyle());
 		txn.AddQuery(query);
 		
-		SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_InsertOptions, DB_TxnFailure_Generic, player, DBPrio_High);
+		SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_InsertOptions, DB_TxnFailure_Generic, userid, DBPrio_High);
 	}
 	
 	else if (SQL_FetchRow(results[0]))
 	{
+		KZPlayer player = new KZPlayer(client);
 		player.style = SQL_FetchInt(results[0], 0);
 		player.showingTPMenu = SQL_FetchInt(results[0], 1);
 		player.showingInfoPanel = SQL_FetchInt(results[0], 2);
@@ -67,7 +68,14 @@ public void DB_TxnSuccess_LoadOptions(Handle db, KZPlayer player, int numQueries
 	}
 }
 
-public void DB_TxnSuccess_InsertOptions(Handle db, KZPlayer player, int numQueries, Handle[] results, any[] queryData)
+public void DB_TxnSuccess_InsertOptions(Handle db, int userid, int numQueries, Handle[] results, any[] queryData)
 {
-	DB_LoadOptions(player.id);
+	int client = GetClientOfUserId(userid);
+	
+	if (!IsValidClient(client))
+	{
+		return;
+	}
+	
+	DB_LoadOptions(client);
 } 

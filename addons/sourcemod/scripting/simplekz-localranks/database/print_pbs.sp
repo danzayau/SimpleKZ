@@ -11,7 +11,7 @@ void DB_PrintPBs(int client, int targetSteamID, int mapID, int course, int style
 	char query[1024];
 	
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteCell(course);
 	data.WriteCell(style);
 	
@@ -53,7 +53,7 @@ void DB_PrintPBs(int client, int targetSteamID, int mapID, int course, int style
 public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	int course = data.ReadCell();
 	int style = data.ReadCell();
 	data.Close();
@@ -172,7 +172,7 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 void DB_PrintPBs_FindMap(int client, int targetSteamID, const char[] mapSearch, int course, int style)
 {
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteCell(targetSteamID);
 	data.WriteString(mapSearch);
 	data.WriteCell(course);
@@ -184,7 +184,7 @@ void DB_PrintPBs_FindMap(int client, int targetSteamID, const char[] mapSearch, 
 public void DB_TxnSuccess_PrintPBs_FindMap(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	int targetSteamID = data.ReadCell();
 	char mapSearch[33];
 	data.ReadString(mapSearch, sizeof(mapSearch));
@@ -212,7 +212,7 @@ public void DB_TxnSuccess_PrintPBs_FindMap(Handle db, DataPack data, int numQuer
 void DB_PrintPBs_FindPlayerAndMap(int client, const char[] playerSearch, const char[] mapSearch, int course, int style)
 {
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteString(playerSearch);
 	data.WriteString(mapSearch);
 	data.WriteCell(course);
@@ -224,7 +224,7 @@ void DB_PrintPBs_FindPlayerAndMap(int client, const char[] playerSearch, const c
 public void DB_TxnSuccess_PrintPBs_FindPlayerAndMap(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	char playerSearch[MAX_NAME_LENGTH];
 	data.ReadString(playerSearch, sizeof(playerSearch));
 	char mapSearch[33];

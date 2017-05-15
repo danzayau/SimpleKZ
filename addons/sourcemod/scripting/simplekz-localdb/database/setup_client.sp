@@ -8,9 +8,7 @@
 
 void DB_SetupClient(int client)
 {
-	KZPlayer player = new KZPlayer(client);
-	
-	if (player.fake)
+	if (IsFakeClient(client))
 	{
 		return;
 	}
@@ -18,26 +16,26 @@ void DB_SetupClient(int client)
 	// Setup Client Step 1 - Upsert them into Players Table
 	char query[1024], name[MAX_NAME_LENGTH], nameEscaped[MAX_NAME_LENGTH * 2 + 1], clientIP[16], country[45];
 	
-	int steamID = GetSteamAccountID(player.id);
-	if (!GetClientName(player.id, name, MAX_NAME_LENGTH))
+	int steamID = GetSteamAccountID(client);
+	if (!GetClientName(client, name, MAX_NAME_LENGTH))
 	{
-		LogMessage("Couldn't get name of %L.", player.id);
+		LogMessage("Couldn't get name of %L.", client);
 		name = "Unknown";
 	}
 	SQL_EscapeString(gH_DB, name, nameEscaped, MAX_NAME_LENGTH * 2 + 1);
-	if (!GetClientIP(player.id, clientIP, sizeof(clientIP)))
+	if (!GetClientIP(client, clientIP, sizeof(clientIP)))
 	{
-		LogMessage("Couldn't get IP of %L.", player.id);
+		LogMessage("Couldn't get IP of %L.", client);
 		clientIP = "Unknown";
 	}
 	if (!GeoipCountry(clientIP, country, sizeof(country)))
 	{
-		LogMessage("Couldn't get country of %L (%s).", player.id, clientIP);
+		LogMessage("Couldn't get country of %L (%s).", client, clientIP);
 		country = "Unknown";
 	}
 	
 	DataPack data = new DataPack();
-	data.WriteCell(player.id);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteCell(steamID);
 	
 	Transaction txn = SQL_CreateTransaction();
@@ -68,9 +66,14 @@ void DB_SetupClient(int client)
 public void DB_TxnSuccess_SetupClient(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	int steamID = data.ReadCell();
 	data.Close();
+	
+	if (!IsValidClient(client))
+	{
+		return;
+	}
 	
 	Call_OnClientSetup(client, steamID);
 } 

@@ -107,11 +107,7 @@ void OnOptionChanged_HideWeapon(int client, Option option)
 
 void PrintConnectMessage(int client)
 {
-	if (!GetConVarBool(gCV_ConnectionMessages))
-	{
-		return;
-	}
-	if (!IsValidClient(client) || IsFakeClient(client))
+	if (!GetConVarBool(gCV_ConnectionMessages) || IsFakeClient(client))
 	{
 		return;
 	}
@@ -128,7 +124,7 @@ void PrintDisconnectMessage(int client, Event event) // Hooked to player_disconn
 	
 	SetEventBroadcast(event, true);
 	
-	if (!IsValidClient(client) || IsFakeClient(client))
+	if (IsFakeClient(client))
 	{
 		return;
 	}
@@ -219,6 +215,11 @@ void UpdatePlayerModel(int client)
 		case CS_TEAM_CT:SetEntityModel(client, playerModelCT);
 	}
 	
+	UpdatePlayerModelAlpha(client);
+}
+
+void UpdatePlayerModelAlpha(int client)
+{
 	SetEntityRenderMode(client, RENDER_TRANSCOLOR);
 	SetEntityRenderColor(client, _, _, _, gCV_PlayerModelAlpha.IntValue);
 }

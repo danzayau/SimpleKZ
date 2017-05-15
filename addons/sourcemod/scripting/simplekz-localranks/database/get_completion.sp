@@ -11,7 +11,7 @@ void DB_GetCompletion(int client, int targetSteamID, int style, bool print)
 	char query[1024];
 	
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteCell(targetSteamID);
 	data.WriteCell(style);
 	data.WriteCell(print);
@@ -45,7 +45,7 @@ void DB_GetCompletion(int client, int targetSteamID, int style, bool print)
 public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	int targetSteamID = data.ReadCell();
 	int style = data.ReadCell();
 	bool print = data.ReadCell();
@@ -124,7 +124,7 @@ public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries
 void DB_GetCompletion_FindPlayer(int client, const char[] target, int style)
 {
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteString(target);
 	data.WriteCell(style);
 	
@@ -134,7 +134,7 @@ void DB_GetCompletion_FindPlayer(int client, const char[] target, int style)
 public void DB_TxnSuccess_GetCompletion_FindPlayer(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	char playerSearch[33];
 	data.ReadString(playerSearch, sizeof(playerSearch));
 	int style = data.ReadCell();

@@ -11,7 +11,7 @@ void DB_PrintRecords(int client, int mapID, int course, int style)
 	char query[1024];
 	
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteCell(course);
 	data.WriteCell(style);
 	
@@ -37,7 +37,7 @@ void DB_PrintRecords(int client, int mapID, int course, int style)
 public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	int course = data.ReadCell();
 	int style = data.ReadCell();
 	data.Close();
@@ -134,7 +134,7 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 void DB_PrintRecords_FindMap(int client, const char[] mapSearch, int course, int style)
 {
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteString(mapSearch);
 	data.WriteCell(course);
 	data.WriteCell(style);
@@ -145,7 +145,7 @@ void DB_PrintRecords_FindMap(int client, const char[] mapSearch, int course, int
 public void DB_TxnSuccess_PrintRecords_FindMap(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	char mapSearch[33];
 	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();

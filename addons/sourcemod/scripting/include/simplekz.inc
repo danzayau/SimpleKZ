@@ -75,14 +75,14 @@ stock char[] SKZ_FormatTime(float time, bool precise = true)
 }
 
 /**
- * Checks if the value is a valid client entity index, and if they are in-game.
+ * Checks if the value is a valid client entity index, if they are in-game and not GOTV.
  *
  * @param client		Client index.
  * @return				Whether client is valid.
  */
 stock bool IsValidClient(int client)
 {
-	return client >= 1 && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && !IsClientSourceTV(client);
+	return client >= 1 && client <= MaxClients && IsClientInGame(client) && !IsClientSourceTV(client);
 }
 
 /**

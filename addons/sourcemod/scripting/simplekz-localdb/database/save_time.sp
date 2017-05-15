@@ -8,16 +8,14 @@
 
 void DB_SaveTime(int client, int course, int style, float runTime, int teleportsUsed, float theoreticalRunTime)
 {
-	KZPlayer player = new KZPlayer(client);
-	
 	char query[1024];
-	int steamID = GetSteamAccountID(player.id);
+	int steamID = GetSteamAccountID(client);
 	int mapID = SKZ_DB_GetCurrentMapID();
 	int runTimeMS = SKZ_DB_TimeFloatToInt(runTime);
 	int theoreticalRunTimeMS = SKZ_DB_TimeFloatToInt(theoreticalRunTime);
 	
 	DataPack data = new DataPack();
-	data.WriteCell(player.id);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteCell(steamID);
 	data.WriteCell(mapID);
 	data.WriteCell(course);
@@ -38,7 +36,7 @@ void DB_SaveTime(int client, int course, int style, float runTime, int teleports
 public void DB_TxnSuccess_SaveTime(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	int steamID = data.ReadCell();
 	int mapID = data.ReadCell();
 	int course = data.ReadCell();
@@ -47,6 +45,11 @@ public void DB_TxnSuccess_SaveTime(Handle db, DataPack data, int numQueries, Han
 	int teleportsUsed = data.ReadCell();
 	int theoreticalTimeMS = data.ReadCell();
 	data.Close();
+	
+	if (!IsValidClient(client))
+	{
+		return;
+	}
 	
 	Call_OnTimeInserted(client, steamID, mapID, course, style, runTimeMS, teleportsUsed, theoreticalTimeMS);
 } 

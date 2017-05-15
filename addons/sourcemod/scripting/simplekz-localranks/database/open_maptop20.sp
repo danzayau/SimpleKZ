@@ -13,7 +13,7 @@ void DB_OpenMapTop20(int client, int mapID, int course, int style, int timeType)
 	char query[1024];
 	
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteCell(course);
 	data.WriteCell(style);
 	data.WriteCell(timeType);
@@ -42,7 +42,7 @@ void DB_OpenMapTop20(int client, int mapID, int course, int style, int timeType)
 public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	int course = data.ReadCell();
 	int style = data.ReadCell();
 	int timeType = data.ReadCell();

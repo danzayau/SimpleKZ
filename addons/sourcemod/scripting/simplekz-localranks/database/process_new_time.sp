@@ -12,7 +12,7 @@ void DB_ProcessNewTime(int client, int steamID, int mapID, int course, int style
 	char query[1024];
 	
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteCell(steamID);
 	data.WriteCell(mapID);
 	data.WriteCell(course);
@@ -52,7 +52,7 @@ void DB_ProcessNewTime(int client, int steamID, int mapID, int course, int style
 public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	int steamID = data.ReadCell();
 	int mapID = data.ReadCell();
 	int course = data.ReadCell();
@@ -61,6 +61,11 @@ public void DB_TxnSuccess_ProcessTimerEnd(Handle db, DataPack data, int numQueri
 	int teleportsUsed = data.ReadCell();
 	int theoRunTimeMS = data.ReadCell();
 	data.Close();
+	
+	if (!IsValidClient(client))
+	{
+		return;
+	}
 	
 	bool firstTime = SQL_GetRowCount(results[0]) == 1;
 	int pbDiff = 0;

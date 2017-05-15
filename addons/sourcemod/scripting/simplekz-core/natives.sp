@@ -160,15 +160,13 @@ public int Native_PrintToChat(Handle plugin, int numParams)
 	int client = GetNativeCell(1);
 	bool addPrefix = GetNativeCell(2);
 	
-	char buffer[256];
+	char buffer[1024];
 	FormatNativeString(0, 3, 4, sizeof(buffer), _, buffer);
-	
 	if (addPrefix)
 	{
 		char prefix[64];
 		gCV_ChatPrefix.GetString(prefix, sizeof(prefix));
 		Format(buffer, sizeof(buffer), "%s%s", prefix, buffer);
 	}
-	
 	CPrintToChat(client, "%s", buffer);
 } 

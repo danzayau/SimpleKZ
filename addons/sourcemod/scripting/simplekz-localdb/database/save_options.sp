@@ -32,7 +32,7 @@ void DB_SaveOptions(int client)
 		player.errorSounds, 
 		player.timerText, 
 		player.speedText, 
-		GetSteamAccountID(player.id));
+		GetSteamAccountID(client));
 	txn.AddQuery(query);
 	
 	SQL_ExecuteTransaction(gH_DB, txn, _, DB_TxnFailure_Generic, _, DBPrio_High);
