@@ -7,6 +7,7 @@
 
 
 ConVar gCV_ChatProcessing;
+ConVar gCV_ChatPrefix;
 ConVar gCV_ConnectionMessages;
 ConVar gCV_DefaultStyle;
 ConVar gCV_PlayerModelT;
@@ -25,6 +26,7 @@ ConVar gCV_StyleCVar[STYLECVAR_COUNT];
 void CreateConVars()
 {
 	gCV_ChatProcessing = CreateConVar("kz_chat_processing", "1", "Whether SimpleKZ processes player chat messages.", _, true, 0.0, true, 1.0);
+	gCV_ChatPrefix = CreateConVar("kz_chat_prefix", "{grey}[{lightgreen}KZ{grey}] ", "Chat prefix used for SimpleKZ messages.");
 	gCV_ConnectionMessages = CreateConVar("kz_connection_messages", "1", "Whether SimpleKZ handles connection and disconnection messages.", _, true, 0.0, true, 1.0);
 	gCV_DefaultStyle = CreateConVar("kz_default_style", "0", "Default movement style (0 = Standard, 1 = Legacy, 2 = Competitive).", _, true, 0.0, true, 2.0);
 	gCV_PlayerModelT = CreateConVar("kz_player_model_t", "models/player/tm_leet_varianta.mdl", "Model to change Terrorists to (applies after map change).");

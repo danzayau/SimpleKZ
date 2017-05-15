@@ -129,7 +129,7 @@ public Action CommandStopTimer(int client, int args)
 {
 	if (TimerStop(client))
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped");
+		SKZ_PrintToChat(client, true, "%t", "Time Stopped");
 	}
 	return Plugin_Handled;
 }
@@ -145,7 +145,7 @@ public Action CommandGoto(int client, int args)
 	// If no arguments, respond with error message
 	if (args < 1)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Failure (Didn't Specify Player)");
+		SKZ_PrintToChat(client, true, "%t", "Goto Failure (Didn't Specify Player)");
 	}
 	// Otherwise try to teleport to the player
 	else
@@ -158,18 +158,18 @@ public Action CommandGoto(int client, int args)
 		{
 			if (target == client)
 			{
-				CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Failure (Not Yourself)");
+				SKZ_PrintToChat(client, true, "%t", "Goto Failure (Not Yourself)");
 			}
 			else if (!IsPlayerAlive(target))
 			{
-				CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Failure (Dead)");
+				SKZ_PrintToChat(client, true, "%t", "Goto Failure (Dead)");
 			}
 			else
 			{
 				GotoPlayer(client, target);
 				if (GetTimerRunning(client))
 				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Goto)");
+					SKZ_PrintToChat(client, true, "%t", "Time Stopped (Goto)");
 				}
 				TimerStop(client);
 			}
@@ -196,11 +196,11 @@ public Action CommandSpec(int client, int args)
 		{
 			if (target == client)
 			{
-				CPrintToChat(client, "%t %t", "KZ Prefix", "Spectate Failure (Not Yourself)");
+				SKZ_PrintToChat(client, true, "%t", "Spectate Failure (Not Yourself)");
 			}
 			else if (!IsPlayerAlive(target))
 			{
-				CPrintToChat(client, "%t %t", "KZ Prefix", "Spectate Failure (Dead)");
+				SKZ_PrintToChat(client, true, "%t", "Spectate Failure (Dead)");
 			}
 			else
 			{

@@ -32,6 +32,7 @@ void CreateNatives()
 	CreateNative("SKZ_SetOption", Native_SetOption);
 	CreateNative("SKZ_GetHitPerf", Native_GetHitPerf);
 	CreateNative("SKZ_GetTakeoffSpeed", Native_GetTakeoffSpeed);
+	CreateNative("SKZ_PrintToChat", Native_PrintToChat);
 }
 
 public int Native_IsClientSetUp(Handle plugin, int numParams)
@@ -152,4 +153,22 @@ public int Native_GetHitPerf(Handle plugin, int numParams)
 public int Native_GetTakeoffSpeed(Handle plugin, int numParams)
 {
 	return view_as<int>(GetSKZTakeoffSpeed(GetNativeCell(1)));
+}
+
+public int Native_PrintToChat(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	bool addPrefix = GetNativeCell(2);
+	
+	char buffer[256];
+	FormatNativeString(0, 3, 4, sizeof(buffer), _, buffer);
+	
+	if (addPrefix)
+	{
+		char prefix[64];
+		gCV_ChatPrefix.GetString(prefix, sizeof(prefix));
+		Format(buffer, sizeof(buffer), "%s%s", prefix, buffer);
+	}
+	
+	CPrintToChat(client, "%s", buffer);
 } 

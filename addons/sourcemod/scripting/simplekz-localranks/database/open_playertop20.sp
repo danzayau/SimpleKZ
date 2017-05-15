@@ -58,9 +58,9 @@ public void DB_TxnSuccess_OpenPlayerTop20(Handle db, DataPack data, int numQueri
 	{
 		switch (timeType)
 		{
-			case TimeType_Nub:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times");
-			case TimeType_Pro:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times (Pro)");
-			case TimeType_Theoretical:CPrintToChat(client, "%t %t", "KZ Prefix", "Player Top - No Times");
+			case TimeType_Nub:SKZ_PrintToChat(client, true, "%t", "Player Top - No Times");
+			case TimeType_Pro:SKZ_PrintToChat(client, true, "%t", "Player Top - No Times (Pro)");
+			case TimeType_Theoretical:SKZ_PrintToChat(client, true, "%t", "Player Top - No Times");
 		}
 		PlayerTopMenuDisplay(client);
 		return;

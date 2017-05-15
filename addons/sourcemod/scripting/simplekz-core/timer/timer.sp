@@ -173,7 +173,7 @@ void OnChangeMoveType_Timer(int client, MoveType newMoveType)
 	{
 		if (TimerStop(client))
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Noclipped)");
+			SKZ_PrintToChat(client, true, "%t", "Time Stopped (Noclipped)");
 		}
 	}
 }
@@ -201,7 +201,7 @@ void OnOptionChanged_Timer(int client, Option option)
 	{
 		if (TimerStop(client))
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Time Stopped (Changed Style)");
+			SKZ_PrintToChat(client, true, "%t", "Time Stopped (Changed Style)");
 		}
 	}
 }
@@ -273,7 +273,7 @@ static void PrintEndTimeString(int client)
 		{
 			case TimeType_Nub:
 			{
-				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map (Nub)", 
+				SKZ_PrintToChatAll(true, "%t", "Beat Map (Nub)", 
 					client, 
 					SKZ_FormatTime(currentTime[client]), 
 					GetTeleportCount(client), 
@@ -282,7 +282,7 @@ static void PrintEndTimeString(int client)
 			}
 			case TimeType_Pro:
 			{
-				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Map (Pro)", 
+				SKZ_PrintToChatAll(true, "%t", "Beat Map (Pro)", 
 					client, 
 					SKZ_FormatTime(currentTime[client]), 
 					gC_StylePhrases[GetOption(client, Option_Style)]);
@@ -295,7 +295,7 @@ static void PrintEndTimeString(int client)
 		{
 			case TimeType_Nub:
 			{
-				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus (Nub)", 
+				SKZ_PrintToChatAll(true, "%t", "Beat Bonus (Nub)", 
 					client, 
 					currentCourse[client], 
 					SKZ_FormatTime(currentTime[client]), 
@@ -305,7 +305,7 @@ static void PrintEndTimeString(int client)
 			}
 			case TimeType_Pro:
 			{
-				CPrintToChatAll("%t %t", "KZ Prefix", "Beat Bonus (Pro)", 
+				SKZ_PrintToChatAll(true, "%t", "Beat Bonus (Pro)", 
 					client, 
 					currentCourse[client], 
 					SKZ_FormatTime(currentTime[client]), 

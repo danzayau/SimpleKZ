@@ -102,11 +102,11 @@ public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries
 	{
 		if (totalMainCourses + totalBonuses == 0)
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "No Ranked Maps");
+			SKZ_PrintToChat(client, true, "%t", "No Ranked Maps");
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Map Completion", 
+			SKZ_PrintToChat(client, true, "%t", "Map Completion", 
 				playerName, 
 				completions, totalMainCourses, completionsPro, totalMainCourses, 
 				bonusCompletions, totalBonuses, bonusCompletionsPro, totalBonuses, 
@@ -147,7 +147,7 @@ public void DB_TxnSuccess_GetCompletion_FindPlayer(Handle db, DataPack data, int
 	
 	else if (SQL_GetRowCount(results[0]) == 0)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Player Not Found", playerSearch);
+		SKZ_PrintToChat(client, true, "%t", "Player Not Found", playerSearch);
 		return;
 	}
 	else if (SQL_FetchRow(results[0]))

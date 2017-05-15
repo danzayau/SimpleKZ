@@ -39,19 +39,19 @@ void MakeCheckpoint(int client)
 	// Guards
 	if (!IsPlayerAlive(client))
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Dead)");
+		SKZ_PrintToChat(client, true, "%t", "Can't Checkpoint (Dead)");
 		PlayErrorSound(client);
 		return;
 	}
 	if (!Movement_GetOnGround(client))
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Midair)");
+		SKZ_PrintToChat(client, true, "%t", "Can't Checkpoint (Midair)");
 		PlayErrorSound(client);
 		return;
 	}
 	if (BhopTriggersJustTouched(client))
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Checkpoint (Just Landed)");
+		SKZ_PrintToChat(client, true, "%t", "Can't Checkpoint (Just Landed)");
 		PlayErrorSound(client);
 		return;
 	}
@@ -74,7 +74,7 @@ void MakeCheckpoint(int client)
 	}
 	if (GetOption(client, Option_CheckpointMessages) == CheckpointMessages_Enabled)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Make Checkpoint");
+		SKZ_PrintToChat(client, true, "%t", "Make Checkpoint");
 	}
 	
 	// Call Post Forward
@@ -95,7 +95,7 @@ void TeleportToCheckpoint(int client)
 	}
 	if (GetCurrentMapPrefix() == MapPrefix_KZPro && GetTimerRunning(client))
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Teleport (Map)");
+		SKZ_PrintToChat(client, true, "%t", "Can't Teleport (Map)");
 		PlayErrorSound(client);
 		return;
 	}
@@ -161,13 +161,13 @@ void UndoTeleport(int client)
 	}
 	if (!lastTeleportOnGround[client])
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Undo (TP Was Midair)");
+		SKZ_PrintToChat(client, true, "%t", "Can't Undo (TP Was Midair)");
 		PlayErrorSound(client);
 		return;
 	}
 	if (lastTeleportInBhopTrigger[client])
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Undo (Just Landed)");
+		SKZ_PrintToChat(client, true, "%t", "Can't Undo (Just Landed)");
 		PlayErrorSound(client);
 		return;
 	}
@@ -213,7 +213,7 @@ void GotoPlayer(int client, int target)
 	
 	TeleportDo(client, targetOrigin, targetAngles);
 	
-	CPrintToChat(client, "%t %t", "KZ Prefix", "Goto Success", target);
+	SKZ_PrintToChat(client, true, "%t", "Goto Success", target);
 }
 
 

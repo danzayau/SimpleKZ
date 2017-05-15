@@ -116,7 +116,7 @@ static void MeasureGetPos(int client, int arg)
 	if (!TR_DidHit(trace))
 	{
 		CloseHandle(trace);
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Measure Failure (Not Aiming at Solid)");
+		SKZ_PrintToChat(client, true, "%t", "Measure Failure (Not Aiming at Solid)");
 		PlayErrorSound(client);
 		return;
 	}

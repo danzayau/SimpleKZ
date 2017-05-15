@@ -64,7 +64,7 @@ public Action CommandBMapTop(int client, int args)
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
+			SKZ_PrintToChat(client, true, "%t", "Invalid Bonus Number", argBonus);
 		}
 	}
 	else if (args >= 2)
@@ -79,7 +79,7 @@ public Action CommandBMapTop(int client, int args)
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
+			SKZ_PrintToChat(client, true, "%t", "Invalid Bonus Number", argBonus);
 		}
 	}
 	return Plugin_Handled;
@@ -123,7 +123,7 @@ public Action CommandBPB(int client, int args) {
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
+			SKZ_PrintToChat(client, true, "%t", "Invalid Bonus Number", argBonus);
 		}
 	}
 	else if (args == 2)
@@ -138,7 +138,7 @@ public Action CommandBPB(int client, int args) {
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
+			SKZ_PrintToChat(client, true, "%t", "Invalid Bonus Number", argBonus);
 		}
 	}
 	else if (args >= 3)
@@ -154,7 +154,7 @@ public Action CommandBPB(int client, int args) {
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
+			SKZ_PrintToChat(client, true, "%t", "Invalid Bonus Number", argBonus);
 		}
 	}
 	return Plugin_Handled;
@@ -192,7 +192,7 @@ public Action CommandBWR(int client, int args)
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
+			SKZ_PrintToChat(client, true, "%t", "Invalid Bonus Number", argBonus);
 		}
 	}
 	else if (args >= 2)
@@ -207,7 +207,7 @@ public Action CommandBWR(int client, int args)
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Invalid Bonus Number", argBonus);
+			SKZ_PrintToChat(client, true, "%t", "Invalid Bonus Number", argBonus);
 		}
 	}
 	return Plugin_Handled;

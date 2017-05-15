@@ -116,7 +116,7 @@ void PrintConnectMessage(int client)
 		return;
 	}
 	
-	CPrintToChatAll("%T", "Client Connection Message", client, client);
+	SKZ_PrintToChatAll(false, "%t", "Client Connection Message", client, client);
 }
 
 void PrintDisconnectMessage(int client, Event event) // Hooked to player_disconnect event
@@ -135,7 +135,7 @@ void PrintDisconnectMessage(int client, Event event) // Hooked to player_disconn
 	
 	char reason[64];
 	GetEventString(event, "reason", reason, sizeof(reason));
-	CPrintToChatAll("%T", "Client Disconnection Message", client, client, reason);
+	SKZ_PrintToChatAll(false, "%t", "Client Disconnection Message", client, client, reason);
 }
 
 
@@ -190,7 +190,7 @@ void PlayErrorSound(int client)
 void StopSounds(int client)
 {
 	ClientCommand(client, "snd_playsounds Music.StopAllExceptMusic");
-	CPrintToChat(client, "%t %t", "KZ Prefix", "Stopped Sounds");
+	SKZ_PrintToChat(client, true, "%t", "Stopped Sounds");
 }
 
 Action OnNormalSound_StopSounds(int entity)
@@ -397,11 +397,11 @@ Action OnClientSayCommand_ChatProcessing(int client, const char[] message)
 	// Print the message to chat
 	if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
 	{
-		CPrintToChatAll("{bluegrey}%N{default} : %s", client, message);
+		SKZ_PrintToChatAll(false, "{bluegrey}%N{default} : %s", client, message);
 	}
 	else
 	{
-		CPrintToChatAll("{lime}%N{default} : %s", client, message);
+		SKZ_PrintToChatAll(false, "{lime}%N{default} : %s", client, message);
 	}
 	return Plugin_Handled;
 } 

@@ -69,11 +69,11 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 	{
 		if (course == 0)
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Main Course Not Found", mapName);
+			SKZ_PrintToChat(client, true, "%t", "Main Course Not Found", mapName);
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Bonus Not Found", mapName, course);
+			SKZ_PrintToChat(client, true, "%t", "Bonus Not Found", mapName, course);
 		}
 		return;
 	}
@@ -103,11 +103,11 @@ public void DB_TxnSuccess_PrintRecords(Handle db, DataPack data, int numQueries,
 	// Print WR header to chat
 	if (course == 0)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "WR Header", mapName, gC_StylePhrases[style]);
+		SKZ_PrintToChat(client, true, "%t", "WR Header", mapName, gC_StylePhrases[style]);
 	}
 	else
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "WR Header (Bonus)", mapName, course, gC_StylePhrases[style]);
+		SKZ_PrintToChat(client, true, "%t", "WR Header (Bonus)", mapName, course, gC_StylePhrases[style]);
 	}
 	
 	// Print WR times to chat
@@ -159,7 +159,7 @@ public void DB_TxnSuccess_PrintRecords_FindMap(Handle db, DataPack data, int num
 	
 	if (SQL_GetRowCount(results[0]) == 0)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearch);
+		SKZ_PrintToChat(client, true, "%t", "Map Not Found", mapSearch);
 		return;
 	}
 	else if (SQL_FetchRow(results[0]))

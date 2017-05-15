@@ -32,7 +32,7 @@ void Pause(int client)
 	if (GetTimerRunning(client) && hasResumedInThisRun[client]
 		 && GetEngineTime() - lastResumeTime[client] < PAUSE_COOLDOWN)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Just Resumed)");
+		SKZ_PrintToChat(client, true, "%t", "Can't Pause (Just Resumed)");
 		PlayErrorSound(client);
 		return;
 	}
@@ -40,7 +40,7 @@ void Pause(int client)
 		 && !Movement_GetOnGround(client)
 		 && !(Movement_GetSpeed(client) == 0 && Movement_GetVerticalVelocity(client) == 0))
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Pause (Midair)");
+		SKZ_PrintToChat(client, true, "%t", "Can't Pause (Midair)");
 		PlayErrorSound(client);
 		return;
 	}
@@ -76,7 +76,7 @@ void Resume(int client)
 	if (GetTimerRunning(client) && hasPausedInThisRun[client]
 		 && GetEngineTime() - lastPauseTime[client] < PAUSE_COOLDOWN)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Can't Resume (Just Paused)");
+		SKZ_PrintToChat(client, true, "%t", "Can't Resume (Just Paused)");
 		PlayErrorSound(client);
 		return;
 	}

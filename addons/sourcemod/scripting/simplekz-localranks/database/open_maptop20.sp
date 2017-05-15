@@ -64,11 +64,11 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 	{
 		if (course == 0)
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Main Course Not Found", mapName);
+			SKZ_PrintToChat(client, true, "%t", "Main Course Not Found", mapName);
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Bonus Not Found", mapName, course);
+			SKZ_PrintToChat(client, true, "%t", "Bonus Not Found", mapName, course);
 		}
 		return;
 	}
@@ -78,9 +78,9 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 	{
 		switch (timeType)
 		{
-			case TimeType_Nub:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times");
-			case TimeType_Pro:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times (Pro)");
-			case TimeType_Theoretical:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times");
+			case TimeType_Nub:SKZ_PrintToChat(client, true, "%t", "Map Top - No Times");
+			case TimeType_Pro:SKZ_PrintToChat(client, true, "%t", "Map Top - No Times (Pro)");
+			case TimeType_Theoretical:SKZ_PrintToChat(client, true, "%t", "Map Top - No Times");
 		}
 		MapTopMenuDisplay(client);
 		return;

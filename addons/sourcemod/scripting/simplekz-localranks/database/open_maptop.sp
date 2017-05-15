@@ -54,11 +54,11 @@ public void DB_TxnSuccess_OpenMapTopMenu(Handle db, DataPack data, int numQuerie
 	{
 		if (course == 0)
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Main Course Not Found", gC_MapTopMapName[client]);
+			SKZ_PrintToChat(client, true, "%t", "Main Course Not Found", gC_MapTopMapName[client]);
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Bonus Not Found", gC_MapTopMapName[client], course);
+			SKZ_PrintToChat(client, true, "%t", "Bonus Not Found", gC_MapTopMapName[client], course);
 		}
 		return;
 	}
@@ -97,7 +97,7 @@ public void DB_TxnSuccess_OpenMapTopMenu_FindMap(Handle db, DataPack data, int n
 	
 	if (SQL_GetRowCount(results[0]) == 0)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearch);
+		SKZ_PrintToChat(client, true, "%t", "Map Not Found", mapSearch);
 		return;
 	}
 	else if (SQL_FetchRow(results[0]))

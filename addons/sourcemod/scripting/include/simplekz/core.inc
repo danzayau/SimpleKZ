@@ -570,6 +570,45 @@ native bool SKZ_GetHitPerf(int client);
  */
 native float SKZ_GetTakeoffSpeed(int client);
 
+/**
+ * Prints a message to a client's chat, formatting colours and optionally 
+ * adding the chat prefix. If using the chat prefix, specify a colour at 
+ * the beginning of the message.
+ *
+ * @param client		Client index.
+ * @param prefix		Whether to add the chat prefix.
+ * @param format		Formatting rules.
+ * @param any			Variable number of format parameters.
+ * @noreturn
+ */
+native int SKZ_PrintToChat(int client, bool prefix, const char[] format, any...);
+
+
+/**
+ * Prints a message to all clients' chat, formatting colours and optionally 
+ * adding the chat prefix. If using the chat prefix, specify a colour at 
+ * the beginning of the message.
+ *
+ * @param client		Client index.
+ * @param prefix		Whether to add the chat prefix.
+ * @param format		Formatting rules.
+ * @param any			Variable number of format parameters.
+ * @noreturn
+ */
+stock void SKZ_PrintToChatAll(bool prefix, const char[] format, any...)
+{
+	char buffer[256];
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client))
+		{
+			SetGlobalTransTarget(client);
+			VFormat(buffer, sizeof(buffer), format, 3);
+			SKZ_PrintToChat(client, prefix, buffer);
+		}
+	}
+}
+
 
 
 // =========================  METHODMAP  ========================= //

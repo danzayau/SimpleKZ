@@ -92,11 +92,11 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	{
 		if (course == 0)
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Main Course Not Found", mapName);
+			SKZ_PrintToChat(client, true, "%t", "Main Course Not Found", mapName);
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Bonus Not Found", mapName, course);
+			SKZ_PrintToChat(client, true, "%t", "Bonus Not Found", mapName, course);
 		}
 		return;
 	}
@@ -141,11 +141,11 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	// Print PB header to chat
 	if (course == 0)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "PB Header", playerName, mapName, gC_StylePhrases[style]);
+		SKZ_PrintToChat(client, true, "%t", "PB Header", playerName, mapName, gC_StylePhrases[style]);
 	}
 	else
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "PB Header (Bonus)", playerName, mapName, course, gC_StylePhrases[style]);
+		SKZ_PrintToChat(client, true, "%t", "PB Header (Bonus)", playerName, mapName, course, gC_StylePhrases[style]);
 	}
 	
 	// Print PB times to chat
@@ -200,7 +200,7 @@ public void DB_TxnSuccess_PrintPBs_FindMap(Handle db, DataPack data, int numQuer
 	// Check if the map course exists in the database
 	if (SQL_GetRowCount(results[0]) == 0)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearch);
+		SKZ_PrintToChat(client, true, "%t", "Map Not Found", mapSearch);
 		return;
 	}
 	else if (SQL_FetchRow(results[0]))
@@ -240,12 +240,12 @@ public void DB_TxnSuccess_PrintPBs_FindPlayerAndMap(Handle db, DataPack data, in
 	
 	if (SQL_GetRowCount(results[0]) == 0)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Player Not Found", playerSearch);
+		SKZ_PrintToChat(client, true, "%t", "Player Not Found", playerSearch);
 		return;
 	}
 	else if (SQL_GetRowCount(results[1]) == 0)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearch);
+		SKZ_PrintToChat(client, true, "%t", "Map Not Found", mapSearch);
 		return;
 	}
 	else if (SQL_FetchRow(results[0]) && SQL_FetchRow(results[1]))

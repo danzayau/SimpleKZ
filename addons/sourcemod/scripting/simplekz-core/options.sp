@@ -98,7 +98,7 @@ static void PrintOptionChangeMessage(int client, Option option) {
 	{
 		case Option_Style:
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Switched Style", gC_StylePhrases[GetOption(client, Option_Style)]);
+			SKZ_PrintToChat(client, true, "%t", "Switched Style", gC_StylePhrases[GetOption(client, Option_Style)]);
 		}
 		case Option_ShowingTPMenu:
 		{
@@ -106,11 +106,11 @@ static void PrintOptionChangeMessage(int client, Option option) {
 			{
 				case ShowingTPMenu_Disabled:
 				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Menu - Disable");
+					SKZ_PrintToChat(client, true, "%t", "Option - Teleport Menu - Disable");
 				}
 				case ShowingTPMenu_Enabled:
 				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Teleport Menu - Enable");
+					SKZ_PrintToChat(client, true, "%t", "Option - Teleport Menu - Enable");
 				}
 			}
 		}
@@ -120,11 +120,11 @@ static void PrintOptionChangeMessage(int client, Option option) {
 			{
 				case ShowingInfoPanel_Disabled:
 				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Info Panel - Disable");
+					SKZ_PrintToChat(client, true, "%t", "Option - Info Panel - Disable");
 				}
 				case ShowingInfoPanel_Enabled:
 				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Info Panel - Enable");
+					SKZ_PrintToChat(client, true, "%t", "Option - Info Panel - Enable");
 				}
 			}
 		}
@@ -134,11 +134,11 @@ static void PrintOptionChangeMessage(int client, Option option) {
 			{
 				case ShowingPlayers_Disabled:
 				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Players - Disable");
+					SKZ_PrintToChat(client, true, "%t", "Option - Show Players - Disable");
 				}
 				case ShowingPlayers_Enabled:
 				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Players - Enable");
+					SKZ_PrintToChat(client, true, "%t", "Option - Show Players - Enable");
 				}
 			}
 		}
@@ -148,11 +148,11 @@ static void PrintOptionChangeMessage(int client, Option option) {
 			{
 				case ShowingWeapon_Disabled:
 				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Weapon - Disable");
+					SKZ_PrintToChat(client, true, "%t", "Option - Show Weapon - Disable");
 				}
 				case ShowingWeapon_Enabled:
 				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Show Weapon - Enable");
+					SKZ_PrintToChat(client, true, "%t", "Option - Show Weapon - Enable");
 				}
 			}
 		}
@@ -162,11 +162,11 @@ static void PrintOptionChangeMessage(int client, Option option) {
 			{
 				case AutoRestart_Disabled:
 				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Auto Restart - Disable");
+					SKZ_PrintToChat(client, true, "%t", "Option - Auto Restart - Disable");
 				}
 				case AutoRestart_Enabled:
 				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Auto Restart - Enable");
+					SKZ_PrintToChat(client, true, "%t", "Option - Auto Restart - Enable");
 				}
 			}
 		}
@@ -176,11 +176,11 @@ static void PrintOptionChangeMessage(int client, Option option) {
 			{
 				case SlayOnEnd_Disabled:
 				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Slay On End - Disable");
+					SKZ_PrintToChat(client, true, "%t", "Option - Slay On End - Disable");
 				}
 				case SlayOnEnd_Enabled:
 				{
-					CPrintToChat(client, "%t %t", "KZ Prefix", "Option - Slay On End - Enable");
+					SKZ_PrintToChat(client, true, "%t", "Option - Slay On End - Enable");
 				}
 			}
 		}
