@@ -208,8 +208,6 @@ Action OnNormalSound_StopSounds(int entity)
 
 // =========================  PLAYER MODELS  ========================= //
 
-#define PLAYER_MODEL_ALPHA 100
-
 static char playerModelT[256];
 static char playerModelCT[256];
 
@@ -222,7 +220,7 @@ void UpdatePlayerModel(int client)
 	}
 	
 	SetEntityRenderMode(client, RENDER_TRANSCOLOR);
-	SetEntityRenderColor(client, _, _, _, PLAYER_MODEL_ALPHA);
+	SetEntityRenderColor(client, _, _, _, gCV_PlayerModelAlpha.IntValue);
 }
 
 void OnMapStart_PlayerModel()
