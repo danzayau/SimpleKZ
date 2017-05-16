@@ -67,12 +67,12 @@ public int MenuHandler_Measure(Handle menu, MenuAction action, int param1, int p
 				{
 					float horizontalDist = GetVectorHorizontalDistance(measurePos[param1][0], measurePos[param1][1]);
 					float verticalDist = measurePos[param1][1][2] - measurePos[param1][0][2];
-					CPrintToChat(param1, "%t %t", "KZ Prefix", "Measure Result", horizontalDist, verticalDist);
+					SKZ_PrintToChat(param1, true, "%t", "Measure Result", horizontalDist, verticalDist);
 					MeasureBeam(param1, measurePos[param1][0], measurePos[param1][1], 5.0, 2.0, 200, 200, 200);
 				}
 				else
 				{
-					CPrintToChat(param1, "%t %t", "KZ Prefix", "Measure Failure (Points Not Set)");
+					SKZ_PrintToChat(param1, true, "%t", "Measure Failure (Points Not Set)");
 					PlayErrorSound(param1);
 				}
 			}

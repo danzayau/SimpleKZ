@@ -19,7 +19,7 @@ void DB_UpdateRankedMapPool(int client)
 		LogError("There was a problem opening file: %s", FILE_PATH_MAPPOOL);
 		if (IsValidClient(client))
 		{
-			SKZ_PrintToChat(client, true, "[SimpleKZ] There was a problem opening file: %s", FILE_PATH_MAPPOOL);
+			SKZ_PrintToChat(client, true, "{grey}There was a problem opening file: %s", FILE_PATH_MAPPOOL);
 		}
 		return;
 	}
@@ -79,6 +79,6 @@ public void DB_TxnSuccess_UpdateRankedMapPool(Handle db, int userid, int numQuer
 	}
 	else
 	{
-		LogMessage("The ranked map pool was updated.", client);
+		LogMessage("The ranked map pool was updated.");
 	}
 } 
