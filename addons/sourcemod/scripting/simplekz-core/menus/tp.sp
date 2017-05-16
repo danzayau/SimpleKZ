@@ -143,12 +143,12 @@ static void AddItemTPMenuPause(int client, Menu menu)
 	char temp[16];
 	if (GetPaused(client))
 	{
-		FormatEx(temp, sizeof(temp), "%T", "TP Menu - Pause", client);
+		FormatEx(temp, sizeof(temp), "%T", "TP Menu - Resume", client);
 		menu.AddItem("", temp, ITEMDRAW_DEFAULT);
 	}
 	else
 	{
-		FormatEx(temp, sizeof(temp), "%T", "TP Menu - Resume", client);
+		FormatEx(temp, sizeof(temp), "%T", "TP Menu - Pause", client);
 		menu.AddItem("", temp, ITEMDRAW_DEFAULT);
 	}
 }
