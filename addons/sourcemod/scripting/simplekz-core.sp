@@ -101,6 +101,12 @@ public void OnPluginStart()
 	}
 }
 
+public void OnPluginEnd()
+{
+	RestoreDefaults();
+	RemoveHooks();
+}
+
 void OnLateLoad()
 {
 	for (int client = 1; client <= MaxClients; client++)

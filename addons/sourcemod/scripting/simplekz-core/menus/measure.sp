@@ -77,7 +77,7 @@ public int MenuHandler_Measure(Handle menu, MenuAction action, int param1, int p
 				}
 			}
 		}
-		DisplayMenu(measureMenu[param1], param1, MENU_TIME_FOREVER);
+		measureMenu[param1].Display(param1, MENU_TIME_FOREVER);
 	}
 	else if (action == MenuAction_Cancel)
 	{

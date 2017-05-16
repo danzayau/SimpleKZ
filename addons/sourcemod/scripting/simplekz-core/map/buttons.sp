@@ -40,11 +40,11 @@ void UpdateMapButtons()
 		{
 			HookSingleEntityOutput(entity, "OnPressed", OnEndButtonPress);
 		}
-		else if (MatchRegex(RE_BonusStartButton, tempString) > 0)
+		else if (RE_BonusStartButton.Match(tempString) > 0)
 		{
 			HookSingleEntityOutput(entity, "OnPressed", OnBonusStartButtonPress);
 		}
-		else if (MatchRegex(RE_BonusEndButton, tempString) > 0)
+		else if (RE_BonusEndButton.Match(tempString) > 0)
 		{
 			HookSingleEntityOutput(entity, "OnPressed", OnBonusEndButtonPress);
 		}
@@ -85,9 +85,9 @@ public void OnBonusStartButtonPress(const char[] name, int caller, int activator
 	
 	char tempString[32];
 	GetEntPropString(caller, Prop_Data, "m_iName", tempString, sizeof(tempString));
-	if (MatchRegex(RE_BonusStartButton, tempString) > 0)
+	if (RE_BonusStartButton.Match(tempString) > 0)
 	{
-		GetRegexSubString(RE_BonusStartButton, 1, tempString, sizeof(tempString));
+		RE_BonusStartButton.GetSubString(1, tempString, sizeof(tempString));
 		int bonus = StringToInt(tempString);
 		if (bonus > 0)
 		{
@@ -107,9 +107,9 @@ public void OnBonusEndButtonPress(const char[] name, int caller, int activator, 
 	char tempString[32];
 	
 	GetEntPropString(caller, Prop_Data, "m_iName", tempString, sizeof(tempString));
-	if (MatchRegex(RE_BonusEndButton, tempString) > 0)
+	if (RE_BonusEndButton.Match(tempString) > 0)
 	{
-		GetRegexSubString(RE_BonusEndButton, 1, tempString, sizeof(tempString));
+		RE_BonusEndButton.GetSubString(1, tempString, sizeof(tempString));
 		int bonus = StringToInt(tempString);
 		if (bonus > 0)
 		{

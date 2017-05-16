@@ -24,7 +24,39 @@ void OnMapStart_KZConfig()
 	}
 }
 
+// =========================  PLUGIN END  ========================= //
 
+void RestoreDefaults()
+{
+	gCV_StyleCVar[StyleCVar_Accelerate].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_Friction].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_AirAccelerate].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_LadderScaleSpeed].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_MaxVelocity].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_Gravity].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_EnableBunnyhopping].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_AutoBunnyhopping].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_StaminaMax].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_StaminaLandCost].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_StaminaJumpCost].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_StaminaRecoveryRate].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_MaxSpeed].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_WaterAccelerate].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_TimeBetweenDucks].RestoreDefault();
+	gCV_StyleCVar[StyleCVar_AccelerateUseWeaponSpeed].RestoreDefault();
+}
+
+void RemoveHooks()
+{
+	gCV_PlayerModelAlpha.RemoveChangeHook(OnConVarChanged_PlayerModelAlpha);
+	UnhookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Pre);
+	UnhookEvent("player_death", OnPlayerDeath, EventHookMode_Pre);
+	UnhookEvent("player_disconnect", OnPlayerDisconnect, EventHookMode_Pre);
+	UnhookEvent("round_start", OnRoundStart, EventHookMode_Pre);
+	UnhookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);
+	UnhookEntityOutput("trigger_multiple", "OnStartTouch", OnTrigMultTouch);
+	RemoveNormalSoundHook(view_as<NormalSHook>(OnNormalSound));
+}
 
 // =========================  GODMODE  ========================= //
 
@@ -107,7 +139,7 @@ void OnOptionChanged_HideWeapon(int client, Option option)
 
 void PrintConnectMessage(int client)
 {
-	if (!GetConVarBool(gCV_ConnectionMessages) || IsFakeClient(client))
+	if (!gCV_ConnectionMessages.BoolValue || IsFakeClient(client))
 	{
 		return;
 	}
@@ -117,7 +149,7 @@ void PrintConnectMessage(int client)
 
 void PrintDisconnectMessage(int client, Event event) // Hooked to player_disconnect event
 {
-	if (!GetConVarBool(gCV_ConnectionMessages))
+	if (!gCV_ConnectionMessages.BoolValue)
 	{
 		return;
 	}
@@ -130,7 +162,7 @@ void PrintDisconnectMessage(int client, Event event) // Hooked to player_disconn
 	}
 	
 	char reason[64];
-	GetEventString(event, "reason", reason, sizeof(reason));
+	event.GetString("reason", reason, sizeof(reason));
 	SKZ_PrintToChatAll(false, "%t", "Client Disconnection Message", client, client, reason);
 }
 
@@ -140,7 +172,7 @@ void PrintDisconnectMessage(int client, Event event) // Hooked to player_disconn
 
 void OnRoundStart_ForceAllTalk()
 {
-	SetConVarInt(gCV_FullAlltalk, 1);
+	gCV_FullAlltalk.SetInt(1);
 }
 
 
@@ -226,10 +258,10 @@ void UpdatePlayerModelAlpha(int client)
 
 void OnMapStart_PlayerModel()
 {
-	SetConVarInt(gCV_DisableImmunityAlpha, 1); // Ensures player transparency works	
+	gCV_DisableImmunityAlpha.SetInt(1); // Ensures player transparency works
 	
-	GetConVarString(gCV_PlayerModelT, playerModelT, sizeof(playerModelT));
-	GetConVarString(gCV_PlayerModelCT, playerModelCT, sizeof(playerModelCT));
+	gCV_PlayerModelT.GetString(playerModelT, sizeof(playerModelT));
+	gCV_PlayerModelCT.GetString(playerModelCT, sizeof(playerModelCT));
 	
 	PrecacheModel(playerModelT, true);
 	AddFileToDownloadsTable(playerModelT);
@@ -366,7 +398,7 @@ void OnTimerStart_JoinTeam(int client)
 
 Action OnClientSayCommand_ChatProcessing(int client, const char[] message)
 {
-	if (!GetConVarBool(gCV_ChatProcessing))
+	if (!gCV_ChatProcessing.BoolValue)
 	{
 		return Plugin_Continue;
 	}
