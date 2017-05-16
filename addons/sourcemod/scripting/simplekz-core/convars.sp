@@ -32,6 +32,7 @@ void CreateConVars()
 	gCV_PlayerModelT = CreateConVar("kz_player_model_t", "models/player/tm_leet_varianta.mdl", "Model to change Terrorists to (applies after map change).");
 	gCV_PlayerModelCT = CreateConVar("kz_player_model_ct", "models/player/ctm_idf_variantc.mdl", "Model to change Counter-Terrorists to (applies after map change).");
 	gCV_PlayerModelAlpha = CreateConVar("kz_player_model_alpha", "65", "Amount of alpha (transparency) to set player models to.", _, true, 0.0, true, 255.0);
+
 	FindConVars();
 	
 	gCV_PlayerModelAlpha.AddChangeHook(OnConVarChanged_PlayerModelAlpha);

@@ -28,22 +28,10 @@ void OnMapStart_KZConfig()
 
 void RestoreDefaults()
 {
-	gCV_StyleCVar[StyleCVar_Accelerate].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_Friction].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_AirAccelerate].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_LadderScaleSpeed].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_MaxVelocity].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_Gravity].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_EnableBunnyhopping].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_AutoBunnyhopping].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_StaminaMax].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_StaminaLandCost].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_StaminaJumpCost].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_StaminaRecoveryRate].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_MaxSpeed].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_WaterAccelerate].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_TimeBetweenDucks].RestoreDefault();
-	gCV_StyleCVar[StyleCVar_AccelerateUseWeaponSpeed].RestoreDefault();
+	for (int i; i < STYLECVAR_COUNT; i++)
+	{
+		gCV_StyleCVar[i].RestoreDefault();
+	}
 }
 
 void RemoveHooks()
