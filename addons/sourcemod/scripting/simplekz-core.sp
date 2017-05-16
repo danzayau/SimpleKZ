@@ -251,6 +251,7 @@ public void SKZ_OnTimerStart_Post(int client, int course, int style)
 	OnTimerStart_Pause(client);
 	OnTimerStart_Teleports(client);
 	OnTimerStart_WastedTime(client);
+	UpdateTPMenu(client);
 }
 
 public void SKZ_OnTimerEnd_Post(int client, int course, int style, float time, int teleportsUsed, float theoreticalTime)
@@ -261,22 +262,26 @@ public void SKZ_OnTimerEnd_Post(int client, int course, int style, float time, i
 public void SKZ_OnMakeCheckpoint_Post(int client)
 {
 	OnMakeCheckpoint_WastedTime(client);
+	UpdateTPMenu(client);
 }
 
 public void SKZ_OnTeleportToCheckpoint_Post(int client)
 {
 	OnTeleportToCheckpoint_WastedTime(client);
+	UpdateTPMenu(client);
 }
 
 public void SKZ_OnTeleportToStart_Post(int client)
 {
 	OnTeleportToStart_Timer(client);
 	OnTeleportToStart_WastedTime(client);
+	UpdateTPMenu(client);
 }
 
 public void SKZ_OnUndoTeleport_Post(int client)
 {
 	OnUndoTeleport_WastedTime(client);
+	UpdateTPMenu(client);
 }
 
 public void SKZ_OnOptionChanged(int client, Option option, int newValue)
