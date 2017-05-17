@@ -103,8 +103,7 @@ public void OnPluginStart()
 
 public void OnPluginEnd()
 {
-	RestoreDefaults();
-	RemoveHooks();
+	ResetConVars();
 }
 
 void OnLateLoad()

@@ -84,4 +84,12 @@ static void FindConVars()
 	{
 		gCV_StyleCVar[i].Flags &= ~FCVAR_NOTIFY;
 	}
-} 
+}
+
+void ResetConVars()
+{
+	for (int i; i < STYLECVAR_COUNT; i++)
+	{
+		gCV_StyleCVar[i].RestoreDefault();
+	}
+}

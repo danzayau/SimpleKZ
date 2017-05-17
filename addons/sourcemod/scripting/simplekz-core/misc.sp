@@ -24,28 +24,6 @@ void OnMapStart_KZConfig()
 	}
 }
 
-// =========================  PLUGIN END  ========================= //
-
-void RestoreDefaults()
-{
-	for (int i; i < STYLECVAR_COUNT; i++)
-	{
-		gCV_StyleCVar[i].RestoreDefault();
-	}
-}
-
-void RemoveHooks()
-{
-	gCV_PlayerModelAlpha.RemoveChangeHook(OnConVarChanged_PlayerModelAlpha);
-	UnhookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Pre);
-	UnhookEvent("player_death", OnPlayerDeath, EventHookMode_Pre);
-	UnhookEvent("player_disconnect", OnPlayerDisconnect, EventHookMode_Pre);
-	UnhookEvent("round_start", OnRoundStart, EventHookMode_Pre);
-	UnhookEvent("player_team", OnPlayerJoinTeam, EventHookMode_Pre);
-	UnhookEntityOutput("trigger_multiple", "OnStartTouch", OnTrigMultTouch);
-	RemoveNormalSoundHook(view_as<NormalSHook>(OnNormalSound));
-}
-
 // =========================  GODMODE  ========================= //
 
 void UpdateGodMode(int client)
