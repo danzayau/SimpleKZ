@@ -112,7 +112,7 @@ void PrintConnectMessage(int client)
 		return;
 	}
 	
-	SKZ_PrintToChatAll(false, "%t", "Client Connection Message", client, client);
+	SKZ_PrintToChatAll(false, "%t", "Client Connection Message", client);
 }
 
 void PrintDisconnectMessage(int client, Event event) // Hooked to player_disconnect event
@@ -131,7 +131,7 @@ void PrintDisconnectMessage(int client, Event event) // Hooked to player_disconn
 	
 	char reason[64];
 	GetEventString(event, "reason", reason, sizeof(reason));
-	SKZ_PrintToChatAll(false, "%t", "Client Disconnection Message", client, client, reason);
+	SKZ_PrintToChatAll(false, "%t", "Client Disconnection Message", client, reason);
 }
 
 
@@ -167,7 +167,7 @@ public Action Timer_SlayPlayer(Handle timer, int userid)
 
 
 
-// =========================  ERROR MESSAGES AND SOUNDS  ========================= //
+// =========================  ERROR SOUNDS  ========================= //
 
 #define SOUND_ERROR "buttons/button10.wav"
 
