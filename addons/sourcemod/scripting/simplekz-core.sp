@@ -161,6 +161,10 @@ public void OnClientPostAdminCheck(int client)
 public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) // player_disconnect hook
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	if (!IsValidClient(client))
+	{
+		return;
+	}
 	gB_ClientIsSetUp[client] = false;
 	PrintDisconnectMessage(client, event);
 }
