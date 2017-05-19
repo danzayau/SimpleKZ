@@ -79,7 +79,7 @@ public Action CommandJoinTeam(int client, const char[] command, int argc)
 
 public Action CommandToggleMenu(int client, int args)
 {
-	CycleOption(client, Option_ShowingTPMenu);
+	CycleOption(client, Option_ShowingTPMenu, true);
 	return Plugin_Handled;
 }
 
