@@ -65,9 +65,9 @@ public int MenuHandler_Measure(Handle menu, MenuAction action, int param1, int p
 			{  // Find Distance
 				if (measurePosSet[param1][0] && measurePosSet[param1][1])
 				{
-					float horizontalDist = GetVectorHorizontalDistance(measurePos[param1][0], measurePos[param1][1]); // Horizontal Length
-					float verticalDist = measurePos[param1][1][2] - measurePos[param1][0][2]; // Vertical Length
-					float hypotenuseDist = SquareRoot(verticalDist * verticalDist + horizontalDist * horizontalDist); // Pythagoras' Theorem to get Hypotenuse
+					float horizontalDist = GetVectorHorizontalDistance(measurePos[param1][0], measurePos[param1][1]); 	// Horizontal Length
+					float verticalDist = measurePos[param1][1][2] - measurePos[param1][0][2]; 			  	// Vertical Length
+					float hypotenuseDist = SquareRoot(verticalDist * verticalDist + horizontalDist * horizontalDist); 	// Pythagoras' Theorem to get Hypotenuse
 					SKZ_PrintToChat(param1, true, "%t", "Measure Result", horizontalDist, verticalDist, hypotenuseDist);
 					MeasureBeam(param1, measurePos[param1][0], measurePos[param1][1], 5.0, 2.0, 200, 200, 200);
 				}
