@@ -330,10 +330,6 @@ void JoinTeam(int client, int team)
 		Movement_GetOrigin(client, savedOrigin[client]);
 		Movement_GetEyeAngles(client, savedAngles[client]);
 		hasSavedPosition[client] = true;
-		if (SKZ_GetTimerRunning(client))
-		{
-			Pause(client);
-		}
 		ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 	}
 	else if (team == CS_TEAM_CT || team == CS_TEAM_T)
