@@ -158,7 +158,7 @@ void OnTimerEnd_SlayOnEnd(int client)
 public Action Timer_SlayPlayer(Handle timer, int userid)
 {
 	int client = GetClientOfUserId(userid);
-	if (client != 0 && IsPlayerAlive(client))
+	if (IsValidClient(client) && IsPlayerAlive(client))
 	{
 		ForcePlayerSuicide(client);
 	}

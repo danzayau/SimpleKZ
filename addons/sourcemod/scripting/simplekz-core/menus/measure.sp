@@ -136,7 +136,7 @@ static void MeasureGetPos(int client, int arg)
 			P2PRed[client] = INVALID_HANDLE;
 		}
 		measurePosSet[client][0] = true;
-		P2PRed[client] = CreateTimer(1.0, Timer_P2PRed, client, TIMER_REPEAT);
+		P2PRed[client] = CreateTimer(1.0, Timer_P2PRed, GetClientUserId(client), TIMER_REPEAT);
 		P2PXBeam(client, 0);
 	}
 	else
@@ -148,7 +148,7 @@ static void MeasureGetPos(int client, int arg)
 		}
 		measurePosSet[client][1] = true;
 		P2PXBeam(client, 1);
-		P2PGreen[client] = CreateTimer(1.0, Timer_P2PGreen, client, TIMER_REPEAT);
+		P2PGreen[client] = CreateTimer(1.0, Timer_P2PGreen, GetClientUserId(client), TIMER_REPEAT);
 	}
 }
 
@@ -157,16 +157,18 @@ public bool TraceFilterPlayers(int entity, int contentsMask)
 	return (entity > MaxClients);
 }
 
-public Action Timer_P2PRed(Handle timer, int client)
+public Action Timer_P2PRed(Handle timer, int userid)
 {
+	int client = GetClientOfUserId(userid);
 	if (IsValidClient(client))
 	{
 		P2PXBeam(client, 0);
 	}
 }
 
-public Action Timer_P2PGreen(Handle timer, int client)
+public Action Timer_P2PGreen(Handle timer, int userid)
 {
+	int client = GetClientOfUserId(userid);
 	if (IsValidClient(client))
 	{
 		P2PXBeam(client, 1);
