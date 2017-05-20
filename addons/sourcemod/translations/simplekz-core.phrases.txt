@@ -158,9 +158,9 @@
 	}
 	"Measure Result"
 	{
-		// Distance - Horizontal: 123.45, Vertical: 12.34.
-		"#format"	"{1:.2f},{2:.2f}"
-		"en"		"{default}Distance{grey} - Horizontal: {default}{1}{grey}, Vertical: {default}{2}{grey}"
+		// Distance - Horizontal: 123.45, Vertical: 12.34, Hypotenuse: 124.07.
+		"#format"	"{1:.2f},{2:.2f},{3:.2f}"
+		"en"		"{default}Distance{grey} - Horizontal: {default}{1}{grey}, Vertical: {default}{2}{grey}, Hypotenuse: {default}{3}{grey}."
 	}
 	"Measure Failure (Points Not Set)"
 	{
