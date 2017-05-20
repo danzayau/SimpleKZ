@@ -289,7 +289,6 @@ static void GivePistol(int client, int pistol)
 
 	if (playerTeam == CS_TEAM_NONE)
 	{
-		SKZ_PrintToChat(client, true, "Why does this happen!?");
 		return;
 	}
 
