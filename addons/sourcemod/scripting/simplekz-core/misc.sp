@@ -286,6 +286,13 @@ static void GivePistol(int client, int pistol)
 	}
 	
 	int playerTeam = GetClientTeam(client);
+
+	if (playerTeam == CS_TEAM_NONE)
+	{
+		SKZ_PrintToChat(client, true, "Why does this happen!?");
+		return;
+	}
+
 	bool switchedTeams = false;
 	
 	// Switch teams to the side that buys that gun so that gun skins load
