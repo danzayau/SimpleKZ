@@ -280,7 +280,8 @@ void OnOptionChanged_Pistol(int client, Option option)
 
 static void GivePistol(int client, int pistol)
 {
-	if (!IsClientInGame(client) || !IsPlayerAlive(client))
+	if (!IsClientInGame(client) || !IsPlayerAlive(client)
+		 || GetClientTeam(client) == CS_TEAM_NONE)
 	{
 		return;
 	}
