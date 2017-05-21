@@ -112,7 +112,7 @@ void PrintConnectMessage(int client)
 		return;
 	}
 	
-	SKZ_PrintToChatAll(false, "%t", "Client Connection Message", client, client);
+	SKZ_PrintToChatAll(false, "%t", "Client Connection Message", client);
 }
 
 void PrintDisconnectMessage(int client, Event event) // Hooked to player_disconnect event
@@ -131,7 +131,7 @@ void PrintDisconnectMessage(int client, Event event) // Hooked to player_disconn
 	
 	char reason[64];
 	GetEventString(event, "reason", reason, sizeof(reason));
-	SKZ_PrintToChatAll(false, "%t", "Client Disconnection Message", client, client, reason);
+	SKZ_PrintToChatAll(false, "%t", "Client Disconnection Message", client, reason);
 }
 
 
@@ -158,7 +158,7 @@ void OnTimerEnd_SlayOnEnd(int client)
 public Action Timer_SlayPlayer(Handle timer, int userid)
 {
 	int client = GetClientOfUserId(userid);
-	if (client != 0 && IsPlayerAlive(client))
+	if (IsValidClient(client) && IsPlayerAlive(client))
 	{
 		ForcePlayerSuicide(client);
 	}
@@ -167,7 +167,7 @@ public Action Timer_SlayPlayer(Handle timer, int userid)
 
 
 
-// =========================  ERROR MESSAGES AND SOUNDS  ========================= //
+// =========================  ERROR SOUNDS  ========================= //
 
 #define SOUND_ERROR "buttons/button10.wav"
 
@@ -280,7 +280,8 @@ void OnOptionChanged_Pistol(int client, Option option)
 
 static void GivePistol(int client, int pistol)
 {
-	if (!IsClientInGame(client) || !IsPlayerAlive(client))
+	if (!IsClientInGame(client) || !IsPlayerAlive(client)
+		 || GetClientTeam(client) == CS_TEAM_NONE)
 	{
 		return;
 	}
@@ -330,10 +331,6 @@ void JoinTeam(int client, int team)
 		Movement_GetOrigin(client, savedOrigin[client]);
 		Movement_GetEyeAngles(client, savedAngles[client]);
 		hasSavedPosition[client] = true;
-		if (SKZ_GetTimerRunning(client))
-		{
-			Pause(client);
-		}
 		ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 	}
 	else if (team == CS_TEAM_CT || team == CS_TEAM_T)

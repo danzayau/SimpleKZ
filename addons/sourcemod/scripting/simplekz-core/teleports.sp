@@ -249,7 +249,7 @@ static void TeleportDo(int client, const float destOrigin[3], const float destAn
 	Movement_SetVelocity(client, view_as<float>( { 0.0, 0.0, 0.0 } ));
 	Movement_SetBaseVelocity(client, view_as<float>( { 0.0, 0.0, 0.0 } ));
 	Movement_SetGravity(client, 1.0);
-	CreateTimer(0.1, Timer_RemoveBoosts, client); // Prevent booster exploits
+	CreateTimer(0.1, Timer_RemoveBoosts, GetClientUserId(client)); // Prevent booster exploits
 	
 	undoOrigin[client] = oldOrigin;
 	undoAngles[client] = oldAngles;
@@ -260,8 +260,9 @@ static void TeleportDo(int client, const float destOrigin[3], const float destAn
 	}
 }
 
-public Action Timer_RemoveBoosts(Handle timer, int client)
+public Action Timer_RemoveBoosts(Handle timer, int userid)
 {
+	int client = GetClientOfUserId(userid);
 	if (IsValidClient(client))
 	{
 		Movement_SetVelocity(client, view_as<float>( { 0.0, 0.0, 0.0 } ));
