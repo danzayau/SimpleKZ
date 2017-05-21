@@ -35,7 +35,7 @@ void UpdateTimerText(int client)
 
 void OnPlayerRunCmd_TimerText(int client, int tickcount)
 {
-	if ((tickcount + client) % 12 == 0)
+	if ((tickcount + client) % 32 == 0)
 	{
 		UpdateTimerText(client);
 	}
@@ -47,9 +47,7 @@ void OnPlayerRunCmd_TimerText(int client, int tickcount)
 
 static void TimerTextShow(KZPlayer player, KZPlayer targetPlayer)
 {
-	if (player.timerText == TimerText_Disabled
-		 || player.timerText == TimerText_InfoPanel
-		 || !targetPlayer.timerRunning)
+	if (!targetPlayer.timerRunning)
 	{
 		return;
 	}
