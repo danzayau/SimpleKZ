@@ -287,6 +287,12 @@ static void GivePistol(int client, int pistol)
 	}
 	
 	int playerTeam = GetClientTeam(client);
+
+	if (playerTeam == CS_TEAM_NONE)
+	{
+		return;
+	}
+
 	bool switchedTeams = false;
 	
 	// Switch teams to the side that buys that gun so that gun skins load
