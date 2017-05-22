@@ -127,6 +127,7 @@ bool TimerStop(int client)
 	}
 	
 	timerRunning[client] = false;
+	currentTime[client] = 0.0;
 	PlayTimerStopSound(client);
 	
 	Call_SKZ_OnTimerStopped(client);

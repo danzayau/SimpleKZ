@@ -251,19 +251,25 @@ public Action CommandPistolMenu(int client, int args)
 
 public Action CommandToggleNoclip(int client, int args)
 {
-	ToggleNoclip(client);
+	if (!GetPaused(client)) {
+		ToggleNoclip(client);
+	}
 	return Plugin_Handled;
 }
 
 public Action CommandEnableNoclip(int client, int args)
 {
-	Movement_SetMoveType(client, MOVETYPE_NOCLIP);
+	if (!GetPaused(client)) {
+		Movement_SetMoveType(client, MOVETYPE_NOCLIP);
+	}
 	return Plugin_Handled;
 }
 
 public Action CommandDisableNoclip(int client, int args)
 {
-	Movement_SetMoveType(client, MOVETYPE_WALK);
+	if (!GetPaused(client)) {
+		Movement_SetMoveType(client, MOVETYPE_WALK);
+	}
 	return Plugin_Handled;
 }
 
