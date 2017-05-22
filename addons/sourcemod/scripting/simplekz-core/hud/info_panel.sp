@@ -23,10 +23,13 @@ void UpdateInfoPanel(int client)
 	{
 		PrintHintText(player.id, "%s", GetInfoPanel(player, player));
 	}
-	else if (player.hasSpecTarget)
+	else
 	{
-		KZPlayer targetPlayer = new KZPlayer(player.specTarget);
-		PrintHintText(player.id, "%s", GetInfoPanel(player, targetPlayer));
+		KZPlayer targetPlayer = new KZPlayer(player.observerTarget);
+		if (targetPlayer.id != -1)
+		{
+			PrintHintText(player.id, "%s", GetInfoPanel(player, targetPlayer));
+		}
 	}
 }
 

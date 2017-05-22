@@ -885,13 +885,13 @@ methodmap KZPlayer __nullable__ < MovementAPIPlayer {
 		}
 	}
 	
-	property bool hasSpecTarget {
+	property ObsMode observerMode {
 		public get() {
-			return IsSpectatingSomeone(this.id);
+			return GetObserverMode(this.id);
 		}
 	}
 	
-	property int specTarget {
+	property int observerTarget {
 		public get() {
 			return GetObserverTarget(this.id);
 		}

@@ -76,7 +76,7 @@ public Action OnSetTransmitClient(int entity, int client)
 {
 	if (GetOption(client, Option_ShowingPlayers) == ShowingPlayers_Disabled
 		 && entity != client
-		 && (!IsSpectatingSomeone(client) || entity != GetObserverTarget(client)))
+		 && entity != GetObserverTarget(client))
 	{
 		return Plugin_Handled;
 	}

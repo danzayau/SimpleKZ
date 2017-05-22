@@ -22,10 +22,13 @@ void UpdateTimerText(int client)
 	{
 		TimerTextShow(player, player);
 	}
-	else if (player.hasSpecTarget)
+	else
 	{
-		KZPlayer targetPlayer = new KZPlayer(player.specTarget);
-		TimerTextShow(player, targetPlayer);
+		KZPlayer targetPlayer = new KZPlayer(player.observerTarget);
+		if (targetPlayer.id != -1)
+		{
+			TimerTextShow(player, targetPlayer);
+		}
 	}
 }
 
