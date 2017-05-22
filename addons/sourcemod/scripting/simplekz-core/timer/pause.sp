@@ -47,8 +47,8 @@ void Pause(int client)
 	
 	// Call Pre Forward
 	Action result;
-	int error = Call_SKZ_OnPause(client, result);
-	if (error != SP_ERROR_NONE || result != Plugin_Continue)
+	Call_SKZ_OnPause(client, result);
+	if (result != Plugin_Continue)
 	{
 		return;
 	}
@@ -83,8 +83,8 @@ void Resume(int client)
 	
 	// Call Pre Forward
 	Action result;
-	int error = Call_SKZ_OnResume(client, result);
-	if (error != SP_ERROR_NONE || result != Plugin_Continue)
+	Call_SKZ_OnResume(client, result);
+	if (result != Plugin_Continue)
 	{
 		return;
 	}

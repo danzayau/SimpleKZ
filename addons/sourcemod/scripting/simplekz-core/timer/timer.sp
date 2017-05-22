@@ -67,8 +67,8 @@ void TimerStart(int client, int course, bool allowOffGround = false)
 	
 	// Call Pre Forward
 	Action result;
-	int error = Call_SKZ_OnTimerStart(client, course, style, result);
-	if (error != SP_ERROR_NONE || result != Plugin_Continue)
+	Call_SKZ_OnTimerStart(client, course, style, result);
+	if (result != Plugin_Continue)
 	{
 		return;
 	}
@@ -100,8 +100,8 @@ void TimerEnd(int client, int course)
 	
 	// Call Pre Forward
 	Action result;
-	int error = Call_SKZ_OnTimerEnd(client, course, style, time, teleportsUsed, theoreticalTime, result);
-	if (error != SP_ERROR_NONE || result != Plugin_Continue)
+	Call_SKZ_OnTimerEnd(client, course, style, time, teleportsUsed, theoreticalTime, result);
+	if (result != Plugin_Continue)
 	{
 		return;
 	}

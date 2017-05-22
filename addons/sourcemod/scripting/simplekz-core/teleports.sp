@@ -58,8 +58,8 @@ void MakeCheckpoint(int client)
 	
 	// Call Pre Forward
 	Action result;
-	int error = Call_SKZ_OnMakeCheckpoint(client, result);
-	if (error != SP_ERROR_NONE || result != Plugin_Continue)
+	Call_SKZ_OnMakeCheckpoint(client, result);
+	if (result != Plugin_Continue)
 	{
 		return;
 	}
@@ -102,8 +102,8 @@ void TeleportToCheckpoint(int client)
 	
 	// Call Pre Forward
 	Action result;
-	int error = Call_SKZ_OnTeleportToCheckpoint(client, result);
-	if (error != SP_ERROR_NONE || result != Plugin_Continue)
+	Call_SKZ_OnTeleportToCheckpoint(client, result);
+	if (result != Plugin_Continue)
 	{
 		return;
 	}
@@ -119,8 +119,8 @@ void TeleportToStart(int client)
 {
 	// Call Pre Forward
 	Action result;
-	int error = Call_SKZ_OnTeleportToStart(client, result);
-	if (error != SP_ERROR_NONE || result != Plugin_Continue)
+	Call_SKZ_OnTeleportToStart(client, result);
+	if (result != Plugin_Continue)
 	{
 		return;
 	}
@@ -174,8 +174,8 @@ void UndoTeleport(int client)
 	
 	// Call Pre Forward
 	Action result;
-	int error = Call_SKZ_OnUndoTeleport(client, result);
-	if (error != SP_ERROR_NONE || result != Plugin_Continue)
+	Call_SKZ_OnUndoTeleport(client, result);
+	if (result != Plugin_Continue)
 	{
 		return;
 	}
