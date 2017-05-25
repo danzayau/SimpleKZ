@@ -79,10 +79,40 @@ void TimerStart(int client, int course, bool allowOffGround = false)
 	currentCourse[client] = course;
 	hasStartedTimerThisMap[client] = true;
 	PlayTimerStartSound(client);
+	SetFragsToTimer(client);
+	
 	
 	// Call Post Forward
 	Call_SKZ_OnTimerStart_Post(client, course, style);
 }
+
+void SetFragsToTimer(int client)
+{
+	// Creates a timer that gets timer for client, repeats until Plugin_Stop is reached.
+	CreateTimer(0.0, GetTimer, GetClientSerial(client), TIMER_REPEAT);
+}
+
+public Action GetTimer(Handle timer, any serial)
+{
+	int client = GetClientFromSerial(serial);
+	
+	/* If no client, timer isn't running, so it resets and stops counting.
+	* If timer not running, frags (checkpoints) resets to 0 and stops running.
+	* If timer not running, deaths(teleports) resets to 0 and stop running.
+	*/
+	if (client == 0 || timerRunning[client] == false)
+	{
+		return Plugin_Stop;
+	}
+	
+	
+	// Sets frags as a count for player's time.
+ 	SetEntProp(client, Prop_Data, "m_iFrags", RoundToFloor(currentTime[client]));
+ 	
+ 	// Continues plugin indefinitely. Plugin_Stop must be used later otherwise it results in a memory leak.
+ 	return Plugin_Continue;
+}
+
 
 void TimerEnd(int client, int course)
 {
