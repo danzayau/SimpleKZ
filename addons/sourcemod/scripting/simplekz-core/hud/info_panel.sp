@@ -23,10 +23,13 @@ void UpdateInfoPanel(int client)
 	{
 		PrintHintText(player.id, "%s", GetInfoPanel(player, player));
 	}
-	else if (player.hasSpecTarget)
+	else
 	{
-		KZPlayer targetPlayer = new KZPlayer(player.specTarget);
-		PrintHintText(player.id, "%s", GetInfoPanel(player, targetPlayer));
+		KZPlayer targetPlayer = new KZPlayer(player.observerTarget);
+		if (targetPlayer.id != -1)
+		{
+			PrintHintText(player.id, "%s", GetInfoPanel(player, targetPlayer));
+		}
 	}
 }
 
@@ -49,7 +52,7 @@ void OnPlayerRunCmd_InfoPanel(int client, int tickcount)
 static bool NothingEnabledInInfoPanel(KZPlayer player)
 {
 	bool noTimerText = player.timerText != TimerText_InfoPanel;
-	bool noSpeedText = player.speedText != SpeedText_InfoPanel;
+	bool noSpeedText = player.speedText != SpeedText_InfoPanel || player.paused;
 	bool noKeys = player.showingKeys == ShowingKeys_Disabled
 	 || player.showingKeys == ShowingKeys_Spectating && player.alive;
 	return noTimerText && noSpeedText && noKeys;
@@ -69,7 +72,8 @@ static char[] GetInfoPanel(KZPlayer player, KZPlayer targetPlayer)
 static char[] GetTimeString(KZPlayer player, KZPlayer targetPlayer)
 {
 	char timeString[128];
-	if (player.timerText != TimerText_InfoPanel) {
+	if (player.timerText != TimerText_InfoPanel)
+	{
 		timeString = "";
 	}
 	else if (targetPlayer.timerRunning)
@@ -124,7 +128,8 @@ static char[] GetPausedString(KZPlayer player, KZPlayer targetPlayer)
 static char[] GetSpeedString(KZPlayer player, KZPlayer targetPlayer)
 {
 	char speedString[128];
-	if (player.speedText != SpeedText_InfoPanel || targetPlayer.paused) {
+	if (player.speedText != SpeedText_InfoPanel || targetPlayer.paused)
+	{
 		speedString = "";
 	}
 	else

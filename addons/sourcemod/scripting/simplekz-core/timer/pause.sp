@@ -47,8 +47,8 @@ void Pause(int client)
 	
 	// Call Pre Forward
 	Action result;
-	int error = Call_SKZ_OnPause(client, result);
-	if (error != SP_ERROR_NONE || result != Plugin_Continue)
+	Call_SKZ_OnPause(client, result);
+	if (result != Plugin_Continue)
 	{
 		return;
 	}
@@ -83,8 +83,8 @@ void Resume(int client)
 	
 	// Call Pre Forward
 	Action result;
-	int error = Call_SKZ_OnResume(client, result);
-	if (error != SP_ERROR_NONE || result != Plugin_Continue)
+	Call_SKZ_OnResume(client, result);
+	if (result != Plugin_Continue)
 	{
 		return;
 	}
@@ -118,10 +118,13 @@ void TogglePause(int client)
 
 // =========================  LISTENERS  ========================= //
 
-void OnTimerStart_Pause(int client)
+void SetupClientPause(int client)
 {
 	paused[client] = false;
-	lastResumeTime[client] = 0.0;
+}
+
+void OnTimerStart_Pause(int client)
+{
 	hasPausedInThisRun[client] = false;
 	hasResumedInThisRun[client] = false;
 }
@@ -146,7 +149,21 @@ void OnChangeMoveType_Pause(int client, MoveType newMoveType)
 	Call_SKZ_OnResume_Post(client);
 }
 
-void OnPlayerDeath_Pause(int client)
+void OnPlayerSpawn_Pause(int client)
 {
+	if (!paused[client])
+	{
+		return;
+	}
+	
+	// Player has left paused state by spawning in, so resume
 	paused[client] = false;
+	if (GetTimerRunning(client))
+	{
+		hasResumedInThisRun[client] = true;
+		lastResumeTime[client] = GetEngineTime();
+	}
+	
+	// Call Post Forward
+	Call_SKZ_OnResume_Post(client);
 } 

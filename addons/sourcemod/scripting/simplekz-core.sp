@@ -151,6 +151,7 @@ public void OnClientPostAdminCheck(int client)
 	SDKHook(client, SDKHook_PreThinkPost, OnClientPreThink_Post);
 	SetupClientOptions(client);
 	SetupClientTimer(client);
+	SetupClientPause(client);
 	SetupClientBhopTriggers(client);
 	SetupClientHidePlayers(client);
 	PrintConnectMessage(client);
@@ -161,6 +162,10 @@ public void OnClientPostAdminCheck(int client)
 public void OnPlayerDisconnect(Event event, const char[] name, bool dontBroadcast) // player_disconnect hook
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	if (!IsValidClient(client))
+	{
+		return;
+	}
 	gB_ClientIsSetUp[client] = false;
 	PrintDisconnectMessage(client, event);
 }
@@ -177,6 +182,7 @@ public void OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast) //
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	OnPlayerSpawn_Style(client);
+	OnPlayerSpawn_Pause(client);
 	UpdateCSGOHUD(client);
 	UpdateHideWeapon(client);
 	UpdatePistol(client);
@@ -190,7 +196,6 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) //
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	OnPlayerDeath_Timer(client);
-	OnPlayerDeath_Pause(client);
 }
 
 public Action OnPlayerJoinTeam(Event event, const char[] name, bool dontBroadcast) // player_team hook

@@ -22,10 +22,13 @@ void UpdateSpeedText(int client)
 	{
 		SpeedTextShow(player, player);
 	}
-	else if (player.hasSpecTarget)
+	else
 	{
-		KZPlayer targetPlayer = new KZPlayer(player.specTarget);
-		SpeedTextShow(player, targetPlayer);
+		KZPlayer targetPlayer = new KZPlayer(player.observerTarget);
+		if (targetPlayer.id != -1)
+		{
+			SpeedTextShow(player, targetPlayer);
+		}
 	}
 }
 
