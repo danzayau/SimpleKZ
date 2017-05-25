@@ -4,7 +4,9 @@
 	SimpleKZ Local Ranks API.
 */
 
-/*===============================  Forwards  ===============================*/
+
+
+// =========================  FORWARDS  ========================= //
 
 void CreateGlobalForwards()
 {
@@ -17,7 +19,7 @@ void Call_OnTimeProcessed(
 	int steamID, 
 	int mapID, 
 	int course, 
-	KZStyle style, 
+	int style, 
 	float runTime, 
 	int teleports, 
 	float theoRunTime, 
@@ -50,7 +52,7 @@ void Call_OnTimeProcessed(
 	Call_Finish();
 }
 
-void Call_OnNewRecord(int client, int steamID, int mapID, int course, KZStyle style, KZRecordType recordType)
+void Call_OnNewRecord(int client, int steamID, int mapID, int course, int style, KZRecordType recordType)
 {
 	Call_StartForward(gH_OnNewRecord);
 	Call_PushCell(client);

@@ -5,7 +5,11 @@
 	and updates them to be part of the ranked map pool.
 */
 
+
+
 #define FILE_PATH_MAPPOOL "cfg/sourcemod/simplekz/mappool.cfg"
+
+
 
 void DB_UpdateRankedMapPool(int client)
 {
@@ -15,7 +19,7 @@ void DB_UpdateRankedMapPool(int client)
 		LogError("There was a problem opening file: %s", FILE_PATH_MAPPOOL);
 		if (IsValidClient(client))
 		{
-			PrintToChat(client, "[SimpleKZ] There was a problem opening file: %s", FILE_PATH_MAPPOOL);
+			SKZ_PrintToChat(client, true, "{grey}There was a problem opening file: %s", FILE_PATH_MAPPOOL);
 		}
 		return;
 	}
@@ -54,16 +58,27 @@ void DB_UpdateRankedMapPool(int client)
 		}
 	}
 	
-	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_UpdateRankedMapPool, DB_TxnFailure_Generic, client, DBPrio_Low);
+	int data = -1;
+	if (IsValidClient(client))
+	{
+		data = GetClientUserId(client);
+	}
+	
+	SQL_ExecuteTransaction(gH_DB, txn, DB_TxnSuccess_UpdateRankedMapPool, DB_TxnFailure_Generic, data, DBPrio_Low);
 	
 	CloseHandle(file);
 }
 
-public void DB_TxnSuccess_UpdateRankedMapPool(Handle db, int client, int numQueries, Handle[] results, any[] queryData)
+public void DB_TxnSuccess_UpdateRankedMapPool(Handle db, int userid, int numQueries, Handle[] results, any[] queryData)
 {
-	LogMessage("The ranked map pool was updated by %L.", client);
+	int client = GetClientOfUserId(userid);
 	if (IsValidClient(client))
 	{
-		PrintToChat(client, "[SimpleKZ] The ranked map pool was updated.");
+		LogMessage("The ranked map pool was updated by %L.", client);
+		SKZ_PrintToChat(client, true, "{grey}The ranked map pool was updated.");
+	}
+	else
+	{
+		LogMessage("The ranked map pool was updated.");
 	}
 } 

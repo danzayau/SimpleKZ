@@ -229,11 +229,11 @@
 	}
 	"Player Top - No Times"
 	{
-		"en"		"No one has beaten a ranked map on this server... yet."
+		"en"		"{grey}No one has beaten a ranked map on this server... yet."
 	}
 	"Player Top - No Times (Pro)"
 	{
-		"en"		"No one has {blue}PRO{grey}'d a ranked map on this server... yet."
+		"en"		"{grey}No one has {blue}PRO{grey}'d a ranked map on this server... yet."
 	}
 	"Map Completion"
 	{

@@ -6,12 +6,14 @@
 		menus/maptop.sp
 */
 
-void DB_OpenMapTop20(int client, int mapID, int course, KZStyle style, KZTimeType timeType)
+
+
+void DB_OpenMapTop20(int client, int mapID, int course, int style, int timeType)
 {
 	char query[1024];
 	
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteCell(course);
 	data.WriteCell(style);
 	data.WriteCell(timeType);
@@ -28,9 +30,9 @@ void DB_OpenMapTop20(int client, int mapID, int course, KZStyle style, KZTimeTyp
 	// Get top 20 times for each time type
 	switch (timeType)
 	{
-		case KZTimeType_Nub:FormatEx(query, sizeof(query), sql_getmaptop, mapID, course, style, 20);
-		case KZTimeType_Pro:FormatEx(query, sizeof(query), sql_getmaptoppro, mapID, course, style, 20);
-		case KZTimeType_Theoretical:FormatEx(query, sizeof(query), sql_getmaptoptheoretical, mapID, course, style, 20);
+		case TimeType_Nub:FormatEx(query, sizeof(query), sql_getmaptop, mapID, course, style, 20);
+		case TimeType_Pro:FormatEx(query, sizeof(query), sql_getmaptoppro, mapID, course, style, 20);
+		case TimeType_Theoretical:FormatEx(query, sizeof(query), sql_getmaptoptheoretical, mapID, course, style, 20);
 	}
 	txn.AddQuery(query);
 	
@@ -40,10 +42,10 @@ void DB_OpenMapTop20(int client, int mapID, int course, KZStyle style, KZTimeTyp
 public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	int course = data.ReadCell();
-	KZStyle style = data.ReadCell();
-	KZTimeType timeType = data.ReadCell();
+	int style = data.ReadCell();
+	int timeType = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))
@@ -62,11 +64,11 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 	{
 		if (course == 0)
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Main Course Not Found", mapName);
+			SKZ_PrintToChat(client, true, "%t", "Main Course Not Found", mapName);
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Bonus Not Found", mapName, course);
+			SKZ_PrintToChat(client, true, "%t", "Bonus Not Found", mapName, course);
 		}
 		return;
 	}
@@ -76,9 +78,9 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 	{
 		switch (timeType)
 		{
-			case KZTimeType_Nub:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times");
-			case KZTimeType_Pro:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times (Pro)");
-			case KZTimeType_Theoretical:CPrintToChat(client, "%t %t", "KZ Prefix", "Map Top - No Times");
+			case TimeType_Nub:SKZ_PrintToChat(client, true, "%t", "Map Top - No Times");
+			case TimeType_Pro:SKZ_PrintToChat(client, true, "%t", "Map Top - No Times (Pro)");
+			case TimeType_Theoretical:SKZ_PrintToChat(client, true, "%t", "Map Top - No Times");
 		}
 		MapTopMenuDisplay(client);
 		return;
@@ -110,18 +112,18 @@ public void DB_TxnSuccess_OpenMapTop20(Handle db, DataPack data, int numQueries,
 		runTime = SKZ_DB_TimeIntToFloat(SQL_FetchInt(results[2], 1));
 		switch (timeType)
 		{
-			case KZTimeType_Nub:
+			case TimeType_Nub:
 			{
 				teleports = SQL_FetchInt(results[2], 2);
 				FormatEx(newMenuItem, sizeof(newMenuItem), "#%-2d   %11s  %d TP      %s", 
 					rank, SKZ_FormatTime(runTime), teleports, playerName);
 			}
-			case KZTimeType_Pro:
+			case TimeType_Pro:
 			{
 				FormatEx(newMenuItem, sizeof(newMenuItem), "#%-2d   %11s   %s", 
 					rank, SKZ_FormatTime(runTime), playerName);
 			}
-			case KZTimeType_Theoretical:
+			case TimeType_Theoretical:
 			{
 				teleports = SQL_FetchInt(results[2], 2);
 				FormatEx(newMenuItem, sizeof(newMenuItem), "#%-2d   %11s  %d TP      %s", 

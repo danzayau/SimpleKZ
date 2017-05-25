@@ -4,8 +4,12 @@
 	Saves player options to the database.
 */
 
-void DB_SaveOptions(KZPlayer player)
+
+
+void DB_SaveOptions(int client)
 {
+	KZPlayer player = new KZPlayer(client);
+	
 	char query[1024];
 	
 	Transaction txn = SQL_CreateTransaction();
@@ -28,7 +32,7 @@ void DB_SaveOptions(KZPlayer player)
 		player.errorSounds, 
 		player.timerText, 
 		player.speedText, 
-		GetSteamAccountID(player.id));
+		GetSteamAccountID(client));
 	txn.AddQuery(query);
 	
 	SQL_ExecuteTransaction(gH_DB, txn, _, DB_TxnFailure_Generic, _, DBPrio_High);

@@ -4,12 +4,14 @@
 	Gets the number and percentage of maps completed.
 */
 
-void DB_GetCompletion(int client, int targetSteamID, KZStyle style, bool print)
+
+
+void DB_GetCompletion(int client, int targetSteamID, int style, bool print)
 {
 	char query[1024];
 	
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteCell(targetSteamID);
 	data.WriteCell(style);
 	data.WriteCell(print);
@@ -43,9 +45,9 @@ void DB_GetCompletion(int client, int targetSteamID, KZStyle style, bool print)
 public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	int targetSteamID = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	bool print = data.ReadCell();
 	data.Close();
 	
@@ -100,11 +102,11 @@ public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries
 	{
 		if (totalMainCourses + totalBonuses == 0)
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "No Ranked Maps");
+			SKZ_PrintToChat(client, true, "%t", "No Ranked Maps");
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Map Completion", 
+			SKZ_PrintToChat(client, true, "%t", "Map Completion", 
 				playerName, 
 				completions, totalMainCourses, completionsPro, totalMainCourses, 
 				bonusCompletions, totalBonuses, bonusCompletionsPro, totalBonuses, 
@@ -119,10 +121,10 @@ public void DB_TxnSuccess_GetCompletion(Handle db, DataPack data, int numQueries
 	}
 }
 
-void DB_GetCompletion_FindPlayer(int client, const char[] target, KZStyle style)
+void DB_GetCompletion_FindPlayer(int client, const char[] target, int style)
 {
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteString(target);
 	data.WriteCell(style);
 	
@@ -132,10 +134,10 @@ void DB_GetCompletion_FindPlayer(int client, const char[] target, KZStyle style)
 public void DB_TxnSuccess_GetCompletion_FindPlayer(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	char playerSearch[33];
 	data.ReadString(playerSearch, sizeof(playerSearch));
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))
@@ -145,7 +147,7 @@ public void DB_TxnSuccess_GetCompletion_FindPlayer(Handle db, DataPack data, int
 	
 	else if (SQL_GetRowCount(results[0]) == 0)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Player Not Found", playerSearch);
+		SKZ_PrintToChat(client, true, "%t", "Player Not Found", playerSearch);
 		return;
 	}
 	else if (SQL_FetchRow(results[0]))

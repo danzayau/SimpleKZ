@@ -4,6 +4,8 @@
 	Plugin-based movement mechanics and styles.
 */
 
+
+
 #define SPEED_NORMAL 250.0
 #define SPEED_NO_WEAPON 260.0
 #define DUCK_SPEED_MINIMUM 7.0
@@ -16,94 +18,140 @@
 
 #define LEGACY_PERF_SPEED_CAP 380.0
 
+static bool SKZHitPerf[MAXPLAYERS + 1];
+static float SKZTakeoffSpeed[MAXPLAYERS + 1];
+static int oldButtons[MAXPLAYERS + 1];
+static float preVelMod[MAXPLAYERS + 1];
+static float preVelModLastChange[MAXPLAYERS + 1];
+static int preTickCounter[MAXPLAYERS + 1];
+
+static char weaponNames[][] = 
+{
+	"weapon_knife", "weapon_hkp2000", "weapon_deagle", "weapon_elite", "weapon_fiveseven", 
+	"weapon_glock", "weapon_p250", "weapon_tec9", "weapon_decoy", "weapon_flashbang", 
+	"weapon_hegrenade", "weapon_incgrenade", "weapon_molotov", "weapon_smokegrenade", "weapon_taser", 
+	"weapon_ak47", "weapon_aug", "weapon_awp", "weapon_bizon", "weapon_famas", 
+	"weapon_g3sg1", "weapon_galilar", "weapon_m249", "weapon_m4a1", "weapon_mac10", 
+	"weapon_mag7", "weapon_mp7", "weapon_mp9", "weapon_negev", "weapon_nova", 
+	"weapon_p90", "weapon_sawedoff", "weapon_scar20", "weapon_sg556", "weapon_ssg08", 
+	"weapon_ump45", "weapon_xm1014"
+};
+
+static int weaponRunSpeeds[sizeof(weaponNames)] = 
+{
+	250, 240, 230, 240, 240, 
+	240, 240, 240, 245, 245, 
+	245, 245, 245, 245, 220, 
+	215, 220, 200, 240, 220, 
+	215, 215, 195, 225, 240, 
+	225, 220, 240, 150, 220, 
+	230, 210, 215, 210, 230, 
+	230, 215
+};
+
+static float styleCVarValues[STYLE_COUNT][STYLECVAR_COUNT] = 
+{
+	{ 6.5, 5.2, 100.0, 1.0, 3500.0, 800.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 320.0, 10.0, 0.4, 0.0 }, 
+	{ 6.5, 5.0, 100.0, 1.0, 3500.0, 800.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 320.0, 10.0, 0.4, 0.0 }, 
+	{ 5.5, 5.2, 12.0, 0.78, 3500.0, 800.0, 0.0, 0.0, 80.0, 0.05, 0.08, 60.0, 320.0, 10.0, 0.4, 1.0 }
+};
 
 
-void StyleOnPlayerRunCmd(int client, int &buttons)
+
+// =========================  PUBLIC  ========================= //
+
+bool GetSKZHitPerf(int client)
+{
+	return SKZHitPerf[client];
+}
+
+float GetSKZTakeoffSpeed(int client)
+{
+	return SKZTakeoffSpeed[client];
+}
+
+
+
+// =========================  LISTENERS  ========================= //
+
+void OnPlayerRunCmd_Style(int client, int &buttons)
 {
 	if (!IsPlayerAlive(client))
 	{
 		return;
 	}
 	
-	RemoveCrouchJumpBind(g_KZPlayer[client], buttons);
-	TweakVelMod(g_KZPlayer[client]);
+	KZPlayer player = new KZPlayer(client);
+	RemoveCrouchJumpBind(player, buttons);
+	TweakVelMod(player);
+	oldButtons[client] = buttons;
 }
 
-void StyleOnClientPreThinkPost(int client)
+void OnClientPreThink_Style(int client)
 {
-	TweakConVars(g_KZPlayer[client]);
+	KZPlayer player = new KZPlayer(client);
+	TweakConVars(player);
 }
 
-void StyleOnStartTouchGround(int client)
+void OnPlayerSpawn_Style(int client)
 {
-	ReduceDuckSlowdown(g_KZPlayer[client]);
+	SKZHitPerf[client] = false;
+	SKZTakeoffSpeed[client] = 0.0;
 }
 
-void StyleOnStopTouchGround(int client, bool jumped)
+void OnStartTouchGround_Style(int client)
 {
+	KZPlayer player = new KZPlayer(client);
+	ReduceDuckSlowdown(player);
+}
+
+void OnStopTouchGround_Style(int client, bool jumped)
+{
+	KZPlayer player = new KZPlayer(client);
 	if (jumped)
 	{
-		TweakJump(g_KZPlayer[client]);
+		TweakJump(player);
 	}
 	else
 	{
-		gB_SKZHitPerf[client] = false;
-		gF_SKZTakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
+		SKZHitPerf[client] = false;
+		SKZTakeoffSpeed[client] = Movement_GetTakeoffSpeed(client);
 	}
 	
-	if (g_Style[client] == KZStyle_Standard)
-	{  // No 'pre b-hopping' in Standard
-		gF_PreVelMod[client] = 1.0;
+	// No 'pre b-hopping' in Standard
+	if (GetOption(client, Option_Style) == Style_Standard)
+	{
+		preVelMod[client] = 1.0;
 	}
 }
 
-void StyleOnStopTouchLadder(int client)
+void OnChangeMoveType_Style(int client, MoveType newMoveType)
 {
-	gB_SKZHitPerf[client] = false;
-	gF_SKZTakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
-}
-
-void StyleOnStopNoclipping(int client)
-{
-	gB_SKZHitPerf[client] = false;
-	gF_SKZTakeoffSpeed[client] = g_KZPlayer[client].takeoffSpeed;
+	if (newMoveType == MOVETYPE_WALK)
+	{
+		SKZHitPerf[client] = false;
+		SKZTakeoffSpeed[client] = Movement_GetTakeoffSpeed(client);
+	}
 }
 
 
 
-/*===============================  ConVars Tweak  ===============================*/
+// =========================  PRIVATE  ========================= //
+
+// CONVARS
 
 static void TweakConVars(KZPlayer player)
 {
-	gCV_Accelerate.FloatValue = GetStyleSetting(player, KZStyleSetting_Accelerate);
-	gCV_Friction.FloatValue = GetStyleSetting(player, KZStyleSetting_Friction);
-	gCV_AirAccelerate.FloatValue = GetStyleSetting(player, KZStyleSetting_AirAccelerate);
-	gCV_LadderScaleSpeed.FloatValue = GetStyleSetting(player, KZStyleSetting_LadderScaleSpeed);
-	gCV_MaxVelocity.FloatValue = GetStyleSetting(player, KZStyleSetting_MaxVelocity);
-	gCV_Gravity.FloatValue = GetStyleSetting(player, KZStyleSetting_Gravity);
-	
-	gCV_EnableBunnyhopping.FloatValue = GetStyleSetting(player, KZStyleSetting_EnableBunnyhopping);
-	gCV_AutoBunnyhopping.FloatValue = GetStyleSetting(player, KZStyleSetting_AutoBunnyhopping);
-	
-	gCV_StaminaMax.FloatValue = GetStyleSetting(player, KZStyleSetting_StaminaMax);
-	gCV_StaminaLandCost.FloatValue = GetStyleSetting(player, KZStyleSetting_StaminaLandCost);
-	gCV_StaminaJumpCost.FloatValue = GetStyleSetting(player, KZStyleSetting_StaminaJumpCost);
-	gCV_StaminaRecoveryRate.FloatValue = GetStyleSetting(player, KZStyleSetting_StaminaRecoveryRate);
-	
-	gCV_MaxSpeed.FloatValue = GetStyleSetting(player, KZStyleSetting_MaxSpeed);
-	gCV_WaterAccelerate.FloatValue = GetStyleSetting(player, KZStyleSetting_WaterAccelerate);
-	gCV_TimeBetweenDucks.FloatValue = GetStyleSetting(player, KZStyleSetting_TimeBetweenDucks);
-	gCV_AccelerateUseWeaponSpeed.FloatValue = GetStyleSetting(player, KZStyleSetting_AccelerateUseWeaponSpeed);
-}
-
-static float GetStyleSetting(KZPlayer player, KZStyleSetting setting)
-{
-	return gF_StyleSettings[player.style][view_as<int>(setting)];
+	int style = player.style;
+	for (int i = 0; i < STYLECVAR_COUNT; i++)
+	{
+		gCV_StyleCVar[i].FloatValue = styleCVarValues[style][i];
+	}
 }
 
 
 
-/*===============================  Velocity Modifier  ===============================*/
+// VELOCITY MODIFIER
 
 static void TweakVelMod(KZPlayer player)
 {
@@ -118,89 +166,89 @@ static float CalcPrestrafeVelMod(KZPlayer player)
 {
 	switch (player.style)
 	{
-		case KZStyle_Standard:
+		case Style_Standard:
 		{
 			if (player.turning
 				 && ((player.buttons & IN_FORWARD && !(player.buttons & IN_BACK)) || (!(player.buttons & IN_FORWARD) && player.buttons & IN_BACK))
 				 && ((player.buttons & IN_MOVELEFT && !(player.buttons & IN_MOVERIGHT)) || (!(player.buttons & IN_MOVELEFT) && player.buttons & IN_MOVERIGHT)))
 			{
-				gF_PreVelMod[player.id] += STANDARD_PRE_VELMOD_INCREMENT;
+				preVelMod[player.id] += STANDARD_PRE_VELMOD_INCREMENT;
 			}
 			else
 			{
-				gF_PreVelMod[player.id] -= STANDARD_PRE_VELMOD_DECREMENT;
+				preVelMod[player.id] -= STANDARD_PRE_VELMOD_DECREMENT;
 			}
 		}
-		case KZStyle_Legacy:
+		case Style_Legacy:
 		{
 			// KZTimer prestrafe (not exactly the same, and is only for 128 tick)
 			if (!player.turning)
 			{
-				if (GetEngineTime() - gF_PreVelModLastChange[player.id] > 0.2)
+				if (GetEngineTime() - preVelModLastChange[player.id] > 0.2)
 				{
-					gF_PreVelMod[player.id] = 1.0;
-					gF_PreVelModLastChange[player.id] = GetEngineTime();
+					preVelMod[player.id] = 1.0;
+					preVelModLastChange[player.id] = GetEngineTime();
 				}
 			}
 			else if ((player.buttons & IN_MOVELEFT || player.buttons & IN_MOVERIGHT) && player.speed > 248.9)
 			{
 				float increment = 0.0009;
-				if (gF_PreVelMod[player.id] > 1.04)
+				if (preVelMod[player.id] > 1.04)
 				{
 					increment = 0.001;
 				}
 				
-				gI_PreTickCounter[player.id]++;
-				if (gI_PreTickCounter[player.id] < 75)
+				preTickCounter[player.id]++;
+				if (preTickCounter[player.id] < 75)
 				{
-					gF_PreVelMod[player.id] += increment;
-					if (gF_PreVelMod[player.id] > PRE_VELMOD_MAX)
+					preVelMod[player.id] += increment;
+					if (preVelMod[player.id] > PRE_VELMOD_MAX)
 					{
-						if (gF_PreVelMod[player.id] > PRE_VELMOD_MAX + 0.007)
+						if (preVelMod[player.id] > PRE_VELMOD_MAX + 0.007)
 						{
-							gF_PreVelMod[player.id] = PRE_VELMOD_MAX - 0.001;
+							preVelMod[player.id] = PRE_VELMOD_MAX - 0.001;
 						}
 						else
 						{
-							gF_PreVelMod[player.id] -= 0.007;
+							preVelMod[player.id] -= 0.007;
 						}
 					}
-					gF_PreVelMod[player.id] += increment;
+					preVelMod[player.id] += increment;
 				}
 				else
 				{
-					gF_PreVelMod[player.id] -= 0.0045;
-					gI_PreTickCounter[player.id] -= 2;
+					preVelMod[player.id] -= 0.0045;
+					preTickCounter[player.id] -= 2;
 				}
 			}
 			else {
-				gF_PreVelMod[player.id] -= 0.04;
+				preVelMod[player.id] -= 0.04;
 			}
 		}
 		default:
 		{
-			gF_PreVelMod[player.id] = 1.0;
+			preVelMod[player.id] = 1.0;
 			return 1.0;
 		}
 	}
 	
 	// Keep prestrafe velocity modifier within range
-	if (gF_PreVelMod[player.id] < 1.0)
+	if (preVelMod[player.id] < 1.0)
 	{
-		gF_PreVelMod[player.id] = 1.0;
-		gI_PreTickCounter[player.id] = 0;
+		preVelMod[player.id] = 1.0;
+		preTickCounter[player.id] = 0;
 	}
-	else if (gF_PreVelMod[player.id] > PRE_VELMOD_MAX)
+	else if (preVelMod[player.id] > PRE_VELMOD_MAX)
 	{
-		gF_PreVelMod[player.id] = PRE_VELMOD_MAX;
+		preVelMod[player.id] = PRE_VELMOD_MAX;
 	}
 	
-	return gF_PreVelMod[player.id];
+	return preVelMod[player.id];
 }
 
 static float CalcWeaponVelMod(KZPlayer player)
 {
-	if (player.style == KZStyle_Competitive)
+	if (player.style == Style_Competitive)
 	{
 		return 1.0;
 	}
@@ -215,12 +263,12 @@ static float CalcWeaponVelMod(KZPlayer player)
 	GetEntityClassname(weaponEnt, weaponName, sizeof(weaponName)); // Weapon the client is holding
 	
 	// Get weapon speed and work out how much to scale the modifier
-	int weaponCount = sizeof(gC_WeaponNames);
+	int weaponCount = sizeof(weaponNames);
 	for (int weaponID = 0; weaponID < weaponCount; weaponID++)
 	{
-		if (StrEqual(weaponName, gC_WeaponNames[weaponID]))
+		if (StrEqual(weaponName, weaponNames[weaponID]))
 		{
-			return SPEED_NORMAL / gI_WeaponRunSpeeds[weaponID];
+			return SPEED_NORMAL / weaponRunSpeeds[weaponID];
 		}
 	}
 	
@@ -229,13 +277,13 @@ static float CalcWeaponVelMod(KZPlayer player)
 
 
 
-/*===============================  Jump Tweaks  ===============================*/
+// JUMPING
 
 static void TweakJump(KZPlayer player)
 {
-	if (SKZHitPerf(player))
+	if (HitSKZPerf(player))
 	{
-		gB_SKZHitPerf[player.id] = true;
+		SKZHitPerf[player.id] = true;
 		
 		if (NeedToTweakTakeoffSpeed(player))
 		{
@@ -244,31 +292,31 @@ static void TweakJump(KZPlayer player)
 			player.GetBaseVelocity(baseVelocity);
 			player.GetLandingVelocity(newVelocity);
 			newVelocity[2] = velocity[2];
-			AdjustVectorSpeed(newVelocity, CalcTweakedTakeoffSpeed(player), newVelocity);
+			SetVectorHorizontalLength(newVelocity, CalcTweakedTakeoffSpeed(player));
 			AddVectors(newVelocity, baseVelocity, newVelocity);
 			player.SetVelocity(newVelocity);
-			gF_SKZTakeoffSpeed[player.id] = player.speed;
+			SKZTakeoffSpeed[player.id] = player.speed;
 		}
-		else if (player.style == KZStyle_Competitive)
+		else if (player.style == Style_Competitive)
 		{
 			// MovementAPI takeoff speed is wrong if hit a perf on sv_enablebunnyhopping 0
-			gF_SKZTakeoffSpeed[player.id] = player.speed;
+			SKZTakeoffSpeed[player.id] = player.speed;
 		}
 		else
 		{
-			gF_SKZTakeoffSpeed[player.id] = player.takeoffSpeed;
+			SKZTakeoffSpeed[player.id] = player.takeoffSpeed;
 		}
 	}
 	else
 	{
-		gB_SKZHitPerf[player.id] = false;
-		gF_SKZTakeoffSpeed[player.id] = player.takeoffSpeed;
+		SKZHitPerf[player.id] = false;
+		SKZTakeoffSpeed[player.id] = player.takeoffSpeed;
 	}
 }
 
-static bool SKZHitPerf(KZPlayer player)
+static bool HitSKZPerf(KZPlayer player)
 {
-	if (player.style == KZStyle_Standard)
+	if (player.style == Style_Standard)
 	{
 		return player.takeoffTick - player.landingTick <= STANDARD_PERF_TICKS;
 	}
@@ -280,8 +328,8 @@ static bool NeedToTweakTakeoffSpeed(KZPlayer player)
 {
 	switch (player.style)
 	{
-		case KZStyle_Standard:return !player.hitPerf || player.takeoffSpeed > SPEED_NORMAL;
-		case KZStyle_Legacy:return player.takeoffSpeed > LEGACY_PERF_SPEED_CAP;
+		case Style_Standard:return !player.hitPerf || player.takeoffSpeed > SPEED_NORMAL;
+		case Style_Legacy:return player.takeoffSpeed > LEGACY_PERF_SPEED_CAP;
 	}
 	return false;
 }
@@ -291,7 +339,7 @@ static float CalcTweakedTakeoffSpeed(KZPlayer player)
 {
 	switch (player.style)
 	{
-		case KZStyle_Standard:
+		case Style_Standard:
 		{
 			// Formula
 			if (player.landingSpeed > SPEED_NORMAL)
@@ -300,7 +348,7 @@ static float CalcTweakedTakeoffSpeed(KZPlayer player)
 			}
 			return player.landingSpeed;
 		}
-		case KZStyle_Legacy:
+		case Style_Legacy:
 		{
 			return LEGACY_PERF_SPEED_CAP;
 		}
@@ -310,16 +358,16 @@ static float CalcTweakedTakeoffSpeed(KZPlayer player)
 
 
 
-/*===============================  Other Tweaks  ===============================*/
+// OTHER
 
 static void RemoveCrouchJumpBind(KZPlayer player, int &buttons)
 {
-	if (player.style == KZStyle_Competitive)
+	if (player.style == Style_Competitive)
 	{
 		return;
 	}
 	
-	if (player.onGround && buttons & IN_JUMP && !(gI_OldButtons[player.id] & IN_JUMP) && !(gI_OldButtons[player.id] & IN_DUCK))
+	if (player.onGround && buttons & IN_JUMP && !(oldButtons[player.id] & IN_JUMP) && !(oldButtons[player.id] & IN_DUCK))
 	{
 		buttons &= ~IN_DUCK;
 	}
@@ -327,7 +375,7 @@ static void RemoveCrouchJumpBind(KZPlayer player, int &buttons)
 
 static void ReduceDuckSlowdown(KZPlayer player)
 {
-	if (player.style == KZStyle_Competitive)
+	if (player.style == Style_Competitive)
 	{
 		return;
 	}

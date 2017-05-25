@@ -6,6 +6,7 @@
 #include <colorvariables>
 #include <simplekz>
 
+#include <simplekz/core>
 #include <simplekz/localdb>
 #include <simplekz/localranks>
 
@@ -19,11 +20,9 @@ public Plugin myinfo =
 	name = "SimpleKZ Local Ranks", 
 	author = "DanZay", 
 	description = "SimpleKZ Local Ranks Module", 
-	version = "0.12.0", 
+	version = "0.13.0", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
-
-
 
 Handle gH_OnTimeProcessed;
 Handle gH_OnNewRecord;
@@ -36,29 +35,11 @@ Menu gH_MapTopSubMenu[MAXPLAYERS + 1];
 char gC_MapTopMapName[MAXPLAYERS + 1][64];
 int gI_MapTopMapID[MAXPLAYERS + 1];
 int gI_MapTopCourse[MAXPLAYERS + 1];
-KZStyle g_MapTopStyle[MAXPLAYERS + 1];
+int g_MapTopStyle[MAXPLAYERS + 1];
 
 Menu gH_PlayerTopMenu[MAXPLAYERS + 1];
 Menu gH_PlayerTopSubMenu[MAXPLAYERS + 1];
-KZStyle g_PlayerTopStyle[MAXPLAYERS + 1];
-
-// Styles translation phrases for chat messages (respective to KZStyle enum)
-char gC_StylePhrases[view_as<int>(KZStyle)][] = 
-{
-	"Style - Standard", 
-	"Style - Legacy", 
-	"Style - Competitive"
-};
-
-// Time type translation phrases for chat messages (respective to KZTimeType enum)
-char gC_TimeTypePhrases[view_as<int>(KZTimeType)][] = 
-{
-	"Time Type - Nub", 
-	"Time Type - Pro", 
-	"Time Type - Theoretical"
-};
-
-
+int g_PlayerTopStyle[MAXPLAYERS + 1];
 
 #include "simplekz-localranks/database/sql.sp"
 
@@ -82,7 +63,7 @@ char gC_TimeTypePhrases[view_as<int>(KZTimeType)][] =
 
 
 
-/*===============================  Plugin Forwards  ===============================*/
+// =========================  PLUGIN  ========================= //
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -109,7 +90,7 @@ public void OnPluginStart()
 
 
 
-/*===============================  SimpleKZ Forwards  ===============================*/
+// =========================  SIMPLEKZ  ========================= //
 
 public void SKZ_DB_OnDatabaseConnect(Database database, DatabaseType DBType)
 {
@@ -119,12 +100,9 @@ public void SKZ_DB_OnDatabaseConnect(Database database, DatabaseType DBType)
 	CompletionMVPStarsUpdateAll();
 }
 
-public void SKZ_DB_OnTimeInserted(int client, int steamID, int mapID, int course, KZStyle style, int runTimeMS, int teleportsUsed, int theoRunTimeMS)
+public void SKZ_DB_OnTimeInserted(int client, int steamID, int mapID, int course, int style, int runTimeMS, int teleportsUsed, int theoRunTimeMS)
 {
-	if (IsValidClient(client) && steamID == GetSteamAccountID(client))
-	{
-		DB_ProcessNewTime(client, steamID, mapID, course, style, runTimeMS, teleportsUsed, theoRunTimeMS);
-	}
+	DB_ProcessNewTime(client, steamID, mapID, course, style, runTimeMS, teleportsUsed, theoRunTimeMS);
 }
 
 public void SKZ_LR_OnTimeProcessed(
@@ -132,7 +110,7 @@ public void SKZ_LR_OnTimeProcessed(
 	int steamID, 
 	int mapID, 
 	int course, 
-	KZStyle style, 
+	int style, 
 	float runTime, 
 	int teleportsUsed, 
 	float theoRunTime, 
@@ -145,36 +123,40 @@ public void SKZ_LR_OnTimeProcessed(
 	int rankPro, 
 	int maxRankPro)
 {
-	if (IsValidClient(client) && steamID == GetSteamAccountID(client) && mapID == SKZ_DB_GetCurrentMapID())
+	if (mapID != SKZ_DB_GetCurrentMapID())
 	{
-		AnnounceNewTime(client, course, style, runTime, teleportsUsed, firstTime, pbDiff, rank, maxRank, firstTimePro, pbDiffPro, rankPro, maxRankPro);
-		if (course == 0 && style == SKZ_GetDefaultStyle() && firstTimePro)
-		{
-			CompletionMVPStarsUpdate(client);
-		}
+		return;
+	}
+	
+	AnnounceNewTime(client, course, style, runTime, teleportsUsed, firstTime, pbDiff, rank, maxRank, firstTimePro, pbDiffPro, rankPro, maxRankPro);
+	if (course == 0 && style == SKZ_GetDefaultStyle() && firstTimePro)
+	{
+		CompletionMVPStarsUpdate(client);
 	}
 }
 
-public void SKZ_LR_OnNewRecord(int client, int steamID, int mapID, int course, KZStyle style, KZRecordType recordType)
+public void SKZ_LR_OnNewRecord(int client, int steamID, int mapID, int course, int style, KZRecordType recordType)
 {
-	if (IsValidClient(client) && steamID == GetSteamAccountID(client) && mapID == SKZ_DB_GetCurrentMapID())
+	if (mapID != SKZ_DB_GetCurrentMapID())
 	{
-		AnnounceNewRecord(client, course, style, recordType);
-		PlayNewRecordSound();
+		return;
 	}
+	
+	AnnounceNewRecord(client, course, style, recordType);
+	PlayNewRecordSound();
 }
 
 
 
-/*===============================  Functions  ===============================*/
+// =========================  PRIVATE  ========================= //
 
-void CreateMenus()
+static void CreateMenus()
 {
 	MapTopMenuCreateMenus();
 	PlayerTopMenuCreateMenus();
 }
 
-void TryGetDatabaseInfo()
+static void TryGetDatabaseInfo()
 {
 	SKZ_DB_GetDatabase(gH_DB);
 	if (gH_DB != null)

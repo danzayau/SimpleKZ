@@ -4,6 +4,8 @@
 	Set up the connection to the local database.
 */
 
+
+
 void DB_SetupDatabase()
 {
 	char error[255];

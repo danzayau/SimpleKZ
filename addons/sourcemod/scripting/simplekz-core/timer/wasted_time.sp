@@ -4,67 +4,108 @@
 	Keep track of time wasted when teleporting back to checkpoints.
 */
 
-void WastedTimeOnTeleportToStart(int client)
+
+
+static float wastedTime[MAXPLAYERS + 1];
+static float lastCheckpointTime[MAXPLAYERS + 1];
+static float lastGoCheckTime[MAXPLAYERS + 1];
+static float lastGoCheckWastedTime[MAXPLAYERS + 1];
+static float lastUndoTime[MAXPLAYERS + 1];
+static float lastUndoWastedTime[MAXPLAYERS + 1];
+static float lastTeleportToStartTime[MAXPLAYERS + 1];
+static float lastTeleportToStartWastedTime[MAXPLAYERS + 1];
+
+
+
+// =========================  PUBLIC  ========================= //
+
+float GetWastedTime(int client)
 {
-	float addedWastedTime = 0.0;
-	addedWastedTime = gF_CurrentTime[client] - gF_WastedTime[client];
-	gF_WastedTime[client] += addedWastedTime;
-	gF_LastTeleportToStartWastedTime[client] = addedWastedTime;
-	gF_LastTeleportToStartTime[client] = gF_CurrentTime[client];
+	return wastedTime[client];
 }
 
-void WastedTimeOnTeleportToCheckpoint(int client)
+
+
+// =========================  LISTENERS  ========================= //
+
+void OnTimerStart_WastedTime(int client)
 {
-	float addedWastedTime = 0.0;
-	if (TeleportToStartWasLatestTeleport(client))
-	{
-		addedWastedTime -= gF_LastTeleportToStartWastedTime[client];
-	}
-	if (UndoWasLatestTeleport(client))
-	{
-		addedWastedTime -= gF_LastUndoWastedTime[client];
-	}
-	addedWastedTime += gF_CurrentTime[client] - FloatMax(gF_LastCheckpointTime[client], gF_LastGoCheckTime[client]);
-	gF_WastedTime[client] += addedWastedTime;
-	gF_LastGoCheckWastedTime[client] = addedWastedTime;
-	gF_LastGoCheckTime[client] = gF_CurrentTime[client];
+	wastedTime[client] = 0.0;
+	lastCheckpointTime[client] = 0.0;
+	lastGoCheckTime[client] = 0.0;
+	lastGoCheckWastedTime[client] = 0.0;
+	lastUndoTime[client] = 0.0;
+	lastUndoWastedTime[client] = 0.0;
+	lastTeleportToStartTime[client] = 0.0;
+	lastTeleportToStartWastedTime[client] = 0.0;
 }
 
-void WastedTimeOnUndoTeleport(int client)
+void OnMakeCheckpoint_WastedTime(int client)
+{
+	lastCheckpointTime[client] = GetCurrentTime(client);
+}
+
+void OnTeleportToStart_WastedTime(int client)
 {
 	float addedWastedTime = 0.0;
-	if (TeleportToStartWasLatestTeleport(client))
+	addedWastedTime = GetCurrentTime(client) - wastedTime[client];
+	wastedTime[client] += addedWastedTime;
+	lastTeleportToStartWastedTime[client] = addedWastedTime;
+	lastTeleportToStartTime[client] = GetCurrentTime(client);
+}
+
+void OnTeleportToCheckpoint_WastedTime(int client)
+{
+	float addedWastedTime = 0.0;
+	if (TeleportToStartWasLastTeleport(client))
 	{
-		addedWastedTime -= gF_LastTeleportToStartWastedTime[client];
-		addedWastedTime += gF_CurrentTime[client] - gF_LastTeleportToStartTime[client];
+		addedWastedTime -= lastTeleportToStartWastedTime[client];
 	}
-	else if (UndoWasLatestTeleport(client))
+	if (UndoWasLastTeleport(client))
 	{
-		addedWastedTime -= gF_LastUndoWastedTime[client];
-		addedWastedTime += gF_CurrentTime[client] - gF_LastUndoTime[client];
+		addedWastedTime -= lastUndoWastedTime[client];
+	}
+	addedWastedTime += GetCurrentTime(client) - FloatMax(lastCheckpointTime[client], lastGoCheckTime[client]);
+	wastedTime[client] += addedWastedTime;
+	lastGoCheckWastedTime[client] = addedWastedTime;
+	lastGoCheckTime[client] = GetCurrentTime(client);
+}
+
+void OnUndoTeleport_WastedTime(int client)
+{
+	float addedWastedTime = 0.0;
+	if (TeleportToStartWasLastTeleport(client))
+	{
+		addedWastedTime -= lastTeleportToStartWastedTime[client];
+		addedWastedTime += GetCurrentTime(client) - lastTeleportToStartTime[client];
+	}
+	else if (UndoWasLastTeleport(client))
+	{
+		addedWastedTime -= lastUndoWastedTime[client];
+		addedWastedTime += GetCurrentTime(client) - lastUndoTime[client];
 	}
 	else
 	{
-		addedWastedTime -= gF_LastGoCheckWastedTime[client];
-		addedWastedTime += gF_CurrentTime[client] - gF_LastGoCheckTime[client];
+		addedWastedTime -= lastGoCheckWastedTime[client];
+		addedWastedTime += GetCurrentTime(client) - lastGoCheckTime[client];
 	}
-	gF_WastedTime[client] += addedWastedTime;
-	gF_LastUndoWastedTime[client] = addedWastedTime;
-	gF_LastUndoTime[client] = gF_CurrentTime[client];
+	wastedTime[client] += addedWastedTime;
+	lastUndoWastedTime[client] = addedWastedTime;
+	lastUndoTime[client] = GetCurrentTime(client);
 }
 
 
 
-/*===============================  Static Functions  ===============================*/
+// =========================  PRIVATE  ========================= //
 
-static bool UndoWasLatestTeleport(int client)
+static bool UndoWasLastTeleport(int client)
 {
-	return gF_LastUndoTime[client] > gF_LastGoCheckTime[client]
-	 && gF_LastUndoTime[client] > gF_LastTeleportToStartTime[client];
+	return lastUndoTime[client] > lastGoCheckTime[client]
+	 && lastUndoTime[client] > lastTeleportToStartTime[client];
 }
 
-static bool TeleportToStartWasLatestTeleport(int client)
+static bool TeleportToStartWasLastTeleport(int client)
 {
-	return gF_LastTeleportToStartTime[client] > gF_LastGoCheckTime[client]
-	 && gF_LastTeleportToStartTime[client] > gF_LastUndoTime[client];
+	return lastTeleportToStartTime[client] > lastGoCheckTime[client]
+	 && lastTeleportToStartTime[client] > lastUndoTime[client];
 } 

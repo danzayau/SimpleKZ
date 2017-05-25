@@ -11,7 +11,7 @@
 
 
 
-/*===============================  Enumerations  ===============================*/
+// =========================  ENUMERATIONS  ========================= //
 
 enum ObsMode
 {
@@ -26,7 +26,7 @@ enum ObsMode
 
 
 
-/*===============================  Stocks  ===============================*/
+// =========================  STOCKS  ========================= //
 
 /**
  * Represents a time float as a string e.g. 01:23.45.
@@ -75,14 +75,14 @@ stock char[] SKZ_FormatTime(float time, bool precise = true)
 }
 
 /**
- * Checks if the value is a valid client entity index, and if they are in-game.
+ * Checks if the value is a valid client entity index, if they are in-game and not GOTV.
  *
  * @param client		Client index.
  * @return				Whether client is valid.
  */
 stock bool IsValidClient(int client)
 {
-	return client >= 1 && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && !IsClientSourceTV(client);
+	return client >= 1 && client <= MaxClients && IsClientInGame(client) && !IsClientSourceTV(client);
 }
 
 /**
@@ -133,26 +133,19 @@ stock ObsMode GetObserverMode(int client)
 }
 
 /**
- * Gets whether client is spectating someone.
- *
- * @param client		Client index.
- * @return				Whether client is spectating someone.
- */
-stock bool IsSpectatingSomeone(int client)
-{
-	ObsMode mode = GetObserverMode(client);
-	return mode == ObsMode_InEye || mode == ObsMode_Chase;
-}
-
-/**
  * Gets the player a client is spectating.
  *
  * @param client		Client index.
- * @return				Client index of target.
+ * @return				Client index of target, or -1 if not spectating anyone.
  */
 stock int GetObserverTarget(int client)
 {
-	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+	ObsMode mode = GetObserverMode(client);
+	if (mode == ObsMode_InEye || mode == ObsMode_Chase)
+	{
+		return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+	}
+	return -1;
 }
 
 /**
@@ -166,7 +159,7 @@ stock void EmitSoundToClientSpectators(int client, const char[] sound)
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (IsValidClient(i) && IsSpectatingSomeone(i) && GetObserverTarget(i) == client)
+		if (IsValidClient(i) && GetObserverTarget(i) == client)
 		{
 			EmitSoundToClient(i, sound);
 		}

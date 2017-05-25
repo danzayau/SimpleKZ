@@ -27,10 +27,6 @@
 	}
 
 	// General Chat Messages ////////////////////////////////////////////////////////////
-	"KZ Prefix"
-	{
-		"en"		"{grey}[{lightgreen}KZ{grey}]"
-	}
 	"Beat Map (Nub)"
 	{
 		// Bill finished in 01:23.45 (4 TP | 01.02.34) [Style]

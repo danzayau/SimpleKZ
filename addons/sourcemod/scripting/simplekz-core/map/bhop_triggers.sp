@@ -1,48 +1,62 @@
 /*
 	Bunnyhop Trigger Detection
 	
-	Detects when players are on bunnyhop triggers and shouldn't be allowed to checkpoint.
+	Detects when players are on bunnyhop triggers and
+	shouldn't be allowed to checkpoint.
 */
 
-#define TIME_BHOP_TRIGGER_DETECTION 0.2 // Time after touching trigger_multiple to block checkpoints
 
-void BhopTriggersSetupClient(int client)
-{
-	gI_JustTouchedTrigMulti[client] = 0;
-}
 
-// Returns if the plugin thinks the player just touched a b-hop block trigger.
+#define BHOP_DETECTION_TIME 0.15 // Time after touching trigger_multiple to block checkpoints
+
+static int justTouchedTrigMult[MAXPLAYERS + 1];
+
+
+
+// =========================  PUBLIC  ========================= //
+
 bool BhopTriggersJustTouched(int client)
 {
 	// If just touched trigger_multiple and landed within 0.2 seconds ago
-	if ((gI_JustTouchedTrigMulti[client] > 0)
-		 && (GetGameTickCount() - g_KZPlayer[client].landingTick) < (TIME_BHOP_TRIGGER_DETECTION / GetTickInterval()))
+	if ((justTouchedTrigMult[client] > 0)
+		 && (GetGameTickCount() - Movement_GetLandingTick(client))
+		 < (BHOP_DETECTION_TIME / GetTickInterval()))
 	{
 		return true;
 	}
 	return false;
 }
 
-void BhopTriggersOnTrigMultiTouch(int activator)
+
+
+// =========================  LISTENERS  ========================= //
+
+void SetupClientBhopTriggers(int client)
+{
+	justTouchedTrigMult[client] = 0;
+}
+
+void OnTrigMultTouch_BhopTriggers(int activator)
 {
 	if (IsValidClient(activator))
 	{
-		gI_JustTouchedTrigMulti[activator]++;
-		CreateTimer(TIME_BHOP_TRIGGER_DETECTION, TrigMultiStartTouchDelayed, activator);
+		justTouchedTrigMult[activator]++;
+		CreateTimer(BHOP_DETECTION_TIME, TrigMultTouchDelayed, GetClientUserId(activator));
 	}
 }
 
 
 
-/*===============================  Public Callbacks  ===============================*/
+// =========================  HANDLERS  ========================= //
 
-public Action TrigMultiStartTouchDelayed(Handle timer, int client)
+public Action TrigMultTouchDelayed(Handle timer, int userid)
 {
+	int client = GetClientOfUserId(userid);
 	if (IsValidClient(client))
 	{
-		if (gI_JustTouchedTrigMulti[client] > 0)
+		if (justTouchedTrigMult[client] > 0)
 		{
-			gI_JustTouchedTrigMulti[client]--;
+			justTouchedTrigMult[client]--;
 		}
 	}
 	return Plugin_Continue;

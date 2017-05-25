@@ -6,12 +6,14 @@
 		menus/maptop.sp
 */
 
-void DB_OpenMapTop(int client, int mapID, int course, KZStyle style)
+
+
+void DB_OpenMapTop(int client, int mapID, int course, int style)
 {
 	char query[1024];
 	
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteCell(mapID);
 	data.WriteCell(course);
 	data.WriteCell(style);
@@ -31,10 +33,10 @@ void DB_OpenMapTop(int client, int mapID, int course, KZStyle style)
 public void DB_TxnSuccess_OpenMapTopMenu(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	int mapID = data.ReadCell();
 	int course = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))
@@ -52,11 +54,11 @@ public void DB_TxnSuccess_OpenMapTopMenu(Handle db, DataPack data, int numQuerie
 	{
 		if (course == 0)
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Main Course Not Found", gC_MapTopMapName[client]);
+			SKZ_PrintToChat(client, true, "%t", "Main Course Not Found", gC_MapTopMapName[client]);
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Bonus Not Found", gC_MapTopMapName[client], course);
+			SKZ_PrintToChat(client, true, "%t", "Bonus Not Found", gC_MapTopMapName[client], course);
 		}
 		return;
 	}
@@ -67,10 +69,10 @@ public void DB_TxnSuccess_OpenMapTopMenu(Handle db, DataPack data, int numQuerie
 	MapTopMenuDisplay(client);
 }
 
-void DB_OpenMapTop_FindMap(int client, const char[] mapSearch, int course, KZStyle style)
+void DB_OpenMapTop_FindMap(int client, const char[] mapSearch, int course, int style)
 {
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteString(mapSearch);
 	data.WriteCell(course);
 	data.WriteCell(style);
@@ -81,11 +83,11 @@ void DB_OpenMapTop_FindMap(int client, const char[] mapSearch, int course, KZSty
 public void DB_TxnSuccess_OpenMapTopMenu_FindMap(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	char mapSearch[33];
 	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))
@@ -95,7 +97,7 @@ public void DB_TxnSuccess_OpenMapTopMenu_FindMap(Handle db, DataPack data, int n
 	
 	if (SQL_GetRowCount(results[0]) == 0)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearch);
+		SKZ_PrintToChat(client, true, "%t", "Map Not Found", mapSearch);
 		return;
 	}
 	else if (SQL_FetchRow(results[0]))

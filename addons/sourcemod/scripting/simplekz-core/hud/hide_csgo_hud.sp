@@ -4,22 +4,27 @@
 	Hides elements of the CS:GO HUD.
 */
 
-void HideCSGOHUD(int client)
+
+
+// =========================  PUBLIC  ========================= //
+
+void UpdateCSGOHUD(int client)
 {
 	if (IsFakeClient(client))
 	{
 		return;
 	}
 	
-	CreateTimer(0.0, CleanHUD, client);
+	CreateTimer(0.1, CleanHUD, GetClientUserId(client));
 }
 
 
 
-/*===============================  Public Callbacks  ===============================*/
+// =========================  CALLBACKS  ========================= //
 
-public Action CleanHUD(Handle timer, int client)
+public Action CleanHUD(Handle timer, int userid)
 {
+	int client = GetClientOfUserId(userid);
 	if (IsValidClient(client))
 	{
 		// (1 << 12) Hide Radar

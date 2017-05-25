@@ -4,12 +4,14 @@
 	Prints the player's personal times on a map course and given style.
 */
 
-void DB_PrintPBs(int client, int targetSteamID, int mapID, int course, KZStyle style)
+
+
+void DB_PrintPBs(int client, int targetSteamID, int mapID, int course, int style)
 {
 	char query[1024];
 	
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteCell(course);
 	data.WriteCell(style);
 	
@@ -51,9 +53,9 @@ void DB_PrintPBs(int client, int targetSteamID, int mapID, int course, KZStyle s
 public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	int course = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))
@@ -90,11 +92,11 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	{
 		if (course == 0)
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Main Course Not Found", mapName);
+			SKZ_PrintToChat(client, true, "%t", "Main Course Not Found", mapName);
 		}
 		else
 		{
-			CPrintToChat(client, "%t %t", "KZ Prefix", "Bonus Not Found", mapName, course);
+			SKZ_PrintToChat(client, true, "%t", "Bonus Not Found", mapName, course);
 		}
 		return;
 	}
@@ -139,11 +141,11 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	// Print PB header to chat
 	if (course == 0)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "PB Header", playerName, mapName, gC_StylePhrases[style]);
+		SKZ_PrintToChat(client, true, "%t", "PB Header", playerName, mapName, gC_StylePhrases[style]);
 	}
 	else
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "PB Header (Bonus)", playerName, mapName, course, gC_StylePhrases[style]);
+		SKZ_PrintToChat(client, true, "%t", "PB Header (Bonus)", playerName, mapName, course, gC_StylePhrases[style]);
 	}
 	
 	// Print PB times to chat
@@ -167,10 +169,10 @@ public void DB_TxnSuccess_PrintPBs(Handle db, DataPack data, int numQueries, Han
 	}
 }
 
-void DB_PrintPBs_FindMap(int client, int targetSteamID, const char[] mapSearch, int course, KZStyle style)
+void DB_PrintPBs_FindMap(int client, int targetSteamID, const char[] mapSearch, int course, int style)
 {
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteCell(targetSteamID);
 	data.WriteString(mapSearch);
 	data.WriteCell(course);
@@ -182,12 +184,12 @@ void DB_PrintPBs_FindMap(int client, int targetSteamID, const char[] mapSearch, 
 public void DB_TxnSuccess_PrintPBs_FindMap(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	int targetSteamID = data.ReadCell();
 	char mapSearch[33];
 	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))
@@ -198,7 +200,7 @@ public void DB_TxnSuccess_PrintPBs_FindMap(Handle db, DataPack data, int numQuer
 	// Check if the map course exists in the database
 	if (SQL_GetRowCount(results[0]) == 0)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearch);
+		SKZ_PrintToChat(client, true, "%t", "Map Not Found", mapSearch);
 		return;
 	}
 	else if (SQL_FetchRow(results[0]))
@@ -207,10 +209,10 @@ public void DB_TxnSuccess_PrintPBs_FindMap(Handle db, DataPack data, int numQuer
 	}
 }
 
-void DB_PrintPBs_FindPlayerAndMap(int client, const char[] playerSearch, const char[] mapSearch, int course, KZStyle style)
+void DB_PrintPBs_FindPlayerAndMap(int client, const char[] playerSearch, const char[] mapSearch, int course, int style)
 {
 	DataPack data = new DataPack();
-	data.WriteCell(client);
+	data.WriteCell(GetClientUserId(client));
 	data.WriteString(playerSearch);
 	data.WriteString(mapSearch);
 	data.WriteCell(course);
@@ -222,13 +224,13 @@ void DB_PrintPBs_FindPlayerAndMap(int client, const char[] playerSearch, const c
 public void DB_TxnSuccess_PrintPBs_FindPlayerAndMap(Handle db, DataPack data, int numQueries, Handle[] results, any[] queryData)
 {
 	data.Reset();
-	int client = data.ReadCell();
+	int client = GetClientOfUserId(data.ReadCell());
 	char playerSearch[MAX_NAME_LENGTH];
 	data.ReadString(playerSearch, sizeof(playerSearch));
 	char mapSearch[33];
 	data.ReadString(mapSearch, sizeof(mapSearch));
 	int course = data.ReadCell();
-	KZStyle style = data.ReadCell();
+	int style = data.ReadCell();
 	data.Close();
 	
 	if (!IsValidClient(client))
@@ -238,12 +240,12 @@ public void DB_TxnSuccess_PrintPBs_FindPlayerAndMap(Handle db, DataPack data, in
 	
 	if (SQL_GetRowCount(results[0]) == 0)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Player Not Found", playerSearch);
+		SKZ_PrintToChat(client, true, "%t", "Player Not Found", playerSearch);
 		return;
 	}
 	else if (SQL_GetRowCount(results[1]) == 0)
 	{
-		CPrintToChat(client, "%t %t", "KZ Prefix", "Map Not Found", mapSearch);
+		SKZ_PrintToChat(client, true, "%t", "Map Not Found", mapSearch);
 		return;
 	}
 	else if (SQL_FetchRow(results[0]) && SQL_FetchRow(results[1]))

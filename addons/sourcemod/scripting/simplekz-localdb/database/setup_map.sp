@@ -5,6 +5,8 @@
 	Retrieves the MapID of the map and stores it in a global variable.
 */
 
+
+
 void DB_SetupMap()
 {
 	char query[1024];
