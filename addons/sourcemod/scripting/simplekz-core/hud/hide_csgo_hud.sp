@@ -15,15 +15,16 @@ void UpdateCSGOHUD(int client)
 		return;
 	}
 	
-	CreateTimer(0.0, CleanHUD, client);
+	CreateTimer(0.1, CleanHUD, GetClientUserId(client));
 }
 
 
 
 // =========================  CALLBACKS  ========================= //
 
-public Action CleanHUD(Handle timer, int client)
+public Action CleanHUD(Handle timer, int userid)
 {
+	int client = GetClientOfUserId(userid);
 	if (IsValidClient(client))
 	{
 		// (1 << 12) Hide Radar

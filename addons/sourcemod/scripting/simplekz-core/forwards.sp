@@ -51,32 +51,32 @@ void CreateGlobalForwards()
 	H_OnUndoTeleport_Post = CreateGlobalForward("SKZ_OnUndoTeleport_Post", ET_Ignore, Param_Cell);
 }
 
-int Call_SKZ_OnClientSetup(int client)
+void Call_SKZ_OnClientSetup(int client)
 {
 	Call_StartForward(H_OnClientSetup);
 	Call_PushCell(client);
-	return Call_Finish();
+	Call_Finish();
 }
 
-int Call_SKZ_OnTimerStart(int client, int course, int style, Action &result)
+void Call_SKZ_OnTimerStart(int client, int course, int style, Action &result)
 {
 	Call_StartForward(H_OnTimerStart);
 	Call_PushCell(client);
 	Call_PushCell(course);
 	Call_PushCell(style);
-	return Call_Finish(result);
+	Call_Finish(result);
 }
 
-int Call_SKZ_OnTimerStart_Post(int client, int course, int style)
+void Call_SKZ_OnTimerStart_Post(int client, int course, int style)
 {
 	Call_StartForward(H_OnTimerStart_Post);
 	Call_PushCell(client);
 	Call_PushCell(course);
 	Call_PushCell(style);
-	return Call_Finish();
+	Call_Finish();
 }
 
-int Call_SKZ_OnTimerEnd(int client, int course, int style, float time, int teleportsUsed, float theoreticalTime, Action &result)
+void Call_SKZ_OnTimerEnd(int client, int course, int style, float time, int teleportsUsed, float theoreticalTime, Action &result)
 {
 	Call_StartForward(H_OnTimerEnd);
 	Call_PushCell(client);
@@ -85,10 +85,10 @@ int Call_SKZ_OnTimerEnd(int client, int course, int style, float time, int telep
 	Call_PushFloat(time);
 	Call_PushCell(teleportsUsed);
 	Call_PushFloat(theoreticalTime);
-	return Call_Finish(result);
+	Call_Finish(result);
 }
 
-int Call_SKZ_OnTimerEnd_Post(int client, int course, int style, float time, int teleportsUsed, float theoreticalTime)
+void Call_SKZ_OnTimerEnd_Post(int client, int course, int style, float time, int teleportsUsed, float theoreticalTime)
 {
 	Call_StartForward(H_OnTimerEnd_Post);
 	Call_PushCell(client);
@@ -97,105 +97,105 @@ int Call_SKZ_OnTimerEnd_Post(int client, int course, int style, float time, int 
 	Call_PushFloat(time);
 	Call_PushCell(teleportsUsed);
 	Call_PushFloat(theoreticalTime);
-	return Call_Finish();
+	Call_Finish();
 }
 
-int Call_SKZ_OnTimerStopped(int client)
+void Call_SKZ_OnTimerStopped(int client)
 {
 	Call_StartForward(H_OnTimerStopped);
 	Call_PushCell(client);
-	return Call_Finish();
+	Call_Finish();
 }
 
-int Call_SKZ_OnPause(int client, Action &result)
+void Call_SKZ_OnPause(int client, Action &result)
 {
 	Call_StartForward(H_OnPause);
 	Call_PushCell(client);
-	return Call_Finish(result);
+	Call_Finish(result);
 }
 
-int Call_SKZ_OnPause_Post(int client)
+void Call_SKZ_OnPause_Post(int client)
 {
 	Call_StartForward(H_OnPause_Post);
 	Call_PushCell(client);
-	return Call_Finish();
+	Call_Finish();
 }
 
-int Call_SKZ_OnResume(int client, Action &result)
+void Call_SKZ_OnResume(int client, Action &result)
 {
 	Call_StartForward(H_OnResume);
 	Call_PushCell(client);
-	return Call_Finish(result);
+	Call_Finish(result);
 }
 
-int Call_SKZ_OnResume_Post(int client)
+void Call_SKZ_OnResume_Post(int client)
 {
 	Call_StartForward(H_OnResume_Post);
 	Call_PushCell(client);
-	return Call_Finish();
+	Call_Finish();
 }
 
-int Call_SKZ_OnMakeCheckpoint(int client, Action &result)
+void Call_SKZ_OnMakeCheckpoint(int client, Action &result)
 {
 	Call_StartForward(H_OnMakeCheckpoint);
 	Call_PushCell(client);
-	return Call_Finish(result);
+	Call_Finish(result);
 }
 
-int Call_SKZ_OnMakeCheckpoint_Post(int client)
+void Call_SKZ_OnMakeCheckpoint_Post(int client)
 {
 	Call_StartForward(H_OnMakeCheckpoint_Post);
 	Call_PushCell(client);
-	return Call_Finish();
+	Call_Finish();
 }
 
-int Call_SKZ_OnTeleportToCheckpoint(int client, Action &result)
+void Call_SKZ_OnTeleportToCheckpoint(int client, Action &result)
 {
 	Call_StartForward(H_OnTeleportToCheckpoint);
 	Call_PushCell(client);
-	return Call_Finish(result);
+	Call_Finish(result);
 }
 
-int Call_SKZ_OnTeleportToCheckpoint_Post(int client)
+void Call_SKZ_OnTeleportToCheckpoint_Post(int client)
 {
 	Call_StartForward(H_OnTeleportToCheckpoint_Post);
 	Call_PushCell(client);
-	return Call_Finish();
+	Call_Finish();
 }
 
-int Call_SKZ_OnTeleportToStart(int client, Action &result)
+void Call_SKZ_OnTeleportToStart(int client, Action &result)
 {
 	Call_StartForward(H_OnTeleportToStart);
 	Call_PushCell(client);
-	return Call_Finish(result);
+	Call_Finish(result);
 }
 
-int Call_SKZ_OnTeleportToStart_Post(int client)
+void Call_SKZ_OnTeleportToStart_Post(int client)
 {
 	Call_StartForward(H_OnTeleportToStart_Post);
 	Call_PushCell(client);
-	return Call_Finish();
+	Call_Finish();
 }
 
-int Call_SKZ_OnUndoTeleport(int client, Action &result)
+void Call_SKZ_OnUndoTeleport(int client, Action &result)
 {
 	Call_StartForward(H_OnUndoTeleport);
 	Call_PushCell(client);
-	return Call_Finish();
+	Call_Finish();
 }
 
-int Call_SKZ_OnUndoTeleport_Post(int client)
+void Call_SKZ_OnUndoTeleport_Post(int client)
 {
 	Call_StartForward(H_OnUndoTeleport_Post);
 	Call_PushCell(client);
-	return Call_Finish();
+	Call_Finish();
 }
 
-int Call_SKZ_OnOptionChanged(int client, Option option, int optionValue)
+void Call_SKZ_OnOptionChanged(int client, Option option, int optionValue)
 {
 	Call_StartForward(H_OnOptionChanged);
 	Call_PushCell(client);
 	Call_PushCell(option);
 	Call_PushCell(optionValue);
-	return Call_Finish();
+	Call_Finish();
 } 

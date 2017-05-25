@@ -41,7 +41,7 @@ void OnTrigMultTouch_BhopTriggers(int activator)
 	if (IsValidClient(activator))
 	{
 		justTouchedTrigMult[activator]++;
-		CreateTimer(BHOP_DETECTION_TIME, TrigMultTouchDelayed, activator);
+		CreateTimer(BHOP_DETECTION_TIME, TrigMultTouchDelayed, GetClientUserId(activator));
 	}
 }
 
@@ -49,8 +49,9 @@ void OnTrigMultTouch_BhopTriggers(int activator)
 
 // =========================  HANDLERS  ========================= //
 
-public Action TrigMultTouchDelayed(Handle timer, int client)
+public Action TrigMultTouchDelayed(Handle timer, int userid)
 {
+	int client = GetClientOfUserId(userid);
 	if (IsValidClient(client))
 	{
 		if (justTouchedTrigMult[client] > 0)
