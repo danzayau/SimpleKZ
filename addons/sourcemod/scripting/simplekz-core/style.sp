@@ -15,6 +15,7 @@
 #define STANDARD_PERF_TICKS 2
 #define STANDARD_PRE_VELMOD_INCREMENT 0.0014 // Per tick when prestrafing
 #define STANDARD_PRE_VELMOD_DECREMENT 0.0021 // Per tick when not prestrafing
+#define STANDARD_PRE_VELMOD_DECREMENT_MIDAIR 0.0011063829787234 // Per tick when in air - calculated 0.104velmod/94ticks
 
 #define LEGACY_PERF_SPEED_CAP 380.0
 
@@ -24,6 +25,7 @@ static int oldButtons[MAXPLAYERS + 1];
 static float preVelMod[MAXPLAYERS + 1];
 static float preVelModLastChange[MAXPLAYERS + 1];
 static int preTickCounter[MAXPLAYERS + 1];
+static float preVelModLanding[MAXPLAYERS + 1];
 
 static char weaponNames[][] = 
 {
@@ -103,6 +105,7 @@ void OnStartTouchGround_Style(int client)
 {
 	KZPlayer player = new KZPlayer(client);
 	ReduceDuckSlowdown(player);
+	preVelModLanding[client] = preVelMod[client];
 }
 
 void OnStopTouchGround_Style(int client, bool jumped)
@@ -116,12 +119,6 @@ void OnStopTouchGround_Style(int client, bool jumped)
 	{
 		SKZHitPerf[client] = false;
 		SKZTakeoffSpeed[client] = Movement_GetTakeoffSpeed(client);
-	}
-	
-	// No 'pre b-hopping' in Standard
-	if (GetOption(client, Option_Style) == Style_Standard)
-	{
-		preVelMod[client] = 1.0;
 	}
 }
 
@@ -155,10 +152,6 @@ static void TweakConVars(KZPlayer player)
 
 static void TweakVelMod(KZPlayer player)
 {
-	if (!player.onGround)
-	{
-		return;
-	}
 	player.velocityModifier = CalcPrestrafeVelMod(player) * CalcWeaponVelMod(player);
 }
 
@@ -168,7 +161,11 @@ static float CalcPrestrafeVelMod(KZPlayer player)
 	{
 		case Style_Standard:
 		{
-			if (player.turning
+			if (!player.onGround)
+			{
+				preVelMod[player.id] -= STANDARD_PRE_VELMOD_DECREMENT_MIDAIR;
+			}
+			else if (player.turning
 				 && ((player.buttons & IN_FORWARD && !(player.buttons & IN_BACK)) || (!(player.buttons & IN_FORWARD) && player.buttons & IN_BACK))
 				 && ((player.buttons & IN_MOVELEFT && !(player.buttons & IN_MOVERIGHT)) || (!(player.buttons & IN_MOVELEFT) && player.buttons & IN_MOVERIGHT)))
 			{
@@ -181,6 +178,11 @@ static float CalcPrestrafeVelMod(KZPlayer player)
 		}
 		case Style_Legacy:
 		{
+			if (!player.onGround)
+			{
+				return preVelMod[player.id]; // No changes in midair
+			}
+			
 			// KZTimer prestrafe (not exactly the same, and is only for 128 tick)
 			if (!player.turning)
 			{
@@ -296,6 +298,10 @@ static void TweakJump(KZPlayer player)
 			AddVectors(newVelocity, baseVelocity, newVelocity);
 			player.SetVelocity(newVelocity);
 			SKZTakeoffSpeed[player.id] = player.speed;
+			if (player.style == Style_Standard)
+			{
+				preVelMod[player.id] = preVelModLanding[player.id];
+			}
 		}
 		else if (player.style == Style_Competitive)
 		{
@@ -344,7 +350,7 @@ static float CalcTweakedTakeoffSpeed(KZPlayer player)
 			// Formula
 			if (player.landingSpeed > SPEED_NORMAL)
 			{
-				return 0.2 * player.landingSpeed + 200;
+				return (0.2 * player.landingSpeed + 200) * preVelModLanding[player.id];
 			}
 			return player.landingSpeed;
 		}
