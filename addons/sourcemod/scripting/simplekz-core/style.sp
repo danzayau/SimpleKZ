@@ -350,7 +350,7 @@ static float CalcTweakedTakeoffSpeed(KZPlayer player)
 			// Formula
 			if (player.landingSpeed > SPEED_NORMAL)
 			{
-				return (0.2 * player.landingSpeed + 200) * preVelModLanding[player.id];
+				return FloatMin(player.landingSpeed, (0.2 * player.landingSpeed + 200) * preVelModLanding[player.id]);
 			}
 			return player.landingSpeed;
 		}

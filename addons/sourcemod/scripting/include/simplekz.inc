@@ -102,6 +102,22 @@ stock float FloatMax(float value1, float value2)
 }
 
 /**
+ * Returns the lesser of two float values.
+ *
+ * @param value1		First value.
+ * @param value2		Second value.
+ * @return				Lesser value.
+ */
+stock float FloatMin(float value1, float value2)
+{
+	if (value1 <= value2)
+	{
+		return value1;
+	}
+	return value2;
+}
+
+/**
  * Sets all characters in a string to lower case.
  *
  * @param input			Input string.
