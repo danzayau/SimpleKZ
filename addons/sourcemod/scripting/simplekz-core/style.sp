@@ -28,6 +28,7 @@ static float preVelMod[MAXPLAYERS + 1];
 static float preVelModLastChange[MAXPLAYERS + 1];
 static int preTickCounter[MAXPLAYERS + 1];
 static float preVelModLanding[MAXPLAYERS + 1];
+static bool preTurningLeft[MAXPLAYERS + 1];
 
 static char weaponNames[][] = 
 {
@@ -172,6 +173,11 @@ static float CalcPrestrafeVelMod(KZPlayer player, const float angles[3])
 				 && ((player.buttons & IN_FORWARD && !(player.buttons & IN_BACK)) || (!(player.buttons & IN_FORWARD) && player.buttons & IN_BACK))
 				 && ((player.buttons & IN_MOVELEFT && !(player.buttons & IN_MOVERIGHT)) || (!(player.buttons & IN_MOVELEFT) && player.buttons & IN_MOVERIGHT)))
 			{
+				if (player.turningLeft && !preTurningLeft[player.id] || player.turningRight && preTurningLeft[player.id])
+				{
+					preVelMod[player.id] = 1.0;
+				}
+				preTurningLeft[player.id] = player.turningLeft;
 				preVelMod[player.id] += STANDARD_PRE_VELMOD_INCREMENT;
 			}
 			else
