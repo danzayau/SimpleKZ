@@ -180,4 +180,25 @@ stock void EmitSoundToClientSpectators(int client, const char[] sound)
 			EmitSoundToClient(i, sound);
 		}
 	}
+}
+
+/**
+ * Calculates the delta angle between two angles (-180 to 180).
+ *
+ * @param startAngle	Start angle.
+ * @param endAngle		End angle.
+ * @return				Delta angle.
+ */
+stock float CalcDeltaAngle(float startAngle, float endAngle)
+{
+	float difference = endAngle - startAngle;
+	if (difference > 180)
+	{
+		difference + 360;
+	}
+	else if (difference < -180)
+	{
+		difference - 360;
+	}
+	return difference;
 } 

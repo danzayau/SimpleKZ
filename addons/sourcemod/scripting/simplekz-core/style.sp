@@ -13,6 +13,7 @@
 #define PRE_VELMOD_MAX 1.104 // Calculated 276/250
 
 #define STANDARD_PERF_TICKS 2
+#define STANDARD_PRE_MINIMUM_DELTA_ANGLE 0.5
 #define STANDARD_PRE_VELMOD_INCREMENT 0.0014 // Per tick when prestrafing
 #define STANDARD_PRE_VELMOD_DECREMENT 0.0021 // Per tick when not prestrafing
 #define STANDARD_PRE_VELMOD_DECREMENT_MIDAIR 0.0011063829787234 // Per tick when in air - calculated 0.104velmod/94ticks
@@ -22,6 +23,7 @@
 static bool SKZHitPerf[MAXPLAYERS + 1];
 static float SKZTakeoffSpeed[MAXPLAYERS + 1];
 static int oldButtons[MAXPLAYERS + 1];
+static float oldAngles[MAXPLAYERS + 1][3];
 static float preVelMod[MAXPLAYERS + 1];
 static float preVelModLastChange[MAXPLAYERS + 1];
 static int preTickCounter[MAXPLAYERS + 1];
@@ -76,7 +78,7 @@ float GetSKZTakeoffSpeed(int client)
 
 // =========================  LISTENERS  ========================= //
 
-void OnPlayerRunCmd_Style(int client, int &buttons)
+void OnPlayerRunCmd_Style(int client, int &buttons, const float angles[3])
 {
 	if (!IsPlayerAlive(client))
 	{
@@ -85,8 +87,9 @@ void OnPlayerRunCmd_Style(int client, int &buttons)
 	
 	KZPlayer player = new KZPlayer(client);
 	RemoveCrouchJumpBind(player, buttons);
-	TweakVelMod(player);
+	TweakVelMod(player, angles);
 	oldButtons[client] = buttons;
+	oldAngles[client] = angles;
 }
 
 void OnClientPreThink_Style(int client)
@@ -150,12 +153,12 @@ static void TweakConVars(KZPlayer player)
 
 // VELOCITY MODIFIER
 
-static void TweakVelMod(KZPlayer player)
+static void TweakVelMod(KZPlayer player, const float angles[3])
 {
-	player.velocityModifier = CalcPrestrafeVelMod(player) * CalcWeaponVelMod(player);
+	player.velocityModifier = CalcPrestrafeVelMod(player, angles) * CalcWeaponVelMod(player);
 }
 
-static float CalcPrestrafeVelMod(KZPlayer player)
+static float CalcPrestrafeVelMod(KZPlayer player, const float angles[3])
 {
 	switch (player.style)
 	{
@@ -165,7 +168,7 @@ static float CalcPrestrafeVelMod(KZPlayer player)
 			{
 				preVelMod[player.id] -= STANDARD_PRE_VELMOD_DECREMENT_MIDAIR;
 			}
-			else if (player.turning
+			else if (FloatAbs(CalcDeltaAngle(oldAngles[player.id][1], angles[1])) >= STANDARD_PRE_MINIMUM_DELTA_ANGLE
 				 && ((player.buttons & IN_FORWARD && !(player.buttons & IN_BACK)) || (!(player.buttons & IN_FORWARD) && player.buttons & IN_BACK))
 				 && ((player.buttons & IN_MOVELEFT && !(player.buttons & IN_MOVERIGHT)) || (!(player.buttons & IN_MOVELEFT) && player.buttons & IN_MOVERIGHT)))
 			{
