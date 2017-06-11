@@ -13,7 +13,7 @@
 #define PRE_VELMOD_MAX 1.104 // Calculated 276/250
 
 #define STANDARD_PERF_TICKS 2
-#define STANDARD_PRE_MINIMUM_DELTA_ANGLE 0.5
+#define STANDARD_PRE_MINIMUM_DELTA_ANGLE 0.4
 #define STANDARD_PRE_VELMOD_INCREMENT 0.0014 // Per tick when prestrafing
 #define STANDARD_PRE_VELMOD_DECREMENT 0.0021 // Per tick when not prestrafing
 #define STANDARD_PRE_VELMOD_DECREMENT_MIDAIR 0.0011063829787234 // Per tick when in air - calculated 0.104velmod/94ticks
