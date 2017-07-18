@@ -102,6 +102,22 @@ stock float FloatMax(float value1, float value2)
 }
 
 /**
+ * Returns the lesser of two float values.
+ *
+ * @param value1		First value.
+ * @param value2		Second value.
+ * @return				Lesser value.
+ */
+stock float FloatMin(float value1, float value2)
+{
+	if (value1 <= value2)
+	{
+		return value1;
+	}
+	return value2;
+}
+
+/**
  * Sets all characters in a string to lower case.
  *
  * @param input			Input string.
@@ -164,4 +180,25 @@ stock void EmitSoundToClientSpectators(int client, const char[] sound)
 			EmitSoundToClient(i, sound);
 		}
 	}
+}
+
+/**
+ * Calculates the delta angle between two angles (-180 to 180).
+ *
+ * @param startAngle	Start angle.
+ * @param endAngle		End angle.
+ * @return				Delta angle.
+ */
+stock float CalcDeltaAngle(float startAngle, float endAngle)
+{
+	float difference = endAngle - startAngle;
+	if (difference > 180)
+	{
+		difference + 360;
+	}
+	else if (difference < -180)
+	{
+		difference - 360;
+	}
+	return difference;
 } 
