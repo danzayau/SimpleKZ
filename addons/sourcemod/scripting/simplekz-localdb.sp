@@ -19,7 +19,7 @@ public Plugin myinfo =
 	name = "SimpleKZ Local DB", 
 	author = "DanZay", 
 	description = "SimpleKZ Local Database Module", 
-	version = "0.13.0", 
+	version = "0.13.1", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 

@@ -25,7 +25,7 @@ public Plugin myinfo =
 	name = "SimpleKZ Core", 
 	author = "DanZay", 
 	description = "SimpleKZ Core Plugin", 
-	version = "0.13.0", 
+	version = "0.13.1", 
 	url = "https://github.com/danzayau/SimpleKZ"
 };
 
