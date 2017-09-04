@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/danzayau/SimpleKZ.svg?branch=master)](https://travis-ci.org/danzayau/SimpleKZ)
 
+**NOTE**: **SimpleKZ** was renamed **GOKZ** and has moved to a [different repository](https://bitbucket.org/kztimerglobalteam/gokz).
+
 ## Features
 
  * **Timer** - Obviously!
